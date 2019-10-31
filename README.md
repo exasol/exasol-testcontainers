@@ -24,7 +24,7 @@ You can create a dockerized instance of Exasol with a few Java commands from wit
 
 ### Run Time Dependencies
 
-Running the Virtual Schema requires a Java Runtime version 9 or later.
+Running the Exasol Testcontainers requires a Java Runtime version 9 or later.
 
 | Dependency                                                                          | Purpose                                                | License                       |
 |-------------------------------------------------------------------------------------|--------------------------------------------------------|-------------------------------|
