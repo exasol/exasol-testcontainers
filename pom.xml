@@ -6,11 +6,12 @@
   <artifactId>exasol-testcontainers</artifactId>
   <version>${product.version}</version>
   <name>Test containers for Exasol on Docker</name>
-  <description>This module provides abstraction for generation, startup, shutdown and use of an Exasol database running on Docker.</description>
+  <description>This module provides abstraction for generation, startup, shutdown and use of an
+    Exasol database running on Docker.</description>
   <properties>
     <product.version>0.1.0</product.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8 
+    <project.reporting.outputEncoding>UTF-8
     </project.reporting.outputEncoding>
     <java.version>9</java.version>
     <junit.version>5.4.2</junit.version>
@@ -58,6 +59,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>nl.jqno.equalsverifier</groupId>
+      <artifactId>equalsverifier</artifactId>
+      <version>3.1.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>1.12.3</version>
@@ -94,11 +101,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.version}</version>
         <configuration>
-          <!-- Set the highest log level for coverage testing, so that we 
-            have a chance to reach branches in the logging lambdas too. -->
-          <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties
-            ${argLine} 
-          </argLine>
+          <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches 
+            in the logging lambdas too. -->
+          <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
         </configuration>
       </plugin>
       <plugin>
