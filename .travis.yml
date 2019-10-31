@@ -1,0 +1,22 @@
+language: java
+
+# Setting sudo to false will cause Travis to use Containers.
+# To use Docker's privileged mode, we need to enable sudo.
+sudo: required
+
+services:
+  - docker
+
+jdk:
+  - openjdk9
+
+addons:
+  sonarcloud:
+    organization: exasol
+    token:
+      secure: "Tzw0mn8q0kVwC2x8LJfYCFCn/Zxxp468tbwtoh1xD/KTpGSPhqg8HmfWGKr9r6nRmoghhOVAJufNRWa2ZBOAGQ53TRd44Zub/REyB9GL/8ccG4UiYB3TVAyipQboIfw2dY51oi7s1YMKpgJeraYk56Hd/fF2oMaEDDgtl48Q5yU5FWwYttNQltnl5R1Bwg3wuyghNg+RxcGIW22OQPbvDLeyDHz0UFbqDV8g0bOUqsaTEzHhzBMLz1g1hq5OvWdbwqV3chyHft6Hp5PwIG64dpdhxEhcELcVJyHKe31vaSLOcO8NvSbcJ7By4gtanD4Y3aelxocY7yJEUxtunde9fHUIOi5xcECWpF0Faf6mC17OEuukbE86ryC6tKdPxQkC55zt1troXlQdNqr6l/Ae8PN9sU10Hra28137jXdMX94So63ZFU1ks2SzcjFfdBAHKqE1i7amlE37pRhJp15sm5OVxPJ+3jn8zwYwewq4Zl+KzPUqqqKeCAH/1nAHr9nAN/iJyvz39kilcHjrSi6nCm9UcKh5u0EHFVbfMXHutrtN+vG4F7JICDzvfw1NMiFrNLXwqPESVH4KN8n7CsXevzqpkkzoOBCkYAk1Ww+lGrpZKq2icTgQRaez4SliwZhrcyJjaUghfVKrJZUBS7sLnzY26iuHyD/QCF2kHvMqAzY="
+
+before_script: ./tools/version.sh verify
+
+script:
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar

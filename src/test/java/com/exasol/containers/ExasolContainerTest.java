@@ -9,24 +9,21 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+// This test contains test cases that modify the configuration of the container. Don't add test
+// cases that depend on the default settings!
 @Testcontainers
 class ExasolContainerTest {
-    private static final int EXASOL_DATABASE_PORT = 8888;
-    private static final String EXASOL_DOCKER_IMAGE_VERSION = "6.2.2-d1";
-    private static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerTest.class);
 
     @Container
-    private static ExasolContainer container = new ExasolContainer(
-            EXASOL_DOCKER_IMAGE_ID + ":" + EXASOL_DOCKER_IMAGE_VERSION);
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
+            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
 
     @BeforeAll
     static void beforeAll() {
-        container.waitingFor(Wait.forListeningPort());
         container.followOutput(new Slf4jLogConsumer(LOGGER));
     }
 
@@ -40,4 +37,15 @@ class ExasolContainerTest {
         assertThat(container.getJdbcUrl(), matchesPattern("jdbc:exa:localhost:\\d{1,5}"));
     }
 
+    @Test
+    public void testWithUsername() {
+        final String expectedUsername = "Johnathan Smith";
+        assertThat(container.withUsername(expectedUsername).getUsername(), equalTo(expectedUsername));
+    }
+
+    @Test
+    public void testWithPassword() {
+        final String expectedPwd = "open sesame!";
+        assertThat(container.withPassword(expectedPwd).getPassword(), equalTo(expectedPwd));
+    }
 }

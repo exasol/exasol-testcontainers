@@ -11,7 +11,7 @@ public class ExasolContainerProvider extends JdbcDatabaseContainerProvider {
     }
 
     @Override
-    public JdbcDatabaseContainer newInstance(final String tag) {
-        return new ExasolContainer<>(ExasolContainer.IMAGE_ID + ":" + tag);
+    public JdbcDatabaseContainer<? extends JdbcDatabaseContainer<?>> newInstance(final String tag) {
+        return new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_ID + ":" + tag);
     }
 }
