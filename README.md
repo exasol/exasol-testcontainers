@@ -1,20 +1,20 @@
 # exasol-testcontainers
 
-[![Build Status](https://api.travis-ci.org/exasol/virtual-schema-common-java.svg?branch=master)](https://travis-ci.org/exasol/virtual-schema-common-java)
+[![Build Status](https://api.travis-ci.org/exasol/exasol-testcontainers.svg?branch=master)](https://travis-ci.org/exasol/exasol-testcontainers)
 
 SonarCloud results:
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
 
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=security_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=sqale_index)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=security_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=sqale_index)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
 
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=code_smells)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=coverage)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Avirtual-schema-common-java&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.exasol%3Avirtual-schema-common-java)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=code_smells)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=coverage)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
 
 This project provides an abstraction to Exasol running on Docker for the purpose of integration testing based on [Java Testcontainers](https://www.testcontainers.org).
 
