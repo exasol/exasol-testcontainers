@@ -26,12 +26,12 @@ class ExasolContainerDefaultsTest {
     }
 
     @Test
-    public void testGetDefaultUsername() {
+    void testGetDefaultUsername() {
         assertThat(container.getUsername(), equalTo("SYS"));
     }
 
     @Test
-    public void testGetDefaultUser() {
+    void testGetDefaultUser() {
         final String expectedUser = "JohnSmith";
         assertThat(container.withUsername(expectedUser).getUsername(), equalTo(expectedUser));
     }

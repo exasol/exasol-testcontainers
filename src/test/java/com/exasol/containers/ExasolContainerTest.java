@@ -12,6 +12,8 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 // This test contains test cases that modify the configuration of the container. Don't add test
 // cases that depend on the default settings!
 @Testcontainers
@@ -33,19 +35,24 @@ class ExasolContainerTest {
     }
 
     @Test
-    public void testGetJdbcUrl() throws Exception {
+    void testGetJdbcUrl() throws Exception {
         assertThat(container.getJdbcUrl(), matchesPattern("jdbc:exa:localhost:\\d{1,5}"));
     }
 
     @Test
-    public void testWithUsername() {
-        final String expectedUsername = "Johnathan Smith";
+    void testWithUsername() {
+        final String expectedUsername = "JohnathanSmith";
         assertThat(container.withUsername(expectedUsername).getUsername(), equalTo(expectedUsername));
     }
 
     @Test
-    public void testWithPassword() {
+    void testWithPassword() {
         final String expectedPwd = "open sesame!";
         assertThat(container.withPassword(expectedPwd).getPassword(), equalTo(expectedPwd));
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        EqualsVerifier.forClass(ExasolContainer.class).verify();
     }
 }
