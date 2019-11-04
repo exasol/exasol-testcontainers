@@ -12,8 +12,6 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-
 // This test contains test cases that modify the configuration of the container. Don't add test
 // cases that depend on the default settings!
 @Testcontainers
@@ -49,10 +47,5 @@ class ExasolContainerTest {
     void testWithPassword() {
         final String expectedPwd = "open sesame!";
         assertThat(container.withPassword(expectedPwd).getPassword(), equalTo(expectedPwd));
-    }
-
-    @Test
-    void testEqualsAndHashCode() {
-        EqualsVerifier.forClass(ExasolContainer.class).verify();
     }
 }

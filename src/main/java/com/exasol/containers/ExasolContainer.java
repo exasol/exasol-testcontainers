@@ -1,10 +1,10 @@
 package com.exasol.containers;
 
-import java.util.Objects;
 import java.util.Set;
 
 import org.testcontainers.containers.JdbcDatabaseContainer;
 
+@SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     public static final String NAME = "exasol";
     private static final int CONTAINER_INTERNAL_DATABASE_PORT = 8888;
@@ -67,30 +67,5 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public T withPassword(final String password) {
         this.password = password;
         return self();
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = (prime * result) + Objects.hash(password, username);
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (obj instanceof ExasolContainer) {
-            @SuppressWarnings({ "unchecked" })
-            final ExasolContainer<? extends ExasolContainer<?>> other = (ExasolContainer<? extends ExasolContainer<?>>) obj;
-            return Objects.equals(password, other.password) && Objects.equals(username, other.username);
-        } else {
-            return false;
-        }
     }
 }
