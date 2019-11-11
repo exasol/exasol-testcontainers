@@ -1,6 +1,8 @@
 # exasol-testcontainers
 
-[![Build Status](https://api.travis-ci.org/exasol/exasol-testcontainers.svg?branch=master)](https://travis-ci.org/exasol/exasol-testcontainers)
+<img alt="exasol-testcontainer logo" src="doc/images/exasol-testcontainer.svg" style="width:150px; float:left; padding:0px 10px 10px 10px;"/>
+
+[![Build Status](https://api.travis-ci.com/exasol/exasol-testcontainers.svg?branch=master)](https://travis-ci.org/exasol/exasol-testcontainers)
 
 SonarCloud results:
 
@@ -20,11 +22,32 @@ This project provides an abstraction to Exasol running on Docker for the purpose
 
 You can create a dockerized instance of Exasol with a few Java commands from within the test framework (e.g. [JUnit](https://junit.org)).
 
+## Scope
+
+This software is intended for use in automated integration tests of Java software that uses Exasol. It sets up and runs a disposable Docker container and lets users access the interfaces of the Exasol instance inside that container with minimum effort.
+
+**Don't use testcontainers for production environments or with confidential data.** To make testing as convenient as possible, the handling of the disposable containers is not up to the same security standards as a production system.
+
+## Features
+
+* Download, start and stop an Exasol docker container automatically
+* JUnit integration via annotations
+* JDBC connection to the database inside the container
+* BucketFS access
+
+## Table of Contents
+
+### Information for Users
+
+"Users" from the perspective of this project are software developers integrating the Exasol test container into their test environment, not database end users.
+
+* [User Guide](doc/user-guide/user-guide.md)
+
 ## Dependencies
 
 ### Run Time Dependencies
 
-Running the Exasol Testcontainers requires a Java Runtime version 9 or later.
+Running the Exasol Testcontainers requires a Java Runtime version 11 or later.
 
 | Dependency                                                                          | Purpose                                                | License                       |
 |-------------------------------------------------------------------------------------|--------------------------------------------------------|-------------------------------|
