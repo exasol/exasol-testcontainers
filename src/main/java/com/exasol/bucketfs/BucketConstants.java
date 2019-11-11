@@ -1,7 +1,7 @@
 package com.exasol.bucketfs;
 
 /**
- * BucketFS constants
+ * BucketFS constants.
  */
 public final class BucketConstants {
     public static final String PATH_SEPARATOR = "/";

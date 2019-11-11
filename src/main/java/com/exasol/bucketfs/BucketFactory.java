@@ -6,7 +6,7 @@ import java.util.Map;
 import com.exasol.config.*;
 
 /**
- * Factor for objects abstracting buckets in Exasol's BucketFS.
+ * Factory for objects abstracting buckets in Exasol's BucketFS.
  */
 public final class BucketFactory {
     private final Map<String, Bucket> buckets = new HashMap<>();
@@ -15,7 +15,7 @@ public final class BucketFactory {
     private final Map<Integer, Integer> portMappings;
 
     /**
-     * Create a new instance of a BucketManager.
+     * Create a new instance of a BucketFactory.
      *
      * @param ipAddress            IP address of the the BucketFS service
      * @param clusterConfiguration configuration of the Exasol Cluster

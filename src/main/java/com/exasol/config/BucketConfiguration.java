@@ -19,7 +19,7 @@ public class BucketConfiguration {
     }
 
     /**
-     * Get the name of the bucket
+     * Get the name of the bucket.
      *
      * @return bucket name
      */
@@ -28,7 +28,7 @@ public class BucketConfiguration {
     }
 
     /**
-     * Get the bucket read password
+     * Get the bucket read password.
      *
      * @return read password
      */
@@ -37,7 +37,7 @@ public class BucketConfiguration {
     }
 
     /**
-     * Get the bucket write password
+     * Get the bucket write password.
      *
      * @return write password
      */
@@ -46,7 +46,7 @@ public class BucketConfiguration {
     }
 
     /**
-     * Get a builder for a {@link BucketConfiguration}
+     * Get a builder for a {@link BucketConfiguration}.
      *
      * @return builder
      */
@@ -64,7 +64,7 @@ public class BucketConfiguration {
     }
 
     /**
-     * Get the configuration of the parent BucketFS service
+     * Get the configuration of the parent BucketFS service.
      *
      * @return service configuration
      */
