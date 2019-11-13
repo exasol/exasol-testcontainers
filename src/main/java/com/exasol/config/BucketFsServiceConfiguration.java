@@ -20,7 +20,7 @@ public class BucketFsServiceConfiguration {
     }
 
     /**
-     * Get the name of the BucketFS service
+     * Get the name of the BucketFS service.
      *
      * @return bucket name
      */
@@ -47,7 +47,7 @@ public class BucketFsServiceConfiguration {
     }
 
     /**
-     * Get the configuration of a bucket
+     * Get the configuration of a bucket.
      *
      * @param bucketName name of the bucket
      * @return
@@ -61,7 +61,7 @@ public class BucketFsServiceConfiguration {
     }
 
     /**
-     * Get a builder for a {@link BucketFsServiceConfiguration}
+     * Get a builder for a {@link BucketFsServiceConfiguration}.
      *
      * @return builder
      */

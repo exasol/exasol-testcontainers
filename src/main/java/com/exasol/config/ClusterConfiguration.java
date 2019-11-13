@@ -19,7 +19,7 @@ public class ClusterConfiguration {
     private final Map<String, String> parameters;
 
     /**
-     * Create a new instance of an Exasol {@link ClusterConfiguration}
+     * Create a new instance of an Exasol {@link ClusterConfiguration}.
      *
      * @param parameters configuration options as map of keys and values
      */
@@ -46,7 +46,7 @@ public class ClusterConfiguration {
     }
 
     /**
-     * Get the configuration of a BucketFS service
+     * Get the configuration of a BucketFS service.
      *
      * @param name name of the BuckteFS service
      * @return service configuration
