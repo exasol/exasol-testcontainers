@@ -1,6 +1,6 @@
 # exasol-testcontainers
 
-<img alt="exasol-testcontainer logo" src="doc/images/exasol-testcontainer.svg" style="width:150px; float:left; padding:0px 10px 10px 10px;"/>
+<img alt="exasol-testcontainer logo" src="doc/images/exasol-testcontainer_128x128.png" style="float:left; padding:0px 10px 10px 10px;"/>
 
 [![Build Status](https://api.travis-ci.com/exasol/exasol-testcontainers.svg?branch=master)](https://travis-ci.org/exasol/exasol-testcontainers)
 

@@ -118,6 +118,8 @@ The test container knows the cluster setup, including the [bucket credentials](#
 
 ### Improving Random Data Acquisition
 
+If key generation steps inside the Docker container are slow, installing the `rng-tools` on the host can improve the situation.
+
 ```bash
 sudo apt install rng-tools
 ```
