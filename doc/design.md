@@ -45,7 +45,6 @@ Needs: impl
 
 The `ConfigurationParser` parses Exasol's cluster configuration format.
 
-
 ## `Bucket`
 
 The `Bucket` building block controls interaction with a bucket in BucketFS. 
@@ -112,7 +111,6 @@ Covers:
 * `const~exasol-docker-container-requires-privileged-mode~1`
 
 Needs: impl, itest
-
 
 ## Database Access
 
