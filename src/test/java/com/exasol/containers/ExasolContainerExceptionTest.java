@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
 
-public class ExasolContainerExceptionTest {
+class ExasolContainerExceptionTest {
     @Test
-    public void testCreate() throws Exception {
+    void testCreate() throws Exception {
         final String message = "foo";
         final Exception cause = new InterruptedException();
         final ExasolContainerException exception = new ExasolContainerException(message, cause);
