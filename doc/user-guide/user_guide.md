@@ -28,7 +28,9 @@ class BucketTest {
 
 Let's go through the code line by line.
 
-The first two imports provide support for annotations that you need in order to tell `testcontainers` to automatically initialize the docker container. You annotate the test class with `@Testcontainers`. The `@Container` tells the `testcontainers` framework to initialize the static variable `container` with control object for the Exasol docker container.
+The first two imports provide support for annotations that you need in order to tell `testcontainers` to automatically initialize the docker container. You annotate the test class with `@Testcontainers`.
+
+The `@Container` tells the `testcontainers` framework to initialize the static variable `container` with control object for the Exasol docker container.
 
 Under the hood the framework takes care of downloading the docker image &mdash; unless it is already locally cached. Then it starts the container and waits for the service inside to be ready. The `ExasolContainer` implements its own waiting strategy to make sure that the services you need in your tests are available once your test code takes over.
 
@@ -111,3 +113,11 @@ If you are wondering how to provide the access passwords for the buckets &mdash;
 After all you want to test whether the software that you want to using in combination with Exasol works and not Exasol's authentication mechanisms.
 
 The test container knows the cluster setup, including the [bucket credentials](#generated-passwords). The test container handles the authentication for you when working with buckets.
+
+## Tweaking
+
+### Improving Random Data Acquisition
+
+```bash
+sudo apt install rng-tools
+```

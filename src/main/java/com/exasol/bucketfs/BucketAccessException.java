@@ -38,7 +38,7 @@ public class BucketAccessException extends Exception {
 
     /**
      * Create a new instance of a {@link BucketAccessException}
-     * 
+     *
      * @param message error message
      * @param cause   exception that caused this one
      */

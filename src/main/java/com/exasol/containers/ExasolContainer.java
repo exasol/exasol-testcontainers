@@ -1,6 +1,7 @@
 package com.exasol.containers;
 
 import java.io.IOException;
+import java.sql.*;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -13,21 +14,21 @@ import com.exasol.config.ClusterConfiguration;
 import com.exasol.exaconf.ConfigurationParser;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 
+// [external->dsn~testcontainer-framework-controls-docker-image-download~1]
+// [impl->dsn~exasol-container-controls-docker-container~1]
+
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     @SuppressWarnings("squid:S1075") // This is the default URI where EXAConf is supposed to be located.
     private static final String CLUSTER_CONFIGURATION_PATH = "/exa/etc/EXAConf";
     public static final String NAME = "exasol";
-    private static final int CONTAINER_INTERNAL_DATABASE_PORT = 8888;
-    private static final int CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
     private static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
-    private String username = "SYS";
     private ClusterConfiguration clusterConfiguration = null;
-    // The following assignment intentionally contains the initial password for the database administrator.
-    // Keep in mind that this project deals with disposable containers that should only be used in integration tests.
+    // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
+    private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
     @SuppressWarnings("squid:S2068")
-    private String password = "EXASOL";
+    private String password = ExasolContainerConstants.DEFAULT_SYS_USER_PASSWORD;
 
     public ExasolContainer(final String dockerImageName) {
         super(dockerImageName);
@@ -46,9 +47,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * Sets the container to privileged mode. This is needed for shared memory, huge-page support and other low-level
      * access.
      */
+    // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
-        this.addExposedPorts(CONTAINER_INTERNAL_DATABASE_PORT, CONTAINER_INTERNAL_BUCKETFS_PORT);
+        this.addExposedPorts(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT, ExasolContainerConstants.CONTAINER_INTERNAL_BUCKETFS_PORT);
         this.setPrivilegedMode(true);
         super.configure();
     }
@@ -80,7 +82,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public Set<Integer> getLivenessCheckPortNumbers() {
-        return Set.of(getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT));
+        return Set.of(getMappedPort(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT));
     }
 
     @Override
@@ -90,7 +92,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT);
+        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT);
     }
 
     @Override
@@ -103,11 +105,30 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return this.password;
     }
 
+    /**
+     * Create a JDBC connection for the given user.
+     *
+     * @param user     username
+     * @param password password of the user
+     * @return database connection
+     * @throws SQLException if the connection cannot be established
+     */
+    // [impl->dsn~exasol-container-provides-a-jdbc-connection-for-username-and-password~1]
+    public Connection createConnectionForUser(final String user, final String password) throws SQLException {
+        final Driver driver = getJdbcDriverInstance();
+        final Properties info = new Properties();
+        info.put("user", user);
+        info.put("password", password);
+        return driver.connect(constructUrlForConnection(""), info);
+    }
+
+    // [impl->dsn~exasol-container-ready-criteria~1]
     @Override
     protected String getTestQueryString() {
         return "SELECT 1 FROM DUAL";
     }
 
+    // [dsn~exasol-container-provides-a-jdbc-connection-with-administrator-privileges~1]
     @Override
     public T withUsername(final String username) {
         this.username = username;

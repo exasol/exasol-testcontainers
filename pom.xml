@@ -128,6 +128,19 @@
           <target>${java.version}</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.itsallcode</groupId>
+        <artifactId>openfasttrace-maven-plugin</artifactId>
+        <version>0.0.2</version>
+        <executions>
+          <execution>
+            <id>trace-requirements</id>
+            <goals>
+              <goal>trace</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

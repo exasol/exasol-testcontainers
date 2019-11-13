@@ -50,6 +50,24 @@ public class Bucket {
     }
 
     /**
+     * Get the read password for the bucket.
+     *
+     * @return read password
+     */
+    public String getReadPassword() {
+        return this.readPassword;
+    }
+
+    /**
+     * Get the write password for the bucket.
+     *
+     * @return write password.
+     */
+    public String getWritePassword() {
+        return this.writePassword;
+    }
+
+    /**
      * List the contents of a path inside a bucket
      *
      * @param path relative path from the bucket root
@@ -57,6 +75,7 @@ public class Bucket {
      * @throws BucketAccessException if the contents are not accessible or the path is invalid
      * @throws InterruptedException  if the list request was interrupted
      */
+    // [impl->dsn~bucket-lists-its-contents~1]
     public Set<String> listContents(final String path) throws BucketAccessException, InterruptedException {
         final URI uri = createPublicReadURI(path);
         LOGGER.debug("Listing contents of bucket path \"{}\"", uri);
@@ -85,6 +104,7 @@ public class Bucket {
      * @throws InterruptedException  if the upload is interrupted
      * @throws BucketAccessException if the file cannot be uploaded to the given URI
      */
+    // [impl->dsn~uploading-to-bucket~1]
     public void uploadFile(final Path localPath, final String pathInBucket)
             throws IOException, InterruptedException, BucketAccessException {
         final URI uri = createWriteURI(pathInBucket);
@@ -135,7 +155,7 @@ public class Bucket {
      * @throws InterruptedException  if the upload is interrupted
      * @throws BucketAccessException if the file cannot be uploaded to the given URI
      */
-
+    // [impl->dsn~uploading-strings-to-bucket~1]
     public void uploadStringContent(final String content, final String pathInBucket)
             throws IOException, InterruptedException, BucketAccessException {
         final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
@@ -144,10 +164,12 @@ public class Bucket {
         try {
             final int statusCode = httpPut(uri, BodyPublishers.ofString(content));
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to ", statusCode, uri);
+                throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to bucket.", statusCode,
+                        uri);
             }
         } catch (final IOException exception) {
-            throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to ", uri, exception);
+            throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to bucket.", uri,
+                    exception);
         }
     }
 

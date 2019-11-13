@@ -38,6 +38,7 @@ public final class BucketFactory {
      * @param configuration bucket configuration
      * @return bucket
      */
+    // [impl->dsn~bucket-factory-injects-access-credentials~1]
     public synchronized Bucket getBucket(final String serviceName, final String bucketName) {
         final BucketFsServiceConfiguration serviceConfiguration = this.clusterConfiguration
                 .getBucketFsServiceConfiguration(serviceName);

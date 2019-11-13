@@ -10,7 +10,7 @@ public class BucketConfiguration {
     private final String writePassword;
     private final BucketFsServiceConfiguration serviceConfiguration;
 
-    public BucketConfiguration(final Builder builder) {
+    private BucketConfiguration(final Builder builder) {
         this.name = builder.name;
         this.publiclyReadable = builder.publiclyReadable;
         this.readPassword = builder.readPassword;

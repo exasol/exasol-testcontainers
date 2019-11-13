@@ -43,6 +43,13 @@ This software is intended for use in automated integration tests of Java softwar
 
 * [User Guide](doc/user-guide/user-guide.md)
 
+### Information for Contributors
+
+Requirement, design documents and coverage tags are written in [OpenFastTrace](https://github.com/itsallcode/openfasttrace) format.
+
+* [System Requirement Specification](doc/system_requirements.md)
+* [Design](doc/design.md)
+
 ## Dependencies
 
 ### Run Time Dependencies
@@ -72,3 +79,4 @@ Running the Exasol Testcontainers requires a Java Runtime version 11 or later.
 | [Maven Jacoco Plugin](https://www.eclemma.org/jacoco/trunk/doc/maven.html)          | Code coverage metering                                 | Eclipse Public License 2.0    |
 | [Maven Source Plugin](https://maven.apache.org/plugins/maven-source-plugin/)        | Creating a source code JAR                             | Apache License 2.0            |
 | [Maven Surefire Plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)   | Unit testing                                           | Apache License 2.0            |
+| [OpenFastTrace Maven Plugin](https://github.com/itsallcode/openfasttrace-maven-plugin) | Requirement Tracing                                 | GPL v3                        |
