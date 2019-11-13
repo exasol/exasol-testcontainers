@@ -1,6 +1,8 @@
 # exasol-testcontainers
 
-[![Build Status](https://api.travis-ci.org/exasol/exasol-testcontainers.svg?branch=master)](https://travis-ci.org/exasol/exasol-testcontainers)
+<img alt="exasol-testcontainer logo" src="doc/images/exasol-testcontainer_128x128.png" style="float:left; padding:0px 10px 10px 10px;"/>
+
+[![Build Status](https://api.travis-ci.com/exasol/exasol-testcontainers.svg?branch=master)](https://travis-ci.org/exasol/exasol-testcontainers)
 
 SonarCloud results:
 
@@ -20,11 +22,39 @@ This project provides an abstraction to Exasol running on Docker for the purpose
 
 You can create a dockerized instance of Exasol with a few Java commands from within the test framework (e.g. [JUnit](https://junit.org)).
 
+## Scope
+
+This software is intended for use in automated integration tests of Java software that uses Exasol. It sets up and runs a disposable Docker container and lets users access the interfaces of the Exasol instance inside that container with minimum effort.
+
+**Don't use testcontainers for production environments or with confidential data.** To make testing as convenient as possible, the handling of the disposable containers is not up to the same security standards as a production system.
+
+## Features
+
+* Download, start and stop an Exasol docker container automatically
+* JUnit integration via annotations
+* JDBC connection to the database inside the container
+* BucketFS access
+
+## Table of Contents
+
+### Information for Users
+
+"Users" from the perspective of this project are software developers integrating the Exasol test container into their test environment, not database end users.
+
+* [User Guide](doc/user-guide/user-guide.md)
+
+### Information for Contributors
+
+Requirement, design documents and coverage tags are written in [OpenFastTrace](https://github.com/itsallcode/openfasttrace) format.
+
+* [System Requirement Specification](doc/system_requirements.md)
+* [Design](doc/design.md)
+
 ## Dependencies
 
 ### Run Time Dependencies
 
-Running the Exasol Testcontainers requires a Java Runtime version 9 or later.
+Running the Exasol Testcontainers requires a Java Runtime version 11 or later.
 
 | Dependency                                                                          | Purpose                                                | License                       |
 |-------------------------------------------------------------------------------------|--------------------------------------------------------|-------------------------------|
@@ -49,3 +79,4 @@ Running the Exasol Testcontainers requires a Java Runtime version 9 or later.
 | [Maven Jacoco Plugin](https://www.eclemma.org/jacoco/trunk/doc/maven.html)          | Code coverage metering                                 | Eclipse Public License 2.0    |
 | [Maven Source Plugin](https://maven.apache.org/plugins/maven-source-plugin/)        | Creating a source code JAR                             | Apache License 2.0            |
 | [Maven Surefire Plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)   | Unit testing                                           | Apache License 2.0            |
+| [OpenFastTrace Maven Plugin](https://github.com/itsallcode/openfasttrace-maven-plugin) | Requirement Tracing                                 | GPL v3                        |
