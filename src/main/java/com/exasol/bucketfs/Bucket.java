@@ -229,7 +229,7 @@ public class Bucket {
         /**
          * Set the port the BucketFS service listens on.
          *
-         * @param port port the BucketFS service listens on
+         * @param port HTTP port the BucketFS service listens on
          * @return Builder instance for fluent programming
          */
         public Builder httpPort(final int port) {

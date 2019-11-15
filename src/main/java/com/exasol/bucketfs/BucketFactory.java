@@ -35,7 +35,7 @@ public final class BucketFactory {
     /**
      * Get a BucketFS bucket.
      *
-     * @param serviceName name of the service
+     * @param serviceName name of the BucketFS service that hosts the bucket
      * @param bucketName name of the bucket
      * @return bucket
      */
