@@ -35,7 +35,8 @@ public final class BucketFactory {
     /**
      * Get a BucketFS bucket.
      *
-     * @param configuration bucket configuration
+     * @param serviceName name of the BucketFS service that hosts the bucket
+     * @param bucketName name of the bucket
      * @return bucket
      */
     // [impl->dsn~bucket-factory-injects-access-credentials~1]
