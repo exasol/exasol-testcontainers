@@ -48,7 +48,7 @@ public class ClusterConfiguration {
     /**
      * Get the configuration of a BucketFS service.
      *
-     * @param name name of the BuckteFS service
+     * @param name name of the BucketFS service
      * @return service configuration
      */
     public BucketFsServiceConfiguration getBucketFsServiceConfiguration(final String name) {
@@ -85,17 +85,17 @@ public class ClusterConfiguration {
                 .collect(Collectors.toSet());
     }
 
-    private String getOrDefault(final String sectionKey, final String paramterKey, final String defaultValue) {
-        return this.parameters.getOrDefault(sectionKey + SECTION_SEPARATOR + paramterKey, defaultValue);
+    private String getOrDefault(final String sectionKey, final String parameterKey, final String defaultValue) {
+        return this.parameters.getOrDefault(sectionKey + SECTION_SEPARATOR + parameterKey, defaultValue);
     }
 
-    private String get(final String sectionKey, final String subSectionKey, final String paramterKey) {
-        return this.parameters.get(sectionKey + SECTION_SEPARATOR + subSectionKey + SECTION_SEPARATOR + paramterKey);
+    private String get(final String sectionKey, final String subSectionKey, final String parameterKey) {
+        return this.parameters.get(sectionKey + SECTION_SEPARATOR + subSectionKey + SECTION_SEPARATOR + parameterKey);
     }
 
-    private String getOrDefault(final String sectionKey, final String subSectionKey, final String paramterKey,
+    private String getOrDefault(final String sectionKey, final String subSectionKey, final String parameterKey,
             final String defaultValue) {
         return this.parameters.getOrDefault(
-                sectionKey + SECTION_SEPARATOR + subSectionKey + SECTION_SEPARATOR + paramterKey, defaultValue);
+                sectionKey + SECTION_SEPARATOR + subSectionKey + SECTION_SEPARATOR + parameterKey, defaultValue);
     }
 }

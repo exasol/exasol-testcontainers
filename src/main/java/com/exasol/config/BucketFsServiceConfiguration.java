@@ -50,7 +50,7 @@ public class BucketFsServiceConfiguration {
      * Get the configuration of a bucket.
      *
      * @param bucketName name of the bucket
-     * @return
+     * @return bucket configuration
      */
     public BucketConfiguration getBucketConfiguration(final String bucketName) {
         if (this.bucketConfigurations.containsKey(bucketName)) {
@@ -103,7 +103,7 @@ public class BucketFsServiceConfiguration {
         /**
          * Set the HTTPS port the BucketFS service listens on.
          *
-         * @param httpPort HTTPS port
+         * @param httpsPort HTTPS port
          * @return Builder instance for fluent programming
          */
         public Builder httpsPort(final int httpsPort) {

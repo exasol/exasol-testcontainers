@@ -38,14 +38,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * Configure the Exasol container.
      * <p>
      * Maps the following ports:
+     * </p>
      * <ul>
      * <li>Database port</li>
      * <li>BucketFS port</li>
      * </ul>
-     * </p>
      * <p>
      * Sets the container to privileged mode. This is needed for shared memory, huge-page support and other low-level
      * access.
+     * </p>
      */
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override

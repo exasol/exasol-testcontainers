@@ -68,7 +68,7 @@ public class Bucket {
     }
 
     /**
-     * List the contents of a path inside a bucket
+     * List the contents of a path inside a bucket.
      *
      * @param path relative path from the bucket root
      * @return list of file system entries
@@ -106,7 +106,7 @@ public class Bucket {
      */
     // [impl->dsn~uploading-to-bucket~1]
     public void uploadFile(final Path localPath, final String pathInBucket)
-            throws IOException, InterruptedException, BucketAccessException {
+            throws InterruptedException, BucketAccessException {
         final URI uri = createWriteURI(pathInBucket);
         LOGGER.info("Uploading file \"{}\" to \"{}\"", localPath, uri);
         try {
@@ -150,14 +150,14 @@ public class Bucket {
      * For large payload use {@link Bucket#uploadFile(Path, String)} instead.
      * </p>
      *
+     * @param content string to write
      * @param pathInBucket path inside the bucket
-     * @param localPath    path of the file to be uploaded
      * @throws InterruptedException  if the upload is interrupted
      * @throws BucketAccessException if the file cannot be uploaded to the given URI
      */
     // [impl->dsn~uploading-strings-to-bucket~1]
     public void uploadStringContent(final String content, final String pathInBucket)
-            throws IOException, InterruptedException, BucketAccessException {
+            throws InterruptedException, BucketAccessException {
         final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
         final URI uri = createWriteURI(pathInBucket);
         LOGGER.info("Uploading text \"{}\" to \"{}\"", excerpt, uri);
@@ -229,7 +229,7 @@ public class Bucket {
         /**
          * Set the port the BucketFS service listens on.
          *
-         * @param ipAddress IP Address the BucketFS service listens on
+         * @param port port the BucketFS service listens on
          * @return Builder instance for fluent programming
          */
         public Builder httpPort(final int port) {
@@ -238,9 +238,9 @@ public class Bucket {
         }
 
         /**
-         * Set the read password
+         * Set the read password.
          *
-         * @param readPassword
+         * @param readPassword read password to set
          * @return Builder instance for fluent programming
          */
         public Builder readPassword(final String readPassword) {
@@ -249,9 +249,9 @@ public class Bucket {
         }
 
         /**
-         * Set the write password
+         * Set the write password.
          *
-         * @param writePassword
+         * @param writePassword write password to set
          * @return Builder instance for fluent programming
          */
         public Builder writePassword(final String writePassword) {

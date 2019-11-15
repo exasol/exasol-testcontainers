@@ -41,7 +41,7 @@ This software is intended for use in automated integration tests of Java softwar
 
 "Users" from the perspective of this project are software developers integrating the Exasol test container into their test environment, not database end users.
 
-* [User Guide](doc/user-guide/user-guide.md)
+* [User Guide](doc/user_guide/user_guide.md)
 
 ### Information for Contributors
 

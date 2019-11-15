@@ -127,7 +127,7 @@ public class BucketConfiguration {
         }
 
         /**
-         * Link to the configuration of the parent BucketFS service
+         * Link to the configuration of the parent BucketFS service.
          *
          * @param serviceConfiguration configuration of the service
          * @return Builder instance for fluent programming
