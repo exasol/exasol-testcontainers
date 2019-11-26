@@ -14,7 +14,7 @@ import com.exasol.config.ClusterConfiguration;
 import com.exasol.exaconf.ConfigurationParser;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 
-// [external->dsn~testcontainer-framework-controls-docker-image-download~1]
+// [external->dsn~testcontainer-framework-controls-docker-image-download~2]
 // [impl->dsn~exasol-container-controls-docker-container~1]
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
@@ -50,7 +50,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
-        this.addExposedPorts(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT, ExasolContainerConstants.CONTAINER_INTERNAL_BUCKETFS_PORT);
+        this.addExposedPorts(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT,
+                ExasolContainerConstants.CONTAINER_INTERNAL_BUCKETFS_PORT);
         this.setPrivilegedMode(true);
         super.configure();
     }
@@ -92,7 +93,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT);
+        return "jdbc:exa:" + getContainerIpAddress() + ":"
+                + getMappedPort(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT);
     }
 
     @Override

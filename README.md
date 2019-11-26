@@ -59,6 +59,9 @@ Running the Exasol Testcontainers requires a Java Runtime version 11 or later.
 | Dependency                                                                          | Purpose                                                | License                       |
 |-------------------------------------------------------------------------------------|--------------------------------------------------------|-------------------------------|
 | [Testcontainers](https://www.testcontainers.org/)                                   | Docker Container control abstraction                   | MIT License                   |
+| [Exasol JDBC driver](https://docs.exasol.com/connect_exasol/drivers/jdbc.htm)       | Run SQL statements on Exasol via JDBC                  | EXAClient License             |
+
+Note that using the Exasol test container requires that you also use the JDBC driver (transitive dependency). This is necessary so that the test container code can provide a JDBC database interface.
 
 ### Test Dependencies
 
