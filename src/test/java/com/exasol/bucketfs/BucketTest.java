@@ -39,7 +39,7 @@ class BucketTest {
         assertThat(container.getDefaultBucket().listContents("/"), hasItem(startsWith("EXAClusterOS")));
     }
 
-    // [itest->dsn~uploading-to-bucket~1]]
+    // [itest->dsn~uploading-to-bucket~1]
     @Test
     void testUploadFile(@TempDir final Path tempDir) throws IOException, BucketAccessException, InterruptedException {
         final String pathInBucket = "test-uploaded.txt";
@@ -49,7 +49,7 @@ class BucketTest {
         assertThat(bucket.listContents("/"), hasItem(pathInBucket));
     }
 
-    // [itest->dsn~uploading-strings-to-bucket~1]]
+    // [itest->dsn~uploading-strings-to-bucket~1]
     @Test
     void testUploadStringContent() throws IOException, BucketAccessException, InterruptedException {
         final String content = "Hello BucketFS!";
