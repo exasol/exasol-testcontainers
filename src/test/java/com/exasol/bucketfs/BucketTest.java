@@ -36,17 +36,39 @@ class BucketTest {
     // [itest->dsn~bucket-lists-its-contents~1]
     @Test
     void testListBucketContents() throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents("/"), hasItem(startsWith("EXAClusterOS")));
+        assertThat(container.getDefaultBucket().listContents(), hasItem(startsWith("EXAClusterOS")));
+    }
+
+    // [itest->dsn~bucket-lists-its-contents~1]
+    @Test
+    void testListBucketContentsWithRootPath() throws BucketAccessException, InterruptedException {
+        assertThat(container.getDefaultBucket().listContents(), hasItem(startsWith("EXAClusterOS")));
     }
 
     // [itest->dsn~uploading-to-bucket~1]
     @Test
     void testUploadFile(@TempDir final Path tempDir) throws IOException, BucketAccessException, InterruptedException {
-        final String pathInBucket = "test-uploaded.txt";
-        final Path testFile = Files.writeString(tempDir.resolve("test.txt"), "content", StandardOpenOption.CREATE);
+        final String fileName = "test-uploaded.txt";
+        final Path testFile = createTestFile(tempDir, fileName);
+        final Bucket bucket = container.getDefaultBucket();
+        bucket.uploadFile(testFile, fileName);
+        assertThat(bucket.listContents(), hasItem(fileName));
+    }
+
+    private Path createTestFile(final Path tempDir, final String fileName) throws IOException {
+        return Files.writeString(tempDir.resolve(fileName), "content", StandardOpenOption.CREATE);
+    }
+
+    // [itest->dsn~uploading-to-bucket~1]
+    @Test
+    void testUploadToDirectoryInBucket(@TempDir final Path tempDir)
+            throws BucketAccessException, InterruptedException, IOException {
+        final String fileName = "file.txt";
+        final String pathInBucket = "directory/";
+        final Path testFile = createTestFile(tempDir, fileName);
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadFile(testFile, pathInBucket);
-        assertThat(bucket.listContents("/"), hasItem(pathInBucket));
+        assertThat(container.getDefaultBucket().listContents(pathInBucket), contains(fileName));
     }
 
     // [itest->dsn~uploading-strings-to-bucket~1]
@@ -56,6 +78,6 @@ class BucketTest {
         final String pathInBucket = "string-uploaded.txt";
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadStringContent(content, pathInBucket);
-        assertThat(bucket.listContents("/"), hasItem(pathInBucket));
+        assertThat(bucket.listContents(), hasItem(pathInBucket.toString()));
     }
 }
