@@ -9,6 +9,8 @@ import java.nio.file.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -60,11 +62,11 @@ class BucketTest {
     }
 
     // [itest->dsn~uploading-to-bucket~1]
-    @Test
-    void testUploadToDirectoryInBucket(@TempDir final Path tempDir)
+    @ValueSource(strings = { "dir1/", "dir2/sub2/", "dir3/sub3/subsub3/", "/dir4/", "/dir5/sub5/" })
+    @ParameterizedTest
+    void testUploadToDirectoryInBucket(final String pathInBucket, @TempDir final Path tempDir)
             throws BucketAccessException, InterruptedException, IOException {
         final String fileName = "file.txt";
-        final String pathInBucket = "directory/";
         final Path testFile = createTestFile(tempDir, fileName);
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadFile(testFile, pathInBucket);
