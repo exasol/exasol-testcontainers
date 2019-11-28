@@ -64,7 +64,7 @@ The Exasol test container provides access to buckets in BucketFS. This is useful
 
 ### Understanding Bucket Contents
 
-One thing you need to know about buckets objects inside a bucket are not stored in a hierarchical directory structure. Instead they are flat files that can have slashes in their names so that it looks like a directory structure at first glance.
+One thing you need to know about buckets objects inside a bucket is that they are not stored in a hierarchical directory structure. Instead they are flat files that can have slashes in their names so that it looks like a directory structure at first glance.
 
 Since this internal detail deviates from what users are used to see, the bucket access methods implemented in this project simulate a regular structure.
 

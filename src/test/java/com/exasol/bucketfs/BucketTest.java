@@ -37,14 +37,14 @@ class BucketTest {
 
     // [itest->dsn~bucket-lists-its-contents~1]
     @Test
-    void testListBucketContents() throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents(), hasItem(startsWith("EXAClusterOS")));
+    void testListBucketContentsWithRootPath() throws BucketAccessException, InterruptedException {
+        assertThat(container.getDefaultBucket().listContents(), hasItem("EXAClusterOS"));
     }
 
     // [itest->dsn~bucket-lists-its-contents~1]
     @Test
-    void testListBucketContentsWithRootPath() throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents(), hasItem(startsWith("EXAClusterOS")));
+    void testListBucketContents() throws BucketAccessException, InterruptedException {
+        assertThat(container.getDefaultBucket().listContents("EXAClusterOS/"), hasItem(startsWith("ScriptLanguages")));
     }
 
     // [itest->dsn~uploading-to-bucket~1]

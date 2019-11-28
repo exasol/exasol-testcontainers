@@ -130,7 +130,7 @@ public class Bucket {
 
     private String extractFirstPathComponent(final String path) {
         if (path.contains("/")) {
-            return path.substring(0, path.indexOf('/') + 1);
+            return path.substring(0, path.indexOf('/'));
         } else {
             return path;
         }
