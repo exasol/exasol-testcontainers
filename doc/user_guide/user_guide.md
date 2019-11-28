@@ -62,6 +62,14 @@ This is why **you should not use test containers in a production environment**. 
 
 The Exasol test container provides access to buckets in BucketFS. This is useful if your tests need to work with files in buckets. If you for example want to test a UDF script, you can upload it prior to the test using a `Bucket` control object. 
 
+### Understanding Bucket Contents
+
+One thing you need to know about buckets objects inside a bucket is that they are not stored in a hierarchical directory structure. Instead they are flat files that can have slashes in their names so that it looks like a directory structure at first glance.
+
+Since this internal detail deviates from what users are used to see, the bucket access methods implemented in this project simulate a regular structure.
+
+Another thing worth noting is that if you store files in some selected archive formats (e.g. [TAR archives](https://www.gnu.org/software/tar/)) in a bucket, BucketFS presents the archive contents as a hierarchical structure.
+
 ### Getting a Bucket Control Object
 
 You can get access to a bucket in BucketFS by requesting a `Bucket` control object from the container.
@@ -81,8 +89,10 @@ final Bucket bucket = this.container.getDefaultBucket();
 The following code lists the contents of a buckets root.
 
 ```java
-final List<String> bucketContents = bucket.listContents("/");
+final List<String> bucketContents = bucket.listContents();
 ```
+
+You can also list the contents of a "path" within a bucket. "Path" is set in quotes here since objects in buckets are &mdash; as mentioned earlier &mdash; all files directly in the root of the bucket.
 
 ### Uploading a File to BucketFS
 

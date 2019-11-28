@@ -9,6 +9,8 @@ import java.nio.file.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -35,18 +37,40 @@ class BucketTest {
 
     // [itest->dsn~bucket-lists-its-contents~1]
     @Test
+    void testListBucketContentsWithRootPath() throws BucketAccessException, InterruptedException {
+        assertThat(container.getDefaultBucket().listContents(), hasItem("EXAClusterOS"));
+    }
+
+    // [itest->dsn~bucket-lists-its-contents~1]
+    @Test
     void testListBucketContents() throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents("/"), hasItem(startsWith("EXAClusterOS")));
+        assertThat(container.getDefaultBucket().listContents("EXAClusterOS/"), hasItem(startsWith("ScriptLanguages")));
     }
 
     // [itest->dsn~uploading-to-bucket~1]
     @Test
     void testUploadFile(@TempDir final Path tempDir) throws IOException, BucketAccessException, InterruptedException {
-        final String pathInBucket = "test-uploaded.txt";
-        final Path testFile = Files.writeString(tempDir.resolve("test.txt"), "content", StandardOpenOption.CREATE);
+        final String fileName = "test-uploaded.txt";
+        final Path testFile = createTestFile(tempDir, fileName);
+        final Bucket bucket = container.getDefaultBucket();
+        bucket.uploadFile(testFile, fileName);
+        assertThat(bucket.listContents(), hasItem(fileName));
+    }
+
+    private Path createTestFile(final Path tempDir, final String fileName) throws IOException {
+        return Files.writeString(tempDir.resolve(fileName), "content", StandardOpenOption.CREATE);
+    }
+
+    // [itest->dsn~uploading-to-bucket~1]
+    @ValueSource(strings = { "dir1/", "dir2/sub2/", "dir3/sub3/subsub3/", "/dir4/", "/dir5/sub5/" })
+    @ParameterizedTest
+    void testUploadToDirectoryInBucket(final String pathInBucket, @TempDir final Path tempDir)
+            throws BucketAccessException, InterruptedException, IOException {
+        final String fileName = "file.txt";
+        final Path testFile = createTestFile(tempDir, fileName);
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadFile(testFile, pathInBucket);
-        assertThat(bucket.listContents("/"), hasItem(pathInBucket));
+        assertThat(container.getDefaultBucket().listContents(pathInBucket), contains(fileName));
     }
 
     // [itest->dsn~uploading-strings-to-bucket~1]
@@ -56,6 +80,6 @@ class BucketTest {
         final String pathInBucket = "string-uploaded.txt";
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadStringContent(content, pathInBucket);
-        assertThat(bucket.listContents("/"), hasItem(pathInBucket));
+        assertThat(bucket.listContents(), hasItem(pathInBucket.toString()));
     }
 }
