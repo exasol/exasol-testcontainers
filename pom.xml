@@ -205,7 +205,7 @@
         <configuration>
           <charset>UTF-8</charset>
           <doclint />
-          <serialwarn>true</serialwarn>
+          <serialwarn>false</serialwarn><!-- Serial annotation is introduced with Java 14. -->
           <failOnError>true</failOnError>
           <failOnWarnings>true</failOnWarnings>
         </configuration>

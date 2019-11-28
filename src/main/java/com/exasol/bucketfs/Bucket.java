@@ -211,21 +211,19 @@ public class Bucket {
     // [impl->dsn~uploading-strings-to-bucket~1]
     public void uploadStringContent(final String content, final String pathInBucket)
             throws InterruptedException, BucketAccessException {
-        final String excerpt = (removeLeadingSlash(content).length() > 20)
-                ? removeLeadingSlash(content).substring(0, 20) + "..."
-                : removeLeadingSlash(content);
+
+        final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
         final URI uri = createWriteUri(pathInBucket);
-        LOGGER.info("Uploading text \"{}\" to \"{}\"", removeLeadingSlash(excerpt), uri);
+        LOGGER.info("Uploading text \"{}\" to \"{}\"", excerpt, uri);
         try {
-            final int statusCode = httpPut(uri, BodyPublishers.ofString(removeLeadingSlash(content)));
+            final int statusCode = httpPut(uri, BodyPublishers.ofString(content));
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                throw new BucketAccessException(
-                        "Unable to upload text \"" + removeLeadingSlash(excerpt) + "\"" + " to bucket.", statusCode,
+                throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to bucket.", statusCode,
                         uri);
             }
         } catch (final IOException exception) {
-            throw new BucketAccessException(
-                    "Unable to upload text \"" + removeLeadingSlash(excerpt) + "\"" + " to bucket.", uri, exception);
+            throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to bucket.", uri,
+                    exception);
         }
     }
 
