@@ -13,6 +13,12 @@ public final class ExasolContainerConstants {
     // Keep in mind that this project deals with disposable containers that should only be used in integration tests.
     @SuppressWarnings("squid:S2068")
     public static final String DEFAULT_SYS_USER_PASSWORD = "exasol";
+    @SuppressWarnings("squid:S1075") // This is the default URI where EXAConf is supposed to be located.
+    public static final String CLUSTER_CONFIGURATION_PATH = "/exa/etc/EXAConf";
+    @SuppressWarnings("squid:S1075") // This is the parent directory of all logs in the Docker version of Exasol
+    public static final String EXASOL_LOGS_PATH = "/exa/logs";
+    public static final String NAME = "exasol";
+    public static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
     static final int CONTAINER_INTERNAL_DATABASE_PORT = 8888;
     static final int CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
 

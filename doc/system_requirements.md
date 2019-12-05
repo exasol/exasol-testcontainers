@@ -60,6 +60,13 @@ ETC provides access to the BucketFS service(s) of the Exasol database.
 
 Needs: req
 
+### Log Access
+`feat~log-access-1`
+
+ETC provides access to the logs of the Exasol instance.
+
+Needs: req
+
 ## Functional Requirements
 
 In this section lists functional requirements from the user's perspective. The requirements are grouped by feature where they belong to a single feature.
@@ -213,5 +220,20 @@ Covers:
 
 * [feat~bucketfs-access~1](#bucketfs-access)
 
+
+Needs: dsn
+
+### Log Access
+
+During the installation process and while running the Exasol installation inside the Docker container produces a lot of log files. Integrators need access to those logs in order to see what is going on inside the Exasol platform.
+
+#### Reading Log Files
+`req~reading-log-files~1`
+
+ETC lets Integrators read the Exasol log files.
+
+Covers:
+
+* [feat~log-access~1](#log-access)
 
 Needs: dsn
