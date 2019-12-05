@@ -1,13 +1,13 @@
 package com.exasol.containers;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.Container;
-import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.*;
 
 import com.exasol.bucketfs.*;
 import com.exasol.config.ClusterConfiguration;
@@ -21,6 +21,7 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     @SuppressWarnings("squid:S1075") // This is the default URI where EXAConf is supposed to be located.
     private static final String CLUSTER_CONFIGURATION_PATH = "/exa/etc/EXAConf";
+    private static final String EXASOL_LOGS_PATH = "/exa/logs";
     public static final String NAME = "exasol";
     private static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
@@ -65,10 +66,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
-            LOGGER.info("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
+            LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
-            LOGGER.info(exaconf);
+            LOGGER.debug(exaconf);
             return new ConfigurationParser(exaconf).parse();
         } catch (UnsupportedOperationException | IOException exception) {
             throw new ExasolContainerInitializationException(
@@ -185,5 +186,22 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public Bucket getDefaultBucket() {
         return getBucket(BucketConstants.DEFAULT_BUCKETFS, BucketConstants.DEFAULT_BUCKET);
+    }
+
+    /**
+     * Map the path of the Exasol cluster logs to a path on the host.
+     * <p>
+     * When the container is created with this option, then the cluster log directory is mapped to the given path on the
+     * host. The logs are then created inside that directory and are accessible as normal files on the host for
+     * debugging purposes.
+     * </p>
+     *
+     * @param clusterLogsHostPath path on the host to which the directory for the cluster logs is mapped
+     * @return {@code this} for fluent programming
+     */
+    public T withClusterLogsPath(final Path clusterLogsHostPath) {
+        LOGGER.debug("Mapping cluster log directory to host path: \"{}\"", clusterLogsHostPath);
+        addFileSystemBind(clusterLogsHostPath.toString(), EXASOL_LOGS_PATH, BindMode.READ_WRITE);
+        return self();
     }
 }
