@@ -225,7 +225,7 @@ Needs: dsn
 
 ### Log Access
 
-During the installation process and while running the Exasol installation inside the Docker container produces a log of log file. Integrators need access to those logs in order to see what is going on inside the Exasol platform.
+During the installation process and while running the Exasol installation inside the Docker container produces a lot of log files. Integrators need access to those logs in order to see what is going on inside the Exasol platform.
 
 #### Reading Log Files
 `req~reading-log-files~1`
