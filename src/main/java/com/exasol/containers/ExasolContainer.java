@@ -1,5 +1,7 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.*;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.*;
@@ -19,11 +21,6 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    @SuppressWarnings("squid:S1075") // This is the default URI where EXAConf is supposed to be located.
-    private static final String CLUSTER_CONFIGURATION_PATH = "/exa/etc/EXAConf";
-    private static final String EXASOL_LOGS_PATH = "/exa/logs";
-    public static final String NAME = "exasol";
-    private static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
