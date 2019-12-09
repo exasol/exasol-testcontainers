@@ -4,13 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.exasol</groupId>
   <artifactId>exasol-testcontainers</artifactId>
-  <version>${product.version}</version>
+  <version>1.3.0</version>
   <name>Test containers for Exasol on Docker</name>
   <description>This module provides abstraction for generation, startup, shutdown and use of an
     Exasol database running on Docker.</description>
   <url>https://github.com/exasol/exasol-testcontainers</url>
   <properties>
-    <product.version>1.2.0</product.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8
     </project.reporting.outputEncoding>
