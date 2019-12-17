@@ -61,7 +61,7 @@ ETC provides access to the BucketFS service(s) of the Exasol database.
 Needs: req
 
 ### Log Access
-`feat~log-access-1`
+`feat~log-access~1`
 
 ETC provides access to the logs of the Exasol instance.
 

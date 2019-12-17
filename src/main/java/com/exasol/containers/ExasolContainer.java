@@ -13,14 +13,17 @@ import org.testcontainers.containers.*;
 
 import com.exasol.bucketfs.*;
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.wait.LogFileEntryWaitStrategy;
 import com.exasol.exaconf.ConfigurationParser;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 
-// [external->dsn~testcontainer-framework-controls-docker-image-download~2]
+// [external->dsn~testcontainer-framework-controls-docker-image-download~1]
 // [impl->dsn~exasol-container-controls-docker-container~1]
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
+    private static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
+    private static final String SCRIPT_LANGUGAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -63,10 +66,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
-            LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
+            logger().debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
-            LOGGER.debug(exaconf);
+            logger().debug(exaconf);
             return new ConfigurationParser(exaconf).parse();
         } catch (UnsupportedOperationException | IOException exception) {
             throw new ExasolContainerInitializationException(
@@ -123,7 +126,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return driver.connect(constructUrlForConnection(""), info);
     }
 
-    // [impl->dsn~exasol-container-ready-criteria~1]
+    // [impl->dsn~exasol-container-ready-criteria~2]
     @Override
     protected String getTestQueryString() {
         return "SELECT 1 FROM DUAL";
@@ -196,9 +199,25 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @param clusterLogsHostPath path on the host to which the directory for the cluster logs is mapped
      * @return {@code this} for fluent programming
      */
+    // [impl->dsn~mapping-the-log-directory-to-the-host~1]
     public T withClusterLogsPath(final Path clusterLogsHostPath) {
-        LOGGER.debug("Mapping cluster log directory to host path: \"{}\"", clusterLogsHostPath);
+        logger().debug("Mapping cluster log directory to host path: \"{}\"", clusterLogsHostPath);
         addFileSystemBind(clusterLogsHostPath.toString(), EXASOL_LOGS_PATH, BindMode.READ_WRITE);
         return self();
+    }
+
+    @Override
+    protected void waitUntilContainerStarted() {
+        super.waitUntilContainerStarted();
+        waitUntilUdfLanguageContainerExtracted();
+    }
+
+    // [impl->dsn~exasol-container-ready-criteria~2]
+    private void waitUntilUdfLanguageContainerExtracted() {
+        logger().info("Waiting for UDF language container to be ready.");
+        final LogFileEntryWaitStrategy strategy = new LogFileEntryWaitStrategy(this, EXASOL_CORE_DAEMON_LOGS_PATH,
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, SCRIPT_LANGUGAGE_CONTAINER_READY_PATTERN);
+        strategy.waitUntilReady(this);
+        logger().info("UDF language container is ready.");
     }
 }

@@ -17,6 +17,7 @@ public final class ExasolContainerConstants {
     public static final String CLUSTER_CONFIGURATION_PATH = "/exa/etc/EXAConf";
     @SuppressWarnings("squid:S1075") // This is the parent directory of all logs in the Docker version of Exasol
     public static final String EXASOL_LOGS_PATH = "/exa/logs";
+    public static final String EXASOL_CORE_DAEMON_LOGS_PATH = EXASOL_LOGS_PATH + "/cored";
     public static final String NAME = "exasol";
     public static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
     static final int CONTAINER_INTERNAL_DATABASE_PORT = 8888;
