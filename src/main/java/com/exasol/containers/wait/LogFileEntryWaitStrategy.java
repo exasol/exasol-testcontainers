@@ -36,7 +36,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        final long expiry = System.currentTimeMillis() + 30000;
+        final long expiry = System.currentTimeMillis() + (60 * ONE_SECOND_IN_MILLISECONDS);
         while (System.currentTimeMillis() < expiry) {
             try {
                 final ExecResult result = this.container.execInContainer("find", this.logPath, "-name",
