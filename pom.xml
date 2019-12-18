@@ -152,6 +152,13 @@
               <goal>report</goal>
             </goals>
           </execution>
+          <execution>
+            <id>report-integration</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report-integration</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>
