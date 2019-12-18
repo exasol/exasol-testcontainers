@@ -146,14 +146,17 @@
             </goals>
           </execution>
           <execution>
-            <id>report</id>
+            <goals>
+              <goal>prepare-agent-integration</goal>
+            </goals>
+          </execution>
+          <execution>
             <phase>test</phase>
             <goals>
               <goal>report</goal>
             </goals>
           </execution>
           <execution>
-            <id>report-integration</id>
             <phase>verify</phase>
             <goals>
               <goal>report-integration</goal>
