@@ -1,5 +1,6 @@
 package com.exasol.containers;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -38,7 +39,7 @@ class ExasolContainerWaitStrategyTest {
                 logFileName, expectedMessage);
         final Thread writerThread = new Thread(new MessageWriter(logFileName, expectedMessage));
         writerThread.run();
-        strategy.waitUntilReady(ExasolContainerWaitStrategyTest.container);
+        assertDoesNotThrow(() -> strategy.waitUntilReady(ExasolContainerWaitStrategyTest.container));
     }
 
     private static final class MessageWriter implements Runnable {

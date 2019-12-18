@@ -7,8 +7,6 @@ import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.*;
 
 import com.exasol.bucketfs.*;
@@ -24,7 +22,6 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
     private static final String SCRIPT_LANGUGAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
