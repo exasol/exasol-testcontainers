@@ -89,11 +89,12 @@ Covers:
 Needs: itest
 
 ### `ExasolContainer` Ready Criteria
-`dsn~exasol-container-ready-criteria~1`
+`dsn~exasol-container-ready-criteria~2`
 
 The `ExasolContainer` declares itself ready to be used after the following criteria are fulfilled:
 
 * SQL statements can be issued via the JDBC interface
+* UDF language container is extracted completely
 
 Covers:
 
@@ -185,6 +186,19 @@ Covers:
 * `req~bucket-authentication~1`
 
 Needs: impl, utest
+
+## Log Access
+
+### Mapping the Cluster Log Directory to the Host
+`dsn~mapping-the-log-directory-to-the-host~1`
+
+The `ExasolContainer` lets integrators map the cluster log directory to a configurable directory on the host.
+
+Covers:
+
+* `req~reading-log-files~1`
+
+Needs: impl, itest
 
 # Cross-cutting Concerns
 
