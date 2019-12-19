@@ -70,6 +70,17 @@ Since this internal detail deviates from what users are used to see, the bucket 
 
 Another thing worth noting is that if you store files in some selected archive formats (e.g. [TAR archives](https://www.gnu.org/software/tar/)) in a bucket, BucketFS presents the archive contents as a hierarchical structure.
 
+### Specifying "Paths" Inside a Bucket
+
+Some bucket actions require a path inside the bucket as parameter. While those paths are always relative to the root of the bucket, the Exasol test container lets you treat them as absolute paths too.
+
+That means that the following two paths are both relative to the bucket root:
+
+```
+EXAClusterOS/
+/EXAClusterOS/
+```
+
 ### Getting a Bucket Control Object
 
 You can get access to a bucket in BucketFS by requesting a `Bucket` control object from the container.
@@ -123,6 +134,10 @@ If you are wondering how to provide the access passwords for the buckets &mdash;
 After all you want to test whether the software that you want to using in combination with Exasol works and not Exasol's authentication mechanisms.
 
 The test container knows the cluster setup, including the [bucket credentials](#generated-passwords). The test container handles the authentication for you when working with buckets.
+
+### Managing Buckets and Services
+
+Creating and deleting of buckets and BucketFS services is not yet supported by the Exasol test container.
 
 ## Viewing Cluster Logs
 
