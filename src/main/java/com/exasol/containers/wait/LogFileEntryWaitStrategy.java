@@ -11,7 +11,8 @@ import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
  * Strategy that waits for a container to be ready by checking when the language container is unpacked completely.
  */
 public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
-    private static final int ONE_SECOND_IN_MILLISECONDS = 1000;
+    private static final int WAIT_DURATION_IN_MILLISECONDS = 60000;
+    private static final int POLLING_RATE_LIMIT_IN_MILLISECONDS = 1000;
     private final Container<? extends Container<?>> container;
     private final String logPath;
     private final String pattern;
@@ -36,7 +37,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        final long expiry = System.currentTimeMillis() + (60 * ONE_SECOND_IN_MILLISECONDS);
+        final long expiry = System.currentTimeMillis() + (WAIT_DURATION_IN_MILLISECONDS);
         while (System.currentTimeMillis() < expiry) {
             try {
                 final ExecResult result = this.container.execInContainer("find", this.logPath, "-name",
@@ -44,7 +45,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
                 if (result.getExitCode() == 0) {
                     return;
                 }
-                Thread.sleep(ONE_SECOND_IN_MILLISECONDS);
+                Thread.sleep(POLLING_RATE_LIMIT_IN_MILLISECONDS);
             } catch (UnsupportedOperationException | IOException exception) {
                 throw new ContainerLaunchException("Caught exception while waiting for log entry.", exception);
             } catch (final InterruptedException exception) {

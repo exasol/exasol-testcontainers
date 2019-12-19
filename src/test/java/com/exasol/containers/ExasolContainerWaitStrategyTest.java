@@ -65,8 +65,8 @@ class ExasolContainerWaitStrategyTest {
             }
         }
 
-        private void writeMessage(final String message2) throws IOException, InterruptedException {
-            container.execInContainer("echo", message2, ">>", this.logFilePath);
+        private void writeMessage(final String messageToAppend) throws IOException, InterruptedException {
+            container.execInContainer("echo", messageToAppend, ">>", this.logFilePath);
         }
     }
 }
