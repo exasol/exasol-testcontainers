@@ -42,9 +42,10 @@ class BucketTest {
     }
 
     // [itest->dsn~bucket-lists-its-contents~1]
-    @Test
-    void testListBucketContents() throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents("EXAClusterOS/"), hasItem(startsWith("ScriptLanguages")));
+    @ValueSource(strings = { "EXAClusterOS/", "/EXAClusterOS/" })
+    @ParameterizedTest
+    void testListBucketContents(final String pathInBucket) throws BucketAccessException, InterruptedException {
+        assertThat(container.getDefaultBucket().listContents(pathInBucket), hasItem(startsWith("ScriptLanguages")));
     }
 
     // [itest->dsn~uploading-to-bucket~1]
