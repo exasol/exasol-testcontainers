@@ -5,7 +5,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -26,7 +27,8 @@ class BucketTest {
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
+                    .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     @Test
     void testGetDefaultBucket() {
@@ -50,25 +52,29 @@ class BucketTest {
 
     // [itest->dsn~uploading-to-bucket~1]
     @Test
-    void testUploadFile(@TempDir final Path tempDir) throws IOException, BucketAccessException, InterruptedException {
+    void testUploadFile(@TempDir final Path tempDir)
+            throws IOException, BucketAccessException, InterruptedException, TimeoutException {
         final String fileName = "test-uploaded.txt";
-        final Path testFile = createTestFile(tempDir, fileName);
+        final Path testFile = createTestFile(tempDir, fileName, 10000);
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadFile(testFile, fileName);
         assertThat(bucket.listContents(), hasItem(fileName));
     }
 
-    private Path createTestFile(final Path tempDir, final String fileName) throws IOException {
-        return Files.writeString(tempDir.resolve(fileName), "content", StandardOpenOption.CREATE);
+    private Path createTestFile(final Path tempDir, final String fileName, final int sizeInKiB) throws IOException {
+        final RandomFileGenerator generator = new RandomFileGenerator();
+        final Path path = tempDir.resolve(Path.of(fileName));
+        generator.createRandomFile(path, sizeInKiB);
+        return path;
     }
 
     // [itest->dsn~uploading-to-bucket~1]
     @ValueSource(strings = { "dir1/", "dir2/sub2/", "dir3/sub3/subsub3/", "/dir4/", "/dir5/sub5/" })
     @ParameterizedTest
     void testUploadToDirectoryInBucket(final String pathInBucket, @TempDir final Path tempDir)
-            throws BucketAccessException, InterruptedException, IOException {
+            throws BucketAccessException, InterruptedException, IOException, TimeoutException {
         final String fileName = "file.txt";
-        final Path testFile = createTestFile(tempDir, fileName);
+        final Path testFile = createTestFile(tempDir, fileName, 1);
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadFile(testFile, pathInBucket);
         assertThat(container.getDefaultBucket().listContents(pathInBucket), contains(fileName));
@@ -76,7 +82,7 @@ class BucketTest {
 
     // [itest->dsn~uploading-strings-to-bucket~1]
     @Test
-    void testUploadStringContent() throws IOException, BucketAccessException, InterruptedException {
+    void testUploadStringContent() throws IOException, BucketAccessException, InterruptedException, TimeoutException {
         final String content = "Hello BucketFS!";
         final String pathInBucket = "string-uploaded.txt";
         final Bucket bucket = container.getDefaultBucket();

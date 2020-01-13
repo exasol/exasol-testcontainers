@@ -7,10 +7,16 @@ import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.Container;
+
+import com.exasol.clusterlogs.LogPatternDetector;
+import com.exasol.containers.ExasolContainerConstants;
 
 /**
  * An abstraction for a bucket inside Exasol's BucketFS.
@@ -18,6 +24,8 @@ import org.slf4j.LoggerFactory;
 public class Bucket {
     private static final Logger LOGGER = LoggerFactory.getLogger(Bucket.class);
     private static final String BUCKET_ROOT = "";
+    private static final long BUCKET_SYNC_TIMEOUT_IN_MILLISECONDS = 60000;
+    private static final long FILE_SYNC_POLLING_DELAY_IN_MILLISECONDS = 200;
     private final String bucketFsName;
     private final String bucketName;
     private final String ipAddress;
@@ -25,6 +33,7 @@ public class Bucket {
     private final String readPassword;
     private final String writePassword;
     private final HttpClient client = HttpClient.newBuilder().build();
+    private final Container<? extends Container<?>> container;
 
     private Bucket(final Builder builder) {
         this.bucketFsName = builder.bucketFsName;
@@ -33,6 +42,7 @@ public class Bucket {
         this.port = builder.port;
         this.readPassword = builder.readPassword;
         this.writePassword = builder.writePassword;
+        this.container = builder.container;
     }
 
     /**
@@ -103,6 +113,30 @@ public class Bucket {
         }
     }
 
+    /**
+     * Check whether the file with the given path exists in this bucket.
+     *
+     * @param pathInBucket relative path from the bucket root
+     * @param afterUTC     UTC time in milliseconds after which the object synchronization must happen
+     * @return {@code true} if the file exists in the bucket.
+     * @throws InterruptedException  if the synchronization check is interrupted
+     * @throws BucketAccessException if an I/O operation failed in the underlying check
+     */
+    public boolean isObjectSynchronized(final String pathInBucket, final Instant afterUTC)
+            throws InterruptedException, BucketAccessException {
+        try {
+            final String pattern = pathInBucket + ".*"
+                    + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
+            final LogPatternDetector detector = new LogPatternDetector(this.container,
+                    ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH,
+                    ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern);
+            return detector.isPatternPresentAfter(afterUTC);
+        } catch (final IOException exception) {
+            throw new BucketAccessException("Unable to check if object \"" + pathInBucket
+                    + "\" is synchronized in bucket \"" + this.bucketFsName + "/" + this.bucketName + "\".", exception);
+        }
+    }
+
     private String removeLeadingSlash(final String path) {
         if (path.startsWith("/")) {
             return path.substring(1);
@@ -142,35 +176,69 @@ public class Bucket {
      * Uploads a file from a given local path to a URI pointing to a BucketFS bucket. If the bucket URI ends in a slash,
      * that URI is interpreted as a directory inside the bucket and the original filename is appended.
      * </p>
+     * <p>
+     * This call blocks until the uploaded file is synchronized in BucketFs or a timeout occurs.
+     * </p>
      *
      * @param pathInBucket path inside the bucket
      * @param localPath    path of the file to be uploaded
+     * @throws TimeoutException
      * @throws InterruptedException  if the upload is interrupted
      * @throws BucketAccessException if the file cannot be uploaded to the given URI
      */
     // [impl->dsn~uploading-to-bucket~1]
     public void uploadFile(final Path localPath, final String pathInBucket)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        uploadFile(localPath, pathInBucket, true);
+    }
+
+    /**
+     * Upload a file to the bucket and block the call until it is synchronized.
+     * <p>
+     * Uploads a file from a given local path to a URI pointing to a BucketFS bucket. If the bucket URI ends in a slash,
+     * that URI is interpreted as a directory inside the bucket and the original filename is appended.
+     * </p>
+     * <p>
+     * When blocking is enabled, this call waits until either the uploaded file is synchronized or a timeout occurred.
+     * </p>
+     *
+     * @param pathInBucket path inside the bucket
+     * @param localPath    path of the file to be uploaded
+     * @param blocking     when set to {@code true}, the call waits for the uploaded object to be synchronized,
+     *                     otherwise immediately returns
+     * @throws InterruptedException  if the upload is interrupted
+     * @throws BucketAccessException if the file cannot be uploaded to the given URI
+     * @throws TimeoutException      if synchronization takes too long
+     */
+    public void uploadFile(final Path localPath, final String pathInBucket, final boolean blocking)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final String extendedPathInBucket = extendPathInBucketDownToFilename(localPath, pathInBucket);
+        uploadFileNonBlocking(localPath, extendedPathInBucket);
+        if (blocking) {
+            waitForFileToBeSynchronized(extendedPathInBucket);
+        }
+    }
+
+    private String extendPathInBucketDownToFilename(final Path localPath, final String pathInBucket) {
+        return pathInBucket.endsWith("/") ? pathInBucket + localPath.getFileName() : pathInBucket;
+    }
+
+    private void uploadFileNonBlocking(final Path localPath, final String pathInBucket)
             throws InterruptedException, BucketAccessException {
-        final URI uri = createWriteUri(pathInBucket, localPath);
-        LOGGER.info("Uploading file \"{}\" to \"{}\"", localPath, uri);
+        final URI uri = createWriteUri(pathInBucket);
+        LOGGER.info("Uploading file \"{}\" to bucket \"{}/{}\": \"{}\"", localPath, this.bucketFsName, this.bucketName,
+                uri);
         try {
             final int statusCode = httpPut(uri, BodyPublishers.ofFile(localPath));
             if (statusCode != HttpURLConnection.HTTP_OK) {
+                LOGGER.error("{}: Failed to upload file \"{}\" to \"{}\"", statusCode, localPath, uri);
                 throw new BucketAccessException("Unable to upload file \"" + localPath + "\"" + " to ", statusCode,
                         uri);
             }
         } catch (final IOException exception) {
             throw new BucketAccessException("Unable to upload file \"" + localPath + "\"" + " to ", uri, exception);
         }
-    }
-
-    private URI createWriteUri(final String pathInBucket, final Path localPath) throws BucketAccessException {
-        final URI uri = createWriteUri(pathInBucket);
-        if (uri.toString().endsWith("/")) {
-            return uri.resolve(localPath.getFileName().toString());
-        } else {
-            return uri;
-        }
+        LOGGER.info("Successfully uploaded to \"{}\"", uri);
     }
 
     private URI createWriteUri(final String pathInBucket) throws BucketAccessException {
@@ -202,16 +270,50 @@ public class Bucket {
      * This method is intended for writing small objects in BucketFS dynamically like for example configuration files.
      * For large payload use {@link Bucket#uploadFile(Path, String)} instead.
      * </p>
+     * <p>
+     * This call blocks until the uploaded file is synchronized in BucketFs or a timeout occurs.
+     * </p>
      *
      * @param content      string to write
      * @param pathInBucket path inside the bucket
      * @throws InterruptedException  if the upload is interrupted
      * @throws BucketAccessException if the file cannot be uploaded to the given URI
+     * @throws TimeoutException      if synchronization takes too long
      */
     // [impl->dsn~uploading-strings-to-bucket~1]
     public void uploadStringContent(final String content, final String pathInBucket)
-            throws InterruptedException, BucketAccessException {
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        uploadStringContent(content, pathInBucket, true);
+    }
 
+    /**
+     * Upload the contents of a string to the bucket.
+     * <p>
+     * This method is intended for writing small objects in BucketFS dynamically like for example configuration files.
+     * For large payload use {@link Bucket#uploadFile(Path, String)} instead.
+     * </p>
+     * <p>
+     * This call blocks until the uploaded file is synchronized in BucketFs or a timeout occurs.
+     * </p>
+     *
+     * @param content      string to write
+     * @param pathInBucket path inside the bucket
+     * @param blocking     when set to {@code true}, the call waits for the uploaded object to be synchronized,
+     *                     otherwise immediately returns
+     * @throws InterruptedException  if the upload is interrupted
+     * @throws BucketAccessException if the file cannot be uploaded to the given URI
+     * @throws TimeoutException      if synchronization takes too long
+     */
+    public void uploadStringContent(final String content, final String pathInBucket, final boolean blocking)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        uploadStringContentNonBlocking(content, pathInBucket);
+        if (blocking) {
+            waitForFileToBeSynchronized(pathInBucket);
+        }
+    }
+
+    public void uploadStringContentNonBlocking(final String content, final String pathInBucket)
+            throws InterruptedException, BucketAccessException {
         final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
         final URI uri = createWriteUri(pathInBucket);
         LOGGER.info("Uploading text \"{}\" to \"{}\"", excerpt, uri);
@@ -225,6 +327,31 @@ public class Bucket {
             throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to bucket.", uri,
                     exception);
         }
+    }
+
+    private boolean isSupportedArchiveFormat(final String pathInBucket) {
+        for (final String extension : ExasolContainerConstants.SUPPORTED_ARCHIVE_EXTENSIONS) {
+            if (pathInBucket.endsWith(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // [impl->dsn~waiting-until-archive-extracted~1]
+    // [impl->dsn~waiting-until-file-appears-in-target-directory~1]
+    private void waitForFileToBeSynchronized(final String pathInBucket)
+            throws InterruptedException, TimeoutException, BucketAccessException {
+        final Instant now = Instant.now();
+        final Instant expiry = now.plusMillis(BUCKET_SYNC_TIMEOUT_IN_MILLISECONDS);
+        while (Instant.now().isBefore(expiry)) {
+            if (isObjectSynchronized(pathInBucket, now)) {
+                return;
+            }
+            Thread.sleep(FILE_SYNC_POLLING_DELAY_IN_MILLISECONDS);
+        }
+        throw new TimeoutException("Timeout waiting for object \"" + pathInBucket + "\"to be synchronized in bucket \""
+                + this.bucketFsName + "/" + this.bucketName + "\".");
     }
 
     /**
@@ -246,6 +373,18 @@ public class Bucket {
         private int port;
         private String readPassword;
         private String writePassword;
+        private Container<? extends Container<?>> container;
+
+        /**
+         * Set the parent container.
+         *
+         * @param container parent container in which the Exasol instance with BucketFS runs.
+         * @return Builder instance for fluent programming
+         */
+        public Builder container(final Container<? extends Container<?>> container) {
+            this.container = container;
+            return this;
+        }
 
         /**
          * Set the filesystem name.

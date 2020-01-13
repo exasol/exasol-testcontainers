@@ -223,6 +223,21 @@ Covers:
 
 Needs: dsn
 
+#### Waiting for Bucket Content Synchronization
+`req~waiting-for-bucket-content-synchronization~1`
+
+ETC allows users to wait for bucket contents to be synchronized on a single node after uploading a file.
+
+Rationale:
+
+Files uploaded to Bucket FS are not immediately usable due to internal synchronization mechanisms. For integration tests it is necessary that users can rely on the file to be available in a bucket before running tests that depend on it.
+
+Covers:
+
+* [feat~bucketfs-access~1](#bucketfs-access)
+
+Needs: dsn
+
 ### Log Access
 
 During the installation process and while running the Exasol installation inside the Docker container produces a lot of log files. Integrators need access to those logs in order to see what is going on inside the Exasol platform.

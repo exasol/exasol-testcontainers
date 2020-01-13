@@ -30,7 +30,7 @@ class BucketFactoryTest {
         final BucketFsServiceConfiguration serviceConfiguration = BucketFsServiceConfiguration.builder()
                 .name(serviceName).httpPort(port).addBucketConfiguration(bucketConfiguration).build();
         when(clusterConfigurationMock.getBucketFsServiceConfiguration(any())).thenReturn(serviceConfiguration);
-        final BucketFactory factory = new BucketFactory(ipAddress, clusterConfigurationMock, portMappings);
+        final BucketFactory factory = new BucketFactory(null, ipAddress, clusterConfigurationMock, portMappings);
         final Bucket bucket = factory.getBucket(serviceName, bucketName);
         assertAll(() -> assertThat(bucket.getReadPassword(), equalTo(readPassword)),
                 () -> assertThat(bucket.getWritePassword(), equalTo(writePassword)));

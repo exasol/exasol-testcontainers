@@ -3,6 +3,8 @@ package com.exasol.bucketfs;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.testcontainers.containers.Container;
+
 import com.exasol.config.*;
 
 /**
@@ -13,16 +15,19 @@ public final class BucketFactory {
     private final String ipAddress;
     private final ClusterConfiguration clusterConfiguration;
     private final Map<Integer, Integer> portMappings;
+    private final Container<? extends Container<?>> container;
 
     /**
      * Create a new instance of a BucketFactory.
      *
+     * @param container            parent container
      * @param ipAddress            IP address of the the BucketFS service
      * @param clusterConfiguration configuration of the Exasol Cluster
      * @param portMappings         mapping of container internal to exposed port numbers
      */
-    public BucketFactory(final String ipAddress, final ClusterConfiguration clusterConfiguration,
-            final Map<Integer, Integer> portMappings) {
+    public BucketFactory(final Container<? extends Container<?>> container, final String ipAddress,
+            final ClusterConfiguration clusterConfiguration, final Map<Integer, Integer> portMappings) {
+        this.container = container;
         this.ipAddress = ipAddress;
         this.clusterConfiguration = clusterConfiguration;
         this.portMappings = portMappings;
@@ -36,7 +41,7 @@ public final class BucketFactory {
      * Get a BucketFS bucket.
      *
      * @param serviceName name of the BucketFS service that hosts the bucket
-     * @param bucketName name of the bucket
+     * @param bucketName  name of the bucket
      * @return bucket
      */
     // [impl->dsn~bucket-factory-injects-access-credentials~1]
@@ -48,6 +53,7 @@ public final class BucketFactory {
         if (!this.buckets.containsKey(bucketPath)) {
             final Bucket bucket = Bucket //
                     .builder() //
+                    .container(this.container) //
                     .serviceName(serviceName) //
                     .name(bucketName) //
                     .ipAddress(this.ipAddress) //

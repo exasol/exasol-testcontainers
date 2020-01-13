@@ -17,7 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.exasol.config.ClusterConfiguration;
 
 // [itest->dsn~exasol-container-controls-docker-container~1]
-// [itest->dsn~exasol-container-ready-criteria~2]
+// [itest->dsn~exasol-container-ready-criteria~3]
 
 // This test contains test cases that modify the configuration of the container. Don't add test
 // cases that depend on the default settings!

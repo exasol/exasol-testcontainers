@@ -115,7 +115,7 @@ bucket.uploadFile(source, destination);
 
 Where `source` is an object of type `Path` that points to a local file system and `destination` is a string defining the path relative to the bucket's root to where the file should be uploaded.
 
-### Uploading Test as a File
+### Uploading Text as a File
 
 It's a common use-case test scenarios to create small files of well-defined content and upload them to BucketFS. Most of the time those are configuration files.
 
@@ -126,6 +126,18 @@ bucket.uploadStringContent(content, destination);
 ```
 
 Here `content` is the `String` that you want to write an destination is again the path inside the bucket.
+
+### Blocking vs. Non-blocking Upload
+
+In integration tests you usually want reproducible test cases. This is why the standard implementation of `uploadFile(...)` blocks the call until the underlying object is synchronized in the bucket.
+
+In rare cases you might want more control over that process, for example if you plan bulk-upload of a large number of small files and want to shift the check at the end of that operation.
+
+For those special occasions there is an overloaded method `uploadFile(source, destination, blocking-flag)` where you can choose to upload in non-blocking fashion. 
+
+The same style of overloaded function exists for text content upload too in the method `upload(content, destination, blocking-flag)`.
+
+Unless you really need it and know exactly what you are doing, we recommend to stick to blocking operation for your tests.
 
 ### Automatic Authentication at a BucketFS Service
 

@@ -1,22 +1,22 @@
-package com.exasol.containers.wait;
+package com.exasol.containers.wait.strategy;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import org.testcontainers.containers.Container;
-import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
+
+import com.exasol.clusterlogs.LogPatternDetector;
 
 /**
  * Strategy that waits for a container to be ready by checking when the language container is unpacked completely.
  */
 public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
-    private static final int WAIT_DURATION_IN_MILLISECONDS = 60000;
-    private static final int POLLING_RATE_LIMIT_IN_MILLISECONDS = 1000;
-    private final Container<? extends Container<?>> container;
-    private final String logPath;
-    private final String pattern;
-    private final String logNamePattern;
+    private static final long WAIT_DURATION_IN_MILLISECONDS = 60000;
+    private static final long POLLING_DELAY_IN_MILLISECONDS = 1000;
+    private final LogPatternDetector detector;
+    private final Instant afterUTC;
 
     /**
      * Create a new instance of the {@link LogFileEntryWaitStrategy}
@@ -29,10 +29,8 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
     public LogFileEntryWaitStrategy(final Container<? extends Container<?>> container, final String logPath,
             final String logNamePattern, final String pattern) {
         super();
-        this.container = container;
-        this.logPath = logPath;
-        this.logNamePattern = logNamePattern;
-        this.pattern = pattern;
+        this.afterUTC = Instant.now();
+        this.detector = new LogPatternDetector(container, logPath, logNamePattern, pattern);
     }
 
     @Override
@@ -40,12 +38,10 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
         final long expiry = System.currentTimeMillis() + (WAIT_DURATION_IN_MILLISECONDS);
         while (System.currentTimeMillis() < expiry) {
             try {
-                final ExecResult result = this.container.execInContainer("find", this.logPath, "-name",
-                        this.logNamePattern, "-exec", "grep", this.pattern, "{}", "+");
-                if (result.getExitCode() == 0) {
+                if (this.detector.isPatternPresentAfter(this.afterUTC)) {
                     return;
                 }
-                Thread.sleep(POLLING_RATE_LIMIT_IN_MILLISECONDS);
+                Thread.sleep(POLLING_DELAY_IN_MILLISECONDS);
             } catch (UnsupportedOperationException | IOException exception) {
                 throw new ContainerLaunchException("Caught exception while waiting for log entry.", exception);
             } catch (final InterruptedException exception) {
@@ -53,7 +49,6 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
                 throw new ContainerLaunchException("Waiting for log entry got interrupted.", exception);
             }
         }
-        throw new ContainerLaunchException("Time out waiting for log message \"" + this.pattern + " to appear in \""
-                + this.logPath + "/" + this.logNamePattern + "\".");
+        throw new ContainerLaunchException("Timeout: " + this.detector.describe());
     }
 }

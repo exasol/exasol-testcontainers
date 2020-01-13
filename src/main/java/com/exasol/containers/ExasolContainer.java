@@ -11,7 +11,7 @@ import org.testcontainers.containers.*;
 
 import com.exasol.bucketfs.*;
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.wait.LogFileEntryWaitStrategy;
+import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
 import com.exasol.exaconf.ConfigurationParser;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 
@@ -20,7 +20,6 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
     private static final String SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -123,7 +122,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return driver.connect(constructUrlForConnection(""), info);
     }
 
-    // [impl->dsn~exasol-container-ready-criteria~2]
+    // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected String getTestQueryString() {
         return "SELECT 1 FROM DUAL";
@@ -163,7 +162,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final BucketFactory manager = new BucketFactory(getContainerIpAddress(), getClusterConfiguration(),
+        final BucketFactory manager = new BucketFactory(this, getContainerIpAddress(), getClusterConfiguration(),
                 getPortMappings());
         return manager.getBucket(bucketFsName, bucketName);
     }
@@ -203,17 +202,17 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return self();
     }
 
+    // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
         super.waitUntilContainerStarted();
         waitUntilUdfLanguageContainerExtracted();
     }
 
-    // [impl->dsn~exasol-container-ready-criteria~2]
     private void waitUntilUdfLanguageContainerExtracted() {
         logger().info("Waiting for UDF language container to be ready.");
         final LogFileEntryWaitStrategy strategy = new LogFileEntryWaitStrategy(this, EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
+                ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
         strategy.waitUntilReady(this);
         logger().info("UDF language container is ready.");
     }
