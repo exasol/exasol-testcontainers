@@ -23,7 +23,7 @@ public class LogPatternDetector {
     private final String logNamePattern;
 
     /**
-     * Create a new instance of the {@link LogPatternDetector}
+     * Create a new instance of the {@link LogPatternDetector}.
      *
      * @param container      container in which the log messages reside
      * @param logPath        path of the log file to search
