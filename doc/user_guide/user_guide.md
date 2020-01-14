@@ -145,7 +145,7 @@ Here `content` is the `String` that you want to write an destination is again th
 
 In integration tests you usually want reproducible test cases. This is why the standard implementation of `uploadFile(...)` blocks the call until the underlying object is synchronized in the bucket.
 
-In rare cases you might want more control over that process, for example if you plan bulk-upload of a large number of small files and want to shift the check at the end of that operation.
+In rare cases you might want more control over that process, for example if you plan bulk-upload of a large number of small files and want to shift the check to the end of that operation.
 
 For those special occasions there is an overloaded method `uploadFile(source, destination, blocking-flag)` where you can choose to upload in non-blocking fashion. 
 

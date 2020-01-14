@@ -35,7 +35,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        final long expiry = System.currentTimeMillis() + (WAIT_DURATION_IN_MILLISECONDS);
+        final long expiry = System.currentTimeMillis() + WAIT_DURATION_IN_MILLISECONDS;
         while (System.currentTimeMillis() < expiry) {
             try {
                 if (this.detector.isPatternPresentAfter(this.afterUTC)) {
