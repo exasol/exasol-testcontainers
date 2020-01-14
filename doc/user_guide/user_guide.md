@@ -115,6 +115,20 @@ bucket.uploadFile(source, destination);
 
 Where `source` is an object of type `Path` that points to a local file system and `destination` is a string defining the path relative to the bucket's root to where the file should be uploaded.
 
+### Uploading Files Into a "Directory"
+
+As mentioned in section ["Specifying Paths Inside a Bucket"](#specifying-paths-inside-a-bucket) BucketFS only simulates a path structure. For your convenience the file upload lets you choose a "directory" in the bucket to which you want to upload.
+
+If you chose this variant, the original filename from the local path is appended to the path inside the bucket.
+
+As an example let's assume you want to upload a jar file from a local directory like this:
+
+```java
+bucket.uploadFile("repo/virtual-schemas/3.0.1/virtual-schemas-3.0.1.jar", "jars/");
+```
+
+In this case the `Bucket` treats the destination path in the bucket as if you wrote `jars/virtual-schemas-3.0.1.jar`.
+
 ### Uploading Text as a File
 
 It's a common use-case test scenarios to create small files of well-defined content and upload them to BucketFS. Most of the time those are configuration files.
