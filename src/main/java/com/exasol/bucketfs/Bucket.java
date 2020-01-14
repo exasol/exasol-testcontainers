@@ -182,7 +182,7 @@ public class Bucket {
      *
      * @param pathInBucket path inside the bucket
      * @param localPath    path of the file to be uploaded
-     * @throws TimeoutException
+     * @throws TimeoutException      if the synchronization check takes too long
      * @throws InterruptedException  if the upload is interrupted
      * @throws BucketAccessException if the file cannot be uploaded to the given URI
      */
@@ -312,7 +312,7 @@ public class Bucket {
         }
     }
 
-    public void uploadStringContentNonBlocking(final String content, final String pathInBucket)
+    private void uploadStringContentNonBlocking(final String content, final String pathInBucket)
             throws InterruptedException, BucketAccessException {
         final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
         final URI uri = createWriteUri(pathInBucket);

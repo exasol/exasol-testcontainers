@@ -44,8 +44,8 @@ public class LogPatternDetector {
      *
      * @param afterUTC UTC point in time after which the message is relevant
      * @return {@code true} if the pattern is found in the log file
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException          if the underlying check mechanism caused an I/O problem
+     * @throws InterruptedException if the check for a pattern was interrupted
      */
     public boolean isPatternPresentAfter(final Instant afterUTC) throws IOException, InterruptedException {
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
