@@ -19,7 +19,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
     private final Instant afterUTC;
 
     /**
-     * Create a new instance of the {@link LogFileEntryWaitStrategy}
+     * Create a new instance of the {@link LogFileEntryWaitStrategy}.
      *
      * @param detectorFactory log entry pattern detector factory
      * @param logPath         path of the log file to search
