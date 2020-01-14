@@ -36,7 +36,7 @@ public class LogPatternDetector {
         this.logPath = logPath;
         this.logNamePattern = logNamePattern;
         this.pattern = pattern;
-        LOGGER.info("Created log detector that scans for \"{}\" in \"{}/{}\"", pattern, logPath, logNamePattern);
+        LOGGER.debug("Created log detector that scans for \"{}\" in \"{}/{}\"", pattern, logPath, logNamePattern);
     }
 
     /**
