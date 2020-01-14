@@ -89,12 +89,13 @@ Covers:
 Needs: itest
 
 ### `ExasolContainer` Ready Criteria
-`dsn~exasol-container-ready-criteria~2`
+`dsn~exasol-container-ready-criteria~3`
 
 The `ExasolContainer` declares itself ready to be used after the following criteria are fulfilled:
 
 * SQL statements can be issued via the JDBC interface
-* UDF language container is extracted completely
+* BucketFS service is ready
+* UDF language container is extracted completely (implies BucketFS ready)
 
 Covers:
 
@@ -186,6 +187,28 @@ Covers:
 * `req~bucket-authentication~1`
 
 Needs: impl, utest
+
+### Waiting Until File Appears in Target Directory
+`dsn~waiting-until-file-appears-in-target-directory~1`
+
+When uploading a file into a bucket, users can choose to block the call until the file appears in the bucket's target directory.
+
+Covers:
+
+* `req~waiting-for-bucket-content-synchronization~1`
+
+Needs: impl, itest
+
+### Waiting Until Archive Extracted
+`dsn~waiting-until-archive-extracted~1`
+
+When uploading an archive of type `.tar.gz` or `.zip` into a bucket, users can choose to block the call until the archive is fully extracted in the bucket's target directory.
+
+Covers:
+
+* `req~waiting-for-bucket-content-synchronization~1`
+
+Needs: impl, itest
 
 ## Log Access
 

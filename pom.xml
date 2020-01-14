@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.exasol</groupId>
   <artifactId>exasol-testcontainers</artifactId>
-  <version>1.3.1</version>
+  <version>1.4.0</version>
   <name>Test containers for Exasol on Docker</name>
   <description>This module provides abstraction for generation, startup, shutdown and use of an
     Exasol database running on Docker.</description>
@@ -17,6 +17,7 @@
     <junit.version>5.4.2</junit.version>
     <junit.platform.version>1.4.2</junit.platform.version>
     <maven.surefire.version>2.22.1</maven.surefire.version>
+    <testcontainers.version>1.12.4</testcontainers.version>
     <gpg.skip>true</gpg.skip>
   </properties>
   <licenses>
@@ -68,29 +69,33 @@
   <dependencies>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>1.12.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
-      <version>1.12.3</version>
+      <version>${testcontainers.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>jdbc</artifactId>
-      <version>1.12.3</version>
+      <version>${testcontainers.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
       <version>1.7.28</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.exasol</groupId>
       <artifactId>exasol-jdbc</artifactId>
       <version>6.0.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${testcontainers.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

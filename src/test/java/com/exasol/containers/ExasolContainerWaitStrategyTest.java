@@ -1,20 +1,26 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE;
+import static com.exasol.containers.ExasolContainerConstants.EXASOL_LOGS_PATH;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.exasol.containers.wait.LogFileEntryWaitStrategy;
+import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
 
 @Testcontainers
 class ExasolContainerWaitStrategyTest {
@@ -22,12 +28,13 @@ class ExasolContainerWaitStrategyTest {
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
+            EXASOL_DOCKER_IMAGE_REFERENCE) //
                     .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     @Test
     void testWaitForNonExistingLogTimesOut() {
-        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container, "/non/existing/log/", "file", ".*");
+        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container.getLogPatternDetectorFactory(),
+                "/non/existing/log/", "file", ".*");
         assertThrows(ContainerLaunchException.class, () -> strategy.waitUntilReady(container));
     }
 
@@ -35,10 +42,11 @@ class ExasolContainerWaitStrategyTest {
     void testWatingSucceedsIfExpectedLogMessageAppears() {
         final String expectedMessage = "ping";
         final String logFileName = "test.log";
-        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container, ExasolContainerConstants.EXASOL_LOGS_PATH,
-                logFileName, expectedMessage);
-        final Thread writerThread = new Thread(new MessageWriter(logFileName, expectedMessage));
-        writerThread.run();
+        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container.getLogPatternDetectorFactory(),
+                EXASOL_LOGS_PATH, logFileName, expectedMessage);
+        final Thread writerThread = new Thread(
+                new MessageWriter(EXASOL_LOGS_PATH + "/" + logFileName, expectedMessage));
+        writerThread.start();
         assertDoesNotThrow(() -> strategy.waitUntilReady(ExasolContainerWaitStrategyTest.container));
     }
 
@@ -66,7 +74,19 @@ class ExasolContainerWaitStrategyTest {
         }
 
         private void writeMessage(final String messageToAppend) throws IOException, InterruptedException {
-            container.execInContainer("echo", messageToAppend, ">>", this.logFilePath);
+            final String timestamp = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss")
+                    .format(LocalDateTime.now(ZoneId.of("UTC")));
+            final String logEntry = "[I " + timestamp + " somedaemon:1234] " + messageToAppend;
+            LOGGER.info("Writing log message: " + logEntry);
+            final ExecResult result = writeViaDockerExec(logEntry);
+            if (result.getExitCode() != 0) {
+                throw new IllegalStateException("Writer thread returned non-zero exit code.");
+            }
+        }
+
+        private ExecResult writeViaDockerExec(final String logEntry) throws IOException, InterruptedException {
+            // Wrapping the echo in a shell is necessary to enable redirection
+            return container.execInContainer("sh", "-c", "echo " + logEntry + " >> " + this.logFilePath);
         }
     }
 }

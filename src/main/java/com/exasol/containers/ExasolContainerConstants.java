@@ -1,5 +1,7 @@
 package com.exasol.containers;
 
+import java.util.Set;
+
 /**
  * Constants for the Exasol Docker containers (like image ID and version).
  */
@@ -20,8 +22,10 @@ public final class ExasolContainerConstants {
     public static final String EXASOL_CORE_DAEMON_LOGS_PATH = EXASOL_LOGS_PATH + "/cored";
     public static final String NAME = "exasol";
     public static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
+    public static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
     static final int CONTAINER_INTERNAL_DATABASE_PORT = 8888;
     static final int CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
+    public static final Set<String> SUPPORTED_ARCHIVE_EXTENSIONS = Set.of(".tar", ".tgz", ".tar.gz", ".zip");
 
     private ExasolContainerConstants() {
         // prevent instantiation

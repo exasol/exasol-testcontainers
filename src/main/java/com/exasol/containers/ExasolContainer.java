@@ -1,5 +1,7 @@
 package com.exasol.containers;
 
+import static com.exasol.bucketfs.BucketConstants.DEFAULT_BUCKET;
+import static com.exasol.bucketfs.BucketConstants.DEFAULT_BUCKETFS;
 import static com.exasol.containers.ExasolContainerConstants.*;
 
 import java.io.IOException;
@@ -9,9 +11,11 @@ import java.util.*;
 
 import org.testcontainers.containers.*;
 
-import com.exasol.bucketfs.*;
+import com.exasol.bucketfs.Bucket;
+import com.exasol.bucketfs.BucketFactory;
+import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.wait.LogFileEntryWaitStrategy;
+import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
 import com.exasol.exaconf.ConfigurationParser;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 
@@ -20,16 +24,22 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
     private static final String SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
     @SuppressWarnings("squid:S2068")
     private String password = ExasolContainerConstants.DEFAULT_SYS_USER_PASSWORD;
+    private final LogPatternDetectorFactory detectorFactory;
 
+    /**
+     * Create a new instance of an {@link ExasolContainer}.
+     *
+     * @param dockerImageName name of the Docker image from which the container is created
+     */
     public ExasolContainer(final String dockerImageName) {
         super(dockerImageName);
+        this.detectorFactory = new LogPatternDetectorFactory(this);
     }
 
     /**
@@ -49,8 +59,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
-        this.addExposedPorts(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT,
-                ExasolContainerConstants.CONTAINER_INTERNAL_BUCKETFS_PORT);
+        this.addExposedPorts(CONTAINER_INTERNAL_DATABASE_PORT, CONTAINER_INTERNAL_BUCKETFS_PORT);
         this.setPrivilegedMode(true);
         super.configure();
     }
@@ -82,7 +91,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public Set<Integer> getLivenessCheckPortNumbers() {
-        return Set.of(getMappedPort(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT));
+        return Set.of(getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT));
     }
 
     @Override
@@ -92,8 +101,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":"
-                + getMappedPort(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT);
+        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT);
     }
 
     @Override
@@ -104,6 +112,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    /**
+     * Get the log pattern detector factory.
+     * 
+     * @return log pattern detector factory
+     */
+    public LogPatternDetectorFactory getLogPatternDetectorFactory() {
+        return this.detectorFactory;
     }
 
     /**
@@ -123,7 +140,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return driver.connect(constructUrlForConnection(""), info);
     }
 
-    // [impl->dsn~exasol-container-ready-criteria~2]
+    // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected String getTestQueryString() {
         return "SELECT 1 FROM DUAL";
@@ -163,8 +180,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final BucketFactory manager = new BucketFactory(getContainerIpAddress(), getClusterConfiguration(),
-                getPortMappings());
+        final BucketFactory manager = new BucketFactory(this.detectorFactory, getContainerIpAddress(),
+                getClusterConfiguration(), getPortMappings());
         return manager.getBucket(bucketFsName, bucketName);
     }
 
@@ -182,7 +199,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return default bucket control object
      */
     public Bucket getDefaultBucket() {
-        return getBucket(BucketConstants.DEFAULT_BUCKETFS, BucketConstants.DEFAULT_BUCKET);
+        return getBucket(DEFAULT_BUCKETFS, DEFAULT_BUCKET);
     }
 
     /**
@@ -203,17 +220,18 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return self();
     }
 
+    // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
         super.waitUntilContainerStarted();
         waitUntilUdfLanguageContainerExtracted();
     }
 
-    // [impl->dsn~exasol-container-ready-criteria~2]
     private void waitUntilUdfLanguageContainerExtracted() {
         logger().info("Waiting for UDF language container to be ready.");
-        final LogFileEntryWaitStrategy strategy = new LogFileEntryWaitStrategy(this, EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
+        final LogFileEntryWaitStrategy strategy = new LogFileEntryWaitStrategy(this.detectorFactory,
+                EXASOL_CORE_DAEMON_LOGS_PATH, BUCKETFS_DAEMON_LOG_FILENAME_PATTERN,
+                SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
         strategy.waitUntilReady(this);
         logger().info("UDF language container is ready.");
     }
