@@ -30,7 +30,7 @@ public class LogPatternDetector {
      * @param logNamePattern pattern used to find the file name
      * @param pattern        regular expression pattern for which to look out
      */
-    public LogPatternDetector(final Container<? extends Container<?>> container, final String logPath,
+    LogPatternDetector(final Container<? extends Container<?>> container, final String logPath,
             final String logNamePattern, final String pattern) {
         this.container = container;
         this.logPath = logPath;

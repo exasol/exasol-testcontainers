@@ -1,5 +1,7 @@
 package com.exasol.bucketfs;
 
+import static com.exasol.containers.ExasolContainerConstants.*;
+
 import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
@@ -13,10 +15,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.Container;
 
 import com.exasol.clusterlogs.LogPatternDetector;
-import com.exasol.containers.ExasolContainerConstants;
+import com.exasol.clusterlogs.LogPatternDetectorFactory;
 
 /**
  * An abstraction for a bucket inside Exasol's BucketFS.
@@ -33,7 +34,7 @@ public class Bucket {
     private final String readPassword;
     private final String writePassword;
     private final HttpClient client = HttpClient.newBuilder().build();
-    private final Container<? extends Container<?>> container;
+    private final LogPatternDetectorFactory detectorFactory;
 
     private Bucket(final Builder builder) {
         this.bucketFsName = builder.bucketFsName;
@@ -42,7 +43,7 @@ public class Bucket {
         this.port = builder.port;
         this.readPassword = builder.readPassword;
         this.writePassword = builder.writePassword;
-        this.container = builder.container;
+        this.detectorFactory = builder.detectorFactory;
     }
 
     /**
@@ -127,9 +128,8 @@ public class Bucket {
         try {
             final String pattern = pathInBucket + ".*"
                     + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
-            final LogPatternDetector detector = new LogPatternDetector(this.container,
-                    ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH,
-                    ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern);
+            final LogPatternDetector detector = this.detectorFactory.createLogPatternDetector(
+                    EXASOL_CORE_DAEMON_LOGS_PATH, BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern);
             return detector.isPatternPresentAfter(afterUTC);
         } catch (final IOException exception) {
             throw new BucketAccessException("Unable to check if object \"" + pathInBucket
@@ -330,7 +330,7 @@ public class Bucket {
     }
 
     private boolean isSupportedArchiveFormat(final String pathInBucket) {
-        for (final String extension : ExasolContainerConstants.SUPPORTED_ARCHIVE_EXTENSIONS) {
+        for (final String extension : SUPPORTED_ARCHIVE_EXTENSIONS) {
             if (pathInBucket.endsWith(extension)) {
                 return true;
             }
@@ -373,16 +373,16 @@ public class Bucket {
         private int port;
         private String readPassword;
         private String writePassword;
-        private Container<? extends Container<?>> container;
+        private LogPatternDetectorFactory detectorFactory;
 
         /**
-         * Set the parent container.
+         * Set the log pattern detector factory.
          *
-         * @param container parent container in which the Exasol instance with BucketFS runs.
+         * @param detectorFactory factory for log pattern detectors
          * @return Builder instance for fluent programming
          */
-        public Builder container(final Container<? extends Container<?>> container) {
-            this.container = container;
+        public Builder detectorFactory(final LogPatternDetectorFactory detectorFactory) {
+            this.detectorFactory = detectorFactory;
             return this;
         }
 

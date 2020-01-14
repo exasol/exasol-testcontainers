@@ -3,11 +3,11 @@ package com.exasol.containers.wait.strategy;
 import java.io.IOException;
 import java.time.Instant;
 
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
 import com.exasol.clusterlogs.LogPatternDetector;
+import com.exasol.clusterlogs.LogPatternDetectorFactory;
 
 /**
  * Strategy that waits for a container to be ready by checking when the language container is unpacked completely.
@@ -21,16 +21,16 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
     /**
      * Create a new instance of the {@link LogFileEntryWaitStrategy}
      *
-     * @param container      container in which the log messages reside
-     * @param logPath        path of the log file to search
-     * @param logNamePattern pattern used to find the file name
-     * @param pattern        regular expression pattern for which to look out
+     * @param detectorFactory log entry pattern detector factory
+     * @param logPath         path of the log file to search
+     * @param logNamePattern  pattern used to find the file name
+     * @param pattern         regular expression pattern for which to look out
      */
-    public LogFileEntryWaitStrategy(final Container<? extends Container<?>> container, final String logPath,
+    public LogFileEntryWaitStrategy(final LogPatternDetectorFactory detectorFactory, final String logPath,
             final String logNamePattern, final String pattern) {
         super();
         this.afterUTC = Instant.now();
-        this.detector = new LogPatternDetector(container, logPath, logNamePattern, pattern);
+        this.detector = detectorFactory.createLogPatternDetector(logPath, logNamePattern, pattern);
     }
 
     @Override

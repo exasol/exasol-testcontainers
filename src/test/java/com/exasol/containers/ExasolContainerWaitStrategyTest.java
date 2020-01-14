@@ -1,5 +1,7 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE;
+import static com.exasol.containers.ExasolContainerConstants.EXASOL_LOGS_PATH;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,12 +28,13 @@ class ExasolContainerWaitStrategyTest {
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
+            EXASOL_DOCKER_IMAGE_REFERENCE) //
                     .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     @Test
     void testWaitForNonExistingLogTimesOut() {
-        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container, "/non/existing/log/", "file", ".*");
+        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container.getLogPatternDetectorFactory(),
+                "/non/existing/log/", "file", ".*");
         assertThrows(ContainerLaunchException.class, () -> strategy.waitUntilReady(container));
     }
 
@@ -39,10 +42,10 @@ class ExasolContainerWaitStrategyTest {
     void testWatingSucceedsIfExpectedLogMessageAppears() {
         final String expectedMessage = "ping";
         final String logFileName = "test.log";
-        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container, ExasolContainerConstants.EXASOL_LOGS_PATH,
-                logFileName, expectedMessage);
+        final WaitStrategy strategy = new LogFileEntryWaitStrategy(container.getLogPatternDetectorFactory(),
+                EXASOL_LOGS_PATH, logFileName, expectedMessage);
         final Thread writerThread = new Thread(
-                new MessageWriter(ExasolContainerConstants.EXASOL_LOGS_PATH + "/" + logFileName, expectedMessage));
+                new MessageWriter(EXASOL_LOGS_PATH + "/" + logFileName, expectedMessage));
         writerThread.start();
         assertDoesNotThrow(() -> strategy.waitUntilReady(ExasolContainerWaitStrategyTest.container));
     }
