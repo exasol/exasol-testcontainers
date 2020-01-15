@@ -22,8 +22,8 @@ import com.exasol.config.ClusterConfiguration;
 // This test contains test cases that modify the configuration of the container. Don't add test
 // cases that depend on the default settings!
 @Testcontainers
-class ExasolContainerTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerTest.class);
+class ExasolContainerIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
 
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(

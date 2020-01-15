@@ -23,8 +23,8 @@ import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
-class BucketTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BucketTest.class);
+class BucketIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BucketIT.class);
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(

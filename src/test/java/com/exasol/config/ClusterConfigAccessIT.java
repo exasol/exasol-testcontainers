@@ -14,8 +14,8 @@ import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
-class ClusterConfigAccessTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterConfigAccessTest.class);
+class ClusterConfigAccessIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterConfigAccessIT.class);
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(

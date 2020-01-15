@@ -23,8 +23,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
 
 @Testcontainers
-class ExasolContainerWaitStrategyTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerWaitStrategyTest.class);
+class ExasolContainerWaitStrategyIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerWaitStrategyIT.class);
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
@@ -47,7 +47,7 @@ class ExasolContainerWaitStrategyTest {
         final Thread writerThread = new Thread(
                 new MessageWriter(EXASOL_LOGS_PATH + "/" + logFileName, expectedMessage));
         writerThread.start();
-        assertDoesNotThrow(() -> strategy.waitUntilReady(ExasolContainerWaitStrategyTest.container));
+        assertDoesNotThrow(() -> strategy.waitUntilReady(container));
     }
 
     private static final class MessageWriter implements Runnable {

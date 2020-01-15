@@ -22,8 +22,8 @@ import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
-class BucketContentSyncTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BucketTest.class);
+class BucketContentSyncIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BucketIT.class);
     private static RandomFileGenerator GENERATOR = new RandomFileGenerator();
 
     @Container
