@@ -10,6 +10,8 @@ import java.sql.*;
 import java.util.*;
 
 import org.testcontainers.containers.*;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketFactory;
@@ -17,7 +19,6 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
 import com.exasol.exaconf.ConfigurationParser;
-import com.github.dockerjava.api.command.InspectContainerResponse;
 
 // [external->dsn~testcontainer-framework-controls-docker-image-download~1]
 // [impl->dsn~exasol-container-controls-docker-container~1]
@@ -65,31 +66,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     @Override
-    protected void containerIsStarted(final InspectContainerResponse containerInfo) {
-        this.clusterConfiguration = readClusterConfiguration();
-        super.containerIsStarted(containerInfo);
-    }
-
-    private ClusterConfiguration readClusterConfiguration() {
-        try {
-            logger().debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
-            final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
-            final String exaconf = result.getStdout();
-            logger().debug(exaconf);
-            return new ConfigurationParser(exaconf).parse();
-        } catch (UnsupportedOperationException | IOException exception) {
-            throw new ExasolContainerInitializationException(
-                    "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
-        } catch (final InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new ExasolContainerInitializationException(
-                    "Caught interrupt trying to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH
-                            + "\".",
-                    exception);
-        }
-    }
-
-    @Override
     public Set<Integer> getLivenessCheckPortNumbers() {
         return Set.of(getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT));
     }
@@ -116,7 +92,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * Get the log pattern detector factory.
-     * 
+     *
      * @return log pattern detector factory
      */
     public LogPatternDetectorFactory getLogPatternDetectorFactory() {
@@ -223,15 +199,45 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
+        waitUntilCluterConfigurationAvailable();
         super.waitUntilContainerStarted();
         waitUntilUdfLanguageContainerExtracted();
     }
 
+    private void waitUntilCluterConfigurationAvailable() {
+        logger().info("Waiting for cluster configuration to become available.");
+        final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*initializing EXAConf.*");
+        strategy.waitUntilReady(this);
+        clusterConfigurationIsAvailable();
+    }
+
+    private void clusterConfigurationIsAvailable() {
+        this.clusterConfiguration = readClusterConfiguration();
+    }
+
+    private ClusterConfiguration readClusterConfiguration() {
+        try {
+            logger().info("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
+            final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
+            final String exaconf = result.getStdout();
+            logger().debug(exaconf);
+            return new ConfigurationParser(exaconf).parse();
+        } catch (UnsupportedOperationException | IOException exception) {
+            throw new ExasolContainerInitializationException(
+                    "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
+        } catch (final InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new ExasolContainerInitializationException(
+                    "Caught interrupt trying to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH
+                            + "\".",
+                    exception);
+        }
+    }
+
     private void waitUntilUdfLanguageContainerExtracted() {
         logger().info("Waiting for UDF language container to be ready.");
-        final LogFileEntryWaitStrategy strategy = new LogFileEntryWaitStrategy(this.detectorFactory,
-                EXASOL_CORE_DAEMON_LOGS_PATH, BUCKETFS_DAEMON_LOG_FILENAME_PATTERN,
-                SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
+        final WaitStrategy strategy = new LogFileEntryWaitStrategy(this.detectorFactory, EXASOL_CORE_DAEMON_LOGS_PATH,
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
         strategy.waitUntilReady(this);
         logger().info("UDF language container is ready.");
     }
