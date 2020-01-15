@@ -16,7 +16,7 @@
     <java.version>11</java.version>
     <junit.version>5.4.2</junit.version>
     <junit.platform.version>1.4.2</junit.platform.version>
-    <maven.surefire.version>2.22.1</maven.surefire.version>
+    <maven.surefire-and-failsafe.version>3.0.0-M4</maven.surefire-and-failsafe.version>
     <testcontainers.version>1.12.4</testcontainers.version>
     <gpg.skip>true</gpg.skip>
   </properties>
@@ -133,7 +133,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.version}</version>
+        <version>${maven.surefire-and-failsafe.version}</version>
         <configuration>
           <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches 
             in the logging lambdas too. -->
@@ -143,7 +143,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven.surefire.version}</version>
+        <version>${maven.surefire-and-failsafe.version}</version>
         <configuration>
           <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches 
             in the logging lambdas too. -->
