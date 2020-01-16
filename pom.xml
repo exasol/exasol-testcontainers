@@ -170,7 +170,7 @@
             </goals>
           </execution>
           <execution>
-            <id>prepare-agend-integration</id>
+            <id>prepare-agent-integration</id>
             <goals>
               <goal>prepare-agent-integration</goal>
             </goals>
