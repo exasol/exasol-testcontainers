@@ -17,8 +17,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 // This test case is kept separate because it requires an unmodified container for the test cases.
 @Testcontainers
-class ExasolContainerDefaultsTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerTest.class);
+class ExasolContainerDefaultsIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
 
     @Container
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(

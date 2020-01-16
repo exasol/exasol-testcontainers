@@ -19,8 +19,8 @@ import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
-class MappedClusterLogsTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MappedClusterLogsTest.class);
+class MappedClusterLogsIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MappedClusterLogsIT.class);
     private static final Path TEMP_DIR = createTempDir();
 
     private static Path createTempDir() {

@@ -206,7 +206,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void waitUntilCluterConfigurationAvailable() {
         logger().info("Waiting for cluster configuration to become available.");
-        final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*initializing EXAConf.*");
+        final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
         strategy.waitUntilReady(this);
         clusterConfigurationIsAvailable();
     }
