@@ -19,7 +19,7 @@
     <maven.surefire-and-failsafe.version>3.0.0-M4</maven.surefire-and-failsafe.version>
     <testcontainers.version>1.12.4</testcontainers.version>
     <gpg.skip>true</gpg.skip>
-    <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco.xml,target/site/jacoco-it/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
   <licenses>
     <license>
