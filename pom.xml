@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.exasol</groupId>
   <artifactId>exasol-testcontainers</artifactId>
-  <version>1.4.2</version>
+  <version>1.5.0</version>
   <name>Test containers for Exasol on Docker</name>
   <description>This module provides abstraction for generation, startup, shutdown and use of an
     Exasol database running on Docker.</description>
@@ -17,7 +17,7 @@
     <junit.version>5.4.2</junit.version>
     <junit.platform.version>1.4.2</junit.platform.version>
     <maven.surefire-and-failsafe.version>3.0.0-M4</maven.surefire-and-failsafe.version>
-    <testcontainers.version>1.12.4</testcontainers.version>
+    <testcontainers.version>1.12.5</testcontainers.version>
     <gpg.skip>true</gpg.skip>
     <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
