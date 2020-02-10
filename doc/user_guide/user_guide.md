@@ -45,7 +45,7 @@ This configuration for example contains the setup of BucketFS services and the b
 To inspect this configuration use the following method:
 
 ```java
-final ClusterConfiguration configuration = this.container.getClusterConfiguration();
+final ClusterConfiguration configuration = container.getClusterConfiguration();
 ```
 
 Check the JavaDoc of [`ClusterConfiguration`](../../src/main/java/com/exasol/config/ClusterConfiguration.java) for details about the configuration structure and contents.
@@ -57,6 +57,37 @@ Since as the name suggests, the Exasol test container is intended as a test supp
 The parser for the `ClusterConfiguration` extracts them.
 
 This is why **you should not use test containers in a production environment**. Obviously integration tests need to simulate user access and for that they need to have the passwords. But in any real world scenario outside of a test this would be a clear security issue.
+
+## Database Access
+
+Of course the most important feature of the Exasol test container is to provide a running database instance and access to it.
+
+### Getting a JDBC `Connection` Object Directly from the Container
+
+The most convenient way to get a database connection is to simply call `createConnection()`.
+
+```java
+final Connection connection = container.createConnection("") ;
+```
+This gives you a connection with the default user that the container is configured to. Unless you change anything this is the `SYS` user.
+
+You could add query parameters which would be attached to the JDBC connection string, but for Exasol you really don't need that.
+
+If you want to create a connection for a different user &mdash; e.g. when testing restricted access to data &mdash; you can specify user and password and create a connection for a different user.
+
+```java
+final Connection connection = container.createConnectionForUser("johndoe", "z6K+Px38a@Lm71");
+```
+
+In case you prefer a more manual approach, you can also use `getJdbcUrl()` and create the connection yourself. 
+
+### Getting the Address Part of an EXA Connection
+
+"EXA Connections" are a special form of [connection](https://docs.exasol.com/sql/create_connection.htm) that you can use between Exasol database clients and the database. A popular example is loading from one Exasol cluster into another using the [`IMPORT`](https://docs.exasol.com/sql/import.htm) command.
+
+The simplest possible EXA connection consist of a hostname followed by a colon and a port number. Instead of the hostname you can also use an IP or IP range.
+
+The method `getExaConnectionAddress()` gives you the address part that you need to create such a connection to the Exasol instance running inside the test container from the host.
 
 ## Working with Buckets
 
@@ -201,6 +232,35 @@ If you combine two or more annotations and the initialization of one of them dep
 In this concrete example the container got initialized before the temporary directory during experiments with `@TempDir`.
 
 We therefore recommend the more inconvenient but safer way shown in the example code above. 
+
+## Networking
+
+### Running the Exasol Test Container in a Docker Network
+
+For integration tests you sometimes need to connect services via a network. In case of test containers a convenient way is to use the docker network feature.
+
+Add the following to your container definition.
+
+```java
+try (final Network network = Network.newNetwork();
+     final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = 
+             new ExasolContainer<>(/* ... */)
+             // ...
+            .withNetwork(network);
+) {
+    // ...
+}
+```
+
+#### Use Internal IP Addresses Instead of Network Aliases
+
+Docker network aliases work like hostnames inside a Docker network. Usually they can be used just like hostnames and are then resolved to IP addresses by standard DNS tools.
+
+Unfortunately in case of Exasol, this does _not_ work, because the proprietary DNS implementation of Exasol does not support this. Use IP addresses if you want to access a service running in a different container from an Exasol container instead.
+
+Check the method `getDockerNetworkInternalIpAddress()` in the `ExasolContainer` class to learn how to determine the Docker-network-internal IP address of a container.
+
+If your are looking for an example, please check the integration test `ExaLoaderBetweenTwoContainersIT`.
 
 ## Tweaking
 

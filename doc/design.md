@@ -1,8 +1,14 @@
 # Introduction
 
-## Acknowledgements
+## Acknowledgments
 
 This document's section structure is derived from the "[arc42](https://arc42.org/)" architectural template by Dr. Gernot Starke, Dr. Peter Hruschka.
+
+## Terms and Abbreviations
+
+<dl>
+    <dt>ETC</dt><dd>Exasol Test Containers</dd>
+</dl>
 
 # Constraints
 
@@ -141,6 +147,17 @@ Covers:
 * `req~jdbc-connection-with-administrator-privileges~1`
 
 Needs: impl, itest
+
+### ExaLoader in Common Docker Network
+`dsn~exaloader-in-common-docker-network~1`
+
+ETC allows running two Exasol containers in the same docker network so that the ExaLoader is able to execute `IMPORT` statements that import data from one database into the other.
+
+Covers:
+
+* `req~exaloader-between-two-containers~1`
+
+Needs: impl
 
 ## BucketFS Access
 

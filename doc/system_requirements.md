@@ -160,6 +160,21 @@ Covers:
 
 Needs: dsn
 
+#### ExaLoader Between Two Containers
+`req~exaloader-between-two-containers~1`
+
+Given two running Exasol instances each inside a test container, the ExaLoader on one is able to import data from the other database.
+
+Rationale:
+
+This allows testing scenarios that use the ExaLoader (i.e. `IMPORT` statements).
+
+Covers:
+
+* [feat~database-access~1](#database-access)
+
+Needs: dsn
+
 ### BucketFS Access
 
 #### Bucket Content Listing

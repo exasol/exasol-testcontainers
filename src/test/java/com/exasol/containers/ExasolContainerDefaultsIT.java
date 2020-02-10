@@ -55,4 +55,9 @@ class ExasolContainerDefaultsIT {
             }
         }
     }
+
+    @Test
+    void testGetDockerNetworkInternalIpAddressReturnsLocalhostWithDefaultBridge() {
+        assertThat(container.getDockerNetworkInternalIpAddress(), equalTo("127.0.0.1"));
+    }
 }

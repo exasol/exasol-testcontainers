@@ -19,6 +19,7 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
 import com.exasol.exaconf.ConfigurationParser;
+import com.github.dockerjava.api.model.ContainerNetwork;
 
 // [external->dsn~testcontainer-framework-controls-docker-image-download~1]
 // [impl->dsn~exasol-container-controls-docker-container~1]
@@ -88,6 +89,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    /**
+     * Get the address-part of an Exasol-specific connection string.
+     *
+     * @return host (list) and port
+     */
+    public String getExaConnectionAddress() {
+        return this.getContainerIpAddress() + ":" + getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT);
     }
 
     /**
@@ -240,5 +250,24 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
         strategy.waitUntilReady(this);
         logger().info("UDF language container is ready.");
+    }
+
+    /**
+     * Get the IP address of the container <i>inside</i> the docker network.
+     *
+     * @return internal IP address
+     */
+    @SuppressWarnings("squid:S2589") // getNetwork() can be NULL despite annotation that says otherwise
+    public String getDockerNetworkInternalIpAddress() {
+        final Network thisNetwork = getNetwork();
+        if (thisNetwork != null) {
+            final Map<String, ContainerNetwork> networks = getContainerInfo().getNetworkSettings().getNetworks();
+            for (final ContainerNetwork network : networks.values()) {
+                if (thisNetwork.getId().equals(network.getNetworkID())) {
+                    return network.getIpAddress();
+                }
+            }
+        }
+        return "127.0.0.1";
     }
 }
