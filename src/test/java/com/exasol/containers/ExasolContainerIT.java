@@ -79,4 +79,10 @@ class ExasolContainerIT {
                 .of(container.getMappedPort(ExasolContainerConstants.CONTAINER_INTERNAL_DATABASE_PORT));
         assertThat(container.getLivenessCheckPortNumbers(), equalTo(expectedPorts));
     }
+
+    @Test
+    void testGetExaConnectionAddress() {
+        final String address = container.getExaConnectionAddress();
+        assertThat(address, matchesPattern("(?:[.0-9]+|localhost):[0-9]{1,5}"));
+    }
 }

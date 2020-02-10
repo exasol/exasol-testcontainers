@@ -87,7 +87,7 @@ In case you prefer a more manual approach, you can also use `getJdbcUrl()` and c
 
 The simplest possible EXA connection consist of a hostname followed by a colon and a port number. Instead of the hostname you can also use an IP or IP range.
 
-The method `getExaConnectionAddress()` gives you the address part that you need to create such a connection to the Exasol instance running inside the test container.
+The method `getExaConnectionAddress()` gives you the address part that you need to create such a connection to the Exasol instance running inside the test container from the host.
 
 ## Working with Buckets
 

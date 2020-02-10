@@ -254,14 +254,18 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * Get the IP address of the container <i>inside</i> the docker network.
-     * 
+     *
      * @return internal IP address
      */
+    @SuppressWarnings("squid:S2589") // getNetwork() can be NULL despite annotation that says otherwise
     public String getDockerNetworkInternalIpAddress() {
-        final Map<String, ContainerNetwork> networks = getContainerInfo().getNetworkSettings().getNetworks();
-        for (final ContainerNetwork network : networks.values()) {
-            if (getNetwork().getId().equals(network.getNetworkID())) {
-                return network.getIpAddress();
+        final Network thisNetwork = getNetwork();
+        if (thisNetwork != null) {
+            final Map<String, ContainerNetwork> networks = getContainerInfo().getNetworkSettings().getNetworks();
+            for (final ContainerNetwork network : networks.values()) {
+                if (thisNetwork.getId().equals(network.getNetworkID())) {
+                    return network.getIpAddress();
+                }
             }
         }
         return "127.0.0.1";
