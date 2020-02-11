@@ -2,6 +2,48 @@
 
 The Exasol Java Testcontainer is based on the [testcontainers](https://testcontainers.org) open source project. It is intended for use in automated integration tests of Java software that uses Exasol.
 
+## Getting Test Containers Into Your Project
+
+### Exasol Test Containers as Maven Dependency
+
+Exasol test containers are built using [Apache Maven](https://maven.apache.org/), so integrating the release packages into your project is easy with Maven.
+
+Just add the following dependencies.
+
+```xml
+<dependency>
+    <groupId>com.exasol</groupId>
+    <artifactId>exasol-testcontainers</artifactId>
+    <version><!-- add latest version here --></version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>com.exasol</groupId>
+    <artifactId>exasol-jdbc</artifactId>
+    <version>6.0.0</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+As always, check for the latest version of the dependencies.
+
+Note that you only need the `exasol-testcontainers` dependency in the `test` scope. It won't appear in your production release. The same is true for all transitive dependencies of the test containers.
+
+The JDBC driver is best used in scope `runtime`, meaning that it is not needed for building production code or test code. It just needs to be available at runtime. This is typical for a JDBC driver.
+
+We recommend using [test containers together with JUnit 5](https://www.testcontainers.org/test_framework_integration/junit_5/). If you want to do that, please also add the following dependency.
+
+```xml
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>1.12.5</version>
+    <scope>test</scope>
+</dependency>
+```
+
+Please check out ["Introduction to the Dependency Mechanism"](http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html), if you want to learn more about how maven handles dependencies and dependency scopes.
+
 ## Creating an Exasol Testcontainer in a JUnit 5 Test
 
 This Example demonstrates how to create a test container from within a JUnit 5 test with minimum effort.
