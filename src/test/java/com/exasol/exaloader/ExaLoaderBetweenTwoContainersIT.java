@@ -29,17 +29,11 @@ class ExaLoaderBetweenTwoContainersIT {
     void testImport() throws NoDriverFoundException, SQLException, UnsupportedOperationException, IOException,
             InterruptedException {
         try (final Network network = Network.newNetwork();
-                final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = //
-                        new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
-                                .withLogConsumer(LOG_CONSUMER) //
-                                .withNetwork(network);
-                final ExasolContainer<? extends ExasolContainer<?>> targetContainer = //
-                        new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
-                                .withLogConsumer(LOG_CONSUMER) //
-                                .withNetwork(network); //
+                final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = createContainer();
+                final ExasolContainer<? extends ExasolContainer<?>> targetContainer = createContainer() //
         ) {
-            sourceContainer.start();
-            targetContainer.start();
+            sourceContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).start();
+            targetContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).start();
             final Connection sourceConnection = sourceContainer.createConnection("");
             executeStatements(sourceConnection, //
                     "CREATE SCHEMA SOURCE_SCHEMA", //
@@ -60,6 +54,10 @@ class ExaLoaderBetweenTwoContainersIT {
             }
             assertThat(fruits, containsInAnyOrder("apple", "banana", "cherry"));
         }
+    }
+
+    private ExasolContainer<? extends ExasolContainer<?>> createContainer() {
+        return new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
     }
 
     private void executeStatements(final Connection connection, final String... sqls) throws SQLException {
