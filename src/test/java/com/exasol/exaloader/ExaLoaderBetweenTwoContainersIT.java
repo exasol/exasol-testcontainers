@@ -21,26 +21,19 @@ import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
 class ExaLoaderBetweenTwoContainersIT {
-    private static final String SOURCE_HOST = "sourcehost";
-    private static final String TARGET_HOST = "targethost";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaLoaderBetweenTwoContainersIT.class);
     private static final Slf4jLogConsumer LOG_CONSUMER = new Slf4jLogConsumer(LOGGER);
 
+    // [itest->dsn~ip-address-in-common-docker-network~1]
     @Test
     void testImport() throws NoDriverFoundException, SQLException, UnsupportedOperationException, IOException,
             InterruptedException {
         try (final Network network = Network.newNetwork();
-                final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = //
-                        new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
-                                .withLogConsumer(LOG_CONSUMER) //
-                                .withNetwork(network);
-                final ExasolContainer<? extends ExasolContainer<?>> targetContainer = //
-                        new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
-                                .withLogConsumer(LOG_CONSUMER) //
-                                .withNetwork(network); //
+                final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = createContainer();
+                final ExasolContainer<? extends ExasolContainer<?>> targetContainer = createContainer() //
         ) {
-            sourceContainer.start();
-            targetContainer.start();
+            sourceContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).start();
+            targetContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).start();
             final Connection sourceConnection = sourceContainer.createConnection("");
             executeStatements(sourceConnection, //
                     "CREATE SCHEMA SOURCE_SCHEMA", //
@@ -61,6 +54,10 @@ class ExaLoaderBetweenTwoContainersIT {
             }
             assertThat(fruits, containsInAnyOrder("apple", "banana", "cherry"));
         }
+    }
+
+    private ExasolContainer<? extends ExasolContainer<?>> createContainer() {
+        return new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
     }
 
     private void executeStatements(final Connection connection, final String... sqls) throws SQLException {

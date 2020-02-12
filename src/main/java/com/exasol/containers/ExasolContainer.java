@@ -17,7 +17,8 @@ import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
+import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
+import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.exaconf.ConfigurationParser;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
@@ -26,13 +27,14 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final String SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
     @SuppressWarnings("squid:S2068")
     private String password = ExasolContainerConstants.DEFAULT_SYS_USER_PASSWORD;
     private final LogPatternDetectorFactory detectorFactory;
+    private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
+    private final Set<ExasolService> readyServices = new HashSet<>();
 
     /**
      * Create a new instance of an {@link ExasolContainer}.
@@ -146,6 +148,18 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
+     * Define which optional services you require.
+     *
+     * @param services list of services you require
+     * @return self reference for fluent programming
+     */
+    // [impl->dsn~defining-required-optional-service~1]
+    public T withRequiredServices(final ExasolService... services) {
+        this.requiredServices = Set.of(services);
+        return self();
+    }
+
+    /**
      * Get the cached Exasol cluster configuration.
      *
      * @return Exasol cluster configuration
@@ -211,7 +225,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void waitUntilContainerStarted() {
         waitUntilCluterConfigurationAvailable();
         super.waitUntilContainerStarted();
-        waitUntilUdfLanguageContainerExtracted();
+        if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
+            new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            this.readyServices.add(ExasolService.BUCKETFS);
+        }
+        if (this.requiredServices.contains(ExasolService.UDF)) {
+            new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            this.readyServices.add(ExasolService.UDF);
+        }
     }
 
     private void waitUntilCluterConfigurationAvailable() {
@@ -244,19 +265,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    private void waitUntilUdfLanguageContainerExtracted() {
-        logger().info("Waiting for UDF language container to be ready.");
-        final WaitStrategy strategy = new LogFileEntryWaitStrategy(this.detectorFactory, EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
-        strategy.waitUntilReady(this);
-        logger().info("UDF language container is ready.");
-    }
-
     /**
      * Get the IP address of the container <i>inside</i> the docker network.
      *
      * @return internal IP address
      */
+    // [impl->dsn~ip-address-in-common-docker-network~1]
     @SuppressWarnings("squid:S2589") // getNetwork() can be NULL despite annotation that says otherwise
     public String getDockerNetworkInternalIpAddress() {
         final Network thisNetwork = getNetwork();
@@ -269,5 +283,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             }
         }
         return "127.0.0.1";
+    }
+
+    /**
+     * Check if a service is ready to be used.
+     *
+     * @param service service that is checked
+     * @return {@code true} if the service is ready and can be used
+     */
+    public boolean isServiceReady(final ExasolService service) {
+        return this.readyServices.contains(service);
     }
 }

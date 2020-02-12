@@ -128,6 +128,24 @@ Covers:
 
 Needs: dsn
 
+#### Defining Required Optional Services
+`req~defining-required-optional-services~1`
+
+Users can decide whether or not they need one or more of the following services to be available for their tests:
+
+1. BucketFS
+2. UDFs
+
+Rationale:
+
+In case of test that do not use UDFs or bucket objects, waiting for the container to become ready wastes unnecessary time.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
 ### Database Access
 
 #### JDBC Connection With Administrator Privileges
