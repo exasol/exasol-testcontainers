@@ -48,7 +48,7 @@ public class UdfContainerWaitStrategyTest {
     @Test
     void testWaitUntilReadyRetry() throws IOException, InterruptedException {
         when(this.detectorMock.isPatternPresentAfter(any())).thenReturn(false, true);
-        assertTimeout(Duration.ofMillis(1100), () -> createWaitStrategy().waitUntilReady(null));
+        assertTimeout(Duration.ofMillis(1500), () -> createWaitStrategy().waitUntilReady(null));
     }
 
     @Test
