@@ -279,6 +279,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return "127.0.0.1";
     }
 
+    /**
+     * Check if an service is ready to be used.
+     *
+     * @param service service that is checked
+     * @return {@code true} if the service is ready and can be used
+     */
     public boolean isServiceReady(final ExasolService service) {
         return this.readyServices.contains(service);
     }

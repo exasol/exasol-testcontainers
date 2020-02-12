@@ -27,7 +27,7 @@ public class BucketFsWaitStrategy extends LogFileEntryWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        LOGGER.info("Waiting for BucketFS container to be ready.");
+        LOGGER.info("Waiting for BucketFS to be ready.");
         super.waitUntilReady();
         LOGGER.info("BucketFS is ready.");
     }
