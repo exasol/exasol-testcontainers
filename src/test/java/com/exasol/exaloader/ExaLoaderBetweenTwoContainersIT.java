@@ -21,8 +21,6 @@ import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
 class ExaLoaderBetweenTwoContainersIT {
-    private static final String SOURCE_HOST = "sourcehost";
-    private static final String TARGET_HOST = "targethost";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaLoaderBetweenTwoContainersIT.class);
     private static final Slf4jLogConsumer LOG_CONSUMER = new Slf4jLogConsumer(LOGGER);
 

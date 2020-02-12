@@ -101,11 +101,22 @@ The `ExasolContainer` declares itself ready to be used after the following crite
 
 * SQL statements can be issued via the JDBC interface
 * BucketFS service is ready
-* UDF language container is extracted completely (implies BucketFS ready)
+* UDF language container is extracted completely
 
 Covers:
 
 * `req~container-ready-check~1`
+
+Needs: impl, itest
+
+### Option to Control Waiting for UDF Container
+`dsn~id_name_part~1`
+
+The `ExasolContainer` offers an option that controls whether or not the start-up waits for the UDF container to be ready.
+
+Covers:
+
+* ``req~wating-for-udf-container-is-optional~1``
 
 Needs: impl, itest
 

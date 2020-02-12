@@ -128,6 +128,21 @@ Covers:
 
 Needs: dsn
 
+#### Waiting for UDF Container is Optional
+`req~wating-for-udf-container-is-optional~1`
+
+Users can decide whether or not they need the User Defined Functions (UDFs) and the corresponding Language Container to be ready for their tests. 
+
+Rationale:
+
+In case of test that do not use UDFs, waiting for the container to become ready wastes unnecessary time.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
 ### Database Access
 
 #### JDBC Connection With Administrator Privileges
