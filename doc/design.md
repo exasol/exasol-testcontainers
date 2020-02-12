@@ -166,7 +166,7 @@ ETC reports the docker-network internal IP address.
 
 Rationale:
 
-This is the main requirement for any Exasol service to be able to reach another service in the same Docker network. Hostname resolution via Docker network alias is not supported by `docker-db` yet.
+This is the main requirement for any Exasol service to be able to reach another service in the same Docker network. Hostname resolution via Docker network alias is not supported by [`exasol/docker-db`](https://github.com/exasol/docker-db) yet.
 
 Covers:
 
