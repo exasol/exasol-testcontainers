@@ -109,14 +109,14 @@ Covers:
 
 Needs: impl, itest
 
-### Option to Control Waiting for UDF Container
-`dsn~id_name_part~1`
+### Defining Required Optional Services
+`dsn~defining-required-optional-service~1`
 
-The `ExasolContainer` offers an option that controls whether or not the start-up waits for the UDF container to be ready.
+The `ExasolContainer` offers an option that controls which services the user requires. The ETC waits for those services to be ready.
 
 Covers:
 
-* ``req~wating-for-udf-container-is-optional~1``
+* `req~defining-required-optional-services~1`
 
 Needs: impl, itest
 
@@ -159,16 +159,20 @@ Covers:
 
 Needs: impl, itest
 
-### ExaLoader in Common Docker Network
-`dsn~exaloader-in-common-docker-network~1`
+### IP Address in Common Docker Network
+`dsn~ip-address-in-common-docker-network~1`
 
-ETC allows running two Exasol containers in the same docker network so that the ExaLoader is able to execute `IMPORT` statements that import data from one database into the other.
+ETC reports the docker-network internal IP address.
+
+Rationale:
+
+This is the main requirement for any Exasol service to be able to reach another service in the same Docker network. Hostname resolution via Docker network alias is not supported by `docker-db` yet.
 
 Covers:
 
 * `req~exaloader-between-two-containers~1`
 
-Needs: impl
+Needs: impl, itest
 
 ## BucketFS Access
 

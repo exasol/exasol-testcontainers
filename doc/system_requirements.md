@@ -128,14 +128,17 @@ Covers:
 
 Needs: dsn
 
-#### Waiting for UDF Container is Optional
-`req~wating-for-udf-container-is-optional~1`
+#### Defining Required Optional Services
+`req~defining-required-optional-services~1`
 
-Users can decide whether or not they need the User Defined Functions (UDFs) and the corresponding Language Container to be ready for their tests. 
+Users can decide whether or not they need one or more of the following services to be available for their tests:
+
+1. BucketFS
+2. UDFs
 
 Rationale:
 
-In case of test that do not use UDFs, waiting for the container to become ready wastes unnecessary time.
+In case of test that do not use UDFs or bucket objects, waiting for the container to become ready wastes unnecessary time.
 
 Covers:
 

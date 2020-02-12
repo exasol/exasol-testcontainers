@@ -264,6 +264,32 @@ If your are looking for an example, please check the integration test `ExaLoader
 
 ## Tweaking
 
+### Limiting Service Dependencies
+
+Not every integration test you implement uses BucketFS or User Defined Functions (UDFs). If you know that you only need a subset of the Services that the Exasol Docker DB provides, you can specify them explicitly when creating the container.
+This way the test container code is able to skip some parts so that your test can start faster. Overall that can speed up your integration tests considerably.
+
+Use the following function to explicitly specify which services you depend on.
+
+```java
+ExasolContainer.withRequiredServices(final ExasolService... services)
+```
+
+You can choose from the following optional services defined in the enumeration `ExasolService`:
+
+* `BUCKETFS`
+* `UDF`
+
+The following snippet tells the test containers that you need BucketFS but you are not using UDFs.
+
+```java
+container.withRequiredServices(ExasolService.BUCKETFS)
+```
+
+If services depend on each other, the test container implementation automatically adds missing services. By default all services are selected.
+
+Handle this option with care. If you explicitly list services you depend on and forget one, this will lead to unexpected behavior in your tests.
+
 ### Improving Random Data Acquisition
 
 If key generation steps inside the Docker container are slow, installing the `rng-tools` on the host can improve the situation.

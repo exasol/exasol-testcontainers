@@ -34,6 +34,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private String password = ExasolContainerConstants.DEFAULT_SYS_USER_PASSWORD;
     private final LogPatternDetectorFactory detectorFactory;
     private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
+    private final Set<ExasolService> readyServices = new HashSet<>();
 
     /**
      * Create a new instance of an {@link ExasolContainer}.
@@ -146,6 +147,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return self();
     }
 
+    // [impl->dsn~defining-required-optional-service~1]
     public T withRequiredServices(final ExasolService... services) {
         this.requiredServices = Set.of(services);
         return self();
@@ -219,9 +221,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         super.waitUntilContainerStarted();
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
             new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            this.readyServices.add(ExasolService.BUCKETFS);
         }
         if (this.requiredServices.contains(ExasolService.UDF)) {
             new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            this.readyServices.add(ExasolService.UDF);
         }
     }
 
@@ -260,6 +264,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      *
      * @return internal IP address
      */
+    // [impl->dsn~ip-address-in-common-docker-network~1]
     @SuppressWarnings("squid:S2589") // getNetwork() can be NULL despite annotation that says otherwise
     public String getDockerNetworkInternalIpAddress() {
         final Network thisNetwork = getNetwork();
@@ -272,5 +277,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             }
         }
         return "127.0.0.1";
+    }
+
+    public boolean isServiceReady(final ExasolService service) {
+        return this.readyServices.contains(service);
     }
 }

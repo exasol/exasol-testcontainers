@@ -24,6 +24,7 @@ class ExaLoaderBetweenTwoContainersIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaLoaderBetweenTwoContainersIT.class);
     private static final Slf4jLogConsumer LOG_CONSUMER = new Slf4jLogConsumer(LOGGER);
 
+    // [itest->dsn~ip-address-in-common-docker-network~1]
     @Test
     void testImport() throws NoDriverFoundException, SQLException, UnsupportedOperationException, IOException,
             InterruptedException {
