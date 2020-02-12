@@ -147,6 +147,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return self();
     }
 
+    /**
+     * Define which optional services you require.
+     *
+     * @param services list of services you require
+     * @return self reference for fluent programming
+     */
     // [impl->dsn~defining-required-optional-service~1]
     public T withRequiredServices(final ExasolService... services) {
         this.requiredServices = Set.of(services);
@@ -280,7 +286,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * Check if an service is ready to be used.
+     * Check if a service is ready to be used.
      *
      * @param service service that is checked
      * @return {@code true} if the service is ready and can be used
