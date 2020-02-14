@@ -193,10 +193,10 @@ Covers:
 
 Needs: dsn
 
-#### Stopping and Restarting the Database
-`req~stopping-and-restarting-the-database~1`
+#### Starting and Stopping the Database
+`req~starting-and-stopping-the-database~1`
 
-Users can stop and restart the Exasol database inside the test container.
+Users can start and stop an Exasol database service inside the test container.
 
 Rationale:
 

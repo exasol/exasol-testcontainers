@@ -39,8 +39,8 @@ public final class DatabaseServiceFactory {
             return this.services.get(databaseName);
         } else {
             if (this.clusterConfiguration.containsDatabaseService(databaseName)) {
-                final DatabaseService service = new DatabaseService("DB1", this.container);
-                this.services.put("DB1", service);
+                final DatabaseService service = new DatabaseService(databaseName, this.container);
+                this.services.put(databaseName, service);
                 return service;
             } else {
                 throw new IllegalArgumentException(

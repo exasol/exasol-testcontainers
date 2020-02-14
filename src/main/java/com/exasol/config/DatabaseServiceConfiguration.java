@@ -3,15 +3,15 @@ package com.exasol.config;
 /**
  * Configuration parameters of a database service.
  */
-public class DatabaseServiceConfig {
+public class DatabaseServiceConfiguration {
     private final String databaseName;
 
     /**
-     * Create a new instance of a {@link DatabaseServiceConfig}.
+     * Create a new instance of a {@link DatabaseServiceConfiguration}.
      *
      * @param builder builder for the service configuration
      */
-    public DatabaseServiceConfig(final Builder builder) {
+    public DatabaseServiceConfiguration(final Builder builder) {
         this.databaseName = builder.databaseName;
     }
 
@@ -25,7 +25,7 @@ public class DatabaseServiceConfig {
     }
 
     /**
-     * Create a builder for the {@link DatabaseServiceConfig}.
+     * Create a builder for the {@link DatabaseServiceConfiguration}.
      *
      * @return builder
      */
@@ -34,13 +34,13 @@ public class DatabaseServiceConfig {
     }
 
     /**
-     * Builder for {@link DatabaseServiceConfig}.
+     * Builder for {@link DatabaseServiceConfiguration}.
      */
     public static class Builder {
         private String databaseName;
 
         /**
-         * Set the name of the database provide by the service.
+         * Set the name of the database provided by the service.
          *
          * @param databaseName name of the database
          * @return builder instance for fluent programming
@@ -51,12 +51,12 @@ public class DatabaseServiceConfig {
         }
 
         /**
-         * Build a new {@link DatabaseServiceConfig} instance.
+         * Build a new {@link DatabaseServiceConfiguration} instance.
          *
-         * @return {@link DatabaseServiceConfig} instance
+         * @return {@link DatabaseServiceConfiguration} instance
          */
-        public DatabaseServiceConfig build() {
-            return new DatabaseServiceConfig(this);
+        public DatabaseServiceConfiguration build() {
+            return new DatabaseServiceConfiguration(this);
         }
     }
 }

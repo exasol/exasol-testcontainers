@@ -1,7 +1,7 @@
 package com.exasol.database;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -23,7 +23,7 @@ class DatabaseServiceFactoryTest {
         final String databaseName = "foo";
         when(this.configurationMock.containsDatabaseService(databaseName)).thenReturn(true);
         final DatabaseServiceFactory factory = new DatabaseServiceFactory(null, this.configurationMock);
-        assertThat(factory.getDatabaseService(databaseName), instanceOf(DatabaseService.class));
+        assertThat(factory.getDatabaseService(databaseName).getDatabaseName(), equalTo(databaseName));
     }
 
     @Test

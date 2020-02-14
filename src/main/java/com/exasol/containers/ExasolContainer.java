@@ -52,7 +52,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * Create a new instance of an {@link ExasolContainer} with the default docker image.
      * <p>
      * Creates a container from the image defined in {@link ExasolContainerConstants#EXASOL_DOCKER_IMAGE_ID}. Note that
-     * this is not necessarily the latest available version but rather a fixed version. That has the benefit, that test
+     * this is not necessarily the latest available version but rather a fixed version. That has the benefit, that tests
      * are guaranteed to be stable as long as you don't change the version of the Exasol test container dependency.
      */
     public ExasolContainer() {

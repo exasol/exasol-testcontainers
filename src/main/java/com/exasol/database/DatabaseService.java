@@ -28,7 +28,16 @@ public class DatabaseService {
     }
 
     /**
-     * (Re-) start the database service.
+     * Get the name of the database provide by this service
+     * 
+     * @return database name
+     */
+    public String getDatabaseName() {
+        return this.databaseName;
+    }
+
+    /**
+     * Start the database service.
      *
      * @throws InterruptedException if starting the database got interrupted
      */

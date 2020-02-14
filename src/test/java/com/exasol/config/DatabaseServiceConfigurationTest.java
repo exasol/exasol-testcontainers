@@ -5,11 +5,11 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.jupiter.api.Test;
 
-class DatabaseServiceConfigTest {
+class DatabaseServiceConfigurationTest {
     @Test
     void testGetName() {
         final String expectedName = "DB3";
-        final DatabaseServiceConfig config = DatabaseServiceConfig.builder().databaseName(expectedName).build();
+        final DatabaseServiceConfiguration config = DatabaseServiceConfiguration.builder().databaseName(expectedName).build();
         assertThat(config.getDatabaseName(), equalTo(expectedName));
     }
 }

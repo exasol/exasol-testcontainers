@@ -185,7 +185,7 @@ The `DatabaseService` allows users to stop the database provided by that service
 
 Covers:
 
-* `req~stopping-and-restarting-the-database~1`
+* `req~starting-and-stopping-the-database~1`
 
 Needs: impl, itest
 
@@ -196,7 +196,7 @@ The `DatabaseService` allows users to start the database provided by that servic
 
 Covers:
 
-* `req~stopping-and-restarting-the-database~1`
+* `req~starting-and-stopping-the-database~1`
 
 Needs: impl, itest
 
