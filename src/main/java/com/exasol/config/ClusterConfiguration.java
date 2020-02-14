@@ -14,6 +14,7 @@ public class ClusterConfiguration {
     private static final String KEY_SEPARATOR = ":";
     private static final String BUCKET_SERVICE_KEY_PREFIX = "BucketFS" + KEY_SEPARATOR;
     private static final String BUCKET_KEY_PREFIX = "Bucket" + KEY_SEPARATOR;
+    private static final String DATABASE_KEY_PREFIX = "DB" + KEY_SEPARATOR;
     private static final String SECTION_SEPARATOR = "/";
     private static final String DEFAULT_BUCKET_SECTION = "BucketFS:bfsdefault/Bucket:default";
     private final Map<String, String> parameters;
@@ -97,5 +98,28 @@ public class ClusterConfiguration {
             final String defaultValue) {
         return this.parameters.getOrDefault(
                 sectionKey + SECTION_SEPARATOR + subSectionKey + SECTION_SEPARATOR + parameterKey, defaultValue);
+    }
+
+    /**
+     * Check whether the service providing the database with the given name exists.
+     *
+     * @param databaseName name of the database to search for
+     * @return {@code true} if the service exists
+     */
+    public boolean containsDatabaseService(final String databaseName) {
+        return this.parameters.keySet().stream().anyMatch(key -> key.startsWith(DATABASE_KEY_PREFIX + databaseName));
+    }
+
+    /**
+     * Get the list of database names.
+     *
+     * @return list of database names
+     */
+    public Set<String> getDatabaseNames() {
+        return this.parameters.keySet() //
+                .stream() //
+                .filter(key -> key.startsWith(DATABASE_KEY_PREFIX)) //
+                .map(key -> key.substring(key.lastIndexOf(KEY_SEPARATOR) + 1).replaceAll("/.*", "")) //
+                .collect(Collectors.toSet());
     }
 }

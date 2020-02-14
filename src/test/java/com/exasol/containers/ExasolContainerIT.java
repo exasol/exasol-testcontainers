@@ -26,9 +26,8 @@ class ExasolContainerIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
 
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
-                    .withLogConsumer(new Slf4jLogConsumer(LOGGER));
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
+            .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     // [itest->dsn~exasol-container-uses-privileged-mode~1]
     @Test

@@ -21,8 +21,7 @@ class ExasolContainerDefaultsIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
 
     @BeforeAll
     static void beforeAll() {

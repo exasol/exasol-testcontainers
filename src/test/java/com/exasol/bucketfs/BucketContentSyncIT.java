@@ -19,7 +19,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
 class BucketContentSyncIT {
@@ -27,8 +26,8 @@ class BucketContentSyncIT {
     private static RandomFileGenerator GENERATOR = new RandomFileGenerator();
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE).withLogConsumer(new Slf4jLogConsumer(LOGGER));
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()
+            .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     // [itest->dsn~waiting-until-file-appears-in-target-directory~1]
     @Test
