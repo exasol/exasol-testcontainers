@@ -53,7 +53,11 @@ The `ConfigurationParser` parses Exasol's cluster configuration format.
 
 ## `Bucket`
 
-The `Bucket` building block controls interaction with a bucket in BucketFS. 
+The `Bucket` building block controls interaction with a bucket in BucketFS.
+
+## `DatabaseService`
+
+The `DatabaseService` controls features of a service providing the database like stopping and restarting.
 
 # Runtime
 
@@ -171,6 +175,28 @@ This is the main requirement for any Exasol service to be able to reach another 
 Covers:
 
 * `req~exaloader-between-two-containers~1`
+
+Needs: impl, itest
+
+### `DatabaseService` stops the Database
+`dsn~database-service-stops-the-database~1`
+
+The `DatabaseService` allows users to stop the database provided by that service.
+
+Covers:
+
+* `req~starting-and-stopping-the-database~1`
+
+Needs: impl, itest
+
+### `DatabaseService` starts the Database
+`dsn~database-service-starts-the-database~1`
+
+The `DatabaseService` allows users to start the database provided by that service.
+
+Covers:
+
+* `req~starting-and-stopping-the-database~1`
 
 Needs: impl, itest
 

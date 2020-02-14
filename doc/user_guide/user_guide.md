@@ -61,8 +61,7 @@ class BucketTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketTest.class);
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
 
     // ...
 }
@@ -77,6 +76,21 @@ The `@Container` tells the `testcontainers` framework to initialize the static v
 Under the hood the framework takes care of downloading the docker image &mdash; unless it is already locally cached. Then it starts the container and waits for the service inside to be ready. The `ExasolContainer` implements its own waiting strategy to make sure that the services you need in your tests are available once your test code takes over.
 
 Make sure that the complete setup of the `container` happens in that initialization of the annotated private static class variable.
+
+### Choosing the Version of Exasol in the Container
+
+If you use the constructor without parameters, the test container picks a fixed version for you. More precisely the following two lines are equivalent:
+
+```java
+private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
+```
+
+```java
+private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
+        ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
+```
+
+If you need a different Exasol version for your tests, replace the value of the constructor parameter with the name of the Exasol docker container you need.
 
 ## Automatic Cluster Configuration Parsing
 
@@ -261,8 +275,7 @@ private static Path createTempDir() {
 
 @Container
 private static final ExasolContainer<? extends ExasolContainer<?>> container
-        = new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE)
-                .withClusterLogsPath(TEMP_DIR);
+        = new ExasolContainer<>().withClusterLogsPath(TEMP_DIR);
 ```
 
 #### Don't mix Annotations That Depend on Each Other
@@ -286,7 +299,7 @@ Add the following to your container definition.
 ```java
 try (final Network network = Network.newNetwork();
      final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = 
-             new ExasolContainer<>(/* ... */)
+             new ExasolContainer<>()
              // ...
             .withNetwork(network);
 ) {

@@ -1,6 +1,5 @@
 package com.exasol.containers;
 
-import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_LOGS_PATH;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,9 +20,8 @@ class ExasolContainerWaitStrategyIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerWaitStrategyIT.class);
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            EXASOL_DOCKER_IMAGE_REFERENCE) //
-                    .withLogConsumer(new Slf4jLogConsumer(LOGGER));
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
+            .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     @Test
     void testWaitForNonExistingLogTimesOut() {

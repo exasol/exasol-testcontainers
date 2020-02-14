@@ -193,6 +193,21 @@ Covers:
 
 Needs: dsn
 
+#### Starting and Stopping the Database
+`req~starting-and-stopping-the-database~1`
+
+Users can start and stop an Exasol database service inside the test container.
+
+Rationale:
+
+This allows testing the fault tolerance of software depending on an Exasol database.
+
+Covers:
+
+* [feat~database-access~1](#database-access)
+
+Needs: dsn
+
 ### BucketFS Access
 
 #### Bucket Content Listing

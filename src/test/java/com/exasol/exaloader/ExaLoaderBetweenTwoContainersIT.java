@@ -17,7 +17,6 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
 class ExaLoaderBetweenTwoContainersIT {
@@ -57,7 +56,7 @@ class ExaLoaderBetweenTwoContainersIT {
     }
 
     private ExasolContainer<? extends ExasolContainer<?>> createContainer() {
-        return new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
+        return new ExasolContainer<>();
     }
 
     private void executeStatements(final Connection connection, final String... sqls) throws SQLException {

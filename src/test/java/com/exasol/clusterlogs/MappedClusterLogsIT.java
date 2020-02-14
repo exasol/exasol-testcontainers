@@ -16,7 +16,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.google.common.io.Files;
 
 import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExasolContainerConstants;
 
 @Testcontainers
 class MappedClusterLogsIT {
@@ -30,10 +29,9 @@ class MappedClusterLogsIT {
     }
 
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
-            ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE) //
-                    .withLogConsumer(new Slf4jLogConsumer(LOGGER)) //
-                    .withClusterLogsPath(TEMP_DIR);
+    private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
+            .withLogConsumer(new Slf4jLogConsumer(LOGGER)) //
+            .withClusterLogsPath(TEMP_DIR);
 
     @Test
     // [itest->dsn~mapping-the-log-directory-to-the-host~1]
