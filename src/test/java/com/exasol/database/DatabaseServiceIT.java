@@ -23,11 +23,13 @@ class DatabaseServiceIT {
             .withRequiredServices();
     private DatabaseService service;
 
+    // [itest->dsn~database-service-stops-the-database~1]
     @BeforeEach
     void beforeEach() {
         this.service = container.getDatabaseService("DB1");
     }
 
+    // [itest->dsn~database-service-starts-the-database~1]
     @Order(1)
     @Test
     void testStop() throws InterruptedException {
