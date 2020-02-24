@@ -7,12 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 
+import com.exasol.containers.exec.ExitCode;
+
 /**
  * Controller for a database service.
  */
 public class DatabaseService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseService.class);
-    private static final int EXIT_OK = 0;
     private final String databaseName;
     private final Container<? extends Container<?>> container;
 
@@ -29,7 +30,7 @@ public class DatabaseService {
 
     /**
      * Get the name of the database provide by this service
-     * 
+     *
      * @return database name
      */
     public String getDatabaseName() {
@@ -47,7 +48,7 @@ public class DatabaseService {
         try {
             final long before = System.currentTimeMillis();
             final ExecResult result = this.container.execInContainer("dwad_client", "start-wait", this.databaseName);
-            if (result.getExitCode() == EXIT_OK) {
+            if (result.getExitCode() == ExitCode.OK) {
                 LOGGER.info("Database \"{}\" started {} ms after start request.", this.databaseName,
                         System.currentTimeMillis() - before);
             } else {
@@ -70,7 +71,7 @@ public class DatabaseService {
         try {
             final long before = System.currentTimeMillis();
             final ExecResult result = this.container.execInContainer("dwad_client", "stop-wait", this.databaseName);
-            if (result.getExitCode() == EXIT_OK) {
+            if (result.getExitCode() == ExitCode.OK) {
                 LOGGER.info("Database \"{}\" stopped {} ms after stop request.", this.databaseName,
                         System.currentTimeMillis() - before);
             } else {

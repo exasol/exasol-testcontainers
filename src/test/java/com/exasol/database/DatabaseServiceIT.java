@@ -18,7 +18,7 @@ import com.exasol.containers.ExasolContainer;
 class DatabaseServiceIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServiceIT.class);
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>() //
             .withLogConsumer(new Slf4jLogConsumer(LOGGER)) //
             .withRequiredServices();
     private DatabaseService service;
@@ -26,7 +26,7 @@ class DatabaseServiceIT {
     // [itest->dsn~database-service-stops-the-database~1]
     @BeforeEach
     void beforeEach() {
-        this.service = container.getDatabaseService("DB1");
+        this.service = CONTAINER.getDatabaseService("DB1");
     }
 
     // [itest->dsn~database-service-starts-the-database~1]
@@ -34,13 +34,13 @@ class DatabaseServiceIT {
     @Test
     void testStop() throws InterruptedException {
         this.service.stop();
-        assertThrows(SQLException.class, () -> container.createConnectionForUser("SYS", "exasol"));
+        assertThrows(SQLException.class, () -> CONTAINER.createConnectionForUser("SYS", "exasol"));
     }
 
     @Order(2)
     @Test
     void testRestart() throws InterruptedException {
         this.service.start();
-        assertDoesNotThrow(() -> container.createConnection(""));
+        assertDoesNotThrow(() -> CONTAINER.createConnection(""));
     }
 }

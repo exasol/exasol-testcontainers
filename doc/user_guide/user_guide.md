@@ -61,7 +61,7 @@ class BucketTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketTest.class);
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>();
 
     // ...
 }
@@ -71,22 +71,42 @@ Let's go through the code line by line.
 
 The first two imports provide support for annotations that you need in order to tell `testcontainers` to automatically initialize the docker container. You annotate the test class with `@Testcontainers`.
 
-The `@Container` tells the `testcontainers` framework to initialize the static variable `container` with control object for the Exasol docker container.
+The `@Container` tells the `testcontainers` framework to initialize the static variable `CONTAINER` with control object for the Exasol docker container.
 
 Under the hood the framework takes care of downloading the docker image &mdash; unless it is already locally cached. Then it starts the container and waits for the service inside to be ready. The `ExasolContainer` implements its own waiting strategy to make sure that the services you need in your tests are available once your test code takes over.
 
-Make sure that the complete setup of the `container` happens in that initialization of the annotated private static class variable.
+Make sure that the complete setup of the `ExasolContainer` happens in that initialization of the annotated private static class variable.
+
+### Static, Instance Variable or Local Variable
+
+When defining a container you have the choice between making the variable static, an instance variable or  local one. The main difference is when and how often the `testcontainer` framework replaces the docker instance them if you use the annotation `@Container`.
+
+Put the annotation on a static class variable and the docker instance is created once per test class. Put it on an instance variable to let the framework create a fresh docker instance per test case.
+
+### Starting the Container "by Hand"
+
+Of course you can also simply assign the `ExasolContainer` to a non-annotated variable (e.g. a local variable) and start the container yourself.
+
+```java
+try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
+    container.with...().start();
+}
+```
+
+In that case, mind the try-with-resources block, to make sure, all dependent resources implementation `AutoClosable` are properly cleaned up afterwards.
+
+Also put all builder methods &mdash; recognizable by the prefix `with` &mdash; _into_ the body of the `try` block, so that static code analyzers can verify the clean up. Otherwise the assignment isn't result of the `new()` but a return parameter from a builder method. And that could potentially be a different object, so that a resource leak would be possible.
 
 ### Choosing the Version of Exasol in the Container
 
 If you use the constructor without parameters, the test container picks a fixed version for you. More precisely the following two lines are equivalent:
 
 ```java
-private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
+private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>();
 ```
 
 ```java
-private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>(
+private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>(
         ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
 ```
 
@@ -306,6 +326,77 @@ try (final Network network = Network.newNetwork();
     // ...
 }
 ```
+
+## EXAoperation Emulation
+
+The Exasol variant in the `docker-db` which is the basis of the Exasol test container, does not feature EXAoperation. That being said, there are situations where integration test requires a subset of EXAoperations functions.
+
+For this particular purpose the test container implementation comes with an emulation of selected EXAoperation features.
+
+### EXAoparation Plug-ins
+
+Plug-ins are one way to extend Exasol with custom functionality. Since the test containers only contain an emulation of EXAoperation, sticking to the plug-in naming and structure conventions is important.
+
+The emulation expects plug-ins to have the following structure.
+
+    Plugin.<plug-in-name>-<version>-<date>.pkg      (TAR archive)
+     |
+     '- Plugin.<plug-in-name>-<version>.tar.gz      (TAR archive)
+         |
+         '- usr
+             |
+             '- opt
+                 |
+                 '- EXAplugins
+                     |
+                     '- <plug-in-name>-<version>
+                         |
+                         '-- exaoperation-gate
+                              |
+                              |- install
+                              |- restart
+                              |- status
+                              |- start
+                              |- status
+                              |- stop
+                              '- uninstall
+
+Note that the script `on-boot` for now is ignored as are plug-in signatures.
+
+### Installing and Uninstalling EXAoperation Plug-ins
+
+You can install plug-ins on an Exasol cluster via the EXAoperation emulator. The emulation takes the path of such a plug-in an lets you install it.
+
+```java
+final EXAoperation exaOperation = container.getExaoperation();
+final Plugin plugin = exaOperation.installPlugInPackage("test/resources/Plugin.FooBar-1.0.0-2020-02-02.pkg");
+```
+
+After this step, the plug-in package is installed in the file system of the Exasol cluster.
+
+Note that after installing the package a second installation step is required to complete the installation. This step covers those installation parts that cannot be done via simple package extraction.
+
+```java
+final ExecResult result = plugin.install()
+```
+
+You can check the execution result to find out, whether executing the installation script contained in the plug-in succeeded.
+
+If you don't need the plug-in anymore, you can uninstall it in a similar way.
+
+```java
+final ExecResult result = plugin.uninstall()
+```
+
+
+### Starting and Stopping a Plug-in
+
+Additionally plug-in can be started, stopped and their status checked using the following methods of the `Plugin` class.
+
+* `start()`
+* `stop()`
+* `restart()`
+* `status()`
 
 #### Use Internal IP Addresses Instead of Network Aliases
 

@@ -31,8 +31,8 @@ class ExaLoaderBetweenTwoContainersIT {
                 final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = createContainer();
                 final ExasolContainer<? extends ExasolContainer<?>> targetContainer = createContainer() //
         ) {
-            sourceContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).start();
-            targetContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).start();
+            sourceContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).withRequiredServices().start();
+            targetContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).withRequiredServices().start();
             final Connection sourceConnection = sourceContainer.createConnection("");
             executeStatements(sourceConnection, //
                     "CREATE SCHEMA SOURCE_SCHEMA", //

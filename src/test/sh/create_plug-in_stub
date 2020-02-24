@@ -1,0 +1,11 @@
+#!/bin/bash
+
+readonly plugin=Plugin.Testing.Stub-1.0.0
+readonly inner_archive="$plugin.tar.gz"
+readonly current_dir=$(pwd)
+
+cd "$plugin"
+tar czvf "$current_dir/$inner_archive" *
+cd "$current_dir"
+tar cvf "$plugin-2020-02-02.pkg" "$inner_archive"
+rm "$inner_archive"

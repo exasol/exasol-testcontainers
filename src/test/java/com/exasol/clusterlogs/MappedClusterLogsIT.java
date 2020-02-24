@@ -29,9 +29,10 @@ class MappedClusterLogsIT {
     }
 
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>() //
             .withLogConsumer(new Slf4jLogConsumer(LOGGER)) //
-            .withClusterLogsPath(TEMP_DIR);
+            .withClusterLogsPath(TEMP_DIR) //
+            .withRequiredServices();
 
     @Test
     // [itest->dsn~mapping-the-log-directory-to-the-host~1]

@@ -67,6 +67,13 @@ ETC provides access to the logs of the Exasol instance.
 
 Needs: req
 
+### EXAoperation Simulation
+`feat~exaoperation-simulation~1`
+
+ETC simulates selected functions of [EXAoperation](https://docs.exasol.com/administration/on-premise/exaoperation.htm#EXAoperation).
+
+Needs: req
+
 ## Functional Requirements
 
 In this section lists functional requirements from the user's perspective. The requirements are grouped by feature where they belong to a single feature.
@@ -298,5 +305,24 @@ ETC lets Integrators read the Exasol log files.
 Covers:
 
 * [feat~log-access~1](#log-access)
+
+Needs: dsn
+
+### EXAoperation Simulation
+
+The Exasol test container is based on Exasol's `docker-db` which does not include [EXAoperation](https://docs.exasol.com/administration/on-premise/exaoperation.htm#EXAoperation). That being said some integration test require a subset of the EXAoperation functions in order to be executable.
+
+#### Installing an EXAoperation Plug-in
+`req~installing-an-exaoperation-plug-in~1`
+
+ETC allows installing an EXAoperation plug-in from a plug-in package file.
+
+Rationale:
+
+If the software under test is an EXAoperation plug-in, ETC takes over the installation in the absence of EXAoperation.
+
+Covers:
+
+* [feat~exaoperation-simulation~1](#exaoperation-simulation)
 
 Needs: dsn
