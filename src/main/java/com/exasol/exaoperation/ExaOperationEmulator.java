@@ -97,4 +97,14 @@ public class ExaOperationEmulator implements ExaOperation {
     public boolean hasPlugin(final String pluginName) {
         return this.plugins.containsKey(pluginName);
     }
+
+    @Override
+    public Plugin getPlugin(final String pluginName) {
+        if (hasPlugin(pluginName)) {
+            return this.plugins.get(pluginName);
+        } else {
+            throw new IllegalArgumentException("Unable to get control object for plug-in named \"" + pluginName
+                    + "\". Choose one of: " + String.join(", ", this.plugins.keySet()));
+        }
+    }
 }

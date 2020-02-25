@@ -5,11 +5,11 @@ import static com.exasol.exaoperation.plugin.PluginStub.PLUGIN_PACKAGE_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
@@ -19,6 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Testcontainers
 class ExaOperationEmulatorIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaOperationEmulatorIT.class);
@@ -46,5 +47,17 @@ class ExaOperationEmulatorIT {
     @Test
     void testHasPluginTrueAfterInstallation() {
         assertThat(container.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(true));
+    }
+
+    @Order(4)
+    @Test
+    void testGetPlugin() {
+        assertThat(container.getExaOperation().getPlugin(PLUGIN_NAME).getName(), equalTo(PLUGIN_NAME));
+    }
+
+    @Order(5)
+    @Test
+    void testGetPluginThrowsIllegalArgumentExceptionForUnknownPluginName() {
+        assertThrows(IllegalArgumentException.class, () -> container.getExaOperation().getPlugin("Non.Existant-1.0.0"));
     }
 }

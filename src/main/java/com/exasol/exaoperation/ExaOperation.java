@@ -23,5 +23,13 @@ public interface ExaOperation {
      * @param pluginName name of the plug-in
      * @return {@code true} if the plug-in is installed
      */
-    public boolean hasPlugin(String pluginName);
+    public boolean hasPlugin(final String pluginName);
+
+    /**
+     * Get the plug-in control object for a plug-in name.
+     *
+     * @param pluginName name of the plug-in
+     * @return plug-in control object
+     */
+    public Plugin getPlugin(final String pluginName);
 }

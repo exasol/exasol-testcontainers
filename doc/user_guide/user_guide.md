@@ -387,7 +387,13 @@ If you don't need the plug-in anymore, you can uninstall it in a similar way.
 ```java
 final ExecResult result = plugin.uninstall()
 ```
+### Getting a Previously Installed Plug-in
 
+If you already installed a plug-in and need access to its control object, use the following method:
+
+```java
+final Plugin plugin = exaOperation.getPlugin("Foo.Bar-1.0.0");
+```
 
 ### Starting and Stopping a Plug-in
 
