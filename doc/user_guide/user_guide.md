@@ -79,7 +79,7 @@ Make sure that the complete setup of the `ExasolContainer` happens in that initi
 
 ### Static, Instance Variable or Local Variable
 
-When defining a container you have the choice between making the variable static, an instance variable or  local one. The main difference is when and how often the `testcontainer` framework replaces the docker instance them if you use the annotation `@Container`.
+When defining a container you have the choice between making the variable static, an instance variable or  local one. The main difference is when and how often the `testcontainer` framework replaces the docker instance if you use the annotation `@Container`.
 
 Put the annotation on a static class variable and the docker instance is created once per test class. Put it on an instance variable to let the framework create a fresh docker instance per test case.
 
@@ -365,7 +365,7 @@ Note that the script `on-boot` for now is ignored as are plug-in signatures.
 
 ### Installing and Uninstalling EXAoperation Plug-ins
 
-You can install plug-ins on an Exasol cluster via the EXAoperation emulator. The emulation takes the path of such a plug-in an lets you install it.
+You can install plug-ins on an Exasol cluster via the EXAoperation emulator. The emulation takes the path of such a plug-in and lets you install it.
 
 ```java
 final EXAoperation exaOperation = container.getExaoperation();
