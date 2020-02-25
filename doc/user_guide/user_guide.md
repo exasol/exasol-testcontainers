@@ -327,6 +327,16 @@ try (final Network network = Network.newNetwork();
 }
 ```
 
+#### Use Internal IP Addresses Instead of Network Aliases
+
+Docker network aliases work like hostnames inside a Docker network. Usually they can be used just like hostnames and are then resolved to IP addresses by standard DNS tools.
+
+Unfortunately in case of Exasol, this does _not_ work, because the proprietary DNS implementation of Exasol does not support this. Use IP addresses if you want to access a service running in a different container from an Exasol container instead.
+
+Check the method `getDockerNetworkInternalIpAddress()` in the `ExasolContainer` class to learn how to determine the Docker-network-internal IP address of a container.
+
+If your are looking for an example, please check the integration test `ExaLoaderBetweenTwoContainersIT`.
+
 ## EXAoperation Emulation
 
 The Exasol variant in the `docker-db` which is the basis of the Exasol test container, does not feature EXAoperation. That being said, there are situations where integration test requires a subset of EXAoperations functions.
@@ -395,24 +405,26 @@ If you already installed a plug-in and need access to its control object, use th
 final Plugin plugin = exaOperation.getPlugin("Foo.Bar-1.0.0");
 ```
 
-### Starting and Stopping a Plug-in
+### Plug-in Scripts
 
-Additionally plug-in can be started, stopped and their status checked using the following methods of the `Plugin` class.
+Plug-ins contain one or more scripts. The only mandatory one is called `plugin-functions`. For other functions naming conventions (e.g. `start` and `stop`) are established but not enforced.
+
+Call the method `functions()` to execute the `plugin-functions` script.
+
+You can call any script using the following method:
+
+```java
+plugin.runScript("my-script-name");
+```
+
+### Methods for Functions Following Established Naming Conventions
+
+The `PlugIn` class contains convenience methods for calling some of the most popular plug-in scripts:
 
 * `start()`
 * `stop()`
 * `restart()`
 * `status()`
-
-#### Use Internal IP Addresses Instead of Network Aliases
-
-Docker network aliases work like hostnames inside a Docker network. Usually they can be used just like hostnames and are then resolved to IP addresses by standard DNS tools.
-
-Unfortunately in case of Exasol, this does _not_ work, because the proprietary DNS implementation of Exasol does not support this. Use IP addresses if you want to access a service running in a different container from an Exasol container instead.
-
-Check the method `getDockerNetworkInternalIpAddress()` in the `ExasolContainer` class to learn how to determine the Docker-network-internal IP address of a container.
-
-If your are looking for an example, please check the integration test `ExaLoaderBetweenTwoContainersIT`.
 
 ## Tweaking
 

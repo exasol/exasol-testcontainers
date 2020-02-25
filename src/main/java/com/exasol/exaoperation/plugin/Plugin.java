@@ -85,10 +85,10 @@ public class Plugin {
      */
     // [impl->dsn~installing-plug-ins~1]
     public ExecResult install() {
-        return runPluginScript("install");
+        return runScript("install");
     }
 
-    private ExecResult runPluginScript(final String method) {
+    public ExecResult runScript(final String method) {
         try {
             final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/" + method;
             LOGGER.info("Running script \"{}\" of plug-in \"{}\".", script, this.name);
@@ -110,7 +110,7 @@ public class Plugin {
      */
     // [impl->dsn~starting-plug-ins~1]
     public ExecResult start() {
-        return runPluginScript("start");
+        return runScript("start");
     }
 
     /**
@@ -120,7 +120,7 @@ public class Plugin {
      */
     // [impl->dsn~stopping-plug-ins~1]
     public ExecResult stop() {
-        return runPluginScript("stop");
+        return runScript("stop");
     }
 
     /**
@@ -130,7 +130,7 @@ public class Plugin {
      */
     // [impl->dsn~restarting-plug-ins~1]
     public ExecResult restart() {
-        return runPluginScript("restart");
+        return runScript("restart");
     }
 
     /**
@@ -140,7 +140,7 @@ public class Plugin {
      */
     // [impl->dsn~getting-the-plug-ins-status~1]
     public ExecResult status() {
-        return runPluginScript("status");
+        return runScript("status");
     }
 
     /**
@@ -150,6 +150,6 @@ public class Plugin {
      */
     // [impl->dsn~uninstalling-plug-ins~1]
     public ExecResult uninstall() {
-        return runPluginScript("uninstall");
+        return runScript("uninstall");
     }
 }
