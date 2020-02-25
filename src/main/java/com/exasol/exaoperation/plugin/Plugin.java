@@ -20,8 +20,10 @@ import com.exasol.exaoperation.ExaOperationEmulatorException;
  * </p>
  */
 public class Plugin {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Plugin.class);
     public static final String PLUGIN_PACKAGE_PREFIX = "Plugin.";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Plugin.class);
+    @SuppressWarnings("squid:S4784") // This is a test framework RegEx DoS attacks are unrealistic since this would mean
+                                     // the testers are attacking themselves.
     private static final Pattern PLUGIN_PACKAGE_FILENAME_PATTERN = Pattern
             .compile("Plugin\\.([.\\w]+-\\d+(?:\\.\\d+)*).*?");
     private final Path sourcePath;
