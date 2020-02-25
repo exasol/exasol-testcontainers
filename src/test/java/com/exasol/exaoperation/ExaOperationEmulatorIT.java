@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ class ExaOperationEmulatorIT {
     // [itest->dsn~extracting-plug-in-packages~1]
     @Order(2)
     @Test
-    void testInstall() throws UnsupportedOperationException, IOException, InterruptedException {
+    void testInstallPluginPackage() throws UnsupportedOperationException, IOException, InterruptedException {
         final ExaOperation exaOperation = container.getExaOperation();
         exaOperation.installPluginPackage(PLUGIN_PACKAGE_PATH);
         final ExecResult result = container.execInContainer("ls", "/usr/opt/EXAplugins");
@@ -55,9 +56,14 @@ class ExaOperationEmulatorIT {
         assertThat(container.getExaOperation().getPlugin(PLUGIN_NAME).getName(), equalTo(PLUGIN_NAME));
     }
 
-    @Order(5)
     @Test
     void testGetPluginThrowsIllegalArgumentExceptionForUnknownPluginName() {
         assertThrows(IllegalArgumentException.class, () -> container.getExaOperation().getPlugin("Non.Existant-1.0.0"));
+    }
+
+    @Test
+    void testInstallPluginPackageThrowsExceptionOnNonExistantPath() {
+        assertThrows(IllegalArgumentException.class,
+                () -> container.getExaOperation().installPluginPackage(Path.of("does", "not", "exist")));
     }
 }
