@@ -25,45 +25,45 @@ import com.exasol.containers.ExasolContainer;
 class ExaOperationEmulatorIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaOperationEmulatorIT.class);
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withLogConsumer(new Slf4jLogConsumer(LOGGER)).withRequiredServices();
 
     @Order(1)
     @Test
     void testHasPluginFalseBeforeInstallation() {
-        assertThat(container.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(false));
+        assertThat(CONTAINER.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(false));
     }
 
     // [itest->dsn~extracting-plug-in-packages~1]
     @Order(2)
     @Test
     void testInstallPluginPackage() throws UnsupportedOperationException, IOException, InterruptedException {
-        final ExaOperation exaOperation = container.getExaOperation();
+        final ExaOperation exaOperation = CONTAINER.getExaOperation();
         exaOperation.installPluginPackage(PLUGIN_PACKAGE_PATH);
-        final ExecResult result = container.execInContainer("ls", "/usr/opt/EXAplugins");
+        final ExecResult result = CONTAINER.execInContainer("ls", "/usr/opt/EXAplugins");
         assertThat(result.getStdout(), containsString(PLUGIN_NAME));
     }
 
     @Order(3)
     @Test
     void testHasPluginTrueAfterInstallation() {
-        assertThat(container.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(true));
+        assertThat(CONTAINER.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(true));
     }
 
     @Order(4)
     @Test
     void testGetPlugin() {
-        assertThat(container.getExaOperation().getPlugin(PLUGIN_NAME).getName(), equalTo(PLUGIN_NAME));
+        assertThat(CONTAINER.getExaOperation().getPlugin(PLUGIN_NAME).getName(), equalTo(PLUGIN_NAME));
     }
 
     @Test
     void testGetPluginThrowsIllegalArgumentExceptionForUnknownPluginName() {
-        assertThrows(IllegalArgumentException.class, () -> container.getExaOperation().getPlugin("Non.Existant-1.0.0"));
+        assertThrows(IllegalArgumentException.class, () -> CONTAINER.getExaOperation().getPlugin("Non.Existant-1.0.0"));
     }
 
     @Test
     void testInstallPluginPackageThrowsExceptionOnNonExistantPath() {
         assertThrows(IllegalArgumentException.class,
-                () -> container.getExaOperation().installPluginPackage(Path.of("does", "not", "exist")));
+                () -> CONTAINER.getExaOperation().installPluginPackage(Path.of("does", "not", "exist")));
     }
 }

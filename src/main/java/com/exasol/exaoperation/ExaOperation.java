@@ -13,7 +13,6 @@ public interface ExaOperation {
      *
      * @param pluginPackagePath from where to install the plug-in package
      * @return control object for the installed plug-in
-     *
      */
     public Plugin installPluginPackage(final Path pluginPackagePath);
 

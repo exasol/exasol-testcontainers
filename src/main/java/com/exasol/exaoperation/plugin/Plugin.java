@@ -138,7 +138,7 @@ public class Plugin {
     /**
      * Get the status of the plug-in.
      *
-     * @return result of executing the start script.
+     * @return result of executing the status script.
      */
     // [impl->dsn~getting-the-plug-ins-status~1]
     public ExecResult status() {

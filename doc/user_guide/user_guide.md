@@ -2,6 +2,10 @@
 
 The Exasol Java Testcontainer is based on the [testcontainers](https://testcontainers.org) open source project. It is intended for use in automated integration tests of Java software that uses Exasol.
 
+## Notation Used in This Document
+
+Syntax definitions in this document are written in [Augmented Backus-Naur Form (ABNF)](https://tools.ietf.org/html/rfc5234).
+
 ## Getting Test Containers Into Your Project
 
 ### Exasol Test Containers as Maven Dependency
@@ -365,13 +369,30 @@ The emulation expects plug-ins to have the following structure.
                               |
                               |- install
                               |- restart
-                              |- status
                               |- start
                               |- status
                               |- stop
                               '- uninstall
 
-Note that the script `on-boot` for now is ignored as are plug-in signatures.
+Versions have the following format:
+
+    version = 1*DIGIT *("." 1*DIGIT)
+
+For example: `3.2.0`
+
+The date must be in the following format:
+
+    date = year "-" month "-" day
+    
+    year = 4DIGIT
+    
+    month = 2DIGIT
+    
+    day = 2DIGIT
+
+Example: `2020-01-31`
+
+Note that the script `on-boot` and signatures are ignored for now.
 
 ### Installing and Uninstalling EXAoperation Plug-ins
 
@@ -390,13 +411,14 @@ Note that after installing the package a second installation step is required to
 final ExecResult result = plugin.install()
 ```
 
-You can check the execution result to find out, whether executing the installation script contained in the plug-in succeeded.
+You can check the execution result to find out whether the execution of the installation script contained in the plug-in succeeded.
 
 If you don't need the plug-in anymore, you can uninstall it in a similar way.
 
 ```java
 final ExecResult result = plugin.uninstall()
 ```
+
 ### Getting a Previously Installed Plug-in
 
 If you already installed a plug-in and need access to its control object, use the following method:
@@ -407,7 +429,7 @@ final Plugin plugin = exaOperation.getPlugin("Foo.Bar-1.0.0");
 
 ### Plug-in Scripts
 
-Plug-ins contain one or more scripts. The only mandatory one is called `plugin-functions`. For other functions naming conventions (e.g. `start` and `stop`) are established but not enforced.
+Plug-ins contain one or more scripts. The only mandatory one is called `plugin-functions`. For other functions, naming conventions (e.g. `start` and `stop`) are established but not enforced.
 
 Call the method `functions()` to execute the `plugin-functions` script.
 

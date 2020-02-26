@@ -26,7 +26,7 @@ public class PluginTest {
         assertThat(this.pluginPackage.getName(), equalTo(PLUGIN_NAME));
     }
 
-    @ValueSource(strings = { "Plugin.Foo+Bar-1.0.0.pkg", "Foo.Bar-1.0.0.pkg", "Plugin-Foo.Bar-1.0.0.pkg" })
+    @ValueSource(strings = { "Plugin.Foo+Bar-1.0.0.pkg", "Foo.Bar-1.0.0.pkg", "Plugin-Foo.Bar-1.0.0.pkg", "" })
     @ParameterizedTest
     void testGetNameFromPackageThrowsExceptionForIllegalNames(final String pathAsString) {
         assertThrows(IllegalArgumentException.class, () -> new Plugin(Path.of(pathAsString), null));

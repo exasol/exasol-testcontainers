@@ -295,7 +295,7 @@ EXAoperation features required for integration tests are emulated.
 
 Interface compatibility for plug-ins means that the emulation uses the established plug-in interfaces (read "control scripts inside the plug-in").
 
-EXAoperations own interfaces are _not_ available. Especially there is no emulation of the XML-RPC interface. What is available though is a control object implementation a Java interface called "EXAoperation". It is this interface that test authors can use in test code to trigger the emulated features.
+EXAoperation's own interfaces are _not_ available. Especially there is no emulation of the XML-RPC interface. What is available though is a control object implementation of a Java interface called "EXAoperation". It is this interface that test authors can use in test code to trigger the emulated features.
 
 #### Extracting Plug-in Packages
 `dsn~extracting-plug-in-packages~1`
