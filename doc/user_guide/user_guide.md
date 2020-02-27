@@ -399,8 +399,10 @@ Note that the script `on-boot` and signatures are ignored for now.
 You can install plug-ins on an Exasol cluster via the EXAoperation emulator. The emulation takes the path of such a plug-in and lets you install it.
 
 ```java
-final EXAoperation exaOperation = container.getExaoperation();
-final Plugin plugin = exaOperation.installPlugInPackage("test/resources/Plugin.FooBar-1.0.0-2020-02-02.pkg");
+final ExaOperation exaOperation = container.getExaOperation();
+final Plugin plugin = exaOperation.installPluginPackage(
+    Path.of( "test/resources/Plugin.FooBar-1.0.0-2020-02-02.pkg" )
+);
 ```
 
 After this step, the plug-in package is installed in the file system of the Exasol cluster.
