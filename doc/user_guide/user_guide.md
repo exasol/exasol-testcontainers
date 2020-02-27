@@ -8,15 +8,15 @@ Syntax definitions in this document are written in [Augmented Backus-Naur Form (
 
 ## Getting Test Containers Into Your Project
 
+Exasol test containers are built using [Apache Maven](https://maven.apache.org/), so integrating the release packages into your project is easy with Maven.
+
 Please check out ["Introduction to the Dependency Mechanism"](http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html), if you want to learn about how maven handles dependencies and dependency scopes.
 
 We assume here that you are familiar with the basics.
 
 ### Exasol Test Containers as Maven Dependency
 
-Exasol test containers are built using [Apache Maven](https://maven.apache.org/), so integrating the release packages into your project is easy with Maven.
-
-Just add the following dependencies.
+Just add the following dependency to add the Exasol test containers to your project.
 
 ```xml
 <dependency>
