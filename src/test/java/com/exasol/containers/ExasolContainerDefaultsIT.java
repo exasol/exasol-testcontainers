@@ -19,30 +19,30 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class ExasolContainerDefaultsIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
-
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
+            .withRequiredServices();
 
     @BeforeAll
     static void beforeAll() {
-        container.followOutput(new Slf4jLogConsumer(LOGGER));
+        CONTAINER.followOutput(new Slf4jLogConsumer(LOGGER));
     }
 
     @Test
     void testGetDefaultUsername() {
-        assertThat(container.getUsername(), equalTo("SYS"));
+        assertThat(CONTAINER.getUsername(), equalTo("SYS"));
     }
 
     @Test
     void testGetDefaultUser() {
         final String expectedUser = "JohnSmith";
-        assertThat(container.withUsername(expectedUser).getUsername(), equalTo(expectedUser));
+        assertThat(CONTAINER.withUsername(expectedUser).getUsername(), equalTo(expectedUser));
     }
 
     // [itest->dsn~default-jdbc-connection-with-sys-credentials~1]
     @Test
     void testDefaultJdbcConnectionBelongsToSysUser() throws NoDriverFoundException, SQLException {
-        try (final Connection connection = container.createConnection("")) {
+        try (final Connection connection = CONTAINER.createConnection("")) {
             try (final Statement statement = connection.createStatement()) {
                 try (final ResultSet resultSet = statement.executeQuery("SELECT CURRENT_USER")) {
                     if (resultSet.next()) {
@@ -57,6 +57,6 @@ class ExasolContainerDefaultsIT {
 
     @Test
     void testGetDockerNetworkInternalIpAddressReturnsLocalhostWithDefaultBridge() {
-        assertThat(container.getDockerNetworkInternalIpAddress(), equalTo("127.0.0.1"));
+        assertThat(CONTAINER.getDockerNetworkInternalIpAddress(), equalTo("127.0.0.1"));
     }
 }

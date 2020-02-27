@@ -22,6 +22,8 @@ import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
 import com.exasol.exaconf.ConfigurationParser;
+import com.exasol.exaoperation.ExaOperation;
+import com.exasol.exaoperation.ExaOperationEmulator;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 // [external->dsn~testcontainer-framework-controls-docker-image-download~1]
@@ -37,6 +39,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final LogPatternDetectorFactory detectorFactory;
     private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
     private final Set<ExasolService> readyServices = new HashSet<>();
+    private final ExaOperation exaOperation;
 
     /**
      * Create a new instance of an {@link ExasolContainer}.
@@ -46,6 +49,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public ExasolContainer(final String dockerImageName) {
         super(dockerImageName);
         this.detectorFactory = new LogPatternDetectorFactory(this);
+        this.exaOperation = new ExaOperationEmulator(this);
     }
 
     /**
@@ -317,5 +321,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public DatabaseService getDatabaseService(final String databaseName) {
         return new DatabaseServiceFactory(this, getClusterConfiguration()).getDatabaseService(databaseName);
+    }
+
+    /**
+     * Get a control object for EXAoperation.
+     *
+     * @return EXAoperation control object.
+     */
+    public ExaOperation getExaOperation() {
+        return this.exaOperation;
     }
 }

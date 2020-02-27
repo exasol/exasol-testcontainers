@@ -59,6 +59,14 @@ The `Bucket` building block controls interaction with a bucket in BucketFS.
 
 The `DatabaseService` controls features of a service providing the database like stopping and restarting.
 
+## `EXAoperationEmulator`
+
+The `EXAoperationEmulator` provides an emulation of selected functions of EXAoperation &mdash; which is not included in the underlying `docker-db`.
+
+## `Plugin`
+
+The `Plugin` allows controlling functions of an EXAoperation plug-in.
+
 # Runtime
 
 This section describes the runtime behavior of the software.
@@ -278,6 +286,91 @@ The `ExasolContainer` lets integrators map the cluster log directory to a config
 Covers:
 
 * `req~reading-log-files~1`
+
+Needs: impl, itest
+
+### ExaOperation Emulation
+
+EXAoperation features required for integration tests are emulated.
+
+Interface compatibility for plug-ins means that the emulation uses the established plug-in interfaces (read "control scripts inside the plug-in").
+
+EXAoperation's own interfaces are _not_ available. Especially there is no emulation of the XML-RPC interface. What is available though is a control object implementation of a Java interface called "EXAoperation". It is this interface that test authors can use in test code to trigger the emulated features.
+
+#### Extracting Plug-in Packages
+`dsn~extracting-plug-in-packages~1`
+
+The `ExaOperationEmulator` unpacks plug-in packages from TAR archives with the suffix `.pgk` inside the Exasol instance.
+
+Covers:
+
+* `req~installing-an-exaoperation-plug-in~1`
+
+Needs: impl, itest
+
+#### Installing Plug-ins
+`dsn~installing-plug-ins~1`
+
+The `Plugin` calls the script "`install`" from the extracted plug-in contents to complete the installation process.
+
+Covers:
+
+* `req~installing-an-exaoperation-plug-in~1`
+
+Needs: impl, itest
+
+#### Uninstalling Plug-ins
+`dsn~uninstalling-plug-ins~1`
+
+The `Plugin` calls the script "`uninstall`" from the extracted plug-in contents to uninstall a previously installed plug-in.
+
+Covers:
+
+* `req~installing-an-exaoperation-plug-in~1`
+
+Needs: impl, itest
+
+#### Starting Plug-ins
+`dsn~starting-plug-ins~1`
+
+The `Plugin` calls the script "`start`" from the extracted plug-in contents to start services provided by the plug-in.
+
+Covers:
+
+* `req~installing-an-exaoperation-plug-in~1`
+
+Needs: impl, itest
+
+#### Stopping Plug-ins
+`dsn~stopping-plug-ins~1`
+
+The `Plugin` calls the script "`stop`" from the extracted plug-in contents to stop services provided by the plug-in.
+
+Covers:
+
+* `req~installing-an-exaoperation-plug-in~1`
+
+Needs: impl, itest
+
+#### Restarting Plug-ins
+`dsn~restarting-plug-ins~1`
+
+The `Plugin` calls the script "`restart`" from the extracted plug-in contents to restart running services provided by the plug-in.
+
+Covers:
+
+* `req~installing-an-exaoperation-plug-in~1`
+
+Needs: impl, itest
+
+#### Getting the Plug-in's Status
+`dsn~getting-the-plug-ins-status~1`
+
+The `Plugin` calls the script "`status`" from the extracted plug-in contents to obtain the status of the services provided by the plug-in.
+
+Covers:
+
+* `req~installing-an-exaoperation-plug-in~1`
 
 Needs: impl, itest
 

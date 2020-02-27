@@ -9,12 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
+import com.exasol.containers.exec.ExitCode;
+
 /**
  * Detector for pattern match in a log file.
  */
 public class LogPatternDetector {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogPatternDetector.class);
-    private static final int EXIT_OK = 0;
     private static final Pattern LOG_ENTRY_PATTERN = Pattern
             .compile("\\[. (\\d\\d)(\\d\\d)(\\d\\d) (\\d\\d:\\d\\d:\\d\\d).*");
     private final Container<? extends Container<?>> container;
@@ -51,7 +52,7 @@ public class LogPatternDetector {
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
                 "-name", this.logNamePattern, //
                 "-exec", "grep", this.pattern, "{}", "+");
-        if (result.getExitCode() == EXIT_OK) {
+        if (result.getExitCode() == ExitCode.OK) {
             return isLogMessageFoundAfter(result.getStdout(), afterUTC);
         } else {
             return false;
