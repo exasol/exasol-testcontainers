@@ -8,11 +8,15 @@ Syntax definitions in this document are written in [Augmented Backus-Naur Form (
 
 ## Getting Test Containers Into Your Project
 
-### Exasol Test Containers as Maven Dependency
-
 Exasol test containers are built using [Apache Maven](https://maven.apache.org/), so integrating the release packages into your project is easy with Maven.
 
-Just add the following dependencies.
+Please check out ["Introduction to the Dependency Mechanism"](http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html), if you want to learn about how maven handles dependencies and dependency scopes.
+
+We assume here that you are familiar with the basics.
+
+### Exasol Test Containers as Maven Dependency
+
+Just add the following dependency to add the Exasol test containers to your project.
 
 ```xml
 <dependency>
@@ -21,19 +25,42 @@ Just add the following dependencies.
     <version><!-- add latest version here --></version>
     <scope>test</scope>
 </dependency>
-<dependency>
-    <groupId>com.exasol</groupId>
-    <artifactId>exasol-jdbc</artifactId>
-    <version>6.0.0</version>
-    <scope>runtime</scope>
-</dependency>
 ```
 
 As always, check for the latest version of the dependencies.
 
 Note that you only need the `exasol-testcontainers` dependency in the `test` scope. It won't appear in your production release. The same is true for all transitive dependencies of the test containers.
 
+### Exasol JDBC Driver as Maven Dependency
+
+You also need the Exasol JDBC Driver as this is not available on Maven Centra, you need to add the Exasol Artifactory as a source:
+
+```xml
+<repositories>
+    <repository>
+        <id>maven.exasol.com</id>
+        <url>https://maven.exasol.com/artifactory/exasol-releases</url>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+
+Then add the JDBC driver dependency:
+
+```xml
+<dependency>
+    <groupId>com.exasol</groupId>
+    <artifactId>exasol-jdbc</artifactId>
+    <version>6.2.3</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
 The JDBC driver is best used in scope `runtime`, meaning that it is not needed for building production code or test code. It just needs to be available at runtime. This is typical for a JDBC driver.
+
+### Test Containers and JUnit 5
 
 We recommend using [test containers together with JUnit 5](https://www.testcontainers.org/test_framework_integration/junit_5/). If you want to do that, please also add the following dependency.
 
@@ -45,8 +72,6 @@ We recommend using [test containers together with JUnit 5](https://www.testconta
     <scope>test</scope>
 </dependency>
 ```
-
-Please check out ["Introduction to the Dependency Mechanism"](http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html), if you want to learn more about how maven handles dependencies and dependency scopes.
 
 ## Creating an Exasol Testcontainer in a JUnit 5 Test
 

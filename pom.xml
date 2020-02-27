@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.exasol</groupId>
   <artifactId>exasol-testcontainers</artifactId>
-  <version>1.6.0</version>
+  <version>1.6.1</version>
   <name>Test containers for Exasol on Docker</name>
   <description>This module provides abstraction for generation, startup, shutdown and use of an
     Exasol database running on Docker.</description>
@@ -89,7 +89,7 @@
     <dependency>
       <groupId>com.exasol</groupId>
       <artifactId>exasol-jdbc</artifactId>
-      <version>6.0.0</version>
+      <version>6.2.3</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
