@@ -22,8 +22,15 @@ public class PluginTest {
     }
 
     @Test
-    void testGetNameFromPackage() {
+    void testGetName() {
         assertThat(this.pluginPackage.getName(), equalTo(PLUGIN_NAME));
+    }
+
+    @Test
+    void testGetNameWithDash() {
+        final Path path = Path.of("src", "test", "sh", "Plugin.Administration.Service.Exasol-DRS-0.7.pkg");
+        final Plugin plugin = new Plugin(path, null);
+        assertThat(plugin.getName(), equalTo("Administration.Service.Exasol-DRS-0.7"));
     }
 
     @ValueSource(strings = { "Plugin.Foo+Bar-1.0.0.pkg", "Foo.Bar-1.0.0.pkg", "Plugin-Foo.Bar-1.0.0.pkg", "" })
