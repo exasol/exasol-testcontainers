@@ -1,6 +1,7 @@
 package com.exasol.exaoperation;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import com.exasol.exaoperation.plugin.Plugin;
 
@@ -31,4 +32,11 @@ public interface ExaOperation {
      * @return plug-in control object
      */
     public Plugin getPlugin(final String pluginName);
+
+
+    /**
+     * Get the list of uploaded plugins. 
+     * @return list of plugin names suitable for {@link #hasPlugin(String)} and {@link #getPlugin(String)} 
+     */
+    public List<String> getPluginNames();
 }

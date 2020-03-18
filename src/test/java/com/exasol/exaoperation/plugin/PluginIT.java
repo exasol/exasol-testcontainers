@@ -106,4 +106,10 @@ class PluginIT {
         assertRunPlugInScriptCatchesException(new UnsupportedOperationException());
     }
 
+    @Test
+    void testListPlugins() {
+        List<String> plugins = CONTAINER.getExaOperation().getPluginNames();
+        assertThat( plugins.size(), equalTo( 1 ) );
+        assertThat( plugins.get(0), equalTo( plugin.getName() ) );
+    }
 }

@@ -2,7 +2,9 @@ package com.exasol.exaoperation;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -104,7 +106,13 @@ public class ExaOperationEmulator implements ExaOperation {
             return this.plugins.get(pluginName);
         } else {
             throw new IllegalArgumentException("Unable to get control object for plug-in named \"" + pluginName
-                    + "\". Choose one of: " + String.join(", ", this.plugins.keySet()));
+                    + "\". Choose one of: " + String.join(", ", getPluginNames()));
         }
     }
+
+    @Override
+    public List<String> getPluginNames() {
+        return new ArrayList<>( this.plugins.keySet() );
+    }
+
 }
