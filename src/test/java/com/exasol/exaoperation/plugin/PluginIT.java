@@ -99,7 +99,7 @@ class PluginIT {
             throws IOException, InterruptedException {
         when(this.containerMock.execInContainer(any())).thenThrow(exception);
         final Plugin plugin = new Plugin(Path.of("Plugin.Irrelevant.Name-1.2.3"), this.containerMock);
-        assertThrows(ExaOperationEmulatorException.class, () -> plugin.install());
+        assertThrows(ExaOperationEmulatorException.class, plugin::install );
     }
 
     @Test
@@ -116,10 +116,16 @@ class PluginIT {
     }
 
     @Test
-    @Disabled
     void testListFunctions() {
         List<String> pluginFunctions = plugin.listFunctions();
         assertThat( pluginFunctions.size(), equalTo( 7 ) );
         assertThat( pluginFunctions, hasItem( containsString( "Start plugin service" ) ) );
+    }
+
+    @Test
+    void testInvalidFunctionCall() {
+        assertThrows( ExaOperationEmulatorException.class
+                , () -> plugin.callFunction( "START", null )
+        );
     }
 }
