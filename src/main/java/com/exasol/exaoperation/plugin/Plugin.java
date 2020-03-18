@@ -2,6 +2,9 @@ package com.exasol.exaoperation.plugin;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,10 +111,29 @@ public class Plugin {
      * @return result of the function call
      */
     public ExecResult callFunction( final String method, final String argument) {
+        if( null == argument ) {
+            throw new ExaOperationEmulatorException(
+                    "Argument of Plugin::callFunction must never be null!" );
+        }
+        return callFunctionInternal( method, argument );
+    }
+
+    /**
+     * Internal implementation of callFunction, distinguishing call with and without argument
+     *
+     * @param method Name of function to call (1st argument)
+     * @param argument optional second argument; null for none
+     * @return result of function call
+     */
+    private ExecResult callFunctionInternal( final String method, final String argument ) {
         try {
             final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/plugin-functions";
             LOGGER.info("Calling function \"{}\" of plug-in \"{}\".", method, this.name);
-            return this.container.execInContainer(script, method, argument);
+            if( null!=argument ) {
+                return this.container.execInContainer( script, method, argument );
+            } else {
+                return this.container.execInContainer( script, method );
+            }
         } catch (UnsupportedOperationException | IOException exception) {
             throw new ExaOperationEmulatorException(
                     "Unable to run \"" + method + ("\" script of plug-in \"") + this.name + "\".", exception);
@@ -125,10 +147,16 @@ public class Plugin {
     /**
      * Return list of functions provided by the plugin
      *
-     * @return result of plugin query
+     * @return List as returned by the plugin. Usually in format "NAME: description"
      */
-    public ExecResult listFunctions() {
-        return callFunction( "--show-functions" );
+    public List<String> listFunctions() {
+        ExecResult tmp = callFunctionInternal( "--show-functions", null );
+        if( 0!=tmp.getExitCode() ) {
+            throw new ExaOperationEmulatorException(
+                    "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + tmp.getStderr() );
+        }
+
+        return Arrays.asList( tmp.getStdout().split( "\n" ) );
     }
 
 

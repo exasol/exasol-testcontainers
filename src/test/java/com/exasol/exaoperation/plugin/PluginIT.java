@@ -2,7 +2,7 @@ package com.exasol.exaoperation.plugin;
 
 import static com.exasol.exaoperation.plugin.PluginStub.PLUGIN_PACKAGE_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -111,5 +113,13 @@ class PluginIT {
         List<String> plugins = CONTAINER.getExaOperation().getPluginNames();
         assertThat( plugins.size(), equalTo( 1 ) );
         assertThat( plugins.get(0), equalTo( plugin.getName() ) );
+    }
+
+    @Test
+    @Disabled
+    void testListFunctions() {
+        List<String> pluginFunctions = plugin.listFunctions();
+        assertThat( pluginFunctions.size(), equalTo( 7 ) );
+        assertThat( pluginFunctions, hasItem( containsString( "Start plugin service" ) ) );
     }
 }
