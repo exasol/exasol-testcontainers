@@ -87,14 +87,31 @@ public class Plugin {
      */
     // [impl->dsn~installing-plug-ins~1]
     public ExecResult install() {
-        return runScript("install");
+        return callFunction("install");
     }
 
-    public ExecResult runScript(final String method) {
+    /**
+     * Call one of the plugin's functions.
+     *
+     * @param method name of the function to call. plugins should handle this case-insensitive
+     * @return result of the function call
+     */
+    public ExecResult callFunction( final String method) {
+        return callFunction( method, "" );
+    }
+
+    /**
+     * Call one of the plugin's functions with the given argument
+     *
+     * @param method name of the function to call. plugins should handle this case-insensitive
+     * @param argument argument to the function call. Content and encoding depends on plugin and method.
+     * @return result of the function call
+     */
+    public ExecResult callFunction( final String method, final String argument) {
         try {
-            final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/" + method;
-            LOGGER.info("Running script \"{}\" of plug-in \"{}\".", script, this.name);
-            return this.container.execInContainer("bash", script);
+            final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/plugin-functions";
+            LOGGER.info("Calling function \"{}\" of plug-in \"{}\".", method, this.name);
+            return this.container.execInContainer(script, method, argument);
         } catch (UnsupportedOperationException | IOException exception) {
             throw new ExaOperationEmulatorException(
                     "Unable to run \"" + method + ("\" script of plug-in \"") + this.name + "\".", exception);
@@ -106,13 +123,23 @@ public class Plugin {
     }
 
     /**
+     * Return list of functions provided by the plugin
+     *
+     * @return result of plugin query
+     */
+    public ExecResult listFunctions() {
+        return callFunction( "--show-functions" );
+    }
+
+
+    /**
      * Start the plug-in.
      *
      * @return result of executing the start script.
      */
     // [impl->dsn~starting-plug-ins~1]
     public ExecResult start() {
-        return runScript("start");
+        return callFunction("start");
     }
 
     /**
@@ -122,7 +149,7 @@ public class Plugin {
      */
     // [impl->dsn~stopping-plug-ins~1]
     public ExecResult stop() {
-        return runScript("stop");
+        return callFunction("stop");
     }
 
     /**
@@ -132,7 +159,7 @@ public class Plugin {
      */
     // [impl->dsn~restarting-plug-ins~1]
     public ExecResult restart() {
-        return runScript("restart");
+        return callFunction("restart");
     }
 
     /**
@@ -142,7 +169,7 @@ public class Plugin {
      */
     // [impl->dsn~getting-the-plug-ins-status~1]
     public ExecResult status() {
-        return runScript("status");
+        return callFunction("status");
     }
 
     /**
@@ -152,6 +179,6 @@ public class Plugin {
      */
     // [impl->dsn~uninstalling-plug-ins~1]
     public ExecResult uninstall() {
-        return runScript("uninstall");
+        return callFunction("uninstall");
     }
 }
