@@ -88,7 +88,6 @@ class PluginIT {
         assertThat( plugin.callFunction( "function_does_not_exist" ).getExitCode(), equalTo(1) );
     }
 
-
     @Test
     void testRunPluginScriptCatchesIoException()
             throws UnsupportedOperationException, IOException, InterruptedException {
