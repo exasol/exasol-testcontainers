@@ -164,7 +164,7 @@ public class Plugin {
     // [impl-dsn~listing-plug-ins~1]
     public List<String> listFunctions() {
         ExecResult result = callFunctionInternal("--show-functions");
-        if (result.getExitCode() != ExitCode.OK ) {
+        if (result.getExitCode() != ExitCode.OK) {
             throw new ExaOperationEmulatorException(
                     "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + result.getStderr());
         }
