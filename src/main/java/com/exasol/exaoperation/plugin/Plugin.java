@@ -144,7 +144,7 @@ public class Plugin {
     }
 
     /**
-     * Return list of functions provided by the plugin
+     * Return list of functions provided by the plugin.
      *
      * @return List as returned by the plugin. Usually in format "NAME: description"
      */
