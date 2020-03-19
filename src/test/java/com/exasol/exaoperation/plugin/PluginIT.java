@@ -98,7 +98,7 @@ class PluginIT {
             throws IOException, InterruptedException {
         when(this.containerMock.execInContainer(any())).thenThrow(exception);
         final Plugin plugin = new Plugin(Path.of("Plugin.Irrelevant.Name-1.2.3"), this.containerMock);
-        assertThrows(ExaOperationEmulatorException.class, plugin::install );
+        assertThrows(ExaOperationEmulatorException.class, plugin::install);
     }
 
     @Test
