@@ -103,7 +103,7 @@ public class Plugin {
     }
 
     /**
-     * Call one of the plugin's functions with the given argument
+     * Call one of the plugin's functions with the given argument.
      *
      * @param method name of the function to call. plugins should handle this case-insensitive
      * @param argument argument to the function call. Content and encoding depends on plugin and method.
