@@ -227,8 +227,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -244,12 +242,11 @@
         <configuration>
           <charset>UTF-8</charset>
           <doclint />
-          <serialwarn>false</serialwarn><!- - Serial annotation is introduced with Java 14. - ->
-          <failOnError>false</failOnError>
-          <failOnWarnings>false</failOnWarnings>
+          <serialwarn>false</serialwarn><!-- Serial annotation is introduced with Java 14. -->
+          <failOnError>true</failOnError>
+          <failOnWarnings>true</failOnWarnings>
         </configuration>
       </plugin>
-      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>

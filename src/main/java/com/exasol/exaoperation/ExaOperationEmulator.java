@@ -112,7 +112,7 @@ public class ExaOperationEmulator implements ExaOperation {
 
     @Override
     public List<String> getPluginNames() {
-        return new ArrayList<>( this.plugins.keySet() );
+        return new ArrayList<>(this.plugins.keySet());
     }
 
 }

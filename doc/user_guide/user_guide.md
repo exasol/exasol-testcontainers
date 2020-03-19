@@ -392,12 +392,7 @@ The emulation expects plug-ins to have the following structure.
                          |
                          '-- exaoperation-gate
                               |
-                              |- install
-                              |- restart
-                              |- start
-                              |- status
-                              |- stop
-                              '- uninstall
+                              '- plugin-functions
 
 Versions have the following format:
 
@@ -417,7 +412,9 @@ The date must be in the following format:
 
 Example: `2020-01-31`
 
-Note that the script `on-boot` and signatures are ignored for now.
+The file `plugin-functions` must be executable.
+
+Note that package signatures are ignored for now.
 
 ### Installing and Uninstalling EXAoperation Plug-ins
 
@@ -432,19 +429,22 @@ final Plugin plugin = exaOperation.installPluginPackage(
 
 After this step, the plug-in package is installed in the file system of the Exasol cluster.
 
-Note that after installing the package a second installation step is required to complete the installation. This step covers those installation parts that cannot be done via simple package extraction.
+`Plugin` offers a few convenience functions that wrap common function calls. Please note that support for these functions depends on the plugin in question; refer to the appropriate user manual when in doubt.
 
+Every plugin should be able to provide a usage description through the `listFunctions` call:
 ```java
-final ExecResult result = plugin.install()
+final List<String> pluginFunctions = plugin.listFunctions();
 ```
 
-You can check the execution result to find out whether the execution of the installation script contained in the plug-in succeeded.
 
-If you don't need the plug-in anymore, you can uninstall it in a similar way.
+### Listing Installed Plug-Ins
+
+To get a list of installed plugins, use the following call:
 
 ```java
-final ExecResult result = plugin.uninstall()
+final List<String> pluginNames = exaOperation.getPluginNames();
 ```
+
 
 ### Getting a Previously Installed Plug-in
 

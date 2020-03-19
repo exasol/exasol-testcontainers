@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.exasol.containers.exec.ExitCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
@@ -94,44 +95,56 @@ public class Plugin {
 
     /**
      * Call one of the plugin's functions.
+     * <p>
+     *     Plugins should handle function names case-insensitive.
+     * </p>
      *
-     * @param method name of the function to call. plugins should handle this case-insensitive
+     * @param method name of the function to call.
      * @return result of the function call
      */
-    public ExecResult callFunction( final String method) {
-        return callFunction( method, "" );
+    public ExecResult callFunction(final String method) {
+        return callFunction(method, "");
     }
 
     /**
      * Call one of the plugin's functions with the given argument.
+     * <p>
+     *     Plugins should handle function names case-insensitive; content and encoding of argument
+     *     depend on plugin and called function.
+     * </p>
      *
-     * @param method name of the function to call. plugins should handle this case-insensitive
-     * @param argument argument to the function call. Content and encoding depends on plugin and method.
+     * @param method   name of the function to call.
+     * @param argument argument to the function call.
      * @return result of the function call
      */
-    public ExecResult callFunction( final String method, final String argument) {
-        if( null == argument ) {
-            throw new ExaOperationEmulatorException(
-                    "Argument of Plugin::callFunction must never be null!" );
+    public ExecResult callFunction(final String method, final String argument) {
+        if (null == argument) {
+            throw new ExaOperationEmulatorException("Argument of Plugin::callFunction must never be null!");
         }
-        return callFunctionInternal( method, argument );
+        return callFunctionInternal(method, argument);
     }
 
     /**
      * Internal implementation of callFunction, distinguishing call with and without argument.
      *
-     * @param method Name of function to call
-     * @param argument optional second argument; null for none
+     * @param method   Name of function to call
+     * @param argument optional single argument for the function call
      * @return result of function call
      */
-    private ExecResult callFunctionInternal( final String method, final String argument ) {
+    private ExecResult callFunctionInternal(final String method, final String... argument) {
+        if (argument.length > 1) {
+            throw new ExaOperationEmulatorException(
+                    "Internal error: Multiple arguments provided when calling function \"" + method + "\" of plugin \""
+                            + this.name + "\"");
+        }
+
         try {
             final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/plugin-functions";
             LOGGER.info("Calling function \"{}\" of plug-in \"{}\".", method, this.name);
-            if( null!=argument ) {
-                return this.container.execInContainer( script, method, argument );
+            if (argument.length == 1) {
+                return this.container.execInContainer(script, method, argument[0]);
             } else {
-                return this.container.execInContainer( script, method );
+                return this.container.execInContainer(script, method);
             }
         } catch (UnsupportedOperationException | IOException exception) {
             throw new ExaOperationEmulatorException(
@@ -148,16 +161,16 @@ public class Plugin {
      *
      * @return List as returned by the plugin. Usually in format "NAME: description"
      */
+    // [impl-dsn~listing-plug-ins~1]
     public List<String> listFunctions() {
-        ExecResult tmp = callFunctionInternal( "--show-functions", null );
-        if( 0!=tmp.getExitCode() ) {
+        ExecResult result = callFunctionInternal("--show-functions");
+        if (result.getExitCode() != ExitCode.OK ) {
             throw new ExaOperationEmulatorException(
-                    "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + tmp.getStderr() );
+                    "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + result.getStderr());
         }
 
-        return Arrays.asList( tmp.getStdout().split( "\n" ) );
+        return Arrays.asList(result.getStdout().split("\n"));
     }
-
 
     /**
      * Start the plug-in.
