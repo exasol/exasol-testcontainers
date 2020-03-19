@@ -33,7 +33,6 @@ public interface ExaOperation {
      */
     public Plugin getPlugin(final String pluginName);
 
-
     /**
      * Get the list of uploaded plugins. 
      * @return list of plugin names suitable for {@link #hasPlugin(String)} and {@link #getPlugin(String)} 
