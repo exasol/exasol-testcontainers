@@ -120,7 +120,7 @@ public class Plugin {
     /**
      * Internal implementation of callFunction, distinguishing call with and without argument.
      *
-     * @param method Name of function to call (1st argument)
+     * @param method Name of function to call
      * @param argument optional second argument; null for none
      * @return result of function call
      */
