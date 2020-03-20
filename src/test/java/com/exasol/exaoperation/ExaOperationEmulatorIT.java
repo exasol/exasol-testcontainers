@@ -56,6 +56,13 @@ class ExaOperationEmulatorIT {
         assertThat(CONTAINER.getExaOperation().getPlugin(PLUGIN_NAME).getName(), equalTo(PLUGIN_NAME));
     }
 
+    @Order(5)
+    @Test
+    void testSecondInstallationThrows() {
+        assertThrows(ExaOperationEmulatorException.class,
+                () -> CONTAINER.getExaOperation().installPluginPackage(PLUGIN_PACKAGE_PATH));
+    }
+
     @Test
     void testGetPluginThrowsIllegalArgumentExceptionForUnknownPluginName() {
         assertThrows(IllegalArgumentException.class, () -> CONTAINER.getExaOperation().getPlugin("Non.Existant-1.0.0"));
