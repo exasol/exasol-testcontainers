@@ -2,9 +2,12 @@ package com.exasol.exaoperation.plugin;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.exasol.containers.exec.ExitCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
@@ -87,14 +90,62 @@ public class Plugin {
      */
     // [impl->dsn~installing-plug-ins~1]
     public ExecResult install() {
-        return runScript("install");
+        return callFunction("install");
     }
 
-    public ExecResult runScript(final String method) {
+    /**
+     * Call one of the plugin's functions.
+     * <p>
+     *     Plugins should handle function names case-insensitive.
+     * </p>
+     *
+     * @param method name of the function to call.
+     * @return result of the function call
+     */
+    public ExecResult callFunction(final String method) {
+        return callFunction(method, "");
+    }
+
+    /**
+     * Call one of the plugin's functions with the given argument.
+     * <p>
+     *     Plugins should handle function names case-insensitive; content and encoding of argument
+     *     depend on plugin and called function.
+     * </p>
+     *
+     * @param method   name of the function to call.
+     * @param argument argument to the function call.
+     * @return result of the function call
+     */
+    public ExecResult callFunction(final String method, final String argument) {
+        if (null == argument) {
+            throw new ExaOperationEmulatorException("Argument of Plugin::callFunction must never be null!");
+        }
+        return callFunctionInternal(method, argument);
+    }
+
+    /**
+     * Internal implementation of callFunction, distinguishing call with and without argument.
+     *
+     * @param method   Name of function to call
+     * @param argument optional single argument for the function call
+     * @return result of function call
+     */
+    private ExecResult callFunctionInternal(final String method, final String... argument) {
+        if (argument.length > 1) {
+            throw new ExaOperationEmulatorException(
+                    "Internal error: Multiple arguments provided when calling function \"" + method + "\" of plugin \""
+                            + this.name + "\"");
+        }
+
         try {
-            final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/" + method;
-            LOGGER.info("Running script \"{}\" of plug-in \"{}\".", script, this.name);
-            return this.container.execInContainer("bash", script);
+            final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/plugin-functions";
+            LOGGER.info("Calling function \"{}\" of plug-in \"{}\".", method, this.name);
+            if (argument.length == 1) {
+                return this.container.execInContainer(script, method, argument[0]);
+            } else {
+                return this.container.execInContainer(script, method);
+            }
         } catch (UnsupportedOperationException | IOException exception) {
             throw new ExaOperationEmulatorException(
                     "Unable to run \"" + method + ("\" script of plug-in \"") + this.name + "\".", exception);
@@ -106,13 +157,29 @@ public class Plugin {
     }
 
     /**
+     * Return list of functions provided by the plugin.
+     *
+     * @return List as returned by the plugin. Usually in format "NAME: description"
+     */
+    // [impl-dsn~listing-plug-ins~1]
+    public List<String> listFunctions() {
+        ExecResult result = callFunctionInternal("--show-functions");
+        if (result.getExitCode() != ExitCode.OK) {
+            throw new ExaOperationEmulatorException(
+                    "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + result.getStderr());
+        }
+
+        return Arrays.asList(result.getStdout().split("\n"));
+    }
+
+    /**
      * Start the plug-in.
      *
      * @return result of executing the start script.
      */
     // [impl->dsn~starting-plug-ins~1]
     public ExecResult start() {
-        return runScript("start");
+        return callFunction("start");
     }
 
     /**
@@ -122,7 +189,7 @@ public class Plugin {
      */
     // [impl->dsn~stopping-plug-ins~1]
     public ExecResult stop() {
-        return runScript("stop");
+        return callFunction("stop");
     }
 
     /**
@@ -132,7 +199,7 @@ public class Plugin {
      */
     // [impl->dsn~restarting-plug-ins~1]
     public ExecResult restart() {
-        return runScript("restart");
+        return callFunction("restart");
     }
 
     /**
@@ -142,7 +209,7 @@ public class Plugin {
      */
     // [impl->dsn~getting-the-plug-ins-status~1]
     public ExecResult status() {
-        return runScript("status");
+        return callFunction("status");
     }
 
     /**
@@ -152,6 +219,6 @@ public class Plugin {
      */
     // [impl->dsn~uninstalling-plug-ins~1]
     public ExecResult uninstall() {
-        return runScript("uninstall");
+        return callFunction("uninstall");
     }
 }

@@ -308,6 +308,17 @@ Covers:
 
 Needs: impl, itest
 
+#### Listing Installed Plug-ins
+`dsn~listing-plug-ins~1`
+
+The `ExaOperationEmulator` provides a list of installed plug-in packages by name.
+
+Covers:
+
+* `req~listing-installed-exaoperation-plug-ins~1`
+
+Needs: impl, itest
+
 #### Installing Plug-ins
 `dsn~installing-plug-ins~1`
 
@@ -315,7 +326,7 @@ The `Plugin` calls the script "`install`" from the extracted plug-in contents to
 
 Covers:
 
-* `req~installing-an-exaoperation-plug-in~1`
+* `req~calling-exaoperation-plugin-functions~1`
 
 Needs: impl, itest
 
@@ -326,7 +337,7 @@ The `Plugin` calls the script "`uninstall`" from the extracted plug-in contents 
 
 Covers:
 
-* `req~installing-an-exaoperation-plug-in~1`
+* `req~calling-exaoperation-plugin-functions~1`
 
 Needs: impl, itest
 
@@ -337,7 +348,7 @@ The `Plugin` calls the script "`start`" from the extracted plug-in contents to s
 
 Covers:
 
-* `req~installing-an-exaoperation-plug-in~1`
+* `req~calling-exaoperation-plugin-functions~1`
 
 Needs: impl, itest
 
@@ -348,7 +359,7 @@ The `Plugin` calls the script "`stop`" from the extracted plug-in contents to st
 
 Covers:
 
-* `req~installing-an-exaoperation-plug-in~1`
+* `req~calling-exaoperation-plugin-functions~1`
 
 Needs: impl, itest
 
@@ -359,7 +370,7 @@ The `Plugin` calls the script "`restart`" from the extracted plug-in contents to
 
 Covers:
 
-* `req~installing-an-exaoperation-plug-in~1`
+* `req~calling-exaoperation-plugin-functions~1`
 
 Needs: impl, itest
 
@@ -370,7 +381,7 @@ The `Plugin` calls the script "`status`" from the extracted plug-in contents to 
 
 Covers:
 
-* `req~installing-an-exaoperation-plug-in~1`
+* `req~calling-exaoperation-plugin-functions~1`
 
 Needs: impl, itest
 

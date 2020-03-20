@@ -1,1 +1,3 @@
+#!/bin/bash
+
 echo "on_boot script called"
