@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +18,10 @@ import com.exasol.containers.exec.ExitCode;
 import com.exasol.exaoperation.plugin.Plugin;
 
 /**
- * Emulator that provides a subset of EXAoperations features needed for integration testing.
+ * Emulator that provides a subset of EXAoperation features needed for integration testing.
  */
 public class ExaOperationEmulator implements ExaOperation {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaOperationEmulator.class);
-    private static final String TMP_DIRECTORY = System.getProperty("java.io.tmpdir");
     private final Container<? extends Container<?>> container;
     private final Map<String, Plugin> plugins = new HashMap<>();
 
@@ -34,19 +34,71 @@ public class ExaOperationEmulator implements ExaOperation {
         this.container = container;
     }
 
+    /**
+     * Wrapped handler for `Container.execInContainer`, performing all the local ExitCode and Exception handling.
+     * <p>
+     * Will also throw an exception if the given command fails with a regular exitcode based error.
+     * </p>
+     *
+     * @param description Text identifying the operation; used as prefix for all thrown Exceptions
+     * @param command     Command to be executed in container
+     * @return The result of container execution, in case of success
+     */
+    private ExecResult execInContainer(String description, String... command) {
+        try {
+            ExecResult result = container.execInContainer(command);
+            if (result.getExitCode() != ExitCode.OK) {
+                throw new ExaOperationEmulatorException(
+                        description + " in container not successful: " + result.getStderr());
+            }
+            return result;
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+            throw new ExaOperationEmulatorException(description + " in container got interrupted.");
+        } catch (UnsupportedOperationException | IOException exception) {
+            throw new ExaOperationEmulatorException(description + " in container failed.", exception);
+        }
+    }
+
     // [impl->dsn~extracting-plug-in-packages~1]
     @Override
     public Plugin installPluginPackage(final Path sourcePath) {
         if (sourcePath.toFile().exists()) {
-            LOGGER.info("Installing plug-in \"{}\".", sourcePath);
-            final Plugin plugin = new Plugin(sourcePath, this.container);
-            copyPackageToContainer(plugin, TMP_DIRECTORY + "/" + plugin.getFileName());
-            extractPluginPackage(plugin);
-            registerPlugin(plugin);
-            return plugin;
+            try {
+                LOGGER.info("Installing plug-in \"{}\".", sourcePath);
+                final Plugin plugin = new Plugin(sourcePath, this.container);
+                if (hasPlugin(plugin.getName())) {
+                    throw new ExaOperationEmulatorException(
+                            "Plugin \"" + plugin.getName() + "\" is already installed.");
+                }
+
+                String tmpDirectory = createTempDirectory();
+                copyPackageToContainer(plugin, tmpDirectory + "/" + plugin.getFileName());
+                extractPluginPackage(plugin, tmpDirectory);
+                registerPlugin(plugin);
+                removeTempDirectory(tmpDirectory);
+                return plugin;
+            } catch (ExaOperationEmulatorException exception) {
+                throw new ExaOperationEmulatorException("Unable to install plug-in.", exception);
+            }
         } else {
             throw new IllegalArgumentException("Plug-in package \"" + sourcePath + "\" does not exist.");
         }
+    }
+
+    private String createTempDirectory() {
+        ExecResult result = execInContainer("Create temp directory for plugin", "/bin/mktemp", "--directory",
+                "--tmpdir=/tmp", "tmp.XXXXXXXX-plugin");
+        return result.getStdout().trim();
+    }
+
+    private void removeTempDirectory(final String tempDirectory) {
+        if (!Pattern.compile("/tmp/.+-plugin").matcher(tempDirectory).matches()) {
+            // just to be on the safe side. Chances are slim that a bad path comes in here.
+            throw new ExaOperationEmulatorException(
+                    "\"" + tempDirectory + "\" does not meet our naming convention. Refusing to delete.");
+        }
+        execInContainer("Remove plugin temp directory", "/bin/rm", "-rf", tempDirectory);
     }
 
     private void copyPackageToContainer(final Plugin plugin, final String targetPath) {
@@ -54,41 +106,23 @@ public class ExaOperationEmulator implements ExaOperation {
         this.container.copyFileToContainer(file, targetPath);
     }
 
-    private void extractPluginPackage(final Plugin plugin) {
-        final String from = TMP_DIRECTORY + "/" + plugin.getFileName();
-        final String to = TMP_DIRECTORY + "/";
+    private void extractPluginPackage(final Plugin plugin, final String tempDirectory) {
+        final String from = tempDirectory + "/" + plugin.getFileName();
+        final String to = tempDirectory + "/";
         LOGGER.debug("Extracting EXAoperation plug-in from \"{}\" to \"{}\".", from, to);
-        try {
-            final ExecResult unpackOuterResult = this.container.execInContainer("tar", "xf", from, "-C", to);
-            if (unpackOuterResult.getExitCode() == ExitCode.OK) {
-                extractPluginPayload(plugin);
-            } else {
-                throw new ExaOperationEmulatorException("Failed to unpack plug-in package (outer TAR archive).\nCause: "
-                        + unpackOuterResult.getStderr());
-            }
-        } catch (UnsupportedOperationException | IOException exception) {
-            throw new ExaOperationEmulatorException(
-                    "Unable to install plug-in from \"" + plugin.getSourcePath() + "\".", exception);
-        } catch (final InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new ExaOperationEmulatorException(
-                    "Installation of plug-in \"" + plugin.getName() + "\" got interrupted.");
-        }
+        execInContainer("Extract plugin package " + plugin.getSourcePath().getFileName(), "tar", "xf", from, "-C", to);
+        extractPluginPayload(plugin, tempDirectory);
     }
 
-    private void extractPluginPayload(final Plugin plugin) throws IOException, InterruptedException {
-        final String from = assembleInnerPath(plugin);
+    private void extractPluginPayload(final Plugin plugin, final String tempDirectory) {
+        final String from = assembleInnerPath(plugin, tempDirectory);
         final String to = "/";
         LOGGER.debug("Extracting the plug-in's inner archive \"{}\" to \"{}\".", from, to);
-        final ExecResult unpackInnerResult = this.container.execInContainer("tar", "xzf", from, "-C", to);
-        if (unpackInnerResult.getExitCode() != ExitCode.OK) {
-            throw new ExaOperationEmulatorException(
-                    "Failed to unpack plug-in payload (inner TAR archive).\nCause: " + unpackInnerResult.getStderr());
-        }
+        execInContainer("Unpack plug-in payload (inner TAR archive)", "tar", "xzf", from, "-C", to);
     }
 
-    private String assembleInnerPath(final Plugin plugin) {
-        return TMP_DIRECTORY + "/" + Plugin.PLUGIN_PACKAGE_PREFIX + plugin.getName() + ".tar.gz";
+    private String assembleInnerPath(final Plugin plugin, final String tempDirectory) {
+        return tempDirectory + "/" + Plugin.PLUGIN_PACKAGE_PREFIX + plugin.getName() + ".tar.gz";
     }
 
     private void registerPlugin(final Plugin plugin) {
