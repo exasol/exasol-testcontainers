@@ -326,3 +326,33 @@ Covers:
 * [feat~exaoperation-simulation~1](#exaoperation-simulation)
 
 Needs: dsn
+
+#### Listing Installed EXAoperation Plug-ins
+`req~listing-installed-exaoperation-plug-ins~1`
+
+ETC allows listing the names of installed EXAoperation plug-ins.
+
+Rationale:
+
+To be resilient against minor naming changes (like version numbers), a test should be able to find a plugin based on local rules (eg. regular expressions).
+
+Covers:
+
+* [feat~exaoperation-simulation~1](#exaoperation-simulation)
+
+Needs: dsn
+
+#### Calling Plugin Functions
+`req~calling-exaoperation-plugin-functions~1`
+
+ETC allows calling functions of a previously installed EXAoperation plug-in.
+
+Rationale:
+
+After all, that's why we installed the plug-in in the first place: To be able to call methods and get back information on execution status.
+
+Covers:
+
+* [feat~exaoperation-simulation~1](#exaoperation-simulation)
+
+Needs: dsn
