@@ -1,11 +1,9 @@
 package com.exasol.exaoperation;
 
-import static com.exasol.exaoperation.plugin.PluginStub.PLUGIN_NAME;
-import static com.exasol.exaoperation.plugin.PluginStub.PLUGIN_PACKAGE_PATH;
+import static com.exasol.exaoperation.plugin.PluginStub.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -72,5 +70,18 @@ class ExaOperationEmulatorIT {
     void testInstallPluginPackageThrowsExceptionOnNonExistantPath() {
         assertThrows(IllegalArgumentException.class,
                 () -> CONTAINER.getExaOperation().installPluginPackage(Path.of("does", "not", "exist")));
+    }
+
+    @Test
+    void testBrokenPackageException() {
+        ExaOperationEmulatorException exception = assertThrows(ExaOperationEmulatorException.class,
+                () -> CONTAINER.getExaOperation().installPluginPackage(BROKEN_PACKAGE_PATH));
+        assertAll( "exception"
+                , () -> assertThat( exception.getMessage(), equalTo( "Unable to install plug-in." ) )
+                , () -> {
+                    assertNotNull( exception.getCause() );
+                    assertThat( exception.getCause().getMessage(), startsWith( "Extract plugin package" ) );
+                }
+        );
     }
 }
