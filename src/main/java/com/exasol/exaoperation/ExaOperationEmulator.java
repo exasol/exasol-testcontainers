@@ -34,17 +34,17 @@ public class ExaOperationEmulator implements ExaOperation {
         this.container = container;
     }
 
-/**
- * Wrapped handler for `Container.execInContainer`, performing all the local ExitCode and Exception handling.
- * <p>
- *     Will also throw an exception if the given command fails with a regular exitcode based error.
- * </p>
- *
- * @param description Text identifying the operation; used as prefix for all thrown Exceptions
- * @param command Command to be executed in container
- * @return The result of container execution, in case of success
- */
-private ExecResult execInContainer(String description, String... command) {
+    /**
+     * Wrapped handler for `Container.execInContainer`, performing all the local ExitCode and Exception handling.
+     * <p>
+     * Will also throw an exception if the given command fails with a regular exitcode based error.
+     * </p>
+     *
+     * @param description Text identifying the operation; used as prefix for all thrown Exceptions
+     * @param command     Command to be executed in container
+     * @return The result of container execution, in case of success
+     */
+    private ExecResult execInContainer(String description, String... command) {
         try {
             ExecResult result = container.execInContainer(command);
             if (result.getExitCode() != ExitCode.OK) {
@@ -65,21 +65,21 @@ private ExecResult execInContainer(String description, String... command) {
     public Plugin installPluginPackage(final Path sourcePath) {
         if (sourcePath.toFile().exists()) {
             try {
-                LOGGER.info( "Installing plug-in \"{}\".", sourcePath );
-                final Plugin plugin = new Plugin( sourcePath, this.container );
-                if( hasPlugin( plugin.getName() ) ) {
-                    throw new ExaOperationEmulatorException( "Plugin \"" + plugin
-                            .getName() + "\" is already installed." );
+                LOGGER.info("Installing plug-in \"{}\".", sourcePath);
+                final Plugin plugin = new Plugin(sourcePath, this.container);
+                if (hasPlugin(plugin.getName())) {
+                    throw new ExaOperationEmulatorException(
+                            "Plugin \"" + plugin.getName() + "\" is already installed.");
                 }
 
                 String tmpDirectory = createTempDirectory();
-                copyPackageToContainer( plugin, tmpDirectory + "/" + plugin.getFileName() );
-                extractPluginPackage( plugin, tmpDirectory );
-                registerPlugin( plugin );
-                removeTempDirectory( tmpDirectory );
+                copyPackageToContainer(plugin, tmpDirectory + "/" + plugin.getFileName());
+                extractPluginPackage(plugin, tmpDirectory);
+                registerPlugin(plugin);
+                removeTempDirectory(tmpDirectory);
                 return plugin;
-            } catch( ExaOperationEmulatorException exception ) {
-                throw new ExaOperationEmulatorException( "Unable to install plug-in.", exception );
+            } catch (ExaOperationEmulatorException exception) {
+                throw new ExaOperationEmulatorException("Unable to install plug-in.", exception);
             }
         } else {
             throw new IllegalArgumentException("Plug-in package \"" + sourcePath + "\" does not exist.");
