@@ -24,17 +24,17 @@ exit_abnormal() {
 
 list_functions() {
     for key in "${!functions[@]}"; do
-        echo " * $key: ${functions[$key]}"
+        echo "$key:${functions[$key]}"
     done
 }
 
-if [[ "$#" == 1 ]]; then
-    if [[ "$1" -eq '--show-functions' ]]; then
+if [[ "$#" -eq 1 ]]; then
+    if [[ "$1" == '--show-functions' ]]; then
         list_functions
     else
         exit_abnormal
     fi
-elif [[ "$#" == 2 ]]; then
+elif [[ "$#" -eq 2 ]]; then
     readonly given_function=${1^^}
     if [[ -n "${functions[$given_function]}" ]]; then
         "$script_path/${1,,}" "$2"
