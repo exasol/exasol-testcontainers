@@ -43,9 +43,8 @@ public class ExaOperationEmulator implements ExaOperation {
  * @param description Text identifying the operation; used as prefix for all thrown Exceptions
  * @param command Command to be executed in container
  * @return The result of container execution, in case of success
- * @throws ExaOperationEmulatorException If execution in container fails for any reason
  */
-private ExecResult execInContainer(String description, String... command) throws ExaOperationEmulatorException {
+private ExecResult execInContainer(String description, String... command) {
         try {
             ExecResult result = container.execInContainer(command);
             if (result.getExitCode() != ExitCode.OK) {
