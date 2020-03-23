@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# This script is a replacement for the plugin-functions script that comes with
+# a regular Exasol installation. It uses Bash instead of Python to reduce the
+# number of external dependencies.
+#
+# Output is identical to the original script in order to not break potential
+# automation that might parse this output.
+
 readonly script_path="$(dirname $(readlink -f $0))"
 
 declare -A functions
@@ -14,11 +21,12 @@ functions[ON_BOOT]='Undocumented'
 
 usage() {
     echo "Usage: $0 <function name> <parameter>"
-    echo "       $0 [--show-functions]"
+    echo "       $0 --show-functions"
+    echo "       $0 -h | --help"
 }
 
 exit_abnormal() {
-    usage
+    echo 'Wrong call to plugin wrapper.'
     exit 1
 }
 
@@ -28,13 +36,13 @@ list_functions() {
     done
 }
 
-if [[ "$#" == 1 ]]; then
-    if [[ "$1" -eq '--show-functions' ]]; then
+if [[ "$#" -eq 1 ]]; then
+    if [[ "$1" == '--show-functions' ]]; then
         list_functions
     else
         exit_abnormal
     fi
-elif [[ "$#" == 2 ]]; then
+elif [[ "$#" -eq 2 ]]; then
     readonly given_function=${1^^}
     if [[ -n "${functions[$given_function]}" ]]; then
         "$script_path/${1,,}" "$2"
