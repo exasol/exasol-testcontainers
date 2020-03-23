@@ -169,7 +169,10 @@ public class Plugin {
                     "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + result.getStderr());
         }
 
-        return Arrays.asList(result.getStdout().split("\n"));
+        List<String> returndata = Arrays.asList(result.getStdout().split("\n"));
+        // due to what seems like a race condition in testcontainers, we need to filter out random empty lines...
+        returndata.removeIf( string -> string.trim().isEmpty() );
+        return returndata;
     }
 
     /**
