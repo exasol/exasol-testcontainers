@@ -2,7 +2,7 @@ package com.exasol.exaoperation.plugin;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,7 +96,7 @@ public class Plugin {
     /**
      * Call one of the plugin's functions.
      * <p>
-     *     Plugins should handle function names case-insensitive.
+     * Plugins should handle function names case-insensitive.
      * </p>
      *
      * @param method name of the function to call.
@@ -109,8 +109,8 @@ public class Plugin {
     /**
      * Call one of the plugin's functions with the given argument.
      * <p>
-     *     Plugins should handle function names case-insensitive; content and encoding of argument
-     *     depend on plugin and called function.
+     * Plugins should handle function names case-insensitive; content and encoding of argument depend on plugin and
+     * called function.
      * </p>
      *
      * @param method   name of the function to call.
@@ -169,7 +169,15 @@ public class Plugin {
                     "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + result.getStderr());
         }
 
-        return Arrays.asList(result.getStdout().split("\n"));
+        List<String> functions = new ArrayList<>();
+        for (String line : result.getStdout().split("\n")) {
+            // due to what seems like a race condition in testcontainers, we need to filter out random empty lines...
+            if (line.trim().isEmpty()) {
+                continue;
+            }
+            functions.add(line);
+        }
+        return functions;
     }
 
     /**

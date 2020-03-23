@@ -51,10 +51,12 @@ public class ConfigurationParser {
             this.subsection = "";
         } else {
             final int assignmentOperatorPosition = line.indexOf('=');
-            final String key = line.substring(0, assignmentOperatorPosition - 1).trim();
-            final String value = line.substring(assignmentOperatorPosition + 1).trim();
-            final String decodedValue = (key.endsWith("Passwd") ? decodePassword(value) : value);
-            this.parameters.put(this.section + this.subsection + key, decodedValue);
+            if (assignmentOperatorPosition > 0) {
+                final String key = line.substring(0, assignmentOperatorPosition - 1).trim();
+                final String value = line.substring(assignmentOperatorPosition + 1).trim();
+                final String decodedValue = (key.endsWith("Passwd") ? decodePassword(value) : value);
+                this.parameters.put(this.section + this.subsection + key, decodedValue);
+            }
         }
     }
 
