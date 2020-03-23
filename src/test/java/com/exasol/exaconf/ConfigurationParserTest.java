@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.exasol.config.*;
 
@@ -63,5 +65,20 @@ class ConfigurationParserTest {
         final ClusterConfiguration config = parseConfiguration(rawConfig);
         assertAll(() -> assertThat(config.getDefaultBucketReadPassword(), nullValue()),
                 () -> assertThat(config.getDefaultBucketWritePassword(), nullValue()));
+    }
+
+    // The following situations should not occur, but we want to be fault-tolerant here.
+    @ValueSource(strings = { "    Ignore this illegal line.", "Ignore this illegal line.",
+            "    Ignore #this illegal line.", "=valueWithoutKey", "     " })
+    @ParameterizedTest
+    void testIgnoreLineWithoutCommentAndAssignment(final String illegalLine) {
+        final ClusterConfiguration clusterConfiguration = parseConfiguration("[BucketFS : the-fs]\n" //
+                + "    [[Bucket : the-bucket]]\n" //
+                + illegalLine + "\n"//
+                + "        Public = True");
+        final BucketConfiguration bucketConfiguration = clusterConfiguration //
+                .getBucketFsServiceConfiguration("the-fs") //
+                .getBucketConfiguration("the-bucket");
+        assertThat(bucketConfiguration.isPubliclyReadable(), equalTo(true));
     }
 }
