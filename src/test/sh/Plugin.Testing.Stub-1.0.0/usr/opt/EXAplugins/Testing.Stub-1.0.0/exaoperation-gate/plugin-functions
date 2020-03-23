@@ -32,7 +32,7 @@ exit_abnormal() {
 
 list_functions() {
     for key in "${!functions[@]}"; do
-        echo " * $key: ${functions[$key]}"
+        echo "$key:${functions[$key]}"
     done
 }
 
@@ -50,6 +50,7 @@ elif [[ "$#" -eq 2 ]]; then
         echo "Unknown plugin function name '$1'. Choose one of:"
         echo
         list_functions
+        exit 1
     fi
 else
     exit_abnormal
