@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -16,10 +13,8 @@ import com.exasol.containers.ExasolContainer;
 
 @Testcontainers
 class DatabaseServiceIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServiceIT.class);
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>() //
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER)) //
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withRequiredServices();
     private DatabaseService service;
 

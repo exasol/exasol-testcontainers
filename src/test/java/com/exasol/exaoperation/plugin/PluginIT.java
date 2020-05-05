@@ -17,9 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -30,10 +27,9 @@ import com.exasol.exaoperation.ExaOperationEmulatorException;
 @ExtendWith(MockitoExtension.class)
 @Testcontainers
 class PluginIT {
-    private final static Logger LOGGER = LoggerFactory.getLogger(PluginIT.class);
     @Container
     private final static ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER)).withRequiredServices();
+            .withRequiredServices();
     private static Plugin plugin;
     @Mock
     private org.testcontainers.containers.Container<? extends org.testcontainers.containers.Container<?>> containerMock;
@@ -70,12 +66,9 @@ class PluginIT {
     // [itest->dsn~getting-the-plug-ins-status~1]
     @Test
     void testStatus() {
-        ExecResult execResult = assertDoesNotThrow(() -> plugin.status());
-        assertAll(
-                "Status Result"
-                , () -> assertThat(execResult.getExitCode(), equalTo(0))
-                , () -> assertThat(execResult.getStdout(), equalTo("status script called\n"))
-        );
+        final ExecResult execResult = assertDoesNotThrow(() -> plugin.status());
+        assertAll("Status Result", () -> assertThat(execResult.getExitCode(), equalTo(0)),
+                () -> assertThat(execResult.getStdout(), equalTo("status script called\n")));
     }
 
     // [itest->dsn~uninstalling-plug-ins~1]
@@ -111,19 +104,16 @@ class PluginIT {
     // [itest->dsn~listing-plug-ins~1]
     @Test
     void testListPlugins() {
-        List<String> plugins = CONTAINER.getExaOperation().getPluginNames();
+        final List<String> plugins = CONTAINER.getExaOperation().getPluginNames();
         // There should only be one plugin
         assertThat(plugins, equalTo(Collections.singletonList(plugin.getName())));
     }
 
     @Test
     void testListFunctions() {
-        List<String> pluginFunctions = plugin.listFunctions();
-        assertAll(
-                "Function List"
-                , () -> assertThat(pluginFunctions.size(), equalTo(7))
-                , () -> assertThat(pluginFunctions, hasItem(containsString("Start plugin service")))
-        );
+        final List<String> pluginFunctions = plugin.listFunctions();
+        assertAll("Function List", () -> assertThat(pluginFunctions.size(), equalTo(7)),
+                () -> assertThat(pluginFunctions, hasItem(containsString("Start plugin service"))));
     }
 
     @Test

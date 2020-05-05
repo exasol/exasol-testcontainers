@@ -226,7 +226,7 @@ public class Bucket {
     private void uploadFileNonBlocking(final Path localPath, final String pathInBucket)
             throws InterruptedException, BucketAccessException {
         final URI uri = createWriteUri(pathInBucket);
-        LOGGER.info("Uploading file \"{}\" to bucket \"{}/{}\": \"{}\"", localPath, this.bucketFsName, this.bucketName,
+        LOGGER.debug("Uploading file \"{}\" to bucket \"{}/{}\": \"{}\"", localPath, this.bucketFsName, this.bucketName,
                 uri);
         try {
             final int statusCode = httpPut(uri, BodyPublishers.ofFile(localPath));
@@ -238,7 +238,7 @@ public class Bucket {
         } catch (final IOException exception) {
             throw new BucketAccessException("Unable to upload file \"" + localPath + "\"" + " to ", uri, exception);
         }
-        LOGGER.info("Successfully uploaded to \"{}\"", uri);
+        LOGGER.debug("Successfully uploaded to \"{}\"", uri);
     }
 
     private URI createWriteUri(final String pathInBucket) throws BucketAccessException {
@@ -316,7 +316,7 @@ public class Bucket {
             throws InterruptedException, BucketAccessException {
         final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
         final URI uri = createWriteUri(pathInBucket);
-        LOGGER.info("Uploading text \"{}\" to \"{}\"", excerpt, uri);
+        LOGGER.debug("Uploading text \"{}\" to \"{}\"", excerpt, uri);
         try {
             final int statusCode = httpPut(uri, BodyPublishers.ofString(content));
             if (statusCode != HttpURLConnection.HTTP_OK) {

@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.exasol.containers.exec.ExitCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 
+import com.exasol.containers.exec.ExitCode;
 import com.exasol.exaoperation.ExaOperationEmulatorException;
 
 /**
@@ -140,7 +140,7 @@ public class Plugin {
 
         try {
             final String script = "/usr/opt/EXAplugins/" + this.name + "/exaoperation-gate/plugin-functions";
-            LOGGER.info("Calling function \"{}\" of plug-in \"{}\".", method, this.name);
+            LOGGER.debug("Calling function \"{}\" of plug-in \"{}\".", method, this.name);
             if (argument.length == 1) {
                 return this.container.execInContainer(script, method, argument[0]);
             } else {
@@ -157,20 +157,20 @@ public class Plugin {
     }
 
     /**
-     * Return list of functions provided by the plugin.
+     * Return list of functions provided by the plug-in.
      *
-     * @return List as returned by the plugin. Usually in format "NAME: description"
+     * @return List as returned by the plug-in. Usually in format "NAME: description"
      */
     // [impl-dsn~listing-plug-ins~1]
     public List<String> listFunctions() {
-        ExecResult result = callFunctionInternal("--show-functions");
+        final ExecResult result = callFunctionInternal("--show-functions");
         if (result.getExitCode() != ExitCode.OK) {
             throw new ExaOperationEmulatorException(
                     "--show-functions of plug-in \"" + this.name + "\" failed; error output:\n " + result.getStderr());
         }
 
-        List<String> functions = new ArrayList<>();
-        for (String line : result.getStdout().split("\n")) {
+        final List<String> functions = new ArrayList<>();
+        for (final String line : result.getStdout().split("\n")) {
             // due to what seems like a race condition in testcontainers, we need to filter out random empty lines...
             if (line.trim().isEmpty()) {
                 continue;

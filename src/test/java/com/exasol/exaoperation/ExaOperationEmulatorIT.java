@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -21,10 +18,9 @@ import com.exasol.containers.ExasolContainer;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Testcontainers
 class ExaOperationEmulatorIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExaOperationEmulatorIT.class);
     @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER)).withRequiredServices();
+            .withRequiredServices();
 
     @Order(1)
     @Test
@@ -74,14 +70,11 @@ class ExaOperationEmulatorIT {
 
     @Test
     void testBrokenPackageException() {
-        ExaOperationEmulatorException exception = assertThrows(ExaOperationEmulatorException.class,
+        final ExaOperationEmulatorException exception = assertThrows(ExaOperationEmulatorException.class,
                 () -> CONTAINER.getExaOperation().installPluginPackage(BROKEN_PACKAGE_PATH));
-        assertAll( "exception"
-                , () -> assertThat( exception.getMessage(), equalTo( "Unable to install plug-in." ) )
-                , () -> {
-                    assertNotNull( exception.getCause() );
-                    assertThat( exception.getCause().getMessage(), startsWith( "Extract plugin package" ) );
-                }
-        );
+        assertAll("exception", () -> assertThat(exception.getMessage(), equalTo("Unable to install plug-in.")), () -> {
+            assertNotNull(exception.getCause());
+            assertThat(exception.getCause().getMessage(), startsWith("Extract plugin package"));
+        });
     }
 }

@@ -5,10 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.ContainerLaunchException;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -17,11 +14,8 @@ import com.exasol.containers.wait.strategy.LogFileEntryWaitStrategy;
 
 @Testcontainers
 class ExasolContainerWaitStrategyIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerWaitStrategyIT.class);
-
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER));
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
 
     @Test
     void testWaitForNonExistingLogTimesOut() {
