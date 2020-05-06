@@ -8,9 +8,6 @@ import java.sql.SQLException;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -23,11 +20,8 @@ import com.exasol.config.ClusterConfiguration;
 // cases that depend on the default settings!
 @Testcontainers
 class ExasolContainerIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
-
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>() //
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER));
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>();
 
     // [itest->dsn~exasol-container-uses-privileged-mode~1]
     @Test

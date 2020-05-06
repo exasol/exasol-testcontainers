@@ -253,7 +253,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void waitUntilCluterConfigurationAvailable() {
-        logger().info("Waiting for cluster configuration to become available.");
+        logger().debug("Waiting for cluster configuration to become available.");
         final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
         strategy.waitUntilReady(this);
         clusterConfigurationIsAvailable();
@@ -265,7 +265,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
-            logger().info("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
+            logger().debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
             logger().debug(exaconf);

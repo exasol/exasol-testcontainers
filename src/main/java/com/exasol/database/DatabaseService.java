@@ -44,12 +44,12 @@ public class DatabaseService {
      */
     // [impl->dsn~database-service-starts-the-database~1]
     public void start() throws InterruptedException {
-        LOGGER.info("Starting database \"{}\".", this.databaseName);
+        LOGGER.debug("Starting database \"{}\".", this.databaseName);
         try {
             final long before = System.currentTimeMillis();
             final ExecResult result = this.container.execInContainer("dwad_client", "start-wait", this.databaseName);
             if (result.getExitCode() == ExitCode.OK) {
-                LOGGER.info("Database \"{}\" started {} ms after start request.", this.databaseName,
+                LOGGER.debug("Database \"{}\" started {} ms after start request.", this.databaseName,
                         System.currentTimeMillis() - before);
             } else {
                 throw new DatabaseServiceException(this.databaseName,
@@ -67,12 +67,12 @@ public class DatabaseService {
      */
     // [impl->dsn~database-service-stops-the-database~1]
     public void stop() throws InterruptedException {
-        LOGGER.info("Stopping database \"{}\".", this.databaseName);
+        LOGGER.debug("Stopping database \"{}\".", this.databaseName);
         try {
             final long before = System.currentTimeMillis();
             final ExecResult result = this.container.execInContainer("dwad_client", "stop-wait", this.databaseName);
             if (result.getExitCode() == ExitCode.OK) {
-                LOGGER.info("Database \"{}\" stopped {} ms after stop request.", this.databaseName,
+                LOGGER.debug("Database \"{}\" stopped {} ms after stop request.", this.databaseName,
                         System.currentTimeMillis() - before);
             } else {
                 throw new DatabaseServiceException(this.databaseName,

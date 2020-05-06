@@ -27,8 +27,8 @@ public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        LOGGER.info("Waiting for UDF language container to be ready.");
+        LOGGER.debug("Waiting for UDF language container to be ready.");
         super.waitUntilReady();
-        LOGGER.info("UDF language container is ready.");
+        LOGGER.debug("UDF language container is ready.");
     }
 }

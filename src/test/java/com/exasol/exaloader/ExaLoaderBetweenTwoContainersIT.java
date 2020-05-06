@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
@@ -21,7 +20,6 @@ import com.exasol.containers.ExasolContainer;
 @Testcontainers
 class ExaLoaderBetweenTwoContainersIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaLoaderBetweenTwoContainersIT.class);
-    private static final Slf4jLogConsumer LOG_CONSUMER = new Slf4jLogConsumer(LOGGER);
 
     // [itest->dsn~ip-address-in-common-docker-network~1]
     @Test
@@ -31,8 +29,8 @@ class ExaLoaderBetweenTwoContainersIT {
                 final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = createContainer();
                 final ExasolContainer<? extends ExasolContainer<?>> targetContainer = createContainer() //
         ) {
-            sourceContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).withRequiredServices().start();
-            targetContainer.withLogConsumer(LOG_CONSUMER).withNetwork(network).withRequiredServices().start();
+            sourceContainer.withNetwork(network).withRequiredServices().start();
+            targetContainer.withNetwork(network).withRequiredServices().start();
             final Connection sourceConnection = sourceContainer.createConnection("");
             executeStatements(sourceConnection, //
                     "CREATE SCHEMA SOURCE_SCHEMA", //

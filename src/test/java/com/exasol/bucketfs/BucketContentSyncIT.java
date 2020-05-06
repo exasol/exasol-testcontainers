@@ -12,9 +12,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -22,12 +19,9 @@ import com.exasol.containers.ExasolContainer;
 
 @Testcontainers
 class BucketContentSyncIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BucketIT.class);
     private static RandomFileGenerator GENERATOR = new RandomFileGenerator();
-
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER));
+    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
 
     // [itest->dsn~waiting-until-file-appears-in-target-directory~1]
     @Test

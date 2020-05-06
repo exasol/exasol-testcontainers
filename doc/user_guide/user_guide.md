@@ -510,3 +510,14 @@ If key generation steps inside the Docker container are slow, installing the `rn
 ```bash
 sudo apt install rng-tools
 ```
+
+## Troubleshooting
+
+### Warning: Failure when attempting to lookup auth config
+
+The test containers produce this error message when there is no Docker configuration file in your home directory. In case you don't need one the simplest fix is to create an empty JSON:
+
+```bash
+mkdir "$HOME"/.docker
+echo '{}' > "$HOME"/.docker/config.json
+```

@@ -2,10 +2,7 @@ package com.exasol.exaoperation;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -44,15 +41,15 @@ public class ExaOperationEmulator implements ExaOperation {
      * @param command     Command to be executed in container
      * @return The result of container execution, in case of success
      */
-    private ExecResult execInContainer(String description, String... command) {
+    private ExecResult execInContainer(final String description, final String... command) {
         try {
-            ExecResult result = container.execInContainer(command);
+            final ExecResult result = this.container.execInContainer(command);
             if (result.getExitCode() != ExitCode.OK) {
                 throw new ExaOperationEmulatorException(
                         description + " in container not successful: " + result.getStderr());
             }
             return result;
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
             throw new ExaOperationEmulatorException(description + " in container got interrupted.");
         } catch (UnsupportedOperationException | IOException exception) {
@@ -65,20 +62,20 @@ public class ExaOperationEmulator implements ExaOperation {
     public Plugin installPluginPackage(final Path sourcePath) {
         if (sourcePath.toFile().exists()) {
             try {
-                LOGGER.info("Installing plug-in \"{}\".", sourcePath);
+                LOGGER.debug("Installing plug-in \"{}\".", sourcePath);
                 final Plugin plugin = new Plugin(sourcePath, this.container);
                 if (hasPlugin(plugin.getName())) {
                     throw new ExaOperationEmulatorException(
                             "Plugin \"" + plugin.getName() + "\" is already installed.");
                 }
 
-                String tmpDirectory = createTempDirectory();
+                final String tmpDirectory = createTempDirectory();
                 copyPackageToContainer(plugin, tmpDirectory + "/" + plugin.getFileName());
                 extractPluginPackage(plugin, tmpDirectory);
                 registerPlugin(plugin);
                 removeTempDirectory(tmpDirectory);
                 return plugin;
-            } catch (ExaOperationEmulatorException exception) {
+            } catch (final ExaOperationEmulatorException exception) {
                 throw new ExaOperationEmulatorException("Unable to install plug-in.", exception);
             }
         } else {
@@ -87,7 +84,7 @@ public class ExaOperationEmulator implements ExaOperation {
     }
 
     private String createTempDirectory() {
-        ExecResult result = execInContainer("Create temp directory for plugin", "/bin/mktemp", "--directory",
+        final ExecResult result = execInContainer("Create temp directory for plugin", "/bin/mktemp", "--directory",
                 "--tmpdir=/tmp", "tmp.XXXXXXXX-plugin");
         return result.getStdout().trim();
     }
