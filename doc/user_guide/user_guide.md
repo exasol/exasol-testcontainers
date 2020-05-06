@@ -519,5 +519,5 @@ The test containers produce this error message when there is no Docker configura
 
 ```bash
 mkdir "$HOME"/.docker
-echo '{}' > "HOME"/.docker/config.json
+echo '{}' > "$HOME"/.docker/config.json
 ```
