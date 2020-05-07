@@ -29,7 +29,7 @@ Integrators integrate their solution with Exasol. To test this, they need a fram
 
 ### Terms and Abbreviations
 
-The following list gives you an overview of terms and abbreviations commonly used in OFT documents.
+The following list gives you an overview of terms and abbreviations commonly used in ETC documents.
 
 * Container: (Docker container)[https://docs.docker.com/glossary/#container]
 * Docker: Container-based virtualization framework
