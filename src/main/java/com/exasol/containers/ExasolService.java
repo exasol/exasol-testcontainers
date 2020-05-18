@@ -7,5 +7,7 @@ public enum ExasolService {
     /** User Defined Functions (UDFs) and the language containers */
     UDF,
     /** Bucket filesystem */
-    BUCKETFS
+    BUCKETFS,
+    /** database connection via JDBC */
+    JDBC
 }

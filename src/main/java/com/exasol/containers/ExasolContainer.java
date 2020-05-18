@@ -31,6 +31,8 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
+    private static final long CONNECTION_WAIT_TIMEOUT = 10000L;
+    private static final long CONNECTION_TEST_RETRY_INTERVAL = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
@@ -166,12 +168,20 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * Define which optional services you require.
+     * <p>
+     * Note that the JDBC service is always considered required, so you don't need to explicitly list it.
+     * </p>
      *
-     * @param services list of services you require
+     * @param optionalServices list of optional services you require
      * @return self reference for fluent programming
      */
     // [impl->dsn~defining-required-optional-service~1]
-    public T withRequiredServices(final ExasolService... services) {
+    public T withRequiredServices(final ExasolService... optionalServices) {
+        final ExasolService[] services = new ExasolService[optionalServices.length + 1];
+        services[0] = ExasolService.JDBC;
+        for (int i = 0; i < optionalServices.length; ++i) {
+            services[i + 1] = optionalServices[i];
+        }
         this.requiredServices = Set.of(services);
         return self();
     }
@@ -241,7 +251,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     protected void waitUntilContainerStarted() {
         waitUntilCluterConfigurationAvailable();
-        super.waitUntilContainerStarted();
+        waitUntilStatementCanBeExecuted();
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
             new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
             this.readyServices.add(ExasolService.BUCKETFS);
@@ -250,9 +260,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
             this.readyServices.add(ExasolService.UDF);
         }
+        logger().info("Exasol container started after waiting for the following services to become available: {}",
+                this.requiredServices);
     }
 
-    private void waitUntilCluterConfigurationAvailable() {
+    protected void waitUntilCluterConfigurationAvailable() {
         logger().debug("Waiting for cluster configuration to become available.");
         final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
         strategy.waitUntilReady(this);
@@ -280,6 +292,45 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                             + "\".",
                     exception);
         }
+    }
+
+    private void waitUntilStatementCanBeExecuted() {
+        sleepBeforeNextConnectionAttempt();
+        final long beforeConnectionCheck = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < CONNECTION_WAIT_TIMEOUT) {
+            if (isConnectionAvailable()) {
+                return;
+            }
+        }
+        throw new ContainerLaunchException("Exasol container start-up timed out in connection test.");
+    }
+
+    private void sleepBeforeNextConnectionAttempt() {
+        try {
+            Thread.sleep(CONNECTION_TEST_RETRY_INTERVAL);
+        } catch (final InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
+            throw new ContainerLaunchException("Container start-up wait was interrupted", interruptedException);
+        }
+    }
+
+    private boolean isConnectionAvailable() {
+        try (final Connection connection = createConnection("");
+                final Statement statement = connection.createStatement();
+                final ResultSet result = statement.executeQuery(getTestQueryString())) {
+            if (result.next()) {
+                return true;
+            } else {
+                throw new ContainerLaunchException("Startup check query failed. Exasol container start-up failed.");
+            }
+        } catch (final NoDriverFoundException exception) {
+            throw new ContainerLaunchException(
+                    "Unable to determine start status of container, because the referenced JDBC driver was not found.",
+                    exception);
+        } catch (final SQLException exception) {
+            sleepBeforeNextConnectionAttempt();
+        }
+        return false;
     }
 
     /**
