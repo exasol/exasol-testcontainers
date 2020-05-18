@@ -31,8 +31,8 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final long CONNECTION_WAIT_TIMEOUT = 10000L;
-    private static final long CONNECTION_TEST_RETRY_INTERVAL = 100L;
+    private static final long CONNECTION_WAIT_TIMEOUT_MILLISECONDS = 30000L;
+    private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
@@ -297,7 +297,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
         final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < CONNECTION_WAIT_TIMEOUT) {
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < CONNECTION_WAIT_TIMEOUT_MILLISECONDS) {
             if (isConnectionAvailable()) {
                 return;
             }
@@ -307,7 +307,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void sleepBeforeNextConnectionAttempt() {
         try {
-            Thread.sleep(CONNECTION_TEST_RETRY_INTERVAL);
+            Thread.sleep(CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS);
         } catch (final InterruptedException interruptedException) {
             Thread.currentThread().interrupt();
             throw new ContainerLaunchException("Container start-up wait was interrupted", interruptedException);
