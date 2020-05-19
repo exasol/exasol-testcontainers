@@ -31,7 +31,7 @@ public class ExasolContainerTest {
         final ExasolContainer<?> container = new ExasolContainer<>();
         container.withRequiredServices();
         this.containerSpy = spy(container);
-        doNothing().when(this.containerSpy).waitUntilCluterConfigurationAvailable();
+        doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
     }
 
     @Test

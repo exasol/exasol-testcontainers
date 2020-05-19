@@ -250,7 +250,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
-        waitUntilCluterConfigurationAvailable();
+        waitUntilClusterConfigurationAvailable();
         waitUntilStatementCanBeExecuted();
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
             new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
