@@ -1,8 +1,9 @@
-# Exasol Test Containers 2.0.3, released ??.07.2020
+# Exasol Test Containers 2.0.3, released 02.07.2020
 
 ## Features / Enhancements
  
 * #63: Added ossindex-maven-plugin and versions-maven-plugin, updated dependencies.
+* #66: Fixed requirements tracing.
 
 ## Dependency updates
  

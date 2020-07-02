@@ -141,6 +141,7 @@ public class ExaOperationEmulator implements ExaOperation {
         }
     }
 
+    // [impl->dsn~listing-plug-ins~1]
     @Override
     public List<String> getPluginNames() {
         return new ArrayList<>(this.plugins.keySet());
