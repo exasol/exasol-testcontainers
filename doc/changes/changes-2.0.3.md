@@ -1,4 +1,4 @@
-# Exasol Test Containers 2.0.3, released 02.07.2020
+# Exasol Test Containers 2.0.3, released 2020-07-03
 
 ## Features / Enhancements
  
