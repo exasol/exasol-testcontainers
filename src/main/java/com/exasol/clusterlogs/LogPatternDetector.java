@@ -50,10 +50,9 @@ public class LogPatternDetector {
      */
     public boolean isPatternPresentAfter(final Instant afterUTC) throws IOException, InterruptedException {
         final LocalDateTime afterLocal = convertUtcToLowResulionLocal(afterUTC);
-        LOGGER.debug("{} after {}", describe(), afterLocal);
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
                 "-name", this.logNamePattern, //
-                "-exec", "grep", this.pattern, "{}", "+");
+                "-exec", "awk", "/" + this.pattern.replace("/", "\\/") + "/{a=$0}END{print a}", "{}", "+");
         if (result.getExitCode() == ExitCode.OK) {
             return isLogMessageFoundAfter(result.getStdout(), afterLocal);
         } else {
@@ -70,7 +69,9 @@ public class LogPatternDetector {
         try (final BufferedReader reader = new BufferedReader(new StringReader(stdout))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                LOGGER.debug("[Log]: {}", line);
+                if (line.isBlank()) {
+                    continue;
+                }
                 final Matcher matcher = LOG_ENTRY_PATTERN.matcher(line);
                 if (matcher.matches()) {
                     final String isoTimestamp = "20" + matcher.group(1) + "-" + matcher.group(2) + "-"

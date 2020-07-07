@@ -11,6 +11,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
@@ -36,7 +37,7 @@ public class Bucket {
     private final String writePassword;
     private final HttpClient client = HttpClient.newBuilder().build();
     private final LogPatternDetectorFactory detectorFactory;
-    private final List<String> uploadHistory = new ArrayList<>();
+    private final Map<String, Instant> uploadHistory = new HashMap<>();
 
     private Bucket(final Builder builder) {
         this.bucketFsName = builder.bucketFsName;
@@ -224,12 +225,19 @@ public class Bucket {
         if (blocking) {
             waitForFileToBeSynchronized(extendedPathInBucket, millisSinceEpochBeforeUpload);
         }
-        this.uploadHistory.add(extendedPathInBucket);
+        this.uploadHistory.put(extendedPathInBucket, Instant.now());
     }
 
     private void delayRepeatedUploadToSamePath(final String extendedPathInBucket) throws InterruptedException {
-        if (this.uploadHistory.contains(extendedPathInBucket)) {
-            Thread.sleep(1000);
+        if (this.uploadHistory.containsKey(extendedPathInBucket)) {
+            final Instant lastUploadAt = this.uploadHistory.get(extendedPathInBucket).with(ChronoField.NANO_OF_SECOND,
+                    0);
+            final Instant now = Instant.now();
+            if (!now.isAfter(lastUploadAt.plusSeconds(1))) {
+                final long delayInMillis = 1000L - (now.getNano() / 1000000L);
+                LOGGER.debug("Delaying upload for {} ms", delayInMillis);
+                Thread.sleep(delayInMillis);
+            }
         }
     }
 
