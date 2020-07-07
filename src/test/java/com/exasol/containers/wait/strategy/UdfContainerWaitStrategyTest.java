@@ -22,7 +22,7 @@ import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class UdfContainerWaitStrategyTest {
+class UdfContainerWaitStrategyTest {
     @Mock
     private LogPatternDetectorFactory detectorFactoryMock;
     @Mock
@@ -54,6 +54,7 @@ public class UdfContainerWaitStrategyTest {
     @Test
     void testWaitUntilReadyTimesOut() throws IOException, InterruptedException {
         when(this.detectorMock.isPatternPresentAfter(any())).thenReturn(false);
-        assertThrows(ContainerLaunchException.class, () -> createWaitStrategy().waitUntilReady(null));
+        final WaitStrategy waitStrategy = createWaitStrategy();
+        assertThrows(ContainerLaunchException.class, () -> waitStrategy.waitUntilReady(null));
     }
 }

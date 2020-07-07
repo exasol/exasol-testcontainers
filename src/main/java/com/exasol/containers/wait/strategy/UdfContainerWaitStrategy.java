@@ -3,6 +3,8 @@ package com.exasol.containers.wait.strategy;
 import static com.exasol.containers.ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
 
+import java.time.Instant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +21,11 @@ public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
      * Create a new instance of a {@link UdfContainerWaitStrategy}.
      *
      * @param detectorFactory factory for log message pattern detectors
+     * @param afterUtc        earliest time after which the UDF container must report readiness
      */
-    public UdfContainerWaitStrategy(final LogPatternDetectorFactory detectorFactory) {
+    public UdfContainerWaitStrategy(final LogPatternDetectorFactory detectorFactory, final Instant afterUtc) {
         super(detectorFactory, EXASOL_CORE_DAEMON_LOGS_PATH, BUCKETFS_DAEMON_LOG_FILENAME_PATTERN,
-                SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN);
+                SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN, afterUtc);
     }
 
     @Override

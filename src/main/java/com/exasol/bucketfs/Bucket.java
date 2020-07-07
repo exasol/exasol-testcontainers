@@ -8,6 +8,7 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
@@ -35,6 +36,7 @@ public class Bucket {
     private final String writePassword;
     private final HttpClient client = HttpClient.newBuilder().build();
     private final LogPatternDetectorFactory detectorFactory;
+    private final List<String> uploadHistory = new ArrayList<>();
 
     private Bucket(final Builder builder) {
         this.bucketFsName = builder.bucketFsName;
@@ -126,15 +128,17 @@ public class Bucket {
     public boolean isObjectSynchronized(final String pathInBucket, final Instant afterUTC)
             throws InterruptedException, BucketAccessException {
         try {
-            final String pattern = pathInBucket + ".*"
-                    + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
-            final LogPatternDetector detector = this.detectorFactory.createLogPatternDetector(
-                    EXASOL_CORE_DAEMON_LOGS_PATH, BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern);
-            return detector.isPatternPresentAfter(afterUTC);
+            return createBucketLogPatterDetector(pathInBucket).isPatternPresentAfter(afterUTC);
         } catch (final IOException exception) {
             throw new BucketAccessException("Unable to check if object \"" + pathInBucket
                     + "\" is synchronized in bucket \"" + this.bucketFsName + "/" + this.bucketName + "\".", exception);
         }
+    }
+
+    private LogPatternDetector createBucketLogPatterDetector(final String pathInBucket) {
+        final String pattern = pathInBucket + ".*" + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
+        return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern);
     }
 
     private String removeLeadingSlash(final String path) {
@@ -210,12 +214,22 @@ public class Bucket {
      * @throws BucketAccessException if the file cannot be uploaded to the given URI
      * @throws TimeoutException      if synchronization takes too long
      */
+    // [impl->dsn~uploading-to-bucket~1]
     public void uploadFile(final Path localPath, final String pathInBucket, final boolean blocking)
             throws InterruptedException, BucketAccessException, TimeoutException {
         final String extendedPathInBucket = extendPathInBucketDownToFilename(localPath, pathInBucket);
+        delayRepeatedUploadToSamePath(extendedPathInBucket);
+        final long millisSinceEpochBeforeUpload = System.currentTimeMillis();
         uploadFileNonBlocking(localPath, extendedPathInBucket);
         if (blocking) {
-            waitForFileToBeSynchronized(extendedPathInBucket);
+            waitForFileToBeSynchronized(extendedPathInBucket, millisSinceEpochBeforeUpload);
+        }
+        this.uploadHistory.add(extendedPathInBucket);
+    }
+
+    private void delayRepeatedUploadToSamePath(final String extendedPathInBucket) throws InterruptedException {
+        if (this.uploadHistory.contains(extendedPathInBucket)) {
+            Thread.sleep(1000);
         }
     }
 
@@ -232,11 +246,11 @@ public class Bucket {
             final int statusCode = httpPut(uri, BodyPublishers.ofFile(localPath));
             if (statusCode != HttpURLConnection.HTTP_OK) {
                 LOGGER.error("{}: Failed to upload file \"{}\" to \"{}\"", statusCode, localPath, uri);
-                throw new BucketAccessException("Unable to upload file \"" + localPath + "\"" + " to ", statusCode,
-                        uri);
+                throw new BucketAccessException("Unable to upload file \"" + localPath + "\" to ", statusCode, uri);
             }
         } catch (final IOException exception) {
-            throw new BucketAccessException("Unable to upload file \"" + localPath + "\"" + " to ", uri, exception);
+            throw new BucketAccessException("I/O error trying to upload file \"" + localPath + "\" to ", uri,
+                    exception);
         }
         LOGGER.debug("Successfully uploaded to \"{}\"", uri);
     }
@@ -306,9 +320,10 @@ public class Bucket {
      */
     public void uploadStringContent(final String content, final String pathInBucket, final boolean blocking)
             throws InterruptedException, BucketAccessException, TimeoutException {
+        final long millisSinceEpochBeforeUpload = System.currentTimeMillis();
         uploadStringContentNonBlocking(content, pathInBucket);
         if (blocking) {
-            waitForFileToBeSynchronized(pathInBucket);
+            waitForFileToBeSynchronized(pathInBucket, millisSinceEpochBeforeUpload);
         }
     }
 
@@ -340,18 +355,58 @@ public class Bucket {
 
     // [impl->dsn~waiting-until-archive-extracted~1]
     // [impl->dsn~waiting-until-file-appears-in-target-directory~1]
-    private void waitForFileToBeSynchronized(final String pathInBucket)
+    private void waitForFileToBeSynchronized(final String pathInBucket, final long millisSinceEpochBeforeUpload)
             throws InterruptedException, TimeoutException, BucketAccessException {
-        final Instant now = Instant.now();
-        final Instant expiry = now.plusMillis(BUCKET_SYNC_TIMEOUT_IN_MILLISECONDS);
-        while (Instant.now().isBefore(expiry)) {
-            if (isObjectSynchronized(pathInBucket, now)) {
-                return;
+        final long expiry = millisSinceEpochBeforeUpload + BUCKET_SYNC_TIMEOUT_IN_MILLISECONDS;
+        final LogPatternDetector detector = createBucketLogPatterDetector(pathInBucket);
+        while (System.currentTimeMillis() < expiry) {
+            try {
+                if (detector.isPatternPresentAfter(Instant.ofEpochMilli(millisSinceEpochBeforeUpload))) {
+                    return;
+                }
+            } catch (final IOException exception) {
+                throw new BucketAccessException(
+                        "I/O exception while checking logs for bucket object is synchronization.", exception);
             }
             Thread.sleep(FILE_SYNC_POLLING_DELAY_IN_MILLISECONDS);
         }
         throw new TimeoutException("Timeout waiting for object \"" + pathInBucket + "\"to be synchronized in bucket \""
                 + this.bucketFsName + "/" + this.bucketName + "\".");
+    }
+
+    /**
+     * Download a file from a bucket to a local filesystem.
+     *
+     * @param pathInBucket path of the file in BucketFS
+     * @param localPath    local path the file is downloaded to
+     * @throws InterruptedException  if the file download was interrupted
+     * @throws BucketAccessException
+     */
+    public void downloadFile(final String pathInBucket, final Path localPath)
+            throws InterruptedException, BucketAccessException {
+        final URI uri = createPublicReadURI(pathInBucket);
+        LOGGER.debug("Downloading  file from bucket \"{}/{}\": \"{}\" to \"{}\"", this.bucketFsName, this.bucketName,
+                uri, localPath);
+        try {
+            final int statusCode = httpGet(uri, localPath);
+            if (statusCode != HttpURLConnection.HTTP_OK) {
+                LOGGER.error("{}: Failed to upload file \"{}\" to \"{}\"", statusCode, localPath, uri);
+                throw new BucketAccessException("Unable to downolad file \"" + localPath + "\" from ", statusCode, uri);
+            }
+        } catch (final IOException exception) {
+            throw new BucketAccessException("Unable to upload file \"" + localPath + "\" from ", uri, exception);
+        }
+        LOGGER.debug("Successfully downloaded file to \"{}\"", localPath);
+    }
+
+    private int httpGet(final URI uri, final Path localPath) throws IOException, InterruptedException {
+        final HttpRequest request = HttpRequest.newBuilder(uri) //
+                .GET() //
+                .header("Authorization", encodeBasicAuth(true)) //
+                .build();
+        final HttpResponse<String> response = this.client.send(request, BodyHandlers.ofString());
+        Files.write(localPath, response.body().getBytes());
+        return response.statusCode();
     }
 
     /**

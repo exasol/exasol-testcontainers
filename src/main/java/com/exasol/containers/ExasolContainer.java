@@ -7,6 +7,7 @@ import static com.exasol.containers.ExasolContainerConstants.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.*;
+import java.time.Instant;
 import java.util.*;
 
 import org.testcontainers.containers.*;
@@ -251,13 +252,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     protected void waitUntilContainerStarted() {
         waitUntilClusterConfigurationAvailable();
+        final Instant afterUtc = Instant.now();
         waitUntilStatementCanBeExecuted();
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
-            new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             this.readyServices.add(ExasolService.BUCKETFS);
         }
         if (this.requiredServices.contains(ExasolService.UDF)) {
-            new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             this.readyServices.add(ExasolService.UDF);
         }
         logger().info("Exasol container started after waiting for the following services to become available: {}",

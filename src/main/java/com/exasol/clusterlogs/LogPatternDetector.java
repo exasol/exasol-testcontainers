@@ -1,7 +1,7 @@
 package com.exasol.clusterlogs;
 
 import java.io.*;
-import java.time.Instant;
+import java.time.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,26 +49,35 @@ public class LogPatternDetector {
      * @throws InterruptedException if the check for a pattern was interrupted
      */
     public boolean isPatternPresentAfter(final Instant afterUTC) throws IOException, InterruptedException {
+        final LocalDateTime afterLocal = convertUtcToLowResulionLocal(afterUTC);
+        LOGGER.debug("{} after {}", describe(), afterLocal);
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
                 "-name", this.logNamePattern, //
                 "-exec", "grep", this.pattern, "{}", "+");
         if (result.getExitCode() == ExitCode.OK) {
-            return isLogMessageFoundAfter(result.getStdout(), afterUTC);
+            return isLogMessageFoundAfter(result.getStdout(), afterLocal);
         } else {
             return false;
         }
     }
 
-    private boolean isLogMessageFoundAfter(final String stdout, final Instant afterUTC) throws IOException {
+    private LocalDateTime convertUtcToLowResulionLocal(final Instant afterUTC) {
+        final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, ZoneId.systemDefault());
+        return localDateTime.withNano(0);
+    }
+
+    private boolean isLogMessageFoundAfter(final String stdout, final LocalDateTime afterLocal) throws IOException {
         try (final BufferedReader reader = new BufferedReader(new StringReader(stdout))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                LOGGER.debug("[Log]: {}", line);
                 final Matcher matcher = LOG_ENTRY_PATTERN.matcher(line);
                 if (matcher.matches()) {
                     final String isoTimestamp = "20" + matcher.group(1) + "-" + matcher.group(2) + "-"
-                            + matcher.group(3) + "T" + matcher.group(4) + "Z";
-                    final Instant timestamp = Instant.parse(isoTimestamp);
-                    if (timestamp.isAfter(afterUTC)) {
+                            + matcher.group(3) + "T" + matcher.group(4);
+                    final LocalDateTime timestamp = LocalDateTime.parse(isoTimestamp);
+                    if (timestamp.isAfter(afterLocal) || timestamp.isEqual(afterLocal)) {
+                        LOGGER.debug("Found matching log entry {} (after {}): {}", timestamp, afterLocal, line);
                         return true;
                     }
                 }
