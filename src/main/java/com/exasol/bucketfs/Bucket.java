@@ -390,7 +390,7 @@ public class Bucket {
      * @param pathInBucket path of the file in BucketFS
      * @param localPath    local path the file is downloaded to
      * @throws InterruptedException  if the file download was interrupted
-     * @throws BucketAccessException
+     * @throws BucketAccessException if the local file does not exist or is not accessible or if the download failed
      */
     // [impl->dsn~downloading-a-file-from-a-bucket~1]
     public void downloadFile(final String pathInBucket, final Path localPath)
@@ -401,7 +401,7 @@ public class Bucket {
         try {
             final int statusCode = httpGet(uri, localPath);
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                LOGGER.error("{}: Failed to upload file \"{}\" to \"{}\"", statusCode, localPath, uri);
+                LOGGER.error("{}: Failed to download \"{}\" to file \"{}\"", statusCode, uri, localPath);
                 throw new BucketAccessException("Unable to downolad file \"" + localPath + "\" from ", statusCode, uri);
             }
         } catch (final IOException exception) {

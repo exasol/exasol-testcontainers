@@ -42,8 +42,10 @@ public class LogPatternDetector {
 
     /**
      * Check whether a certain pattern appears in a log message.
-     * <h2>Implementation notes</h2> We use {@code find} to locate the log file(s) matching the filename search pattern.
-     * This {@code find} command then executes a command that searches the files.
+     * <h2>Implementation notes</h2>
+     * <p>
+     * We use {@code find} to locate the log file(s) matching the filename search pattern. This {@code find} command
+     * then executes a command that searches the files.
      * </p>
      * <p>
      * Since the testcontainers {@link Container#execInContainer(String...)} is not a full-fledged shell, we can't use

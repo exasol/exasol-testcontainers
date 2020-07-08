@@ -128,6 +128,28 @@ class BucketIT {
         assertThat(Files.readString(pathToFile), equalTo(content));
     }
 
+    @Test
+    void testDownloadFileThrowsExceptionOnIllegalPathInBucket(@TempDir final Path tempDir) {
+        final Path pathToFile = tempDir.resolve("irrelevant");
+        final String pathInBucket = "this/path/does/not/exist";
+        final Bucket bucket = container.getDefaultBucket();
+        final BucketAccessException exception = assertThrows(BucketAccessException.class,
+                () -> bucket.downloadFile(pathInBucket, pathToFile));
+        assertThat(exception.getMessage(), startsWith("Unable to downolad file \"" + pathToFile));
+    }
+
+    @Test
+    void testDownloadFileThrowsExceptionOnIllegalLocalPath(@TempDir final Path tempDir)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final Path pathToFile = tempDir.resolve("/this/path/does/not/exist");
+        final String pathInBucket = "foo.txt";
+        final Bucket bucket = container.getDefaultBucket();
+        bucket.uploadStringContent("some content", pathInBucket);
+        final BucketAccessException exception = assertThrows(BucketAccessException.class,
+                () -> bucket.downloadFile(pathInBucket, pathToFile));
+        assertThat(exception.getCause(), instanceOf(IOException.class));
+    }
+
     // [itest->dsn~waiting-until-file-appears-in-target-directory~1]
     // [itest->dsn~bucketfs-object-overwrite-throttle~1]
     @Test
