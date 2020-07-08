@@ -12,6 +12,7 @@ Since this is an internal API that users don't need (and shouldn't) use, we did 
 ## Features / Enhancements
  
 * #54: Download a file from BucketFS.
+* #54: Updated default docker image used by the `exasol-testcontainers` from `6.2.2-d1` to `6.2.7-d1`
 
 ## Bugfixes
 

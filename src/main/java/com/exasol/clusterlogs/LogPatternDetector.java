@@ -1,7 +1,9 @@
 package com.exasol.clusterlogs;
 
 import java.io.*;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,7 @@ public class LogPatternDetector {
     private final String logPath;
     private final String pattern;
     private final String logNamePattern;
+    private final TimeZone timeZone;
 
     /**
      * Create a new instance of the {@link LogPatternDetector}.
@@ -30,14 +33,17 @@ public class LogPatternDetector {
      * @param logPath        path of the log file to search
      * @param logNamePattern pattern used to find the file name
      * @param pattern        regular expression pattern for which to look out
+     * @param timeZone       time zone that serves as context for the short timestamps in the logs
      */
     LogPatternDetector(final Container<? extends Container<?>> container, final String logPath,
-            final String logNamePattern, final String pattern) {
+            final String logNamePattern, final String pattern, final TimeZone timeZone) {
         this.container = container;
         this.logPath = logPath;
         this.logNamePattern = logNamePattern;
         this.pattern = pattern;
-        LOGGER.debug("Created log detector that scans for \"{}\" in \"{}/{}\"", pattern, logPath, logNamePattern);
+        this.timeZone = timeZone;
+        LOGGER.debug("Created log detector that scans for \"{}\" in \"{}/{}\" with time zone \"{}\"", pattern, logPath,
+                logNamePattern, timeZone.getDisplayName());
     }
 
     /**
@@ -85,8 +91,9 @@ public class LogPatternDetector {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private LocalDateTime convertUtcToLowResulionLocal(final Instant afterUTC) {
-        final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, ZoneId.systemDefault());
+        final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, this.timeZone.toZoneId());
         return localDateTime.withNano(0);
     }
 

@@ -18,7 +18,7 @@ class OptionalServicesIT {
     }
 
     private ExasolContainer<? extends ExasolContainer<?>> createContainer() {
-        return new ExasolContainer<>(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_ID);
+        return new ExasolContainer<>();
     }
 
     // [itest->dsn~defining-required-optional-service~1]

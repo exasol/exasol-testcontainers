@@ -43,6 +43,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
     private final Set<ExasolService> readyServices = new HashSet<>();
     private final ExaOperation exaOperation;
+    private TimeZone timeZone;
 
     /**
      * Create a new instance of an {@link ExasolContainer}.
@@ -275,6 +276,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void clusterConfigurationIsAvailable() {
         this.clusterConfiguration = readClusterConfiguration();
+        this.timeZone = this.clusterConfiguration.getTimeZone();
     }
 
     private ClusterConfiguration readClusterConfiguration() {
@@ -383,5 +385,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public ExaOperation getExaOperation() {
         return this.exaOperation;
+    }
+
+    /**
+     * Get the time zone.
+     *
+     * @return time zone
+     */
+    public TimeZone getTimeZone() {
+        assert (this.timeZone != null);
+        return this.timeZone;
     }
 }
