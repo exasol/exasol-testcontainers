@@ -59,11 +59,12 @@ public class LogPatternDetector {
      * </p>
      * <p>
      * We considered the following alternative:
+     * </p>
      *
      * <pre>
      * tac | grep &lt;pattern&gt; | head -n 1
      * </pre>
-     *
+     * <p>
      * But this would require pipes.
      * </p>
      *
