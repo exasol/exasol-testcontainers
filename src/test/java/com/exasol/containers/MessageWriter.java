@@ -6,16 +6,15 @@ import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 
 final class MessageWriter implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageWriter.class);
-    private final Container<? extends Container<?>> container;
+    private final ExasolContainer<? extends ExasolContainer<?>> container;
     private final String logFilePath;
     private final String message;
 
-    public MessageWriter(final Container<? extends Container<?>> container, final String logFilePath,
+    public MessageWriter(final ExasolContainer<? extends ExasolContainer<?>> container, final String logFilePath,
             final String expectedMessage) {
         this.container = container;
         this.logFilePath = logFilePath;
@@ -38,7 +37,7 @@ final class MessageWriter implements Runnable {
     }
 
     private void writeMessage(final String messageToAppend) throws IOException, InterruptedException {
-        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime now = LocalDateTime.now(this.container.getTimeZone().toZoneId());
         final String timestamp = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss").format(now);
         final String logEntry = "[I " + timestamp + " somedaemon:1234] " + messageToAppend;
         LOGGER.info("Writing log message: " + logEntry);
