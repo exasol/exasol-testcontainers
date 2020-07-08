@@ -42,6 +42,27 @@ public class LogPatternDetector {
 
     /**
      * Check whether a certain pattern appears in a log message.
+     * <h2>Implementation notes</h2> We use {@code find} to locate the log file(s) matching the filename search pattern.
+     * This {@code find} command then executes a command that searches the files.
+     * </p>
+     * <p>
+     * Since the testcontainers {@link Container#execInContainer(String...)} is not a full-fledged shell, we can't use
+     * pipes and need {@code -exec} instead. That means the complete job of isolating the matches must be done in one
+     * single command executed by {@code find}. While we could wrap our call in a shell, that would have a considerable
+     * performance impact.
+     * </p>
+     * We use {@code awk} to find the <em>last</em> match against the log entry pattern in the log file. This way we
+     * avoid transferring more and more data with growing logs where we find multiple matches.
+     * </p>
+     * <p>
+     * We considered the following alternative:
+     *
+     * <pre>
+     * tac | grep &lt;pattern&gt; | head -n 1
+     * </pre>
+     *
+     * But this would require pipes.
+     * </p>
      *
      * @param afterUTC UTC point in time after which the message is relevant
      * @return {@code true} if the pattern is found in the log file

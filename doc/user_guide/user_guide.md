@@ -289,6 +289,16 @@ The same style of overloaded function exists for text content upload too in the 
 
 Unless you really need it and know exactly what you are doing, we recommend to stick to blocking operation for your tests.
 
+### Downloading a File from BucketFS
+
+Downloading a file is straight forward:
+
+```java
+bucket.downloadFile(source, destination);
+```
+
+Here the source is a path inside the bucket and destination is a path on a local file system.
+
 ### Automatic Authentication at a BucketFS Service
 
 If you are wondering how to provide the access passwords for the buckets &mdash; you don't have to. Part of this test containers convenience is hiding the details of bucket authentication in integration tests.

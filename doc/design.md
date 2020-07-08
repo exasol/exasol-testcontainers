@@ -224,7 +224,7 @@ Needs: impl, itest
 ### Uploading to `Bucket`
 `dsn~uploading-to-bucket~1`
 
-The `Bucket` offers uploading files from a locally accessible filesystem to a bucket in BucketFS.
+The `Bucket` offers uploading a file from a locally accessible filesystem to a bucket in BucketFS.
 
 Covers:
 
@@ -273,6 +273,17 @@ When uploading an archive of type `.tar.gz` or `.zip` into a bucket, users can c
 Covers:
 
 * `req~waiting-for-bucket-content-synchronization~1`
+
+Needs: impl, itest
+
+### Downloading a file from a `Bucket`
+`dsn~downloading-a-file-from-a-bucket~1`
+
+The `Bucket` offers downloading a file from a bucket in BucketFS to a locally accessible filesystem.
+
+Covers:
+
+* `req~downloading-a-file-from-bucketfs~1`
 
 Needs: impl, itest
 
@@ -388,6 +399,52 @@ Needs: impl, itest
 # Cross-cutting Concerns
 
 # Design Decisions
+
+## How do we Validate That Objects on BucketFS are Ready to Use?
+
+BucketFS is a distributed filesystem with an HTTP interface. When users upload objects to a Bucket, it takes a while until they are really usable.
+The reason are various asynchronous processes an object has to go through, like node synchronization and extraction of archives.
+
+In integration tests run with the ETC, this is important, because reliable tests require objects to be available completely after they are uploaded.
+
+### Alternatives considered
+
+1. Using the `.dest` directory and access timestamps to check for synchronization. We dismissed this idea for two reasons.
+   First this variant is too tightly coupled with the current BucketFS implementation.
+   Second the layout of the `.dest` directory is very complex.
+
+2. Checking via HTTP `GET`. Unfortunately this variant is not reliable.
+
+### Decisions
+
+We decided to base the check on entries in the BucketFS log. A matching log entry detected _after_ an upload proves that the object is usable.
+The biggest downside of this approach is that the timestamps only have a resolution of a second.
+
+#### Validating BucketFS Object Synchronization via the BucktFS log
+`dsn~validating-bucketfs-object-synchronization-via-the-bucketfs-log~1`
+
+The `Bucket` uses the `LogPatternDetector` to check the BucketFS log for messages that confirm object synchronization.
+
+Covers:
+
+* `req~waiting-for-bucket-content-synchronization`
+
+Needs: impl, itest
+
+#### BucketFS Object Overwrite Throttle
+`dsn~bucketfs-object-overwrite-throttle~1`
+
+The `Bucket` delays subsequent uploads to the same path in a bucket so that the upload speed does not exceed the log entry resolution.
+
+Comment:
+
+The logs have a timestamp resolution of a second. That is why we delay a subsequent upload to the same path so that it starts after the next second.
+
+Covers:
+
+* `req~waiting-for-bucket-content-synchronization`
+
+Needs: impl, itest
 
 # Quality Scenarios
 

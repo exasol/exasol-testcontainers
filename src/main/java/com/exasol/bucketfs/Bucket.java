@@ -126,6 +126,7 @@ public class Bucket {
      * @throws InterruptedException  if the synchronization check is interrupted
      * @throws BucketAccessException if an I/O operation failed in the underlying check
      */
+    // [impl->dsn~validating-bucketfs-object-synchronization-via-the-bucketfs-log~1]
     public boolean isObjectSynchronized(final String pathInBucket, final Instant afterUTC)
             throws InterruptedException, BucketAccessException {
         try {
@@ -228,6 +229,7 @@ public class Bucket {
         this.uploadHistory.put(extendedPathInBucket, Instant.now());
     }
 
+    // [impl->dsn~bucketfs-object-overwrite-throttle~1]
     private void delayRepeatedUploadToSamePath(final String extendedPathInBucket) throws InterruptedException {
         if (this.uploadHistory.containsKey(extendedPathInBucket)) {
             final Instant lastUploadAt = this.uploadHistory.get(extendedPathInBucket).with(ChronoField.NANO_OF_SECOND,
@@ -390,6 +392,7 @@ public class Bucket {
      * @throws InterruptedException  if the file download was interrupted
      * @throws BucketAccessException
      */
+    // [impl->dsn~downloading-a-file-from-a-bucket~1]
     public void downloadFile(final String pathInBucket, final Path localPath)
             throws InterruptedException, BucketAccessException {
         final URI uri = createPublicReadURI(pathInBucket);

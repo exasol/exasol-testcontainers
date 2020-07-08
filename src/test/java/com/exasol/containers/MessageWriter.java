@@ -2,7 +2,6 @@ package com.exasol.containers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
@@ -27,6 +26,7 @@ final class MessageWriter implements Runnable {
     @SuppressWarnings("squid:S2925") // we need a sleep() here to make sure the trigger comes after waiting.
     public void run() {
         try {
+            Thread.sleep(1000);
             writeMessage("no effect");
             Thread.sleep(2000);
             writeMessage(this.message);
@@ -38,8 +38,8 @@ final class MessageWriter implements Runnable {
     }
 
     private void writeMessage(final String messageToAppend) throws IOException, InterruptedException {
-        final String timestamp = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss")
-                .format(LocalDateTime.now(ZoneId.of("UTC")));
+        final LocalDateTime now = LocalDateTime.now();
+        final String timestamp = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss").format(now);
         final String logEntry = "[I " + timestamp + " somedaemon:1234] " + messageToAppend;
         LOGGER.info("Writing log message: " + logEntry);
         final ExecResult result = writeViaDockerExec(logEntry);

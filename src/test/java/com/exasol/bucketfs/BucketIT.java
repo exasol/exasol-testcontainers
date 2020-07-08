@@ -115,6 +115,7 @@ class BucketIT {
                 .uploadStringContent("irrelevant content", "this\\is\\an\\illegal\\URL"));
     }
 
+    // [itest->dsn~downloading-a-file-from-a-bucket~1]
     @Test
     void testDownloadFile(@TempDir final Path tempDir)
             throws InterruptedException, BucketAccessException, TimeoutException, IOException {
@@ -128,6 +129,7 @@ class BucketIT {
     }
 
     // [itest->dsn~waiting-until-file-appears-in-target-directory~1]
+    // [itest->dsn~bucketfs-object-overwrite-throttle~1]
     @Test
     void testReplaceFile(@TempDir final Path tempDir) throws InterruptedException, BucketAccessException,
             TimeoutException, IOException, NoSuchAlgorithmException {
@@ -139,7 +141,7 @@ class BucketIT {
         final String contentB = "abcdeABCDE\n";
         final Path fileB = Files.writeString(tempDir.resolve("b.txt"), contentB.repeat(scaleContentSizeBy));
         final Bucket bucket = container.getDefaultBucket();
-        for (int i = 1; i <= 100; ++i) {
+        for (int i = 1; i <= 10; ++i) {
             final boolean useA = (i % 2) == 1;
             final Path currentFile = useA ? fileA : fileB;
             final String currentFirstLine = useA ? contentA : contentB;

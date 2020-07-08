@@ -24,6 +24,7 @@ class BucketContentSyncIT {
     private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
 
     // [itest->dsn~waiting-until-file-appears-in-target-directory~1]
+    // [itest->dsn~validating-bucketfs-object-synchronization-via-the-bucketfs-log~1]
     @Test
     void testWaitForFileToAppear(@TempDir final Path tempDir)
             throws BucketAccessException, InterruptedException, IOException, TimeoutException {
@@ -42,6 +43,7 @@ class BucketContentSyncIT {
     }
 
     // [itest->dsn~waiting-until-archive-extracted~1]
+    // [itest->dsn~validating-bucketfs-object-synchronization-via-the-bucketfs-log~1]
     @Test
     void testWaitForArchiveToBeExtracted(@TempDir final Path tempDir)
             throws IOException, BucketAccessException, InterruptedException, TimeoutException {
