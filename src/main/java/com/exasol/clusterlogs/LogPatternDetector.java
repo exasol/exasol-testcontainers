@@ -53,6 +53,7 @@ public class LogPatternDetector {
      * single command executed by {@code find}. While we could wrap our call in a shell, that would have a considerable
      * performance impact.
      * </p>
+     * <p>
      * We use {@code awk} to find the <em>last</em> match against the log entry pattern in the log file. This way we
      * avoid transferring more and more data with growing logs where we find multiple matches.
      * </p>
