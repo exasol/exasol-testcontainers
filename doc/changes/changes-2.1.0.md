@@ -9,6 +9,8 @@ We also fixed a bug in the code that waits for an upload to complete that occurr
 The constructors of both `UdfContainerWaitStrategy` and `BucketFsWaitStrategy` were changed to add a UTC timestamp after which the services need to report being started.
 Since this is an internal API that users don't need (and shouldn't) use, we did not increase the major version number.
 
+The construct of the `LogPatternDetectorFactory` now requires an `ExasolContainer` as parameter instead of a `Container`. This is also an internal API and passing any other container type would not work anyway since the log format is Exasol-specific.
+
 ## Features / Enhancements
  
 * #54: Download a file from BucketFS.
