@@ -1,8 +1,7 @@
 package com.exasol.config;
 
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.exasol.config.BucketFsServiceConfiguration.Builder;
@@ -16,6 +15,7 @@ public class ClusterConfiguration {
     private static final String BUCKET_KEY_PREFIX = "Bucket" + KEY_SEPARATOR;
     private static final String DATABASE_KEY_PREFIX = "DB" + KEY_SEPARATOR;
     private static final String SECTION_SEPARATOR = "/";
+    private static final String GLOBAL_SECTION = "Global";
     private static final String DEFAULT_BUCKET_SECTION = "BucketFS:bfsdefault/Bucket:default";
     private final Map<String, String> parameters;
 
@@ -121,5 +121,14 @@ public class ClusterConfiguration {
                 .filter(key -> key.startsWith(DATABASE_KEY_PREFIX)) //
                 .map(key -> key.substring(key.lastIndexOf(KEY_SEPARATOR) + 1).replaceAll("/.*", "")) //
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get the time zone the COS (core of the Exasol operating system) uses.
+     *
+     * @return time zone
+     */
+    public TimeZone getTimeZone() {
+        return TimeZone.getTimeZone(this.parameters.get(GLOBAL_SECTION + SECTION_SEPARATOR + "Timezone"));
     }
 }

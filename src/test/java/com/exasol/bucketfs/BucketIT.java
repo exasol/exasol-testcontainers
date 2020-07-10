@@ -2,11 +2,12 @@ package com.exasol.bucketfs;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
@@ -15,11 +16,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.exec.ExitCode;
 
 @Testcontainers
 class BucketIT {
@@ -110,5 +113,68 @@ class BucketIT {
     void testUploadContentToIllegalUrlThrowsException() {
         assertThrows(BucketAccessException.class, () -> container.getDefaultBucket()
                 .uploadStringContent("irrelevant content", "this\\is\\an\\illegal\\URL"));
+    }
+
+    // [itest->dsn~downloading-a-file-from-a-bucket~1]
+    @Test
+    void testDownloadFile(@TempDir final Path tempDir)
+            throws InterruptedException, BucketAccessException, TimeoutException, IOException {
+        final String fileName = "read_me.txt";
+        final Bucket bucket = container.getDefaultBucket();
+        final String content = "read me";
+        bucket.uploadStringContent(content, fileName);
+        final Path pathToFile = tempDir.resolve(fileName);
+        bucket.downloadFile(fileName, pathToFile);
+        assertThat(Files.readString(pathToFile), equalTo(content));
+    }
+
+    @Test
+    void testDownloadFileThrowsExceptionOnIllegalPathInBucket(@TempDir final Path tempDir) {
+        final Path pathToFile = tempDir.resolve("irrelevant");
+        final String pathInBucket = "this/path/does/not/exist";
+        final Bucket bucket = container.getDefaultBucket();
+        final BucketAccessException exception = assertThrows(BucketAccessException.class,
+                () -> bucket.downloadFile(pathInBucket, pathToFile));
+        assertThat(exception.getMessage(), startsWith("Unable to downolad file \"" + pathToFile));
+    }
+
+    @Test
+    void testDownloadFileThrowsExceptionOnIllegalLocalPath(@TempDir final Path tempDir)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final Path pathToFile = tempDir.resolve("/this/path/does/not/exist");
+        final String pathInBucket = "foo.txt";
+        final Bucket bucket = container.getDefaultBucket();
+        bucket.uploadStringContent("some content", pathInBucket);
+        final BucketAccessException exception = assertThrows(BucketAccessException.class,
+                () -> bucket.downloadFile(pathInBucket, pathToFile));
+        assertThat(exception.getCause(), instanceOf(IOException.class));
+    }
+
+    // [itest->dsn~waiting-until-file-appears-in-target-directory~1]
+    // [itest->dsn~bucketfs-object-overwrite-throttle~1]
+    @Test
+    void testReplaceFile(@TempDir final Path tempDir) throws InterruptedException, BucketAccessException,
+            TimeoutException, IOException, NoSuchAlgorithmException {
+        final int scaleContentSizeBy = 10000000;
+        final String fileName = "replace_me.txt";
+        final String absolutePathInContainer = "/exa/data/bucketfs/bfsdefault/.dest/default/" + fileName;
+        final String contentA = "0123456789\n";
+        final Path fileA = Files.writeString(tempDir.resolve("a.txt"), contentA.repeat(scaleContentSizeBy));
+        final String contentB = "abcdeABCDE\n";
+        final Path fileB = Files.writeString(tempDir.resolve("b.txt"), contentB.repeat(scaleContentSizeBy));
+        final Bucket bucket = container.getDefaultBucket();
+        for (int i = 1; i <= 10; ++i) {
+            final boolean useA = (i % 2) == 1;
+            final Path currentFile = useA ? fileA : fileB;
+            final String currentFirstLine = useA ? contentA : contentB;
+            bucket.uploadFile(currentFile, fileName);
+            final ExecResult execInContainer = container.execInContainer("head", "-n", "1", absolutePathInContainer);
+            if (execInContainer.getExitCode() == ExitCode.OK) {
+                assertThat("Upload number " + i + ": file " + (useA ? "A" : "B"), execInContainer.getStdout(),
+                        equalTo(currentFirstLine));
+            } else {
+                fail("Unable to read hash from file in container");
+            }
+        }
     }
 }

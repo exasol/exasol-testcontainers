@@ -262,6 +262,21 @@ Covers:
 
 Needs: dsn
 
+#### Downloading a File from BucketFS
+`req~downloading-a-file-from-bucketfs~1`
+
+ETC downloads a file from a bucket to a locally accessible filesystem.
+
+Rationale:
+
+This allows downloading files like e.g. logs from buckets.
+
+Covers:
+
+* [feat~bucketfs-access~1](#bucketfs-access)
+
+Needs: dsn
+
 #### Bucket Authentication
 `req~bucket-authentication~1`
 

@@ -1,8 +1,7 @@
 package com.exasol.exaconf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
@@ -80,5 +79,11 @@ class ConfigurationParserTest {
                 .getBucketFsServiceConfiguration("the-fs") //
                 .getBucketConfiguration("the-bucket");
         assertThat(bucketConfiguration.isPubliclyReadable(), equalTo(true));
+    }
+
+    @Test
+    void testGetTimeZone() {
+        final ClusterConfiguration clusterConfiguration = parseConfiguration("[Global]\nTimezone = Asia/Taipei");
+        assertThat(clusterConfiguration.getTimeZone().toString(), containsString("Asia/Taipei"));
     }
 }

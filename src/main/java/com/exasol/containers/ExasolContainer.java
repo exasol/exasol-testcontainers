@@ -7,6 +7,7 @@ import static com.exasol.containers.ExasolContainerConstants.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.*;
+import java.time.Instant;
 import java.util.*;
 
 import org.testcontainers.containers.*;
@@ -42,6 +43,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
     private final Set<ExasolService> readyServices = new HashSet<>();
     private final ExaOperation exaOperation;
+    private TimeZone timeZone;
 
     /**
      * Create a new instance of an {@link ExasolContainer}.
@@ -251,13 +253,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     protected void waitUntilContainerStarted() {
         waitUntilClusterConfigurationAvailable();
+        final Instant afterUtc = Instant.now();
         waitUntilStatementCanBeExecuted();
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
-            new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             this.readyServices.add(ExasolService.BUCKETFS);
         }
         if (this.requiredServices.contains(ExasolService.UDF)) {
-            new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
+            new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             this.readyServices.add(ExasolService.UDF);
         }
         logger().info("Exasol container started after waiting for the following services to become available: {}",
@@ -273,6 +276,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void clusterConfigurationIsAvailable() {
         this.clusterConfiguration = readClusterConfiguration();
+        this.timeZone = this.clusterConfiguration.getTimeZone();
+        if (this.timeZone == null) {
+            throw new IllegalStateException(
+                    "Unable to get timezone from cluster configuration. Log entry detection does not work without TZ.");
+        }
     }
 
     private ClusterConfiguration readClusterConfiguration() {
@@ -381,5 +389,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public ExaOperation getExaOperation() {
         return this.exaOperation;
+    }
+
+    /**
+     * Get the time zone.
+     *
+     * @return time zone
+     */
+    public TimeZone getTimeZone() {
+        return this.timeZone;
     }
 }

@@ -21,7 +21,7 @@ import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
 
 @ExtendWith(MockitoExtension.class)
-public class ExasolContainerTest {
+class ExasolContainerTest {
     @Mock
     private Connection connectionMock;
     private ExasolContainer<? extends ExasolContainer<?>> containerSpy;
@@ -31,12 +31,12 @@ public class ExasolContainerTest {
         final ExasolContainer<?> container = new ExasolContainer<>();
         container.withRequiredServices();
         this.containerSpy = spy(container);
-        doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
     }
 
     @Test
-    public void testWaitUntilContainerStarted(@Mock final Statement statementMock, @Mock final ResultSet resultSetMock)
+    void testWaitUntilContainerStarted(@Mock final Statement statementMock, @Mock final ResultSet resultSetMock)
             throws Exception {
+        doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
         doReturn(this.connectionMock).when(this.containerSpy).createConnection(any());
         when(this.connectionMock.createStatement()).thenReturn(statementMock);
         when(statementMock.executeQuery(anyString())).thenReturn(resultSetMock);
@@ -45,7 +45,8 @@ public class ExasolContainerTest {
     }
 
     @Test
-    public void testWaitUntilContainerStartedTimesOut() throws Exception {
+    void testWaitUntilContainerStartedTimesOut() throws Exception {
+        doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
         doReturn(this.connectionMock).when(this.containerSpy).createConnection(any());
         when(this.connectionMock.createStatement()).thenThrow(new SQLException("Mock Exception"));
         assertThrowsLaunchException("timed out", () -> this.containerSpy.waitUntilContainerStarted());
@@ -57,8 +58,8 @@ public class ExasolContainerTest {
     }
 
     @Test
-    public void testWaitUntilContainerStartedThrowsExceptionOnMissingJdbcDriver()
-            throws NoDriverFoundException, SQLException {
+    void testWaitUntilContainerStartedThrowsExceptionOnMissingJdbcDriver() throws NoDriverFoundException, SQLException {
+        doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
         Mockito.doThrow(new NoDriverFoundException("Mock Driver-Not-Found Exception", new Exception("Mock cause")))
                 .when(this.containerSpy).createConnection(anyString());
         assertThrowsLaunchException("driver was not found", () -> this.containerSpy.waitUntilContainerStarted());

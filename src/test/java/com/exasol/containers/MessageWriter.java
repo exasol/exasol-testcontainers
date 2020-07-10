@@ -2,21 +2,19 @@ package com.exasol.containers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 
 final class MessageWriter implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageWriter.class);
-    private final Container<? extends Container<?>> container;
+    private final ExasolContainer<? extends ExasolContainer<?>> container;
     private final String logFilePath;
     private final String message;
 
-    public MessageWriter(final Container<? extends Container<?>> container, final String logFilePath,
+    public MessageWriter(final ExasolContainer<? extends ExasolContainer<?>> container, final String logFilePath,
             final String expectedMessage) {
         this.container = container;
         this.logFilePath = logFilePath;
@@ -27,6 +25,7 @@ final class MessageWriter implements Runnable {
     @SuppressWarnings("squid:S2925") // we need a sleep() here to make sure the trigger comes after waiting.
     public void run() {
         try {
+            Thread.sleep(1000);
             writeMessage("no effect");
             Thread.sleep(2000);
             writeMessage(this.message);
@@ -38,8 +37,8 @@ final class MessageWriter implements Runnable {
     }
 
     private void writeMessage(final String messageToAppend) throws IOException, InterruptedException {
-        final String timestamp = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss")
-                .format(LocalDateTime.now(ZoneId.of("UTC")));
+        final LocalDateTime now = LocalDateTime.now(this.container.getTimeZone().toZoneId());
+        final String timestamp = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss").format(now);
         final String logEntry = "[I " + timestamp + " somedaemon:1234] " + messageToAppend;
         LOGGER.info("Writing log message: " + logEntry);
         final ExecResult result = writeViaDockerExec(logEntry);
