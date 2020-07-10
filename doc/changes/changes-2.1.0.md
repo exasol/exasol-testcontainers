@@ -1,4 +1,4 @@
-# Exasol Test Containers 2.1.0, released 2020-07-03
+# Exasol Test Containers 2.1.0, released 2020-07-10
 
 In this release we added support for downloading a file from BucketFS (e.g. in case you need a log from there).
 
