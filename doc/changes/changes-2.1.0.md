@@ -4,6 +4,8 @@ ETC now supports downloading a file from BucketFS (e.g. in case you need a log f
 
 We have also fixed a bug in the code that waits for an upload to complete that occurred when replacing an existing file. The call now properly blocks until the file is really replaced.
 
+Creating the `ExasolContainer` is now more convenient. The constructor additionally accepts Exasol version numbers as parameters and picks the right Docker image automatically.
+
 ## API Changes
 
 The constructors of both `UdfContainerWaitStrategy` and `BucketFsWaitStrategy` now have an additional UTC timestamp after which the services need to report being started.
@@ -15,6 +17,7 @@ The construct of the `LogPatternDetectorFactory` now requires an `ExasolContaine
  
 * #54: Download a file from BucketFS.
 * #54: Updated default docker image used by the `exasol-testcontainers` from `6.2.2-d1` to `6.2.7-d1`
+* #56: Pick container image by Exasol version
 
 ## Bugfixes
 

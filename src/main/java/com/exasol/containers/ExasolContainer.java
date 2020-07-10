@@ -46,12 +46,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private TimeZone timeZone;
 
     /**
-     * Create a new instance of an {@link ExasolContainer}.
+     * Create a new instance of an {@link ExasolContainer} from a specific docker image.
+     *
+     * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
      *
      * @param dockerImageName name of the Docker image from which the container is created
      */
     public ExasolContainer(final String dockerImageName) {
-        super(dockerImageName);
+        super(ExasolDockerImageReference.parse(dockerImageName).toString());
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
     }
