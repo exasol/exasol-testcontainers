@@ -130,14 +130,14 @@ public class Bucket {
     public boolean isObjectSynchronized(final String pathInBucket, final Instant afterUTC)
             throws InterruptedException, BucketAccessException {
         try {
-            return createBucketLogPatterDetector(pathInBucket).isPatternPresentAfter(afterUTC);
+            return createBucketLogPatternDetector(pathInBucket).isPatternPresentAfter(afterUTC);
         } catch (final IOException exception) {
             throw new BucketAccessException("Unable to check if object \"" + pathInBucket
                     + "\" is synchronized in bucket \"" + this.bucketFsName + "/" + this.bucketName + "\".", exception);
         }
     }
 
-    private LogPatternDetector createBucketLogPatterDetector(final String pathInBucket) {
+    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket) {
         final String pattern = pathInBucket + ".*" + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
         return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
                 BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern);
@@ -368,7 +368,7 @@ public class Bucket {
     private void waitForFileToBeSynchronized(final String pathInBucket, final long millisSinceEpochBeforeUpload)
             throws InterruptedException, TimeoutException, BucketAccessException {
         final long expiry = millisSinceEpochBeforeUpload + BUCKET_SYNC_TIMEOUT_IN_MILLISECONDS;
-        final LogPatternDetector detector = createBucketLogPatterDetector(pathInBucket);
+        final LogPatternDetector detector = createBucketLogPatternDetector(pathInBucket);
         while (System.currentTimeMillis() < expiry) {
             try {
                 if (detector.isPatternPresentAfter(Instant.ofEpochMilli(millisSinceEpochBeforeUpload))) {

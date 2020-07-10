@@ -124,7 +124,7 @@ public class ClusterConfiguration {
     }
 
     /**
-     * Get the time zone the COS uses.
+     * Get the time zone the COS (core of the Exasol operating system) uses.
      *
      * @return time zone
      */

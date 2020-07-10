@@ -277,6 +277,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void clusterConfigurationIsAvailable() {
         this.clusterConfiguration = readClusterConfiguration();
         this.timeZone = this.clusterConfiguration.getTimeZone();
+        if (this.timeZone == null) {
+            throw new IllegalStateException(
+                    "Unable to get timezone from cluster configuration. Log entry detection does not work without TZ.");
+        }
     }
 
     private ClusterConfiguration readClusterConfiguration() {
@@ -393,7 +397,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return time zone
      */
     public TimeZone getTimeZone() {
-        assert (this.timeZone != null);
         return this.timeZone;
     }
 }
