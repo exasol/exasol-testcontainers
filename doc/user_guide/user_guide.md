@@ -141,6 +141,23 @@ private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = n
 
 If you need a different Exasol version for your tests, replace the value of the constructor parameter with the name of the Exasol docker container you need.
 
+You can specify a complete docker image name as in the example below
+
+    exasol/docker-db:6.2.7-d1
+
+Alternatively you can use the Exasol version for convenience:
+
+    7
+    6.2
+    6.1.14
+
+If necessary you can even pick a specific Docker image revision (though in most cases only one will exist anyway):
+
+    6.2-d1
+    6.1.14-d2
+
+If you omit the Docker image revision, it always defaults to `d1`.
+
 ## Automatic Cluster Configuration Parsing
 
 Many integration tests rely on knowing the setup of the cluster. The Exasol test container comes with a parser that reads the cluster configuration from the running docker container.
