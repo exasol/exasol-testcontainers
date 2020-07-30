@@ -72,12 +72,17 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Configure the Exasol container.
      * <p>
-     * Maps the following ports:
+     * Unless you provide different ports first, maps the following ports:
      * </p>
      * <ul>
-     * <li>Database port</li>
-     * <li>BucketFS port</li>
+     * <li>Default Database port</li>
+     * <li>Default BucketFS port</li>
      * </ul>
+     * <p>
+     * Note that the ports must be exposed before the container is started. So while reading the information from the
+     * cluster configuration would be more elegant, we don't have this option because the cluster configuration is not
+     * available at this time.
+     * </p>
      * <p>
      * Sets the container to privileged mode. This is needed for shared memory, huge-page support and other low-level
      * access.
@@ -86,14 +91,26 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
-        this.addExposedPorts(CONTAINER_INTERNAL_DATABASE_PORT, CONTAINER_INTERNAL_BUCKETFS_PORT);
+        exposePorts();
         this.setPrivilegedMode(true);
         super.configure();
     }
 
+    private void exposePorts() {
+        if (this.getExposedPorts().isEmpty()) {
+            this.addExposedPorts(ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT,
+                    ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT);
+        }
+        logger().debug("Exposing ports: {}", this.getExposedPorts());
+    }
+
     @Override
     public Set<Integer> getLivenessCheckPortNumbers() {
-        return Set.of(getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT));
+        return Set.of(getMappedPort(getFirstDatabasePort()));
+    }
+
+    private int getFirstDatabasePort() {
+        return this.clusterConfiguration.getDatabaseServiceConfiguration(0).getPort();
     }
 
     @Override
@@ -103,7 +120,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT);
+        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(getFirstDatabasePort());
     }
 
     @Override
@@ -122,7 +139,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return host (list) and port
      */
     public String getExaConnectionAddress() {
-        return this.getContainerIpAddress() + ":" + getMappedPort(CONTAINER_INTERNAL_DATABASE_PORT);
+        return this.getContainerIpAddress() + ":" + getMappedPort(getFirstDatabasePort());
     }
 
     /**

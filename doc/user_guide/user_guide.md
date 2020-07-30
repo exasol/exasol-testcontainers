@@ -158,6 +158,16 @@ If necessary you can even pick a specific Docker image revision (though in most 
 
 If you omit the Docker image revision, it always defaults to `d1`.
 
+### Using Non-standard Port Numbers
+
+Exasol's `docker-db` has a fixed cluster configuration. The ports for the database service and the BucketFS service are constant. That being said, if you want to experiment with your own Docker images, you might use different port numbers.
+
+As you will learn in section ["Automatic Cluster Configuration Parsing"](#automatic-cluster-configuration-parsing), the testcontainer can configure a lot of settings automatically by reading the cluster configuration.
+
+Unfortunately this in case of exposed ports, this mechanism kicks in too late. Ports must be exposed _before_ the container starts. And at that time the cluster configuration obviously is not available yet.
+
+That means if you use non-standard ports for your services, you must expose the ports manually using the "withExposedPorts(...)" method when you instantiate the container.
+
 ## Automatic Cluster Configuration Parsing
 
 Many integration tests rely on knowing the setup of the cluster. The Exasol test container comes with a parser that reads the cluster configuration from the running docker container.
