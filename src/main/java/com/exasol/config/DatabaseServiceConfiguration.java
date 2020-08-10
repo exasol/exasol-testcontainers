@@ -5,6 +5,7 @@ package com.exasol.config;
  */
 public class DatabaseServiceConfiguration {
     private final String databaseName;
+    private final int port;
 
     /**
      * Create a new instance of a {@link DatabaseServiceConfiguration}.
@@ -13,6 +14,7 @@ public class DatabaseServiceConfiguration {
      */
     public DatabaseServiceConfiguration(final Builder builder) {
         this.databaseName = builder.databaseName;
+        this.port = builder.port;
     }
 
     /**
@@ -22,6 +24,15 @@ public class DatabaseServiceConfiguration {
      */
     public String getDatabaseName() {
         return this.databaseName;
+    }
+
+    /**
+     * Get the TCP port the database listens on.
+     *
+     * @return database port
+     */
+    public int getPort() {
+        return this.port;
     }
 
     /**
@@ -38,6 +49,7 @@ public class DatabaseServiceConfiguration {
      */
     public static class Builder {
         private String databaseName;
+        private int port;
 
         /**
          * Set the name of the database provided by the service.
@@ -47,6 +59,17 @@ public class DatabaseServiceConfiguration {
          */
         public Builder databaseName(final String databaseName) {
             this.databaseName = databaseName;
+            return this;
+        }
+
+        /**
+         * Set the TCP port the database listens on.
+         *
+         * @param port database port
+         * @return builder instance for fluent programming
+         */
+        public Builder port(final int port) {
+            this.port = port;
             return this;
         }
 

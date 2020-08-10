@@ -86,4 +86,27 @@ class ConfigurationParserTest {
         final ClusterConfiguration clusterConfiguration = parseConfiguration("[Global]\nTimezone = Asia/Taipei");
         assertThat(clusterConfiguration.getTimeZone().toString(), containsString("Asia/Taipei"));
     }
+
+    @Test
+    void testGetDatabaseServiceConfiguration() {
+        final ClusterConfiguration clusterConfiguration = parseConfiguration("[DB : DB1]\nPort = 3456");
+        final DatabaseServiceConfiguration databaseServiceConfiguration = clusterConfiguration
+                .getDefaultDatabaseServiceConfiguration();
+        assertAll(() -> assertThat(databaseServiceConfiguration.getDatabaseName(), equalTo("DB1")),
+                () -> assertThat(databaseServiceConfiguration.getPort(), equalTo(3456)));
+    }
+
+    @Test
+    void testGetDatabaseNames() {
+        final ClusterConfiguration clusterConfiguration = parseConfiguration(
+                "[DB : Fred]\nPort=1\nNodes=11\n[DB : Wilma]\nPort=2\n[DB : Barney]\nPort=3");
+        assertThat(clusterConfiguration.getDatabaseNames(), contains("Fred", "Wilma", "Barney"));
+    }
+
+    @Test
+    void testGetBucketFsServiceNames() {
+        final ClusterConfiguration clusterConfiguration = parseConfiguration(
+                "[BucketFS : Fred]\nHttpPort=1\n[[Bucket : default]]\n[BucketFS : Wilma]\nHttpPort=2\n[BucketFS : Barney]\nHttpPort=3");
+        assertThat(clusterConfiguration.getBucketFsServiceNames(), contains("Fred", "Wilma", "Barney"));
+    }
 }

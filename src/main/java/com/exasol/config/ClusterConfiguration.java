@@ -17,6 +17,7 @@ public class ClusterConfiguration {
     private static final String SECTION_SEPARATOR = "/";
     private static final String GLOBAL_SECTION = "Global";
     private static final String DEFAULT_BUCKET_SECTION = "BucketFS:bfsdefault/Bucket:default";
+    private static final String DEFAULT_DATABASE_NAME = "DB1";
     private final Map<String, String> parameters;
 
     /**
@@ -115,12 +116,13 @@ public class ClusterConfiguration {
      *
      * @return list of database names
      */
-    public Set<String> getDatabaseNames() {
+    public List<String> getDatabaseNames() {
         return this.parameters.keySet() //
                 .stream() //
                 .filter(key -> key.startsWith(DATABASE_KEY_PREFIX)) //
                 .map(key -> key.substring(key.lastIndexOf(KEY_SEPARATOR) + 1).replaceAll("/.*", "")) //
-                .collect(Collectors.toSet());
+                .distinct() //
+                .collect(Collectors.toList());
     }
 
     /**
@@ -130,5 +132,54 @@ public class ClusterConfiguration {
      */
     public TimeZone getTimeZone() {
         return TimeZone.getTimeZone(this.parameters.get(GLOBAL_SECTION + SECTION_SEPARATOR + "Timezone"));
+    }
+
+    /**
+     * Get the default database configuration.
+     *
+     * @return database configuration
+     */
+    public DatabaseServiceConfiguration getDefaultDatabaseServiceConfiguration() {
+        return getDatabaseServiceConfiguration(DEFAULT_DATABASE_NAME);
+    }
+
+    /**
+     * Get the database configuration with the given name.
+     *
+     * @param databaseName name of the database in the configuration
+     *
+     * @return database configuration
+     */
+    public DatabaseServiceConfiguration getDatabaseServiceConfiguration(final String databaseName) {
+        return DatabaseServiceConfiguration.builder() //
+                .databaseName(databaseName) //
+                .port(Integer
+                        .parseInt(this.parameters.get(DATABASE_KEY_PREFIX + databaseName + SECTION_SEPARATOR + "Port"))) //
+                .build();
+    }
+
+    /**
+     * Get the database configuration with the given position in the configuration.
+     *
+     * @param position position of the database in the configuration
+     *
+     * @return database configuration
+     */
+    public DatabaseServiceConfiguration getDatabaseServiceConfiguration(final int position) {
+        return getDatabaseServiceConfiguration(getDatabaseNames().get(position));
+    }
+
+    /**
+     * Get the list of bucket FS service names.
+     *
+     * @return list of bucket FS service names
+     */
+    public List<String> getBucketFsServiceNames() {
+        return this.parameters.keySet() //
+                .stream() //
+                .filter(key -> key.startsWith(BUCKET_SERVICE_KEY_PREFIX)) //
+                .map(key -> key.substring(key.indexOf(KEY_SEPARATOR) + 1).replaceAll("/.*", "")) //
+                .distinct() //
+                .collect(Collectors.toList());
     }
 }
