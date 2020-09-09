@@ -79,7 +79,8 @@ class ExasolPurgerIT {
 
     private void createFunction() throws SQLException {
         createSchema();
-        STATEMENT.executeUpdate("CREATE FUNCTION MY_FUNCTION () RETURN VARCHAR(10)\n BEGIN\n RETURN 'test';\n END\n /");
+        STATEMENT.executeUpdate(
+                "CREATE FUNCTION TEST.MY_FUNCTION () RETURN VARCHAR(10)\n BEGIN\n RETURN 'test';\n END\n /");
     }
 
     private void createRole() throws SQLException {
@@ -95,7 +96,7 @@ class ExasolPurgerIT {
     }
 
     private void createTable() throws SQLException {
-        STATEMENT.executeUpdate("CREATE TABLE TEST_SCHEMA.TEST_TABLE (ID VARCHAR(10) UTF8);");
+        STATEMENT.executeUpdate("CREATE TABLE TEST.TEST_TABLE (ID VARCHAR(10) UTF8);");
     }
 
     private void createConnection() throws SQLException {
