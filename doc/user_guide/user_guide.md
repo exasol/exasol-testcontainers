@@ -548,6 +548,16 @@ If key generation steps inside the Docker container are slow, installing the `rn
 sudo apt install rng-tools
 ```
 
+## Reusing Container for Speedup
+
+Exasol testcontainers can reuse the running container to avoid the startup delay.
+for that you need to append `withReuse(true)` at container creation.
+In addition you have to add `testcontainers.reuse.enable=true` to `~/.testcontainers.properties` on your machine.
+
+Then Exasol testcontainers will keep your container running after the tests and reuse if if possible.
+Since testcontainers will not terminate the container any more you have to care yourself. 
+You can find the container id using `docker ps` and terminate it using `docker rm -f <CONTAINER-ID>`.  
+
 ## Troubleshooting
 
 ### Warning: Failure when attempting to lookup auth config

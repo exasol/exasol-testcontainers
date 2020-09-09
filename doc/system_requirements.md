@@ -120,6 +120,20 @@ Covers:
 
 Needs: dsn
 
+#### Optional: Reuse container
+`req~reuse-container~1`
+
+Optional users can decided to keep the container running and reuse them. This speeds up the start up.
+To still guarantee isolation ETC purges the container before use.
+If reuse is activated ETC does not stop the container after the tests.
+Users have to stop and delete it using `docker rm -f <CONTAINER_ID>`.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
 #### Container Ready Check
 `req~container-ready-check~1`
 

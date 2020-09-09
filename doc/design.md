@@ -106,6 +106,43 @@ Covers:
 
 Needs: itest
 
+### Reuse Control
+`dsn~control-reuse~1`
+
+If containers can be controlled using the default test-container way:
+In the code by adding `withReuse(true)` and by adding `testcontainers.reuse.enable=true` to `~/.testcontainers.properties`.
+Only if both of these switches are enabled containers are reused. 
+
+Covers:
+
+* `req~reuse-container~1`
+
+### Keep Container Running if Reuse is Enabled
+`dsn~keep-container-running-if-reuse~1`
+
+If reuse is enabled, ETC does not stop the container after the tests are finished. 
+
+Covers:
+
+* `req~reuse-container~1`
+
+Needs: impl, itest
+
+### Purging
+`dsn~purging~1`
+
+ETC purge the database.
+
+It deletes all database objects, users, and roles.
+
+Until now, BucketFS is not jet purged.
+
+Covers:
+
+* `req~reuse-container~1`
+
+Needs: impl, utest, itest
+
 ### `ExasolContainer` Ready Criteria
 `dsn~exasol-container-ready-criteria~3`
 

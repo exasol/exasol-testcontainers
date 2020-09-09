@@ -13,6 +13,7 @@ import java.util.*;
 import org.testcontainers.containers.*;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketFactory;
@@ -25,6 +26,7 @@ import com.exasol.database.DatabaseServiceFactory;
 import com.exasol.exaconf.ConfigurationParser;
 import com.exasol.exaoperation.ExaOperation;
 import com.exasol.exaoperation.ExaOperationEmulator;
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 // [external->dsn~testcontainer-framework-controls-docker-image-download~1]
@@ -44,13 +46,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final Set<ExasolService> readyServices = new HashSet<>();
     private final ExaOperation exaOperation;
     private TimeZone timeZone;
+    private boolean reused = false;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
      *
-     * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
-     *
      * @param dockerImageName name of the Docker image from which the container is created
+     * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
      */
     public ExasolContainer(final String dockerImageName) {
         super(ExasolDockerImageReference.parse(dockerImageName).toString());
@@ -268,6 +270,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return self();
     }
 
+    @Override
+    protected void containerIsStarting(final InspectContainerResponse containerInfo, final boolean reused) {
+        super.containerIsStarting(containerInfo, reused);
+        this.reused = reused;
+    }
+
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
@@ -275,21 +283,41 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         final Instant afterUtc = Instant.now();
         waitUntilStatementCanBeExecuted();
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
-            new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+            if (!this.reused) {
+                new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+            }
             this.readyServices.add(ExasolService.BUCKETFS);
         }
         if (this.requiredServices.contains(ExasolService.UDF)) {
-            new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+            if (!this.reused) {
+                new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+            }
             this.readyServices.add(ExasolService.UDF);
         }
         logger().info("Exasol container started after waiting for the following services to become available: {}",
                 this.requiredServices);
+        if (this.reused) {
+            purgeDatabase();
+        }
+    }
+
+    // [impl->dsn~purging~1]
+    private void purgeDatabase() {
+        logger().info("Purging database for a clean setup");
+        try (final Connection connection = createConnectionForUser(getUsername(), getPassword());
+                final Statement statement = connection.createStatement()) {
+            new ExasolPurger(statement).purge();
+        } catch (final SQLException exception) {
+            throw new ExasolContainerInitializationException("Failed to purge database", exception);
+        }
     }
 
     protected void waitUntilClusterConfigurationAvailable() {
-        logger().debug("Waiting for cluster configuration to become available.");
-        final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
-        strategy.waitUntilReady(this);
+        if (!this.reused) {
+            logger().debug("Waiting for cluster configuration to become available.");
+            final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
+            strategy.waitUntilReady(this);
+        }
         clusterConfigurationIsAvailable();
     }
 
@@ -309,7 +337,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             final String exaconf = result.getStdout();
             logger().debug(exaconf);
             return new ConfigurationParser(exaconf).parse();
-        } catch (UnsupportedOperationException | IOException exception) {
+        } catch (final UnsupportedOperationException | IOException exception) {
             throw new ExasolContainerInitializationException(
                     "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
         } catch (final InterruptedException exception) {
@@ -394,7 +422,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * Get a database service.
      *
      * @param databaseName name of the database the service provides.
-     *
      * @return database service.
      */
     public DatabaseService getDatabaseService(final String databaseName) {
@@ -417,5 +444,16 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public TimeZone getTimeZone() {
         return this.timeZone;
+    }
+
+    // [impl->dsn~keep-container-running-if-reuse~1]
+    @Override
+    public void stop() {
+        if (isShouldBeReused() && TestcontainersConfiguration.getInstance().environmentSupportsReuse()) {
+            logger().warn(
+                    "Leaving container running since reuse is enabled. Don't forget to stop and remove the container manually using docker rm -f CONTAINER_ID.");
+        } else {
+            super.stop();
+        }
     }
 }
