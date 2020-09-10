@@ -120,6 +120,21 @@ Covers:
 
 Needs: dsn
 
+#### Optional container reuse
+`req~reuse-container~1`
+
+User can decide to reuse the container and keep the container running across the tests. If the reuse is enabled ETC purges the container before use and does not stop the container after the tests.
+
+Rationale:
+
+Reusing the container improves the productivity since users do not have to wait for the container start up.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
 #### Container Ready Check
 `req~container-ready-check~1`
 

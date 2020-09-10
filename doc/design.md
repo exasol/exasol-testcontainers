@@ -106,6 +106,37 @@ Covers:
 
 Needs: itest
 
+### Optional `ExasolContainer` Reuse
+`dsn~control-reuse~1`
+
+The `ExasolContainer` offers control to reuse containers using a switch in code and a second switch on their local machine (in `~/.testcontainers.properties`)
+
+Covers:
+
+* `req~reuse-container~1`
+
+### Keep Container Running if Reuse is Enabled
+`dsn~keep-container-running-if-reuse~1`
+
+If reuse is enabled, ETC does not stop the container after the tests are finished. 
+
+Covers:
+
+* `req~reuse-container~1`
+
+Needs: impl, itest
+
+### Purging
+`dsn~purging~1`
+
+`ExasolContainer` can purge the database. For that, it deletes all database objects such as users, roles and connections.
+
+Covers:
+
+* `req~reuse-container~1`
+
+Needs: impl, utest, itest
+
 ### `ExasolContainer` Ready Criteria
 `dsn~exasol-container-ready-criteria~3`
 
