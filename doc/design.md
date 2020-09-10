@@ -109,7 +109,7 @@ Needs: itest
 ### Optional `ExasolContainer` Reuse
 `dsn~control-reuse~1`
 
-If containers can be controlled using the default test-container way:
+The `ExasolContainer` offers control to reuse containers using a switch in code and a second switch on their local machine (in `~/.testcontainers.properties`)
 
 Covers:
 
