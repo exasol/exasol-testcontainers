@@ -1,4 +1,6 @@
-# Exasol Test Containers 3.0.0, released 2020-07-29
+# Exasol Test Containers 3.0.0, released 2020-09-10
+
+Code name: Container reuse + automatic port detection
 
 Starting with this release the port numbers used for the test containers are read from the Exasol cluster configuration at runtime.
 
@@ -8,9 +10,11 @@ Keep in mind that you still need to expose the right port numbers at constructio
 
 We had to make one not-backward compatible interface change. `getDatabaseNames()` on the `ClusterConfiguration` now returns a list instead of a set. This was necessary, because we need to know which the first listed database is, since this is always the one used for the initial start-up check.
 
+
 ## Features / Enhancements
  
 * #70: Improved exposed port handling
+* #72: Added support for reusing containers
 
 ## Dependency updates
 
