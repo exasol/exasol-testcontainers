@@ -551,7 +551,14 @@ sudo apt install rng-tools
 ## Reusing Container for Speedup
 
 Exasol testcontainers can reuse the running container to avoid the startup delay.
-for that you need to append `withReuse(true)` at container creation.
+For that you need to append `withReuse(true)` at container creation.
+
+```java
+new ExasolContainer<>()
+// ...
+.withReuse(true);
+```
+
 In addition you have to add `testcontainers.reuse.enable=true` to `~/.testcontainers.properties` on your machine. This only enables the reuse for the local development but not for continuous integration (CI).
 
 Then Exasol testcontainers will keep your container running after the tests and reuse across the tests.

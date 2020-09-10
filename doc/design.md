@@ -129,7 +129,7 @@ Needs: impl, itest
 ### Purging
 `dsn~purging~1`
 
-`ExasolContainer` purges the database when reuse is enabled. It deletes all database objects such as users, roles and connections.
+`ExasolContainer` can purge the database. For that, it deletes all database objects such as users, roles and connections.
 
 Covers:
 

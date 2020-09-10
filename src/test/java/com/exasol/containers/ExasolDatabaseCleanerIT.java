@@ -13,19 +13,19 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 // [utest->dsn~purging~1]
 @Testcontainers
-class ExasolPurgerIT {
+class ExasolDatabaseCleanerIT {
 
-    @Container // [itest->dsn~exasol-container-starts-with-test~1]
+    @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true);
     private static Statement STATEMENT;
-    private static ExasolPurger PURGER;
+    private static ExasolDatabaseCleaner PURGER;
 
     @BeforeAll
     static void beforeAll() throws SQLException {
         STATEMENT = CONTAINER.createConnectionForUser(CONTAINER.getUsername(), CONTAINER.getPassword())
                 .createStatement();
-        PURGER = new ExasolPurger(STATEMENT);
+        PURGER = new ExasolDatabaseCleaner(STATEMENT);
     }
 
     @AfterEach

@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
  * This class purges all objects from an Exasol database.
  */
 // [impl->dsn~purging~1]
-public class ExasolPurger {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolPurger.class);
+class ExasolDatabaseCleaner {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolDatabaseCleaner.class);
     private final Statement statement;
 
-    public ExasolPurger(final Statement statement) {
+    public ExasolDatabaseCleaner(final Statement statement) {
         this.statement = statement;
     }
 
@@ -60,9 +60,15 @@ public class ExasolPurger {
         if (objectType.equals("VIRTUAL TABLE") || objectType.equals("TABLE") || objectType.equals("SCRIPT")) {
             return;
         }
-        final boolean addCascade = objectType.equals("SCHEMA") || objectType.equals("VIRTUAL SCHEMA");
-        final String dropCommand = "DROP " + (objectType.equals("VIRTUAL SCHEMA") ? "FORCE " : "") + objectType
-                + " IF EXISTS \"" + objectName + "\"" + (addCascade ? " CASCADE" : "");
+        final StringBuilder dropCommandBuilder = new StringBuilder("DROP ");
+        if (objectType.equals("VIRTUAL SCHEMA")) {
+            dropCommandBuilder.append("FORCE ");
+        }
+        dropCommandBuilder.append(objectType).append(" IF EXISTS \"").append(objectName).append("\"");
+        if (objectType.equals("SCHEMA") || objectType.equals("VIRTUAL SCHEMA")) {
+            dropCommandBuilder.append(" CASCADE");
+        }
+        final String dropCommand = dropCommandBuilder.toString();
         LOGGER.debug(dropCommand);
         this.statement.executeUpdate(dropCommand);
     }

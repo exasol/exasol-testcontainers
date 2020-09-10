@@ -46,7 +46,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final Set<ExasolService> readyServices = new HashSet<>();
     private final ExaOperation exaOperation;
     private TimeZone timeZone;
-    private boolean reused = false;
+    private boolean isReused = false;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -170,6 +170,16 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return driver.connect(constructUrlForConnection(""), info);
     }
 
+    /**
+     * Create a JDBC connection using default username and password.
+     * 
+     * @return database connection
+     * @throws SQLException if the connection cannot be established
+     */
+    public Connection createConnection() throws SQLException {
+        return createConnectionForUser(getUsername(), getPassword());
+    }
+
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected String getTestQueryString() {
@@ -273,7 +283,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     protected void containerIsStarting(final InspectContainerResponse containerInfo, final boolean reused) {
         super.containerIsStarting(containerInfo, reused);
-        this.reused = reused;
+        this.isReused = reused;
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]
@@ -283,37 +293,40 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         final Instant afterUtc = Instant.now();
         waitUntilStatementCanBeExecuted();
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
-            if (!this.reused) {
+            if (!this.isReused) {
                 new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             }
             this.readyServices.add(ExasolService.BUCKETFS);
         }
         if (this.requiredServices.contains(ExasolService.UDF)) {
-            if (!this.reused) {
+            if (!this.isReused) {
                 new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             }
             this.readyServices.add(ExasolService.UDF);
         }
         logger().info("Exasol container started after waiting for the following services to become available: {}",
                 this.requiredServices);
-        if (this.reused) {
+        if (this.isReused) {
             purgeDatabase();
         }
     }
 
+    /**
+     * 
+     */
     // [impl->dsn~purging~1]
-    private void purgeDatabase() {
+    public void purgeDatabase() {
         logger().info("Purging database for a clean setup");
-        try (final Connection connection = createConnectionForUser(getUsername(), getPassword());
+        try (final Connection connection = createConnection();
                 final Statement statement = connection.createStatement()) {
-            new ExasolPurger(statement).purge();
+            new ExasolDatabaseCleaner(statement).purge();
         } catch (final SQLException exception) {
             throw new ExasolContainerInitializationException("Failed to purge database", exception);
         }
     }
 
     protected void waitUntilClusterConfigurationAvailable() {
-        if (!this.reused) {
+        if (!this.isReused) {
             logger().debug("Waiting for cluster configuration to become available.");
             final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
             strategy.waitUntilReady(this);
