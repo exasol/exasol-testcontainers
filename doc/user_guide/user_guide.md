@@ -552,11 +552,11 @@ sudo apt install rng-tools
 
 Exasol testcontainers can reuse the running container to avoid the startup delay.
 for that you need to append `withReuse(true)` at container creation.
-In addition you have to add `testcontainers.reuse.enable=true` to `~/.testcontainers.properties` on your machine.
+In addition you have to add `testcontainers.reuse.enable=true` to `~/.testcontainers.properties` on your machine. This only enables the reuse for the local development but not for continuous integration (CI).
 
-Then Exasol testcontainers will keep your container running after the tests and reuse if if possible.
-Since testcontainers will not terminate the container any more you have to care yourself. 
-You can find the container id using `docker ps` and terminate it using `docker rm -f <CONTAINER-ID>`.  
+Then Exasol testcontainers will keep your container running after the tests and reuse across the tests.
+Since testcontainers will not terminate the container any more you have to manually terminate it. 
+You can find the container id using `docker ps` command and terminate it by running `docker rm -f <CONTAINER-ID>`.  
 
 ## Troubleshooting
 

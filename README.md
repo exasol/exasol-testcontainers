@@ -36,7 +36,7 @@ This software is intended for use in automated integration tests of Java softwar
 * JDBC connection to the database inside the container
 * BucketFS access
 * EXAoperation emulation
-* Reuse containers for speedup (database is purged instead of container restart)
+* Optional container reuse
 
 ## Table of Contents
 

@@ -120,13 +120,14 @@ Covers:
 
 Needs: dsn
 
-#### Optional: Reuse container
+#### Optional container reuse
 `req~reuse-container~1`
 
-Optional users can decided to keep the container running and reuse them. This speeds up the start up.
-To still guarantee isolation ETC purges the container before use.
-If reuse is activated ETC does not stop the container after the tests.
-Users have to stop and delete it using `docker rm -f <CONTAINER_ID>`.
+User can decide to reuse the container and keep the container running across the tests. If the reuse is enabled ETC purges the container before use and does not stop the container after the tests.
+
+Rationale:
+
+Reusing the container improves the productivity since users do not have to wait for the container start up.
 
 Covers:
 

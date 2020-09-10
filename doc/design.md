@@ -106,12 +106,10 @@ Covers:
 
 Needs: itest
 
-### Reuse Control
+### Optional `ExasolContainer` Reuse
 `dsn~control-reuse~1`
 
 If containers can be controlled using the default test-container way:
-In the code by adding `withReuse(true)` and by adding `testcontainers.reuse.enable=true` to `~/.testcontainers.properties`.
-Only if both of these switches are enabled containers are reused. 
 
 Covers:
 
@@ -131,11 +129,7 @@ Needs: impl, itest
 ### Purging
 `dsn~purging~1`
 
-ETC purge the database.
-
-It deletes all database objects, users, and roles.
-
-Until now, BucketFS is not jet purged.
+`ExasolContainer` purges the database when reuse is enabled. It deletes all database objects such as users, roles and connections.
 
 Covers:
 
