@@ -19,6 +19,9 @@ import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.imagereference.DockerImageReference;
+import com.exasol.containers.imagereference.DockerImageReferenceFactory;
+import com.exasol.containers.imagereference.ExasolDockerImageReference;
 import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
 import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.database.DatabaseService;
@@ -47,15 +50,21 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final ExaOperation exaOperation;
     private TimeZone timeZone;
     private boolean isReused = false;
+    private final DockerImageReference dockerImageReference;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
      *
      * @param dockerImageName name of the Docker image from which the container is created
-     * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
+     * @see DockerImageReferenceFactory#parse(String) Examples for supported reference types
      */
     public ExasolContainer(final String dockerImageName) {
-        super(ExasolDockerImageReference.parse(dockerImageName).toString());
+        this(DockerImageReferenceFactory.getInstance().parse(dockerImageName));
+    }
+
+    private ExasolContainer(final DockerImageReference dockerImageReference) {
+        super(dockerImageReference.toString());
+        this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
     }
@@ -98,10 +107,55 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         super.configure();
     }
 
+    /**
+     * Get the default internal port of the database.
+     * <p>
+     * This method dispatches between the port numbers depending on the version of the Exasol database. This is
+     * necessary since the port number was changed with version 7.
+     * </p>
+     * 
+     * @return default internal port of the database
+     */
+    public int getDefaultInternalDatabasePort() {
+        try {
+            final ExasolDockerImageReference exasolDockerImageReference = (ExasolDockerImageReference) this.dockerImageReference;
+            if (exasolDockerImageReference.getMajor() >= 7) {
+                return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
+            } else {
+                return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT;
+            }
+        } catch (final ClassCastException exception) {
+            throw new IllegalStateException(
+                    "Could not detect internal database port for custom image. Please specify the port explicitly using withExposedPorts().");
+        }
+    }
+
+    /**
+     * Get the default internal port of the BucketFS.
+     * <p>
+     * This method dispatches between the port numbers depending on the version of the Exasol database. This is
+     * necessary since the port number was changed with version 7.
+     * </p>
+     *
+     * @return default internal port of the database
+     */
+    public int getDefaultInternalBucketfsPort() {
+        try {
+            final ExasolDockerImageReference exasolDockerImageReference = (ExasolDockerImageReference) this.dockerImageReference;
+            if (exasolDockerImageReference.getMajor() >= 7) {
+                return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
+            } else {
+                return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
+            }
+        } catch (final ClassCastException exception) {
+            throw new IllegalStateException(
+                    "Could not detect internal BucketFS port for custom image. Please specify the port explicitly using withExposedPorts().");
+        }
+    }
+
     private void exposePorts() {
         if (this.getExposedPorts().isEmpty()) {
-            this.addExposedPorts(ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT,
-                    ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT);
+            this.addExposedPorts(getDefaultInternalDatabasePort(), getDefaultInternalBucketfsPort());
         }
         logger().debug("Exposing ports: {}", this.getExposedPorts());
     }
