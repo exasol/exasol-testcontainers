@@ -1,4 +1,4 @@
-# Exasol Test Containers 3.0.0, released 2020-09-10
+# Exasol Test Containers 3.0.0, released 2020-09-14
 
 Code name: Container reuse + automatic port detection
 
