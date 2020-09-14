@@ -1,6 +1,6 @@
 # Exasol Test Containers 3.0.0, released 2020-09-14
 
-Code name: Container reuse + automatic port detection
+Code name: Container reuse and automatic port detection
 
 Starting with this release the port numbers used for the test containers are read from the Exasol cluster configuration at runtime.
 
@@ -9,7 +9,6 @@ This allows you to use Docker images that have the database service(s) or Bucket
 Keep in mind that you still need to expose the right port numbers at construction time using `withExposedPorts(...)`. The reason for this is that the cluster configuration is readable only after the container started and the container won't start if the database port is not exposed, since that prevents an alive-check.
 
 We had to make one not-backward compatible interface change. `getDatabaseNames()` on the `ClusterConfiguration` now returns a list instead of a set. This was necessary, because we need to know which the first listed database is, since this is always the one used for the initial start-up check.
-
 
 ## Features / Enhancements
  
