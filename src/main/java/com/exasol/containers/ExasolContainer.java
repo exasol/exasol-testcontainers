@@ -19,9 +19,6 @@ import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.imagereference.DockerImageReference;
-import com.exasol.containers.imagereference.DockerImageReferenceFactory;
-import com.exasol.containers.imagereference.ExasolDockerImageReference;
 import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
 import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.database.DatabaseService;
@@ -50,19 +47,20 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final ExaOperation exaOperation;
     private TimeZone timeZone;
     private boolean isReused = false;
-    private final DockerImageReference dockerImageReference;
+    private final ExasolDockerImageReference dockerImageReference;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
      *
      * @param dockerImageName name of the Docker image from which the container is created
-     * @see DockerImageReferenceFactory#parse(String) Examples for supported reference types
+     * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
      */
     public ExasolContainer(final String dockerImageName) {
-        this(DockerImageReferenceFactory.getInstance().parse(dockerImageName));
+        this(ExasolDockerImageReference.parse(dockerImageName));
+
     }
 
-    private ExasolContainer(final DockerImageReference dockerImageReference) {
+    private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
         super(dockerImageReference.toString());
         this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
@@ -117,16 +115,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return default internal port of the database
      */
     public int getDefaultInternalDatabasePort() {
-        try {
-            final ExasolDockerImageReference exasolDockerImageReference = (ExasolDockerImageReference) this.dockerImageReference;
-            if (exasolDockerImageReference.getMajor() >= 7) {
-                return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
-            } else {
-                return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT;
-            }
-        } catch (final ClassCastException exception) {
-            throw new IllegalStateException(
-                    "Could not detect internal database port for custom image. Please specify the port explicitly using withExposedPorts().");
+        final int majorVersion = this.dockerImageReference.getMajorVersion()
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "Could not detect internal database port for custom image. Please specify the port explicitly using withExposedPorts()."));
+        if (majorVersion >= 7) {
+            return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
+        } else {
+            return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT;
         }
     }
 
@@ -140,16 +135,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return default internal port of the database
      */
     public int getDefaultInternalBucketfsPort() {
-        try {
-            final ExasolDockerImageReference exasolDockerImageReference = (ExasolDockerImageReference) this.dockerImageReference;
-            if (exasolDockerImageReference.getMajor() >= 7) {
-                return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
-            } else {
-                return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
-            }
-        } catch (final ClassCastException exception) {
-            throw new IllegalStateException(
-                    "Could not detect internal BucketFS port for custom image. Please specify the port explicitly using withExposedPorts().");
+        final int majorVersion = this.dockerImageReference.getMajorVersion()
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "Could not detect internal BucketFS port for custom image. Please specify the port explicitly using withExposedPorts()."));
+        if (majorVersion >= 7) {
+            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
+        } else {
+            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
         }
     }
 

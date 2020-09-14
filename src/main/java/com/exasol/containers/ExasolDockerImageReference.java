@@ -3,6 +3,7 @@ package com.exasol.containers;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE_ID;
 import static java.lang.Integer.parseInt;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,8 @@ import java.util.regex.Pattern;
 public class ExasolDockerImageReference {
     private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = Pattern
             .compile("(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-d(\\d+))?");
+    private static final Pattern MAJOR_VERSION_PATTERN = Pattern
+            .compile(Pattern.quote(EXASOL_DOCKER_IMAGE_ID) + ":(\\d+).*");
     private final String reference;
 
     private ExasolDockerImageReference(final String reference) {
@@ -47,6 +50,24 @@ public class ExasolDockerImageReference {
                     EXASOL_DOCKER_IMAGE_ID + ":" + major + "." + minor + "." + fix + "-d" + imageRevision);
         } else {
             return new ExasolDockerImageReference(reference);
+        }
+    }
+
+    /**
+     * Get the major version of the {@code exasol/docker-db} image if possible.
+     * 
+     * <p>
+     * If a different image is used, not version is detected.
+     * </p>
+     * 
+     * @return major version number of the docker image.
+     */
+    public Optional<Integer> getMajorVersion() {
+        final Matcher matcher = MAJOR_VERSION_PATTERN.matcher(this.reference);
+        if (matcher.matches()) {
+            return Optional.of(parseInt(matcher.group(1)));
+        } else {
+            return Optional.empty();
         }
     }
 

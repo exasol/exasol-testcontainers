@@ -19,4 +19,14 @@ class ExasolDockerImageReferenceTest {
     void toString(final String input, final String expectedReference) {
         assertThat(ExasolDockerImageReference.parse(input).toString(), equalTo(expectedReference));
     }
+
+    @CsvSource({ //
+            "7, 7", //
+            "6.1, 6", //
+            "exasol/docker-db:6.2.7-d1, 6" //
+    })
+    @ParameterizedTest
+    void getMajorVersion(final String input, final int expectedVersion) {
+        assertThat(ExasolDockerImageReference.parse(input).getMajorVersion().orElseThrow(), equalTo(expectedVersion));
+    }
 }
