@@ -8,11 +8,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class ExasolDockerImageReferenceTest {
     @CsvSource({ //
-            "7, exasol/docker-db:7.0.0-d1", //
+            "7, exasol/docker-db:7.0.0", //
             "6.1, exasol/docker-db:6.1.0-d1", //
             "6.2.7, exasol/docker-db:6.2.7-d1", //
-            "7.0.4-d2, exasol/docker-db:7.0.4-d2", //
-            "111.222.333-d444, exasol/docker-db:111.222.333-d444", //
+            "6.0.4-d2, exasol/docker-db:6.0.4-d2", //
+            "1.222.333-d444, exasol/docker-db:1.222.333-d444", //
             "foo/bar:latest, foo/bar:latest", //
             "baz/zoo:1.2.3.4, baz/zoo:1.2.3.4" })
     @ParameterizedTest
