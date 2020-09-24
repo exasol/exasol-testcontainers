@@ -23,7 +23,8 @@ class ExasolDockerImageReferenceTest {
     @CsvSource({ //
             "7, 7", //
             "6.1, 6", //
-            "exasol/docker-db:6.2.7-d1, 6" //
+            "exasol/docker-db:6.2.7-d1, 6", //
+            "exasol/docker-db:7.0.1, 7" //
     })
     @ParameterizedTest
     void getMajorVersion(final String input, final int expectedVersion) {
