@@ -85,4 +85,12 @@ class ExasolContainerTest {
         container.addExposedPorts(1000);
         assertThat(container.getExposedPorts().size(), equalTo(3));
     }
+
+    @Test
+    void testCouldNotExtractPort() {
+        final var container = new ExasolContainer<>("unknown:1.2.3");
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, container::configure);
+        assertThat(exception.getMessage(), equalTo(
+                "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts()."));
+    }
 }
