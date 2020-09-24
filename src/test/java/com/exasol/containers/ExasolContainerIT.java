@@ -68,8 +68,7 @@ class ExasolContainerIT {
 
     @Test
     void testGetLivenessCheckPortNumbers() {
-        final Set<Integer> expectedPorts = Set
-                .of(CONTAINER.getMappedPort(ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT));
+        final Set<Integer> expectedPorts = Set.of(CONTAINER.getMappedPort(CONTAINER.getDefaultInternalDatabasePort()));
         assertThat(CONTAINER.getLivenessCheckPortNumbers(), equalTo(expectedPorts));
     }
 

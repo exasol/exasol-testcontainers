@@ -6,7 +6,7 @@ import java.util.Set;
  * Constants for the Exasol Docker containers (like image ID and version).
  */
 public final class ExasolContainerConstants {
-    public static final String EXASOL_DOCKER_IMAGE_VERSION = "6.2.7-d1";
+    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.0.0";
     public static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
     public static final String EXASOL_DOCKER_IMAGE_REFERENCE = EXASOL_DOCKER_IMAGE_ID + ":"
             + EXASOL_DOCKER_IMAGE_VERSION;
@@ -24,7 +24,9 @@ public final class ExasolContainerConstants {
     public static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
     public static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT = 8888;
+    static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE = 8563;
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
+    static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE = 2580;
     public static final Set<String> SUPPORTED_ARCHIVE_EXTENSIONS = Set.of(".tar", ".tgz", ".tar.gz", ".zip");
 
     private ExasolContainerConstants() {

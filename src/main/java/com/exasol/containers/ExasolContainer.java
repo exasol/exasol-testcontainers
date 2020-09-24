@@ -47,6 +47,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final ExaOperation exaOperation;
     private TimeZone timeZone;
     private boolean isReused = false;
+    private final ExasolDockerImageReference dockerImageReference;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -55,7 +56,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
      */
     public ExasolContainer(final String dockerImageName) {
-        super(ExasolDockerImageReference.parse(dockerImageName).toString());
+        this(ExasolDockerImageReference.parse(dockerImageName));
+    }
+
+    private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
+        super(dockerImageReference.toString());
+        this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
     }
@@ -98,10 +104,49 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         super.configure();
     }
 
+    /**
+     * Get the default internal port of the database.
+     * <p>
+     * This method chooses the port number depending on the version of the Exasol database. This is
+     * necessary since the port number was changed with version 7.
+     * </p>
+     * 
+     * @return default internal port of the database
+     */
+    public int getDefaultInternalDatabasePort() {
+        final int majorVersion = this.dockerImageReference.getMajorVersion()
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "Could not detect internal database port for custom image. Please specify the port explicitly using withExposedPorts()."));
+        if (majorVersion >= 7) {
+            return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
+        } else {
+            return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT;
+        }
+    }
+
+    /**
+     * Get the default internal port of the BucketFS.
+     * <p>
+     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is
+     * necessary since the port number was changed with version 7.
+     * </p>
+     *
+     * @return default internal port of the database
+     */
+    public int getDefaultInternalBucketfsPort() {
+        final int majorVersion = this.dockerImageReference.getMajorVersion()
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "Could not detect internal BucketFS port for custom image. Please specify the port explicitly using withExposedPorts()."));
+        if (majorVersion >= 7) {
+            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
+        } else {
+            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
+        }
+    }
+
     private void exposePorts() {
         if (this.getExposedPorts().isEmpty()) {
-            this.addExposedPorts(ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT,
-                    ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT);
+            this.addExposedPorts(getDefaultInternalDatabasePort(), getDefaultInternalBucketfsPort());
         }
         logger().debug("Exposing ports: {}", this.getExposedPorts());
     }
