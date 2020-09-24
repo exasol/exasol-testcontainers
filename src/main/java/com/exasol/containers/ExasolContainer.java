@@ -66,8 +66,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
         try {
-            addExposedPorts(getDefaultInternalBucketfsPort());
             addExposedPorts(getDefaultInternalDatabasePort());
+            addExposedPorts(getDefaultInternalBucketfsPort());
         } catch (final CouldNotDetectPortException exception) {
             this.portAutodetectFailed = true;
         }
