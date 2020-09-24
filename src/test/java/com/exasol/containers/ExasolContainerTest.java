@@ -2,13 +2,17 @@ package com.exasol.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,5 +67,22 @@ class ExasolContainerTest {
         Mockito.doThrow(new NoDriverFoundException("Mock Driver-Not-Found Exception", new Exception("Mock cause")))
                 .when(this.containerSpy).createConnection(anyString());
         assertThrowsLaunchException("driver was not found", () -> this.containerSpy.waitUntilContainerStarted());
+    }
+
+    @Test
+    void testWithExposedPorts() {
+        assertThat(new ExasolContainer<>().withExposedPorts().getExposedPorts().size(), equalTo(0));
+    }
+
+    @Test
+    void testWithDefaultExposedPorts() {
+        assertThat(new ExasolContainer<>().getExposedPorts().size(), equalTo(2));
+    }
+
+    @Test
+    void testAddExposedPorts() {
+        final ExasolContainer<?> container = new ExasolContainer<>();
+        container.addExposedPorts(1000);
+        assertThat(container.getExposedPorts().size(), equalTo(3));
     }
 }

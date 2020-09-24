@@ -64,6 +64,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
+        this.addExposedPorts(getDefaultInternalDatabasePort(), getDefaultInternalBucketfsPort());
     }
 
     /**
@@ -99,7 +100,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
-        exposePorts();
+        logger().debug("Exposing ports: {}", this.getExposedPorts());
         this.setPrivilegedMode(true);
         super.configure();
     }
@@ -107,8 +108,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Get the default internal port of the database.
      * <p>
-     * This method chooses the port number depending on the version of the Exasol database. This is
-     * necessary since the port number was changed with version 7.
+     * This method chooses the port number depending on the version of the Exasol database. This is necessary since the
+     * port number was changed with version 7.
      * </p>
      * 
      * @return default internal port of the database
@@ -127,8 +128,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Get the default internal port of the BucketFS.
      * <p>
-     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is
-     * necessary since the port number was changed with version 7.
+     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is necessary
+     * since the port number was changed with version 7.
      * </p>
      *
      * @return default internal port of the database
@@ -142,13 +143,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         } else {
             return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
         }
-    }
-
-    private void exposePorts() {
-        if (this.getExposedPorts().isEmpty()) {
-            this.addExposedPorts(getDefaultInternalDatabasePort(), getDefaultInternalBucketfsPort());
-        }
-        logger().debug("Exposing ports: {}", this.getExposedPorts());
     }
 
     @Override
