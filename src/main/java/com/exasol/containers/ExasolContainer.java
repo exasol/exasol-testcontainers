@@ -57,7 +57,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public ExasolContainer(final String dockerImageName) {
         this(ExasolDockerImageReference.parse(dockerImageName));
-
     }
 
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
@@ -108,7 +107,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Get the default internal port of the database.
      * <p>
-     * This method dispatches between the port numbers depending on the version of the Exasol database. This is
+     * This method chooses the port number depending on the version of the Exasol database. This is
      * necessary since the port number was changed with version 7.
      * </p>
      * 
@@ -128,7 +127,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Get the default internal port of the BucketFS.
      * <p>
-     * This method dispatches between the port numbers depending on the version of the Exasol database. This is
+     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is
      * necessary since the port number was changed with version 7.
      * </p>
      *

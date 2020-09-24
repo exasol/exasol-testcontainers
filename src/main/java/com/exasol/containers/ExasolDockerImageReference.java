@@ -57,7 +57,7 @@ public class ExasolDockerImageReference {
      * Get the major version of the {@code exasol/docker-db} image if possible.
      * 
      * <p>
-     * If a different image is used, not version is detected.
+     * If a different image is used, no version is detected.
      * </p>
      * 
      * @return major version number of the docker image.
