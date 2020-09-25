@@ -68,7 +68,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         try {
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
-        } catch (final CouldNotDetectPortException exception) {
+        } catch (final PortDetectionException exception) {
             this.portAutodetectFailed = true;
         }
     }
@@ -131,7 +131,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public int getDefaultInternalDatabasePort() {
         final int majorVersion = this.dockerImageReference.getMajorVersion()
-                .orElseThrow(() -> new CouldNotDetectPortException("database"));
+                .orElseThrow(() -> new PortDetectionException("database"));
         if (majorVersion >= 7) {
             return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
         } else {
@@ -150,7 +150,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public int getDefaultInternalBucketfsPort() {
         final int majorVersion = this.dockerImageReference.getMajorVersion()
-                .orElseThrow(() -> new CouldNotDetectPortException("BucketFS"));
+                .orElseThrow(() -> new PortDetectionException("BucketFS"));
         if (majorVersion >= 7) {
             return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
         } else {
@@ -158,8 +158,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    public static class CouldNotDetectPortException extends UnsupportedOperationException {
-        public CouldNotDetectPortException(final String service) {
+    public static class PortDetectionException extends UnsupportedOperationException {
+        public PortDetectionException(final String service) {
             super("Could not detect internal " + service + " port for custom image. "
                     + "Please specify the port explicitly using withExposedPorts().");
         }
