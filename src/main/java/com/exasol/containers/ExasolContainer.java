@@ -48,6 +48,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private TimeZone timeZone;
     private boolean isReused = false;
     private final ExasolDockerImageReference dockerImageReference;
+    private boolean portAutodetectFailed = false;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -64,6 +65,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
+        try {
+            addExposedPorts(getDefaultInternalDatabasePort());
+            addExposedPorts(getDefaultInternalBucketfsPort());
+        } catch (final PortDetectionException exception) {
+            this.portAutodetectFailed = true;
+        }
     }
 
     /**
@@ -99,7 +106,16 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
-        exposePorts();
+        if (this.portAutodetectFailed) {
+            if (getExposedPorts().isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts().");
+            } else {
+                logger().warn("Could not detect internal ports for custom image. "
+                        + "Don't forget to expose the database and BucketFs ports yourself.");
+            }
+        }
+        logger().debug("Exposing ports: {}", this.getExposedPorts());
         this.setPrivilegedMode(true);
         super.configure();
     }
@@ -107,16 +123,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Get the default internal port of the database.
      * <p>
-     * This method chooses the port number depending on the version of the Exasol database. This is
-     * necessary since the port number was changed with version 7.
+     * This method chooses the port number depending on the version of the Exasol database. This is necessary since the
+     * port number was changed with version 7.
      * </p>
      * 
      * @return default internal port of the database
      */
     public int getDefaultInternalDatabasePort() {
         final int majorVersion = this.dockerImageReference.getMajorVersion()
-                .orElseThrow(() -> new UnsupportedOperationException(
-                        "Could not detect internal database port for custom image. Please specify the port explicitly using withExposedPorts()."));
+                .orElseThrow(() -> new PortDetectionException("database"));
         if (majorVersion >= 7) {
             return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
         } else {
@@ -127,16 +142,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Get the default internal port of the BucketFS.
      * <p>
-     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is
-     * necessary since the port number was changed with version 7.
+     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is necessary
+     * since the port number was changed with version 7.
      * </p>
      *
      * @return default internal port of the database
      */
     public int getDefaultInternalBucketfsPort() {
         final int majorVersion = this.dockerImageReference.getMajorVersion()
-                .orElseThrow(() -> new UnsupportedOperationException(
-                        "Could not detect internal BucketFS port for custom image. Please specify the port explicitly using withExposedPorts()."));
+                .orElseThrow(() -> new PortDetectionException("BucketFS"));
         if (majorVersion >= 7) {
             return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
         } else {
@@ -144,11 +158,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    private void exposePorts() {
-        if (this.getExposedPorts().isEmpty()) {
-            this.addExposedPorts(getDefaultInternalDatabasePort(), getDefaultInternalBucketfsPort());
+    public static class PortDetectionException extends UnsupportedOperationException {
+        public PortDetectionException(final String service) {
+            super("Could not detect internal " + service + " port for custom image. "
+                    + "Please specify the port explicitly using withExposedPorts().");
         }
-        logger().debug("Exposing ports: {}", this.getExposedPorts());
     }
 
     @Override
