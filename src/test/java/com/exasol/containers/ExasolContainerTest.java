@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,18 @@ class ExasolContainerTest {
         Mockito.doThrow(new NoDriverFoundException("Mock Driver-Not-Found Exception", new Exception("Mock cause")))
                 .when(this.containerSpy).createConnection(anyString());
         assertThrowsLaunchException("driver was not found", () -> this.containerSpy.waitUntilContainerStarted());
+    }
+
+    @Test
+    void testWithConnectTimeoutSeconds() {
+        final var container = new ExasolContainer<>();
+        assertThrows(UnsupportedOperationException.class, () -> container.withConnectTimeoutSeconds(1));
+    }
+
+    @Test
+    void testWithStartupTimeout() {
+        final var container = new ExasolContainer<>();
+        assertThrows(UnsupportedOperationException.class, () -> container.withStartupTimeout(Duration.ZERO));
     }
 
     @Test

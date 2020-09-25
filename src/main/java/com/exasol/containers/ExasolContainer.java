@@ -7,6 +7,7 @@ import static com.exasol.containers.ExasolContainerConstants.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.*;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -34,7 +35,7 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final long CONNECTION_WAIT_TIMEOUT_MILLISECONDS = 30000L;
+    private static final long CONNECTION_WAIT_TIMEOUT_MILLISECONDS = 90000L;
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -120,6 +121,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         super.configure();
     }
 
+    private static UnsupportedOperationException getTimeoutNotSupportedException() {
+        throw new UnsupportedOperationException("The Exasol testcontainer do not support this configuration.");
+    }
+
     /**
      * Get the default internal port of the database.
      * <p>
@@ -136,25 +141,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
         } else {
             return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT;
-        }
-    }
-
-    /**
-     * Get the default internal port of the BucketFS.
-     * <p>
-     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is necessary
-     * since the port number was changed with version 7.
-     * </p>
-     *
-     * @return default internal port of the database
-     */
-    public int getDefaultInternalBucketfsPort() {
-        final int majorVersion = this.dockerImageReference.getMajorVersion()
-                .orElseThrow(() -> new PortDetectionException("BucketFS"));
-        if (majorVersion >= 7) {
-            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
-        } else {
-            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
         }
     }
 
@@ -527,5 +513,35 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         } else {
             super.stop();
         }
+    }
+
+    /**
+     * Get the default internal port of the BucketFS.
+     * <p>
+     * This method chooses the BucketFS port number depending on the version of the Exasol database. This is necessary
+     * since the port number was changed with version 7.
+     * </p>
+     *
+     * @return default internal port of the database
+     */
+    public int getDefaultInternalBucketfsPort() {
+        final int majorVersion = this.dockerImageReference.getMajorVersion()
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "Could not detect internal BucketFS port for custom image. Please specify the port explicitly using withExposedPorts()."));
+        if (majorVersion >= 7) {
+            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
+        } else {
+            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
+        }
+    }
+
+    @Override
+    public T withConnectTimeoutSeconds(final int connectTimeoutSeconds) {
+        throw getTimeoutNotSupportedException();
+    }
+
+    @Override
+    public T withStartupTimeout(final Duration startupTimeout) {
+        throw getTimeoutNotSupportedException();
     }
 }
