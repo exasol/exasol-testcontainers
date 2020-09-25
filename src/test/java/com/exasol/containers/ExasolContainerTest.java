@@ -2,6 +2,7 @@ package com.exasol.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -79,5 +80,30 @@ class ExasolContainerTest {
     void testWithStartupTimeout() {
         final var container = new ExasolContainer<>();
         assertThrows(UnsupportedOperationException.class, () -> container.withStartupTimeout(Duration.ZERO));
+    }
+
+    @Test
+    void testWithExposedPorts() {
+        assertThat(new ExasolContainer<>().withExposedPorts().getExposedPorts().size(), equalTo(0));
+    }
+
+    @Test
+    void testWithDefaultExposedPorts() {
+        assertThat(new ExasolContainer<>().getExposedPorts().size(), equalTo(2));
+    }
+
+    @Test
+    void testAddExposedPorts() {
+        final ExasolContainer<?> container = new ExasolContainer<>();
+        container.addExposedPorts(1000);
+        assertThat(container.getExposedPorts().size(), equalTo(3));
+    }
+
+    @Test
+    void testCouldNotExtractPort() {
+        final var container = new ExasolContainer<>("unknown:1.2.3");
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, container::configure);
+        assertThat(exception.getMessage(), equalTo(
+                "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts()."));
     }
 }

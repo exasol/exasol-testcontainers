@@ -4,7 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +42,7 @@ class ExaLoaderBetweenTwoContainersIT {
             final Connection targetConnection = targetContainer.createConnection("");
             executeStatements(targetConnection, //
                     "CREATE CONNECTION SRCCON TO '" + sourceContainer.getDockerNetworkInternalIpAddress() + ":"
-                            + sourceContainer.getExposedPorts().get(0) + "' USER 'SYS' IDENTIFIED BY 'exasol'", //
+                            + sourceContainer.getDefaultInternalDatabasePort() + "' USER 'SYS' IDENTIFIED BY 'exasol'", //
                     "CREATE SCHEMA TARGET_SCHEMA", //
                     "CREATE TABLE TARGET_SCHEMA.FRUITS(NAME VARCHAR(40))", //
                     "IMPORT INTO TARGET_SCHEMA.FRUITS FROM EXA AT SRCCON TABLE SOURCE_SCHEMA.FRUITS");

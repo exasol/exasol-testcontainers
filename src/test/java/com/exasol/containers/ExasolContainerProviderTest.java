@@ -14,17 +14,17 @@ public class ExasolContainerProviderTest {
 
     @BeforeEach
     void beforeEach() {
-        provider = new ExasolContainerProvider();
+        this.provider = new ExasolContainerProvider();
     }
 
     @CsvSource({ "exasol,true", "acme,false", "\"\",false" })
     @ParameterizedTest
     void testSupports(final String databaseType, final boolean expectedToBeSupported) throws Exception {
-        assertThat(provider.supports(databaseType), equalTo(expectedToBeSupported));
+        assertThat(this.provider.supports(databaseType), equalTo(expectedToBeSupported));
     }
 
     @Test
     void testNewInstance() throws Exception {
-        assertThat(provider.newInstance(), instanceOf(ExasolContainer.class));
+        assertThat(this.provider.newInstance("7.0.0"), instanceOf(ExasolContainer.class));
     }
 }
