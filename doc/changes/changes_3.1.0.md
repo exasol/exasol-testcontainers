@@ -6,13 +6,13 @@ Code name: Exasol 7.0.0 support
 
 This release adds support for Exasol 7.0.0
 
-From that version on Docker-DB changed the default ports.
-If you don't set the ports explicitly (using `withExposedPorts()`) this container will auto detect the ports.
-You can also access the internal ports directly using `getDefaultInternalBucketfsPort()` and `getDefaultInternalDatabasePort()`.
+In this version of the Docker-DB, the default ports have changed.
+If you don't set the ports explicitly (using `withExposedPorts()`) the container will auto detect the ports.
+We have added two new methods to access internal ports directly using `getDefaultInternalBucketfsPort()` and `getDefaultInternalDatabasePort()`.
 
-This version also marked the unused methods `withConnectTimeoutSeconds` and `withStartupTimeout` as such using an exception.
+This version also marked the unused methods `withConnectTimeoutSeconds` and `withStartupTimeout`. Calling these methods throws an `UnsupportedOperation` exception.
 
-In addition this release changed updated the default image to 7.0.1.
+In addition this release changed the default image version to 7.0.1.
  
 
 ## Features / Enhancements
@@ -24,4 +24,3 @@ In addition this release changed updated the default image to 7.0.1.
 * #83: Increased connection timeout
 
 ## Dependency updates
-
