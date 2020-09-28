@@ -46,8 +46,8 @@ public class ExasolDockerImageReference {
             final int minor = (matcher.group(2)) == null ? 0 : parseInt(matcher.group(2));
             final int fix = (matcher.group(3)) == null ? 0 : parseInt(matcher.group(3));
             final int imageRevision = (matcher.group(4)) == null ? 1 : parseInt(matcher.group(4));
-            return new ExasolDockerImageReference(
-                    EXASOL_DOCKER_IMAGE_ID + ":" + major + "." + minor + "." + fix + "-d" + imageRevision);
+            return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + major + "." + minor + "." + fix
+                    + (major < 7 ? ("-d" + imageRevision) : ""));
         } else {
             return new ExasolDockerImageReference(reference);
         }
