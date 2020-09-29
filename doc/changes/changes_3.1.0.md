@@ -1,4 +1,4 @@
-# Exasol Test Containers 3.1.0, released 2020-09-XX
+# Exasol Test Containers 3.1.0, released 2020-09-29
 
 Code name: Exasol 7.0.0 support
 
@@ -12,12 +12,12 @@ We have added two new methods to access internal ports directly using `getDefaul
 
 This version also marked the unused methods `withConnectTimeoutSeconds` and `withStartupTimeout`. Calling these methods throws an `UnsupportedOperation` exception.
 
-In addition this release changed the default image version to 7.0.1.
+In addition this release changed the default image version to 7.0.2.
  
 
 ## Features / Enhancements
  
-* #78 Added Support for Exasol 7.0
+* #78 Added Support for Exasol 7.0.0
 
 ## Bugfixes
 
