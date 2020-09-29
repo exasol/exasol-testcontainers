@@ -17,7 +17,8 @@ In addition this release changed the default image version to 7.0.2.
 
 ## Features / Enhancements
  
-* #78 Added Support for Exasol 7.0.0
+* #78: Added Support for Exasol 7.0.0
+* #79: Added GitHub actions
 
 ## Bugfixes
 
