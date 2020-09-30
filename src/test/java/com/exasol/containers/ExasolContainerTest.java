@@ -106,4 +106,9 @@ class ExasolContainerTest {
         assertThat(exception.getMessage(), equalTo(
                 "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts()."));
     }
+
+    @Test
+    void testWithJdbcConnectionTimeout() {
+        assertThat(new ExasolContainer<>().withJdbcConnectionTimeout(123).getJdbcConnectionTimeout(), equalTo(123));
+    }
 }
