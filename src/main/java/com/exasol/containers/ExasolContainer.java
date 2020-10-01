@@ -35,7 +35,7 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final long CONNECTION_WAIT_TIMEOUT_MILLISECONDS = 90000L;
+    private int connectionWaitTimeoutSeconds = 90;
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -122,7 +122,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private static UnsupportedOperationException getTimeoutNotSupportedException() {
-        throw new UnsupportedOperationException("The Exasol testcontainer do not support this configuration.");
+        throw new UnsupportedOperationException(
+                "The Exasol testcontainer do not support this configuration. Use withJdbcConnectionTimeout instead.");
     }
 
     /**
@@ -410,7 +411,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
         final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < CONNECTION_WAIT_TIMEOUT_MILLISECONDS) {
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < this.connectionWaitTimeoutSeconds * 1000L) {
             if (isConnectionAvailable()) {
                 return;
             }
@@ -535,12 +536,51 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
+    /**
+     * Set the timeout for the JDBC connection.
+     * <p>
+     * This time is not measured after the startup, but after container internal cluster was started.
+     * </p>
+     * 
+     * @param timeoutInSeconds timeout in seconds.
+     * @return self
+     */
+    public ExasolContainer<T> withJdbcConnectionTimeout(final int timeoutInSeconds) {
+        this.connectionWaitTimeoutSeconds = timeoutInSeconds;
+        return this;
+    }
+
+    /**
+     * Get the JDBC connection timeout.
+     *
+     * @return JDBC connection timeout in seconds.
+     */
+    public int getJdbcConnectionTimeout() {
+        return this.connectionWaitTimeoutSeconds;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @deprecated this method has no effect for the Exasol testcontainer. Use {@link #withJdbcConnectionTimeout(int)}
+     *             instead
+     */
+    @Deprecated(since = "3.2.0")
     @Override
+    @SuppressWarnings("java:S1133") // we need this method to hide the original one
     public T withConnectTimeoutSeconds(final int connectTimeoutSeconds) {
         throw getTimeoutNotSupportedException();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated this method has no effect for the Exasol testcontainer. Use {@link #withJdbcConnectionTimeout(int)}
+     *             instead
+     */
+    @Deprecated(since = "3.2.0")
     @Override
+    @SuppressWarnings("java:S1133") // we need this method to hide the original one
     public T withStartupTimeout(final Duration startupTimeout) {
         throw getTimeoutNotSupportedException();
     }
