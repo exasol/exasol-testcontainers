@@ -274,6 +274,17 @@ Covers:
 
 Needs: impl, itest
 
+### Uploading InputStream to `Bucket`
+`dsn~uploading-input-stream-to-bucket~1`
+
+The `Bucket` offers uploading of the contents of an InputStream into a file in bucket in BucketFS.
+
+Covers:
+
+* `req~uploading-input-stream-to-a-file-in-bucketfs~1`
+
+Needs: impl, itest
+
 ### `BucketFactory` Injects Access Credentials
 `dsn~bucket-factory-injects-access-credentials~1`
 

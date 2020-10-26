@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +30,7 @@ class BucketIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketIT.class);
 
     @Container
-    private static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
+    private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
             .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
     @Test
@@ -94,6 +95,16 @@ class BucketIT {
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadStringContent(content, pathInBucket);
         assertThat(bucket.listContents(), hasItem(pathInBucket.toString()));
+    }
+
+    // [itest->dsn~uploading-input-stream-to-bucket~1]
+    @Test
+    void testUploadInputStreamContent() throws BucketAccessException, InterruptedException, TimeoutException {
+        final String content = "Hello BucketFS!";
+        final String pathInBucket = "string-uploaded.txt";
+        final Bucket bucket = container.getDefaultBucket();
+        bucket.uploadInputStream(() -> new ByteArrayInputStream(content.getBytes()), pathInBucket);
+        assertThat(bucket.listContents(), hasItem(pathInBucket));
     }
 
     @Test

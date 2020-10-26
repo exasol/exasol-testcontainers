@@ -3,10 +3,15 @@ package com.exasol.bucketfs;
 import static com.exasol.containers.ExasolContainerConstants.*;
 
 import java.io.IOException;
-import java.net.*;
-import java.net.http.*;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +19,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,13 +226,13 @@ public class Bucket {
     public void uploadFile(final Path localPath, final String pathInBucket, final boolean blocking)
             throws InterruptedException, BucketAccessException, TimeoutException {
         final String extendedPathInBucket = extendPathInBucketDownToFilename(localPath, pathInBucket);
-        delayRepeatedUploadToSamePath(extendedPathInBucket);
-        final long millisSinceEpochBeforeUpload = System.currentTimeMillis();
-        uploadFileNonBlocking(localPath, extendedPathInBucket);
-        if (blocking) {
-            waitForFileToBeSynchronized(extendedPathInBucket, millisSinceEpochBeforeUpload);
+        try {
+            uploadContent(BodyPublishers.ofFile(localPath), extendedPathInBucket, "file " + extendedPathInBucket,
+                    blocking);
+        } catch (final IOException exception) {
+            throw new BucketAccessException("I/O failed to open file \"" + localPath + "\" for upload to BucketFS.",
+                    exception);
         }
-        this.uploadHistory.put(extendedPathInBucket, Instant.now());
     }
 
     // [impl->dsn~bucketfs-object-overwrite-throttle~1]
@@ -247,19 +253,31 @@ public class Bucket {
         return pathInBucket.endsWith("/") ? pathInBucket + localPath.getFileName() : pathInBucket;
     }
 
-    private void uploadFileNonBlocking(final Path localPath, final String pathInBucket)
-            throws InterruptedException, BucketAccessException {
+    private void uploadContent(final BodyPublisher bodyPublisher, final String pathInBucket,
+            final String contentDescription, final boolean blocking)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final long millisSinceEpochBeforeUpload = System.currentTimeMillis();
+        uploadContentNonBlocking(bodyPublisher, pathInBucket, contentDescription);
+        if (blocking) {
+            waitForFileToBeSynchronized(pathInBucket, millisSinceEpochBeforeUpload);
+        }
+    }
+
+    private void uploadContentNonBlocking(final BodyPublisher bodyPublisher, final String pathInBucket,
+            final String contentDescription) throws InterruptedException, BucketAccessException {
+        delayRepeatedUploadToSamePath(pathInBucket);
         final URI uri = createWriteUri(pathInBucket);
-        LOGGER.debug("Uploading file \"{}\" to bucket \"{}/{}\": \"{}\"", localPath, this.bucketFsName, this.bucketName,
-                uri);
+        LOGGER.debug("Uploading \"{}\" to bucket \"{}/{}\": \"{}\"", contentDescription, this.bucketFsName,
+                this.bucketName, uri);
         try {
-            final int statusCode = httpPut(uri, BodyPublishers.ofFile(localPath));
+            final int statusCode = httpPut(uri, bodyPublisher);
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                LOGGER.error("{}: Failed to upload file \"{}\" to \"{}\"", statusCode, localPath, uri);
-                throw new BucketAccessException("Unable to upload file \"" + localPath + "\" to ", statusCode, uri);
+                LOGGER.error("{}: Failed to upload \"{}\" to \"{}\"", statusCode, contentDescription, uri);
+                throw new BucketAccessException("Unable to upload file \"" + contentDescription + "\" to ", statusCode,
+                        uri);
             }
         } catch (final IOException exception) {
-            throw new BucketAccessException("I/O error trying to upload file \"" + localPath + "\" to ", uri,
+            throw new BucketAccessException("I/O error trying to upload \"" + contentDescription + "\" to ", uri,
                     exception);
         }
         LOGGER.debug("Successfully uploaded to \"{}\"", uri);
@@ -317,7 +335,7 @@ public class Bucket {
      * For large payload use {@link Bucket#uploadFile(Path, String)} instead.
      * </p>
      * <p>
-     * This call blocks until the uploaded file is synchronized in BucketFs or a timeout occurs.
+     * When blocking is enabled, this call waits until either the uploaded file is synchronized or a timeout occurred.
      * </p>
      *
      * @param content      string to write
@@ -330,28 +348,47 @@ public class Bucket {
      */
     public void uploadStringContent(final String content, final String pathInBucket, final boolean blocking)
             throws InterruptedException, BucketAccessException, TimeoutException {
-        final long millisSinceEpochBeforeUpload = System.currentTimeMillis();
-        uploadStringContentNonBlocking(content, pathInBucket);
-        if (blocking) {
-            waitForFileToBeSynchronized(pathInBucket, millisSinceEpochBeforeUpload);
-        }
+        final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
+        final String description = "text " + excerpt;
+        uploadContent(BodyPublishers.ofString(content), pathInBucket, description, blocking);
     }
 
-    private void uploadStringContentNonBlocking(final String content, final String pathInBucket)
-            throws InterruptedException, BucketAccessException {
-        final String excerpt = (content.length() > 20) ? content.substring(0, 20) + "..." : content;
-        final URI uri = createWriteUri(pathInBucket);
-        LOGGER.debug("Uploading text \"{}\" to \"{}\"", excerpt, uri);
-        try {
-            final int statusCode = httpPut(uri, BodyPublishers.ofString(content));
-            if (statusCode != HttpURLConnection.HTTP_OK) {
-                throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to bucket.", statusCode,
-                        uri);
-            }
-        } catch (final IOException exception) {
-            throw new BucketAccessException("Unable to upload text \"" + excerpt + "\"" + " to bucket.", uri,
-                    exception);
-        }
+    /**
+     * Upload the contents of an input stream to the bucket.
+     * <p>
+     * This call blocks until the uploaded file is synchronized in BucketFs or a timeout occurs.
+     * </p>
+     *
+     * @param inputStreamSupplier supplier that provides the input stream
+     * @param pathInBucket        path inside the bucket
+     * @throws InterruptedException  if the upload is interrupted
+     * @throws BucketAccessException if the file cannot be uploaded to the given URI
+     * @throws TimeoutException      if synchronization takes too long
+     */
+    // [impl->dsn~uploading-input-stream-to-bucket~1]
+    public void uploadInputStream(final Supplier<InputStream> inputStreamSupplier, final String pathInBucket)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        uploadInputStream(inputStreamSupplier, pathInBucket, true);
+    }
+
+    /**
+     * Upload the contents of an input stream to the bucket.
+     * <p>
+     * When blocking is enabled, this call waits until either the uploaded file is synchronized or a timeout occurred.
+     * </p>
+     *
+     * @param inputStreamSupplier supplier that provides the input stream
+     * @param pathInBucket        path inside the bucket
+     * @param blocking            when set to {@code true}, the call waits for the uploaded object to be synchronized,
+     *                            otherwise immediately returns
+     * @throws InterruptedException  if the upload is interrupted
+     * @throws BucketAccessException if the file cannot be uploaded to the given URI
+     * @throws TimeoutException      if synchronization takes too long
+     */
+    // [impl->dsn~dsn~uploading-input-stream-to-bucket~1]
+    public void uploadInputStream(final Supplier<InputStream> inputStreamSupplier, final String pathInBucket,
+            final boolean blocking) throws InterruptedException, BucketAccessException, TimeoutException {
+        uploadContentNonBlocking(BodyPublishers.ofInputStream(inputStreamSupplier), pathInBucket, "input stream");
     }
 
     private boolean isSupportedArchiveFormat(final String pathInBucket) {
