@@ -277,6 +277,21 @@ Covers:
 
 Needs: dsn
 
+#### Uploading InputStream to a File in BucketFS
+`req~uploading-input-stream-to-a-file-in-bucketfs~1`
+
+ETC uploads the contents of an InputStream to a file inside a bucket.
+
+Rationale:
+
+Some tests load the content from resources using `getResourceAsStream()`. 
+
+Covers:
+
+* [feat~bucketfs-access~1](#bucketfs-access)
+
+Needs: dsn
+
 #### Downloading a File from BucketFS
 `req~downloading-a-file-from-bucketfs~1`
 
