@@ -360,7 +360,7 @@ public class Bucket {
     /**
      * Upload the contents of an input stream to the bucket.
      * <p>
-     * This call blocks until the uploaded file is synchronized in BucketFs or a timeout occurs.
+     * This call blocks until the uploaded file is synchronized in BucketFS or a timeout occurs.
      * </p>
      *
      * @param inputStreamSupplier supplier that provides the input stream

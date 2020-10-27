@@ -277,7 +277,7 @@ Needs: impl, itest
 ### Uploading InputStream to `Bucket`
 `dsn~uploading-input-stream-to-bucket~1`
 
-The `Bucket` offers uploading of the contents of an InputStream into a file in bucket in BucketFS.
+The `Bucket` offers uploading of the contents of an `InputStream` into a file in that bucket on BucketFS.
 
 Covers:
 
