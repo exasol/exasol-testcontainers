@@ -235,6 +235,8 @@ public class Bucket {
         }
     }
 
+    // Wait some time between uploads of the same file so we can distinguish the upload success logs for detecting
+    // upload success.
     // [impl->dsn~bucketfs-object-overwrite-throttle~1]
     private void delayRepeatedUploadToSamePath(final String extendedPathInBucket) throws InterruptedException {
         if (this.uploadHistory.containsKey(extendedPathInBucket)) {
@@ -256,6 +258,9 @@ public class Bucket {
     private void uploadContent(final BodyPublisher bodyPublisher, final String pathInBucket,
             final String contentDescription, final boolean blocking)
             throws InterruptedException, BucketAccessException, TimeoutException {
+        if (blocking) {
+            delayRepeatedUploadToSamePath(pathInBucket);
+        }
         final long millisSinceEpochBeforeUpload = System.currentTimeMillis();
         uploadContentNonBlocking(bodyPublisher, pathInBucket, contentDescription);
         if (blocking) {
@@ -265,7 +270,6 @@ public class Bucket {
 
     private void uploadContentNonBlocking(final BodyPublisher bodyPublisher, final String pathInBucket,
             final String contentDescription) throws InterruptedException, BucketAccessException {
-        delayRepeatedUploadToSamePath(pathInBucket);
         final URI uri = createWriteUri(pathInBucket);
         LOGGER.debug("Uploading \"{}\" to bucket \"{}/{}\": \"{}\"", contentDescription, this.bucketFsName,
                 this.bucketName, uri);
