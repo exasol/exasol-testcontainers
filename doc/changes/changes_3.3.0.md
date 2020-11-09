@@ -5,3 +5,7 @@ Code name: Upload input stream to BucketFS
 ## Features / Enhancements
  
 * #77: Upload input stream to BucketFS
+
+## Bugfixes
+
+* #97: Increased BucketFS timeout

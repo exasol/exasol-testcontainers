@@ -358,7 +358,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * 
+     * Clean up the database.
      */
     // [impl->dsn~purging~1]
     public void purgeDatabase() {
