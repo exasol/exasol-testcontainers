@@ -14,6 +14,7 @@ import java.util.*;
 import org.testcontainers.containers.*;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
 import com.exasol.bucketfs.Bucket;
@@ -35,7 +36,7 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private int connectionWaitTimeoutSeconds = 90;
+    private int connectionWaitTimeoutSeconds = 200;
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -57,12 +58,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @param dockerImageName name of the Docker image from which the container is created
      * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
      */
+    @SuppressWarnings("java:S1874") // This constructor is different from JdbcDatabaseContainer(String) and not
+                                    // deprecated
     public ExasolContainer(final String dockerImageName) {
         this(ExasolDockerImageReference.parse(dockerImageName));
     }
 
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
-        super(dockerImageReference.toString());
+        super(DockerImageName.parse(dockerImageReference.toString()));
         this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);

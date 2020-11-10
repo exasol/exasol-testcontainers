@@ -36,7 +36,7 @@ public class ExasolContainerResuseIT {
     private static Properties getTestcontainerProperties() throws NoSuchFieldException, IllegalAccessException {
         final TestcontainersConfiguration testcontainersConfiguration = TestcontainersConfiguration.getInstance();
         final Field environmentPropertiesField = testcontainersConfiguration.getClass()
-                .getDeclaredField("environmentProperties");
+                .getDeclaredField("userProperties");
         environmentPropertiesField.setAccessible(true);
         return (Properties) environmentPropertiesField.get(testcontainersConfiguration);
     }
