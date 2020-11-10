@@ -1,4 +1,4 @@
-# Exasol Test Containers 3.3.0, released 2020-XX-XX
+# Exasol Test Containers 3.3.0, released 2020-11-10
 
 Code name: Upload input stream to BucketFS
  
