@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>3.3.0</version>
+    <version>3.3.1</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.
@@ -16,7 +16,6 @@
         </project.reporting.outputEncoding>
         <java.version>11</java.version>
         <junit.version>5.7.0</junit.version>
-        <junit.platform.version>1.7.0</junit.platform.version>
         <maven.surefire-and-failsafe.version>3.0.0-M3</maven.surefire-and-failsafe.version>
         <testcontainers.version>1.15.0</testcontainers.version>
         <gpg.skip>true</gpg.skip>
@@ -94,6 +93,13 @@
             <version>7.0.3</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- Overrides Junit 4.12 which is used in test containers but contains a security issue:
+        https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+        </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -110,12 +116,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-runner</artifactId>
-            <version>${junit.platform.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -260,6 +260,12 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -275,6 +281,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludeVulnerabilityIds>
+                        <!-- Ignores CVE-2020-15250, because we use Java 11 and junit 4.13.1 which contains a fix:
+                        https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
+                        <exclude>7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1</exclude>
+                    </excludeVulnerabilityIds>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -289,6 +302,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <rulesUri>file:///${project.basedir}/versionsMavenPluginRules.xml</rulesUri>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -307,6 +323,32 @@
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <configuration>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
