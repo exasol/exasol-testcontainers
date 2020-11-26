@@ -168,6 +168,16 @@ Unfortunately this in case of exposed ports, this mechanism kicks in too late. P
 
 That means if you use non-standard ports for your services, you must expose the ports manually using the "withExposedPorts(...)" method when you instantiate the container.
 
+## Overriding the Docker Image in a Build
+
+If your want to test your software against multiple versions or variants of Exasol without altering your code, you can do so by setting the Java property `com.exasol.dockerdb.image`.
+
+This property accepts all forms of image reference that the constructor of the `ExasolContainer` knows. Namely version numbers or complete docker image names.
+
+When you set this property, the `ExasolTestcontainer` will start the Exasol docker image that value of the property refers to instead of the one defined in the constructor call.
+
+You can use this in a continuous integration build for example to iterate through a list of Exasol versions that you want to test your software against.
+
 ## Automatic Cluster Configuration Parsing
 
 Many integration tests rely on knowing the setup of the cluster. The Exasol test container comes with a parser that reads the cluster configuration from the running docker container.

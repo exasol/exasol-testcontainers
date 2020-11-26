@@ -7,6 +7,10 @@ sudo: required
 services:
   - docker
 
+env:
+  - DOCKER_DB_VERSION=7.0.2
+  - DOCKER_DB_VERSION=6.2.12
+   
 jdk:
   - openjdk11
 
