@@ -7,3 +7,8 @@ In the 3.4.0 release we added the ability to override the docker image used via 
 ## Features
  
 * #106: Docker image can be overridden by property.
+
+## Plugin Updates
+
+* Updated `org.jacoco:jacoco-maven-plugin:0.8.5` to `0.8.6`
+* Updated `org.codehaus.mojo:versions-maven-plugin:2.7` to `2.8.1`
