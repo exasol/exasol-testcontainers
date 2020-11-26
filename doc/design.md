@@ -187,7 +187,7 @@ Covers:
 
 * `req~matrix-testing-with-different-docker-images~1`
 
-Needs: impl, utest, itest
+Needs: impl, itest
 
 ## Database Access
 

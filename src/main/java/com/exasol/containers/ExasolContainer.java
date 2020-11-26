@@ -241,7 +241,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return "SELECT 1 FROM DUAL";
     }
 
-    // [dsn~exasol-container-provides-a-jdbc-connection-with-administrator-privileges~1]
     @Override
     public T withUsername(final String username) {
         this.username = username;
