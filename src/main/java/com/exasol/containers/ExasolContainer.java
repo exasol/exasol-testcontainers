@@ -36,7 +36,6 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private int connectionWaitTimeoutSeconds = 200;
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -51,6 +50,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean isReused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
+    private int connectionWaitTimeoutSeconds = 200;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -61,7 +61,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @SuppressWarnings("java:S1874") // This constructor is different from JdbcDatabaseContainer(String) and not
                                     // deprecated
     public ExasolContainer(final String dockerImageName) {
-        this(ExasolDockerImageReference.parse(dockerImageName));
+        this(ExasolDockerImageReference.parse(getOverridableDockerImageName(dockerImageName)));
+    }
+
+    // [impl->dsn~override-docker-image-via-java-property~1]
+    private static String getOverridableDockerImageName(final String dockerImageName) {
+        return System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, dockerImageName);
     }
 
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
@@ -135,7 +140,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * This method chooses the port number depending on the version of the Exasol database. This is necessary since the
      * port number was changed with version 7.
      * </p>
-     * 
+     *
      * @return default internal port of the database
      */
     public int getDefaultInternalDatabasePort() {
@@ -221,7 +226,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * Create a JDBC connection using default username and password.
-     * 
+     *
      * @return database connection
      * @throws SQLException if the connection cannot be established
      */
@@ -235,7 +240,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return "SELECT 1 FROM DUAL";
     }
 
-    // [dsn~exasol-container-provides-a-jdbc-connection-with-administrator-privileges~1]
     @Override
     public T withUsername(final String username) {
         this.username = username;
@@ -414,7 +418,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
         final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < this.connectionWaitTimeoutSeconds * 1000L) {
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < (this.connectionWaitTimeoutSeconds * 1000L)) {
             if (isConnectionAvailable()) {
                 return;
             }
@@ -544,7 +548,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * <p>
      * This time is not measured after the startup, but after container internal cluster was started.
      * </p>
-     * 
+     *
      * @param timeoutInSeconds timeout in seconds.
      * @return self
      */
@@ -564,7 +568,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @deprecated this method has no effect for the Exasol testcontainer. Use {@link #withJdbcConnectionTimeout(int)}
      *             instead
      */
