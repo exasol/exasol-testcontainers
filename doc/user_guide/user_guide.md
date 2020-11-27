@@ -170,9 +170,9 @@ That means if you use non-standard ports for your services, you must expose the 
 
 ## Overriding the Docker Image in a Build
 
-If your want to test your software against multiple versions or variants of Exasol without altering your code, you can do so by setting the Java property `com.exasol.dockerdb.image`.
+If your want to test your software against multiple versions or variants of Exasol without altering your code, you can do so by setting the `com.exasol.dockerdb.image` Java property.
 
-This property accepts all forms of image reference that the constructor of the `ExasolContainer` knows. Namely version numbers or complete docker image names.
+This property accepts all forms of image reference that the constructor of the ExasolContainer knows. Namely version numbers like `7.0.2`, or complete docker image names like `exasol/docker-db:7.0.2`.
 
 When you set this property, the `ExasolTestcontainer` will start the Exasol docker image that value of the property refers to instead of the one defined in the constructor call.
 
