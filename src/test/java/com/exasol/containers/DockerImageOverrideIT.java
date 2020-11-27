@@ -26,7 +26,11 @@ class DockerImageOverrideIT {
             exasol.stop();
             assertThat(productVersion, containsString(NON_RECENT_VERSION));
         } finally {
-            System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, originalVersion);
+            if (originalVersion == null) {
+                System.clearProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+            } else {
+                System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, originalVersion);
+            }
         }
     }
 }
