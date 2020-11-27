@@ -289,7 +289,7 @@ public class Bucket {
 
     private void recordUploadInHistory(final String pathInBucket) {
         final Instant now = Instant.now();
-        LOGGER.debug("Recordeded upload to \"{}\" at {} in upload history", pathInBucket, now);
+        LOGGER.debug("Recorded upload to \"{}\" at {} in upload history", pathInBucket, now);
         this.uploadHistory.put(pathInBucket, now);
     }
 
