@@ -1,5 +1,6 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
@@ -16,8 +17,8 @@ class DockerImageOverrideIT {
     // [itest->dsn~override-docker-image-via-java-property~1]
     @Test
     void testImageOverride() throws SQLException {
-        final String originalVersion = System.getProperty(ExasolContainer.DOCKER_IMAGE_OVERRIDE_PROPERTY);
-        System.setProperty(ExasolContainer.DOCKER_IMAGE_OVERRIDE_PROPERTY, NON_RECENT_VERSION);
+        final String originalVersion = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+        System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, NON_RECENT_VERSION);
         try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>()) {
             exasol.withRequiredServices().start();
             final Connection connection = exasol.createConnection();
@@ -25,7 +26,7 @@ class DockerImageOverrideIT {
             exasol.stop();
             assertThat(productVersion, containsString(NON_RECENT_VERSION));
         } finally {
-            System.setProperty(ExasolContainer.DOCKER_IMAGE_OVERRIDE_PROPERTY, originalVersion);
+            System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, originalVersion);
         }
     }
 }
