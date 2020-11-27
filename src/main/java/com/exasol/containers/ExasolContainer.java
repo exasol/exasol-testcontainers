@@ -135,7 +135,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * This method chooses the port number depending on the version of the Exasol database. This is necessary since the
      * port number was changed with version 7.
      * </p>
-     * 
+     *
      * @return default internal port of the database
      */
     public int getDefaultInternalDatabasePort() {
@@ -149,6 +149,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     public static class PortDetectionException extends UnsupportedOperationException {
+        private static final long serialVersionUID = -1871794026177194823L;
+
         public PortDetectionException(final String service) {
             super("Could not detect internal " + service + " port for custom image. "
                     + "Please specify the port explicitly using withExposedPorts().");
@@ -221,7 +223,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * Create a JDBC connection using default username and password.
-     * 
+     *
      * @return database connection
      * @throws SQLException if the connection cannot be established
      */
@@ -414,7 +416,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
         final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < this.connectionWaitTimeoutSeconds * 1000L) {
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < (this.connectionWaitTimeoutSeconds * 1000L)) {
             if (isConnectionAvailable()) {
                 return;
             }
@@ -544,7 +546,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * <p>
      * This time is not measured after the startup, but after container internal cluster was started.
      * </p>
-     * 
+     *
      * @param timeoutInSeconds timeout in seconds.
      * @return self
      */
@@ -564,7 +566,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @deprecated this method has no effect for the Exasol testcontainer. Use {@link #withJdbcConnectionTimeout(int)}
      *             instead
      */
