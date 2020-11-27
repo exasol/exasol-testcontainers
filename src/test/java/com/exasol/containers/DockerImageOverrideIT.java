@@ -16,6 +16,7 @@ class DockerImageOverrideIT {
     // [itest->dsn~override-docker-image-via-java-property~1]
     @Test
     void testImageOverride() throws SQLException {
+        final String originalVersion = System.getProperty(ExasolContainer.DOCKER_IMAGE_OVERRIDE_PROPERTY);
         System.setProperty(ExasolContainer.DOCKER_IMAGE_OVERRIDE_PROPERTY, NON_RECENT_VERSION);
         try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>()) {
             exasol.withRequiredServices().start();
@@ -23,6 +24,8 @@ class DockerImageOverrideIT {
             final String productVersion = connection.getMetaData().getDatabaseProductVersion();
             exasol.stop();
             assertThat(productVersion, containsString(NON_RECENT_VERSION));
+        } finally {
+            System.setProperty(ExasolContainer.DOCKER_IMAGE_OVERRIDE_PROPERTY, originalVersion);
         }
     }
 }

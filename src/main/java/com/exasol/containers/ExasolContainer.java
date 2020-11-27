@@ -36,7 +36,6 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    public static final String DOCKER_IMAGE_OVERRIDE_PROPERTY = "com.exasol.dockerdb.image";
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
