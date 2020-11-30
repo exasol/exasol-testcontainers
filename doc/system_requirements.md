@@ -168,6 +168,21 @@ Covers:
 
 Needs: dsn
 
+#### Matrix Testing With Different Docker Images
+`req~matrix-testing-with-different-docker-images~1`
+
+Users can run the same build that uses ETC for integration tests against multiple versions of Exasol.
+
+Rationale:
+
+Matrix tests are required if users want to ensure backward compatibility of their product. They also allow testing against variants, e.g. Exasol variants with different feature sets.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
 ### Database Access
 
 #### JDBC Connection With Administrator Privileges

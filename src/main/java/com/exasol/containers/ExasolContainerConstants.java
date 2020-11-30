@@ -23,11 +23,12 @@ public final class ExasolContainerConstants {
     public static final String NAME = "exasol";
     public static final String JDBC_DRIVER_CLASS = "com.exasol.jdbc.EXADriver";
     public static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
+    public static final Set<String> SUPPORTED_ARCHIVE_EXTENSIONS = Set.of(".tar", ".tgz", ".tar.gz", ".zip");
+    public static final String DOCKER_IMAGE_OVERRIDE_PROPERTY = "com.exasol.dockerdb.image";
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT = 8888;
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE = 8563;
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE = 2580;
-    public static final Set<String> SUPPORTED_ARCHIVE_EXTENSIONS = Set.of(".tar", ".tgz", ".tar.gz", ".zip");
 
     private ExasolContainerConstants() {
         // prevent instantiation
