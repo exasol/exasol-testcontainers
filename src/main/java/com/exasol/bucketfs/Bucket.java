@@ -4,14 +4,10 @@ import static com.exasol.containers.ExasolContainerConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
+import java.net.*;
+import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -245,9 +241,12 @@ public class Bucket {
             final Instant now = Instant.now();
             if (!now.isAfter(lastUploadAt.plusSeconds(1))) {
                 final long delayInMillis = 1000L - (now.getNano() / 1000000L);
-                LOGGER.debug("Delaying upload for {} ms", delayInMillis);
+                LOGGER.debug("Delaying upload to \"{}\" for {} ms", extendedPathInBucket, delayInMillis);
                 Thread.sleep(delayInMillis);
             }
+        } else {
+            LOGGER.debug("No previous uploads to \"{}\" recorded in upload history. No upload delay required.",
+                    extendedPathInBucket);
         }
     }
 
@@ -285,6 +284,13 @@ public class Bucket {
                     exception);
         }
         LOGGER.debug("Successfully uploaded to \"{}\"", uri);
+        recordUploadInHistory(pathInBucket);
+    }
+
+    private void recordUploadInHistory(final String pathInBucket) {
+        final Instant now = Instant.now();
+        LOGGER.debug("Recorded upload to \"{}\" at {} in upload history", pathInBucket, now);
+        this.uploadHistory.put(pathInBucket, now);
     }
 
     private URI createWriteUri(final String pathInBucket) throws BucketAccessException {
