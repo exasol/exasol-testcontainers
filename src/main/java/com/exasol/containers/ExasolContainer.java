@@ -36,7 +36,6 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private int connectionWaitTimeoutSeconds = 200;
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -51,6 +50,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean isReused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
+    private int connectionWaitTimeoutSeconds = 200;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -61,7 +61,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @SuppressWarnings("java:S1874") // This constructor is different from JdbcDatabaseContainer(String) and not
                                     // deprecated
     public ExasolContainer(final String dockerImageName) {
-        this(ExasolDockerImageReference.parse(dockerImageName));
+        this(ExasolDockerImageReference.parse(getOverridableDockerImageName(dockerImageName)));
+    }
+
+    // [impl->dsn~override-docker-image-via-java-property~1]
+    private static String getOverridableDockerImageName(final String dockerImageName) {
+        return System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, dockerImageName);
     }
 
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
@@ -237,7 +242,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return "SELECT 1 FROM DUAL";
     }
 
-    // [dsn~exasol-container-provides-a-jdbc-connection-with-administrator-privileges~1]
     @Override
     public T withUsername(final String username) {
         this.username = username;

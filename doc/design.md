@@ -174,6 +174,21 @@ Covers:
 
 Needs: impl, itest
 
+### Override Docker Image via Java Property
+`dsn~override-docker-image-via-java-property~1`
+
+If the Java property `com.exasol.dockerdb.image` is set, it overrides the docker image given in the code that creates the container instance.
+
+Rationale:
+
+This allows running the same build with unaltered code multiple times while mutating the docker image used in the test.
+
+Covers:
+
+* `req~matrix-testing-with-different-docker-images~1`
+
+Needs: impl, itest
+
 ## Database Access
 
 ### `ExasolContainer` Provides a JDBC Connection for Username and Password
