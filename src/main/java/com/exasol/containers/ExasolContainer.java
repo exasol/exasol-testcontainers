@@ -265,13 +265,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     // [impl->dsn~defining-required-optional-service~1]
     public T withRequiredServices(final ExasolService... optionalServices) {
-        final ExasolService[] services = new ExasolService[optionalServices.length + 1];
-        services[0] = ExasolService.JDBC;
-        for (int i = 0; i < optionalServices.length; ++i) {
-            services[i + 1] = optionalServices[i];
-        }
-        this.requiredServices = Set.of(services);
+        final HashSet<ExasolService> services = new HashSet<>();
+        addMandatoryServices(services);
+        services.addAll(Arrays.asList(optionalServices));
+        this.requiredServices = services;
         return self();
+    }
+
+    private void addMandatoryServices(final HashSet<ExasolService> services) {
+        services.add(ExasolService.JDBC);
     }
 
     /**

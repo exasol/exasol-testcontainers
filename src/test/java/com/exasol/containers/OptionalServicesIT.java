@@ -1,7 +1,6 @@
 package com.exasol.containers;
 
-import static com.exasol.containers.ExasolService.BUCKETFS;
-import static com.exasol.containers.ExasolService.UDF;
+import static com.exasol.containers.ExasolService.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -38,6 +37,15 @@ class OptionalServicesIT {
             container.withRequiredServices(UDF).start();
             assertAll(() -> assertFalse(container.isServiceReady(BUCKETFS)),
                     () -> assertTrue(container.isServiceReady(UDF)));
+        }
+    }
+
+    // [itest->dsn~defining-required-optional-service~1]
+    // While explicitly requesting the mandatory service "JDBC" has no particular benefit, it should still work.
+    @Test
+    void testRequiringJdbcService() {
+        try (final ExasolContainer<? extends ExasolContainer<?>> container = createContainer()) {
+            assertDoesNotThrow(() -> container.withRequiredServices(JDBC).start());
         }
     }
 }

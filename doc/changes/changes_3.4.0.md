@@ -8,6 +8,7 @@ In the 3.4.0 release we added the ability to override the docker image used via 
  
 * #105: Fixed code smells.
 * #106: Docker image can be overridden by property.
+* #109: Adding "JDBC" as service in `withRequiredServices()` does not throw exception anymore.
 
 ## Plugin Updates
 
