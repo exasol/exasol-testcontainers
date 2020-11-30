@@ -91,7 +91,6 @@ public class LogPatternDetector {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private LocalDateTime convertUtcToLowResulionLocal(final Instant afterUTC) {
         final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, this.timeZone.toZoneId());
         return localDateTime.withNano(0);

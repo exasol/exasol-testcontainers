@@ -154,6 +154,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     public static class PortDetectionException extends UnsupportedOperationException {
+        private static final long serialVersionUID = -1871794026177194823L;
+
         public PortDetectionException(final String service) {
             super("Could not detect internal " + service + " port for custom image. "
                     + "Please specify the port explicitly using withExposedPorts().");

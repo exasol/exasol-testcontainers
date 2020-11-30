@@ -9,10 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -70,45 +67,58 @@ class ExasolContainerTest {
         assertThrowsLaunchException("driver was not found", () -> this.containerSpy.waitUntilContainerStarted());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void testWithConnectTimeoutSeconds() {
-        final var container = new ExasolContainer<>();
-        assertThrows(UnsupportedOperationException.class, () -> container.withConnectTimeoutSeconds(1));
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            assertThrows(UnsupportedOperationException.class, () -> container.withConnectTimeoutSeconds(1));
+        }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void testWithStartupTimeout() {
-        final var container = new ExasolContainer<>();
-        assertThrows(UnsupportedOperationException.class, () -> container.withStartupTimeout(Duration.ZERO));
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            assertThrows(UnsupportedOperationException.class, () -> container.withStartupTimeout(Duration.ZERO));
+        }
     }
 
     @Test
     void testWithExposedPorts() {
-        assertThat(new ExasolContainer<>().withExposedPorts().getExposedPorts().size(), equalTo(0));
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            assertThat(container.withExposedPorts().getExposedPorts().size(), equalTo(0));
+        }
     }
 
     @Test
     void testWithDefaultExposedPorts() {
-        assertThat(new ExasolContainer<>().getExposedPorts().size(), equalTo(2));
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            assertThat(container.getExposedPorts().size(), equalTo(2));
+        }
     }
 
     @Test
     void testAddExposedPorts() {
-        final ExasolContainer<?> container = new ExasolContainer<>();
-        container.addExposedPorts(1000);
-        assertThat(container.getExposedPorts().size(), equalTo(3));
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            container.addExposedPorts(1000);
+            assertThat(container.getExposedPorts().size(), equalTo(3));
+        }
     }
 
     @Test
     void testCouldNotExtractPort() {
-        final var container = new ExasolContainer<>("unknown:1.2.3");
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, container::configure);
-        assertThat(exception.getMessage(), equalTo(
-                "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts()."));
+        try (final ExasolContainer<?> container = new ExasolContainer<>("unknown:1.2.3")) {
+            final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                    container::configure);
+            assertThat(exception.getMessage(), equalTo(
+                    "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts()."));
+        }
     }
 
     @Test
     void testWithJdbcConnectionTimeout() {
-        assertThat(new ExasolContainer<>().withJdbcConnectionTimeout(123).getJdbcConnectionTimeout(), equalTo(123));
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            assertThat(container.withJdbcConnectionTimeout(123).getJdbcConnectionTimeout(), equalTo(123));
+        }
     }
 }
