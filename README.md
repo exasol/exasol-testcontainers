@@ -88,10 +88,12 @@ Note that using the Exasol test container requires that you also use the JDBC dr
 | [Maven Source Plugin](https://maven.apache.org/plugins/maven-source-plugin/)        | Creating a source code JAR                             | Apache License 2.0            |
 | [Maven Surefire Plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)   | Unit testing                                           | Apache License 2.0            |
 | [OpenFastTrace Maven Plugin][oft-maven-plugin]                                      | Requirement Tracing                                    | GPL v3                        |
+| [Project Keeper Maven Plugin][project-keeper-maven-plugin]                          | Checking project structure                             | MIT License                   |
 | [Sonatype OSS Index Maven Plugin][sonatype-oss-index-maven-plugin]                  | Checking Dependencies Vulnerability                    | ASL2                          |
 | [Versions Maven Plugin][versions-maven-plugin]                                      | Checking if dependencies updates are available         | Apache License 2.0            |
 
 [maven-enforcer-plugin]: http://maven.apache.org/enforcer/maven-enforcer-plugin/
-[sonatype-oss-index-maven-plugin]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [oft-maven-plugin]: https://github.com/itsallcode/openfasttrace-maven-plugin
+[project-keeper-maven-plugin]: https://github.com/exasol/project-keeper-maven-plugin
+[sonatype-oss-index-maven-plugin]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [versions-maven-plugin]: https://www.mojohaus.org/versions-maven-plugin/
