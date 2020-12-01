@@ -22,6 +22,7 @@ The release also now uses `project-keeper` to maintain uniform project setup and
 
 ## Plugin Updates
 
+* Added `com.exaso.l:project-keeper-maven-plugin:0.4.1`
 * Updated `org.jacoco:jacoco-maven-plugin:0.8.5` to `0.8.6`
 * Updated `org.codehaus.mojo:versions-maven-plugin:2.7` to `2.8.1`
 * Updated `com.exasol:exasol-jdbc:7.0.3` to `7.0.4`
