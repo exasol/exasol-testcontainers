@@ -69,13 +69,13 @@ public class ExasolDockerImageReference {
         return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion + "-d1");
     }
 
+    private static ExasolDockerImageReference createSevenPlusVersionWithoutImageRevision(final String exasolVersion) {
+        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion);
+    }
+
     private static ExasolDockerImageReference createVersionWithImageRevision(final String exasolVersion,
             final int imageRevision) {
         return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion + "-d" + imageRevision);
-    }
-
-    private static ExasolDockerImageReference createSevenPlusVersionWithoutImageRevision(final String exasolVersion) {
-        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion);
     }
 
     /**
