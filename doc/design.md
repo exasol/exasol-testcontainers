@@ -208,7 +208,7 @@ Covers:
 
 * `req~shortened-docker-image-references~1`
 
-Needs: utest, itest
+Needs: impl, utest
 
 ## Database Access
 

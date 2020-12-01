@@ -148,7 +148,7 @@ Covers:
 
 * [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
 
-Needs: dsn 
+Needs: dsn
 
 #### Container Ready Check
 `req~container-ready-check~1`
