@@ -4,10 +4,13 @@ Code name: Matrix testing
 
 In the 3.4.0 release we added the ability to override the docker image used via the Java system property `com.exasol.dockerdb.image`. You can use this in a continuous integration build for example to iterate through a list of Exasol versions that you want to test your software against.
 
+Shortened image references can now also be prefixed with `docker-db:` or `exasol/docker-db:`. Example: `docker-db:7`
+
 The release also now uses `project-keeper` to maintain uniform project setup and fixes some bugs and code smells.
  
 ## Features
- 
+
+* #102: `docker-db` now allowed as prefix for shortened docker image references.
 * #106: Docker image can be overridden by property.
 
 ## Bugfixes

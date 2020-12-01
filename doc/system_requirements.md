@@ -120,14 +120,29 @@ Covers:
 
 Needs: dsn
 
-#### Optional container reuse
+#### Optional Container Reuse
 `req~reuse-container~1`
 
-User can decide to reuse the container and keep the container running across the tests. If the reuse is enabled ETC purges the container before use and does not stop the container after the tests.
+Integrators can decide to reuse the container and keep the container running across the tests.
 
 Rationale:
 
-Reusing the container improves the productivity since users do not have to wait for the container start up.
+Reusing the container improves the productivity since integrators do not have to wait for the container start up.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
+#### Automatic Database Cleanup With Reused Containers
+`req~automatic-database-cleanup-with-reused-containers~1`
+
+If the reuse is enabled ETC purges the container before use and does not stop the container after the tests.
+
+Rationale:
+
+This ensures a clean environment when running independent tests.
 
 Covers:
 
@@ -153,7 +168,7 @@ Needs: dsn
 #### Defining Required Optional Services
 `req~defining-required-optional-services~1`
 
-Users can decide whether or not they need one or more of the following services to be available for their tests:
+Integrators can decide whether or not they need one or more of the following services to be available for their tests:
 
 1. BucketFS
 2. UDFs
@@ -171,11 +186,28 @@ Needs: dsn
 #### Matrix Testing With Different Docker Images
 `req~matrix-testing-with-different-docker-images~1`
 
-Users can run the same build that uses ETC for integration tests against multiple versions of Exasol.
+Integrators can run the same build that uses ETC for integration tests against multiple versions of Exasol.
 
 Rationale:
 
-Matrix tests are required if users want to ensure backward compatibility of their product. They also allow testing against variants, e.g. Exasol variants with different feature sets.
+Matrix tests are required if integrators want to ensure backward compatibility of their product. They also allow testing against variants, e.g. Exasol variants with different feature sets.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
+#### Shortened Docker Image References
+`req~shortened-docker-image-references~1`
+
+
+
+* `<major>`
+* `<major>.<minor>`
+* `<major>.<minor>.<fix>`
+* `<major>.<minor>.<fix>-d<docker-image-revision>`
+* All of the above prefixed with `docker-db:` or `exasol/docker-db:`.
 
 Covers:
 
@@ -233,7 +265,7 @@ Needs: dsn
 #### Starting and Stopping the Database
 `req~starting-and-stopping-the-database~1`
 
-Users can start and stop an Exasol database service inside the test container.
+Integrators can start and stop an Exasol database service inside the test container.
 
 Rationale:
 
@@ -341,11 +373,11 @@ Needs: dsn
 #### Waiting for Bucket Content Synchronization
 `req~waiting-for-bucket-content-synchronization~1`
 
-ETC allows users to wait for bucket contents to be synchronized on a single node after uploading a file.
+ETC allows integrators to wait for bucket contents to be synchronized on a single node after uploading a file.
 
 Rationale:
 
-Files uploaded to Bucket FS are not immediately usable due to internal synchronization mechanisms. For integration tests it is necessary that users can rely on the file to be available in a bucket before running tests that depend on it.
+Files uploaded to Bucket FS are not immediately usable due to internal synchronization mechanisms. For integration tests it is necessary that integrators can rely on the file to be available in a bucket before running tests that depend on it.
 
 Covers:
 
