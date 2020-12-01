@@ -1,14 +1,24 @@
-# Exasol Test Containers 3.4.0, released 2020-11-27
+# Exasol Test Containers 3.4.0, released 2020-12-01
 
 Code name: Matrix testing
 
 In the 3.4.0 release we added the ability to override the docker image used via the Java system property `com.exasol.dockerdb.image`. You can use this in a continuous integration build for example to iterate through a list of Exasol versions that you want to test your software against.
+
+The release also now uses `project-keeper` to maintain uniform project setup and fixes some bugs and code smells.
  
 ## Features
  
-* #105: Fixed code smells.
 * #106: Docker image can be overridden by property.
+
+## Bugfixes
+
+* #105: Fixed code smells.
 * #109: Adding "JDBC" as service in `withRequiredServices()` does not throw exception anymore.
+
+## Refactoring
+
+* #106: Introduced CI matrix test with Exasol 6.1.12 and 7.0.4
+* #112: Using `project-keeper` to manage common parts.
 
 ## Plugin Updates
 
