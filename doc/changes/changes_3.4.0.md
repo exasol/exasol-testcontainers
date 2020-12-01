@@ -7,7 +7,8 @@ In the 3.4.0 release we added the ability to override the docker image used via 
 The release also now uses `project-keeper` to maintain uniform project setup and fixes some bugs and code smells.
  
 ## Features
- 
+
+* #102: `docker-db` now allowed as prefix for shortened docker image references.
 * #106: Docker image can be overridden by property.
 
 ## Bugfixes

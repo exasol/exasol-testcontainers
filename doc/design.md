@@ -129,11 +129,15 @@ Needs: impl, itest
 ### Purging
 `dsn~purging~1`
 
-`ExasolContainer` can purge the database. For that, it deletes all database objects such as users, roles and connections.
+The `ExasolContainer` purges the database when reuse is enabled.
+
+Comment:
+
+This means the `ExasolContainer` deletes all database objects such as users, roles and connections.
 
 Covers:
 
-* `req~reuse-container~1`
+* `req~automatic-database-cleanup-with-reused-containers~1`
 
 Needs: impl, utest, itest
 
@@ -188,6 +192,23 @@ Covers:
 * `req~matrix-testing-with-different-docker-images~1`
 
 Needs: impl, itest
+
+### Shortened Docker Image References
+`dsn~shortened-docker-image-references~1`
+
+The `ExasolDockerImageReference` can be constructed with the following forms of shortened image references as parameter:
+
+* `<major>`
+* `<major>.<minor>`
+* `<major>.<minor>.<fix>`
+* `<major>.<minor>.<fix>-d<docker-image-revision>`
+* All of the above prefixed with `docker-db:` or `exasol/docker-db:`.
+
+Covers:
+
+* `req~shortened-docker-image-references~1`
+
+Needs: utest, itest
 
 ## Database Access
 
