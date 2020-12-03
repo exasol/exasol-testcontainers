@@ -168,7 +168,8 @@ public class JdbcDriver implements DatabaseDriver {
                         + "Please consult the driver's manual for the driver-specific JDBC URL syntax.");
 
             }
-            if ((this.mainClass == null) || !this.mainClass.matches("[a-zA-Z]\\w*(?:.[a-zA-Z]\\w*)*")) {
+            if ((this.mainClass == null)
+                    || !this.mainClass.matches("[a-zA-Z]\\w{0,254}(?:.[a-zA-Z]\\w{0,254}){0,10}")) {
                 throw new IllegalStateException("Empty or illegal main class (" + this.mainClass
                         + ") trying to build JDBC driver. Please consult the driver's manual,"
                         + " check the correct spelling and provide the main class name via the mainClass() method.");
