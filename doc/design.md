@@ -67,6 +67,10 @@ The `EXAoperationEmulator` provides an emulation of selected functions of EXAope
 
 The `Plugin` allows controlling functions of an EXAoperation plug-in.
 
+## `ExasolDriverManager`
+
+The `ExasolDriverManager` is responsible for installing and uninstalling drivers for external data sources.
+
 # Runtime
 
 This section describes the runtime behavior of the software.
@@ -378,7 +382,31 @@ Covers:
 
 Needs: impl, itest
 
-### ExaOperation Emulation
+## Driver Management
+
+### Installing a JDBC Driver
+`dsn~installing-a-jdbc-driver-from-host-filesystem~1`
+
+The `ExasolDriverManager` lets integrators install a JDBC driver from the host's filesystem.
+
+Covers:
+
+* `req~installing-a-jdbc-driver~1`
+
+Needs: impl, utest, itest
+
+### Uninstalling a JDBC Driver
+`dsn~uninstalling-a-jdbc-driver-from-host-filesystem~1`
+
+The `ExasolDriverManager` lets integrators uninstall a previously installed JDBC driver from the host's filesystem.
+
+Covers:
+
+* `req~uninstalling-a-jdbc-driver~1`
+
+Needs: impl, utest, itest
+
+## ExaOperation Emulation
 
 EXAoperation features required for integration tests are emulated.
 

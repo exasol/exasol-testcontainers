@@ -25,6 +25,7 @@ import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
 import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
+import com.exasol.drivers.ExasolDriverManager;
 import com.exasol.exaconf.ConfigurationParser;
 import com.exasol.exaoperation.ExaOperation;
 import com.exasol.exaoperation.ExaOperationEmulator;
@@ -594,5 +595,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @SuppressWarnings("java:S1133") // we need this method to hide the original one
     public T withStartupTimeout(final Duration startupTimeout) {
         throw getTimeoutNotSupportedException();
+    }
+
+    /**
+     * Get the manager for the installed drivers.
+     *
+     * @return driver manager
+     */
+    public ExasolDriverManager getDriverManager() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
