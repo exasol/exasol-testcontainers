@@ -413,6 +413,25 @@ Check the method `getDockerNetworkInternalIpAddress()` in the `ExasolContainer` 
 
 If your are looking for an example, please check the integration test `ExaLoaderBetweenTwoContainersIT`.
 
+## Installing Drivers for External Data Sources and Sinks
+
+You can install JDBC drivers that you can use in the ExaLoader (for `IMPORT` statements) and User Defined Functions (UDFs) like this:
+
+```java
+final ExasolDriverManager driverManager = EXASOL.getDriverManager();
+final DatabaseDriver driver = JdbcDriver.builder("EXAMPLE_DRIVER")
+        .prefix("jdbc:examle:")
+        .sourceFile(driverFile)
+        .mainClass("org.example.Driver").build();
+driverManager.install(driver); 
+```
+
+The builder parameter gets the name under which the driver is registered in Exasol. It needs to start with a letter, optionally followed by only letters, numbers or underscores.
+
+You also need to provide the prefix for the JDBC URL, and the main class of the driver that serves as entry point.
+
+The source file is optional. If you provide one, the ETC will install the driver for you. If not the file needs to be present in BucketFS before you use it.
+
 ## EXAoperation Emulation
 
 The Exasol variant in the `docker-db` which is the basis of the Exasol test container, does not feature EXAoperation. That being said, there are situations where integration test requires a subset of EXAoperations functions.
