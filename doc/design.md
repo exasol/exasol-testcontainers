@@ -395,17 +395,6 @@ Covers:
 
 Needs: impl, utest, itest
 
-### Uninstalling a JDBC Driver
-`dsn~uninstalling-a-jdbc-driver-from-host-filesystem~1`
-
-The `ExasolDriverManager` lets integrators uninstall a previously installed JDBC driver from the host's filesystem.
-
-Covers:
-
-* `req~uninstalling-a-jdbc-driver~1`
-
-Needs: impl, utest, itest
-
 ## ExaOperation Emulation
 
 EXAoperation features required for integration tests are emulated.

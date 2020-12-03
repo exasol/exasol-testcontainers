@@ -4,16 +4,20 @@ import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import com.exasol.bucketfs.Bucket;
-import com.exasol.bucketfs.BucketAccessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.exasol.bucketfs.*;
 
 /**
  * Manager for drivers for external data repositories that are installed on the Exasol Database.
  */
 public class ExasolDriverManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolDriverManager.class);
     private static final String MANIFEST_FILENAME = "settings.cfg";
     static final String DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET = "drivers/jdbc";
-    static final String MANIFEST_PATH_IN_BUCKET = DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + "/" + MANIFEST_FILENAME;
+    static final String MANIFEST_PATH_IN_BUCKET = DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + BucketConstants.PATH_SEPARATOR
+            + MANIFEST_FILENAME;
     private final Map<String, DatabaseDriver> installedDrivers = new HashMap<>();
     private final Bucket bucket;
 
@@ -39,6 +43,7 @@ public class ExasolDriverManager {
     }
 
     private void installDriver(final DatabaseDriver driver) {
+        LOGGER.debug("Installing  {}", driver);
         registerDriver(driver);
         if (driver.hasSourceFile()) {
             uploadDriver(driver);
@@ -52,7 +57,8 @@ public class ExasolDriverManager {
 
     private void uploadDriver(final DatabaseDriver driver) {
         try {
-            this.bucket.uploadFile(driver.getSourcePath(), DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + "/");
+            this.bucket.uploadFile(driver.getSourcePath(),
+                    DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + BucketConstants.PATH_SEPARATOR + driver.getFileName());
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new DriverManagerException("Interrupted during database driver upload.", driver, exception);
@@ -88,22 +94,5 @@ public class ExasolDriverManager {
                 .stream() //
                 .map(DatabaseDriver::getManifest)//
                 .collect(Collectors.joining("\n\n"));
-    }
-
-    /**
-     * Uninstall one or more drivers for external data repositories.
-     *
-     * @param drivers to be uninstalled
-     */
-    // [impl->dsn~uninstalling-a-jdbc-driver-from-host-filesystem~1]
-    public void uninstall(final DatabaseDriver... drivers) {
-        for (final DatabaseDriver driver : drivers) {
-            uninstallDriver(driver);
-        }
-
-    }
-
-    private void uninstallDriver(final DatabaseDriver driver) {
-        this.installedDrivers.remove(driver.getName());
     }
 }

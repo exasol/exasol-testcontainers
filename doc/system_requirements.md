@@ -428,21 +428,6 @@ Covers:
 
 Needs: dsn
 
-#### Uninstalling a JDBC Driver
-`req~uninstalling-a-jdbc-driver~1`
-
-ETC lets Integrators uninstall a JDBC driver.
-
-Rationale:
-
-This helps cleaning up ahead of new tests with the same running container.
-
-Covers:
-
-* [feat~driver-management~1](#driver-management)
-
-Needs: dsn
-
 ### EXAoperation Simulation
 
 The Exasol test container is based on Exasol's `docker-db` which does not include [EXAoperation](https://docs.exasol.com/administration/on-premise/exaoperation.htm#EXAoperation). That being said some integration tests require a subset of the EXAoperation functions in order to be executable.

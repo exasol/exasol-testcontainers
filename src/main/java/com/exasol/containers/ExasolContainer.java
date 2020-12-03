@@ -52,6 +52,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
     private int connectionWaitTimeoutSeconds = 200;
+    private ExasolDriverManager driverManager = null;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -602,8 +603,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      *
      * @return driver manager
      */
-    public ExasolDriverManager getDriverManager() {
-        // TODO Auto-generated method stub
-        return null;
+    public final synchronized ExasolDriverManager getDriverManager() {
+        if (this.driverManager == null) {
+            this.driverManager = new ExasolDriverManager(getDefaultBucket());
+        }
+        return this.driverManager;
     }
 }
