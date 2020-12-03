@@ -409,7 +409,7 @@ Needs: dsn
 
 ### Driver Management
 
-The Exasol database supports installation of drivers for external data sources through [BucketFS](#bucketfs-access). Installation requires Integrators to follow a convention for storing and registering those drivers.
+The Exasol database supports installation of drivers for external data sources through [BucketFS](#bucketfs-access). Installation requires Integrators to follow a [convention for storing and registering those drivers](https://github.com/exasol/docker-db#user-content-installing-custom-jdbc-drivers).
 
 ETC abstracts the conventions and the corresponding installation and uninstallation process, allowing to add and remove drivers programmatically with ease.
 
