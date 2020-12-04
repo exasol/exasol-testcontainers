@@ -1,4 +1,4 @@
-# Exasol Test Containers 3.4.0, released 2020-12-01
+# Exasol Test Containers 3.4.0, released 2020-12-04
 
 Code name: Matrix testing
 
