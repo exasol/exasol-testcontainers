@@ -67,6 +67,13 @@ ETC provides access to the logs of the Exasol instance.
 
 Needs: req
 
+### Driver Management
+`feat~driver-management~1`
+
+ETC manages drivers for external data sources.
+
+Needs: req
+
 ### EXAoperation Simulation
 `feat~exaoperation-simulation~1`
 
@@ -397,6 +404,27 @@ ETC lets Integrators read the Exasol log files.
 Covers:
 
 * [feat~log-access~1](#log-access)
+
+Needs: dsn
+
+### Driver Management
+
+The Exasol database supports installation of drivers for external data sources through [BucketFS](#bucketfs-access). Installation requires Integrators to follow a [convention for storing and registering those drivers](https://github.com/exasol/docker-db#user-content-installing-custom-jdbc-drivers).
+
+ETC abstracts the conventions and the corresponding installation and uninstallation process, allowing to add and remove drivers programmatically with ease.
+
+#### Installing a JDBC Driver
+`req~installing-a-jdbc-driver~1`
+
+ETC lets Integrators install a JDBC driver from a file on the host filesystem.
+
+Rationale:
+
+Uploading a driver to BucketFS and registering it requires a lot of repetitive boilerplate code. Removing that boilerplate makes tests more readable, compact and less error-prone.
+
+Covers:
+
+* [feat~driver-management~1](#driver-management)
 
 Needs: dsn
 
