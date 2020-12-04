@@ -5,6 +5,7 @@ package com.exasol.drivers;
  */
 public class DriverManagerException extends RuntimeException {
     private static final long serialVersionUID = -3067281612997655722L;
+    private final DatabaseDriver driver;
 
     /**
      * Create a exception in the context of a database driver.
@@ -14,7 +15,8 @@ public class DriverManagerException extends RuntimeException {
      * @param cause   error causing this exception
      */
     public DriverManagerException(final String message, final DatabaseDriver driver, final Throwable cause) {
-        this(message + " " + driver, cause);
+        super(message + (driver == null ? "" : " " + driver), cause);
+        this.driver = driver;
     }
 
     /**
@@ -24,6 +26,24 @@ public class DriverManagerException extends RuntimeException {
      * @param cause   error causing this exception
      */
     public DriverManagerException(final String message, final Throwable cause) {
-        super(message, cause);
+        this(message, null, cause);
+    }
+
+    /**
+     * Get the driver associated with this exception.
+     *
+     * @return driver
+     */
+    public DatabaseDriver getDriver() {
+        return this.driver;
+    }
+
+    /**
+     * Check whether a driver is associated with this exception.
+     *
+     * @return {@code true} if a driver is associated with this exception.
+     */
+    public boolean hasDriver() {
+        return this.driver != null;
     }
 }

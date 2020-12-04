@@ -5,18 +5,19 @@ import static com.exasol.drivers.ExasolDriverManager.MANIFEST_PATH_IN_BUCKET;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.bucketfs.Bucket;
-import com.exasol.bucketfs.BucketConstants;
+import com.exasol.bucketfs.*;
 
 @ExtendWith(MockitoExtension.class)
 class ExasolDriverManagerTest {
@@ -51,4 +52,39 @@ class ExasolDriverManagerTest {
                 () -> verify(bucketMock).uploadStringContent(expectedManifest, MANIFEST_PATH_IN_BUCKET));
     }
 
+    @Test
+    void testInstallDriverHandlesBucketAccessException(@Mock final Bucket bucketMock,
+            @Mock final DatabaseDriver driverMock)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final IllegalArgumentException cause = new IllegalArgumentException("the cause");
+        final Throwable exception = new BucketAccessException("access denied", cause);
+        assertExecptionHandled(bucketMock, driverMock, exception);
+    }
+
+    private void assertExecptionHandled(final Bucket bucketMock, final DatabaseDriver driverMock,
+            final Throwable exception) throws InterruptedException, BucketAccessException, TimeoutException {
+        final String fileName = "irrelevant";
+        final Path localPath = Path.of("/host/path/" + fileName);
+        when(driverMock.hasSourceFile()).thenReturn(true);
+        when(driverMock.getSourcePath()).thenReturn(localPath);
+        when(driverMock.getFileName()).thenReturn(fileName);
+        final ExasolDriverManager driverManager = new ExasolDriverManager(bucketMock);
+        Mockito.doThrow(exception).when(bucketMock).uploadFile(ArgumentMatchers.any(), ArgumentMatchers.anyString());
+        assertThrows(DriverManagerException.class, () -> driverManager.install(driverMock));
+    }
+
+    @Test
+    void testInstallDriverHandlesTimeoutException(@Mock final Bucket bucketMock, @Mock final DatabaseDriver driverMock)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final Throwable exception = new TimeoutException("timed out");
+        assertExecptionHandled(bucketMock, driverMock, exception);
+    }
+
+    @Test
+    void testInstallDriverHandlesInterruptedException(@Mock final Bucket bucketMock,
+            @Mock final DatabaseDriver driverMock)
+            throws InterruptedException, BucketAccessException, TimeoutException {
+        final Throwable exception = new InterruptedException("interrupted");
+        assertExecptionHandled(bucketMock, driverMock, exception);
+    }
 }
