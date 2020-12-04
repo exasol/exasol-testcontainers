@@ -27,8 +27,8 @@ The release also now uses `project-keeper` to maintain uniform project setup and
 
 ## Bugfixes
 
-* #105: Fixed code smells.
-* #109: Adding "JDBC" as service in `withRequiredServices()` does not throw exception anymore.
+* #105: Adding "JDBC" as service in `withRequiredServices()` does not throw exception anymore.
+* #108: Fixed code smells.
 
 ## Refactoring
 
