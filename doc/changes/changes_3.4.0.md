@@ -2,6 +2,8 @@
 
 Code name: Matrix testing
 
+## Summary
+
 In the 3.4.0 release we added the ability to override the docker image used via the Java system property `com.exasol.dockerdb.image`. You can use this in a continuous integration build for example to iterate through a list of Exasol versions that you want to test your software against.
 
 Shortened image references can now also be prefixed with `docker-db:` or `exasol/docker-db:`. Example: `docker-db:7`
@@ -37,7 +39,7 @@ The release also now uses `project-keeper` to maintain uniform project setup and
 
 ## Plugin Updates
 
-* Added `com.exaso.l:project-keeper-maven-plugin:0.4.1`
+* Added `com.exasol:project-keeper-maven-plugin:0.4.1`
 * Updated `org.jacoco:jacoco-maven-plugin:0.8.5` to `0.8.6`
 * Updated `org.codehaus.mojo:versions-maven-plugin:2.7` to `2.8.1`
 * Updated `com.exasol:exasol-jdbc:7.0.3` to `7.0.4`

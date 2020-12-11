@@ -23,6 +23,7 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
 import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
+import com.exasol.containers.workarounds.*;
 import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
 import com.exasol.drivers.ExasolDriverManager;
@@ -48,7 +49,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final Set<ExasolService> readyServices = new HashSet<>();
     private final ExaOperation exaOperation;
     private TimeZone timeZone;
-    private boolean isReused = false;
+    private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
     private int connectionWaitTimeoutSeconds = 200;
@@ -93,6 +94,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public ExasolContainer() {
         this(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
+    }
+
+    /**
+     * Get the docker image reference on which this container is based.
+     *
+     * @return docker image reference
+     */
+    public ExasolDockerImageReference getDockerImageReference() {
+        return this.dockerImageReference;
     }
 
     /**
@@ -146,12 +156,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return default internal port of the database
      */
     public int getDefaultInternalDatabasePort() {
-        final int majorVersion = this.dockerImageReference.getMajorVersion()
-                .orElseThrow(() -> new PortDetectionException("database"));
-        if (majorVersion >= 7) {
-            return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
+        if (this.dockerImageReference.hasMajor()) {
+            if (this.dockerImageReference.getMajor() >= 7) {
+                return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
+            } else {
+                return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT;
+            }
         } else {
-            return DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT;
+            throw (new PortDetectionException("database"));
         }
     }
 
@@ -209,6 +221,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public LogPatternDetectorFactory getLogPatternDetectorFactory() {
         return this.detectorFactory;
+    }
+
+    /**
+     * Check if this is an existing container that is marked for reuse.
+     *
+     * @return {@code true} if this container is marked for reuse.
+     */
+    public boolean isReused() {
+        return this.reused;
     }
 
     /**
@@ -342,7 +363,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     protected void containerIsStarting(final InspectContainerResponse containerInfo, final boolean reused) {
         super.containerIsStarting(containerInfo, reused);
-        this.isReused = reused;
+        this.reused = reused;
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]
@@ -351,21 +372,49 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         waitUntilClusterConfigurationAvailable();
         final Instant afterUtc = Instant.now();
         waitUntilStatementCanBeExecuted();
+        waitForBucketFs(afterUtc);
+        waitForUdfContainer(afterUtc);
+        applyWorkarounds();
+        logger().info("Exasol container started after waiting for the following services to become available: {}",
+                this.requiredServices);
+
+    }
+
+    private void waitForBucketFs(final Instant afterUtc) {
         if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
-            if (!this.isReused) {
+            if (!this.reused) {
                 new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             }
             this.readyServices.add(ExasolService.BUCKETFS);
         }
+    }
+
+    private void waitForUdfContainer(final Instant afterUtc) {
         if (this.requiredServices.contains(ExasolService.UDF)) {
-            if (!this.isReused) {
+            if (!this.reused) {
                 new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
             }
             this.readyServices.add(ExasolService.UDF);
         }
-        logger().info("Exasol container started after waiting for the following services to become available: {}",
-                this.requiredServices);
-        if (this.isReused) {
+    }
+
+    @Override
+    protected void containerIsStarted(final InspectContainerResponse containerInfo, final boolean reused) {
+        cleanUpDatabaseIfNecessary();
+        super.containerIsStarted(containerInfo, reused);
+    }
+
+    private void applyWorkarounds() {
+        final LogRotationWorkaround logRotationWorkaround = new LogRotationWorkaround(this);
+        try {
+            WorkaroundManager.create(logRotationWorkaround).applyWorkarounds();
+        } catch (final WorkaroundException exception) {
+            throw new ExasolContainerInitializationException("Failed to apply necessary workarounds", exception);
+        }
+    }
+
+    private void cleanUpDatabaseIfNecessary() {
+        if (this.reused) {
             purgeDatabase();
         }
     }
@@ -385,7 +434,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     protected void waitUntilClusterConfigurationAvailable() {
-        if (!this.isReused) {
+        if (!this.reused) {
             logger().debug("Waiting for cluster configuration to become available.");
             final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
             strategy.waitUntilReady(this);
@@ -522,8 +571,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public void stop() {
         if (isShouldBeReused() && TestcontainersConfiguration.getInstance().environmentSupportsReuse()) {
-            logger().warn(
-                    "Leaving container running since reuse is enabled. Don't forget to stop and remove the container manually using docker rm -f CONTAINER_ID.");
+            logger().warn("Leaving container running since reuse is enabled. " //
+                    + "Don't forget to stop and remove the container manually using docker rm -f CONTAINER_ID.");
         } else {
             super.stop();
         }
@@ -539,13 +588,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return default internal port of the database
      */
     public int getDefaultInternalBucketfsPort() {
-        final int majorVersion = this.dockerImageReference.getMajorVersion()
-                .orElseThrow(() -> new UnsupportedOperationException(
-                        "Could not detect internal BucketFS port for custom image. Please specify the port explicitly using withExposedPorts()."));
-        if (majorVersion >= 7) {
-            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
+        if (this.dockerImageReference.hasMajor()) {
+            if (this.dockerImageReference.getMajor() >= 7) {
+                return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
+            } else {
+                return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
+            }
         } else {
-            return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
+            throw new UnsupportedOperationException("Could not detect internal BucketFS port for custom image. " //
+                    + "Please specify the port explicitly using withExposedPorts().");
         }
     }
 

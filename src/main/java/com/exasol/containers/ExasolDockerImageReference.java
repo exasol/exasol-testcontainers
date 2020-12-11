@@ -15,12 +15,38 @@ public class ExasolDockerImageReference {
             Pattern.compile("(?:(?:exasol/)?(?:docker-db:))?" // prefix (optional)
                     + "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?" // Exasol version (partially optional)
                     + "(?:-d(\\d+))?"); // docker image revision (optional)
-    private static final Pattern MAJOR_VERSION_PATTERN = Pattern
-            .compile(Pattern.quote(EXASOL_DOCKER_IMAGE_ID) + ":(\\d+).*");
+    private static final int VERSION_NOT_PRESENT = -1;
     private final String reference;
+    private final int major;
+    private final int minor;
+    private final int fix;
+    private final int dockerImageRevision;
 
     private ExasolDockerImageReference(final String reference) {
         this.reference = reference;
+        this.major = VERSION_NOT_PRESENT;
+        this.minor = VERSION_NOT_PRESENT;
+        this.fix = VERSION_NOT_PRESENT;
+        this.dockerImageRevision = VERSION_NOT_PRESENT;
+    }
+
+    private ExasolDockerImageReference(final int major, final int minor, final int fix, final int dockerImageRevision) {
+        this.major = major;
+        this.minor = minor;
+        this.fix = fix;
+        if (dockerImageRevision == VERSION_NOT_PRESENT) {
+            if (major < 7) {
+                this.dockerImageRevision = 1;
+                this.reference = EXASOL_DOCKER_IMAGE_ID + ":" + major + "." + minor + "." + fix + "-d1";
+            } else {
+                this.dockerImageRevision = VERSION_NOT_PRESENT;
+                this.reference = EXASOL_DOCKER_IMAGE_ID + ":" + major + "." + minor + "." + fix;
+            }
+        } else {
+            this.dockerImageRevision = dockerImageRevision;
+            this.reference = EXASOL_DOCKER_IMAGE_ID + ":" + major + "." + minor + "." + fix + "-d"
+                    + dockerImageRevision;
+        }
     }
 
     /**
@@ -47,53 +73,103 @@ public class ExasolDockerImageReference {
         final Matcher matcher = DOCKER_IMAGE_VERSION_PATTERN.matcher(reference);
         if (matcher.matches()) {
             final int major = parseInt(matcher.group(1));
-            final int minor = (matcher.group(2)) == null ? 0 : parseInt(matcher.group(2));
-            final int fix = (matcher.group(3)) == null ? 0 : parseInt(matcher.group(3));
-            final String exasolVersion = major + "." + minor + "." + fix;
-            if (matcher.group(4) == null) {
-                if (major < 7) {
-                    return createPreSevenVersionWithDefaultImageRevision(exasolVersion);
-                } else {
-                    return createSevenPlusVersionWithoutImageRevision(exasolVersion);
-                }
-            }
-            final int imageRevision = (matcher.group(4)) == null ? 1 : parseInt(matcher.group(4));
-            return createVersionWithImageRevision(exasolVersion, imageRevision);
+            final int minor = (matcher.group(2) == null) ? 0 : parseInt(matcher.group(2));
+            final int fix = (matcher.group(3) == null) ? 0 : parseInt(matcher.group(3));
+            final int dockerImageRevision = (matcher.group(4) == null) ? VERSION_NOT_PRESENT
+                    : parseInt(matcher.group(4));
+            return new ExasolDockerImageReference(major, minor, fix, dockerImageRevision);
         } else {
             return new ExasolDockerImageReference(reference);
         }
-    }
-
-    private static ExasolDockerImageReference createPreSevenVersionWithDefaultImageRevision(
-            final String exasolVersion) {
-        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion + "-d1");
-    }
-
-    private static ExasolDockerImageReference createSevenPlusVersionWithoutImageRevision(final String exasolVersion) {
-        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion);
-    }
-
-    private static ExasolDockerImageReference createVersionWithImageRevision(final String exasolVersion,
-            final int imageRevision) {
-        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion + "-d" + imageRevision);
     }
 
     /**
      * Get the major version of the {@code exasol/docker-db} image if possible.
      *
      * <p>
-     * If a different image is used, no version is detected.
+     * If a non-standard image is used, no version is detected.
      * </p>
      *
-     * @return major version number of the docker image.
+     * @deprecated As of 3.4.1, use {@link ExasolDockerImageReference#getMajor()} and
+     *             {@link ExasolDockerImageReference#hasMajor()} instead.
+     *
+     * @return major version number of the docker image
      */
+    @Deprecated
     public Optional<Integer> getMajorVersion() {
-        final Matcher matcher = MAJOR_VERSION_PATTERN.matcher(this.reference);
-        if (matcher.matches()) {
-            return Optional.of(parseInt(matcher.group(1)));
-        } else {
-            return Optional.empty();
-        }
+        return (this.major == VERSION_NOT_PRESENT) ? Optional.empty() : Optional.of(this.major);
+    }
+
+    /**
+     * Get the major version of the {@code exasol/docker-db} image if possible.
+     *
+     * @return major version number of the docker image
+     */
+    public int getMajor() {
+        return this.major;
+    }
+
+    /**
+     * Check if the major version available.
+     *
+     * @return {@code true} if the major version was detected.
+     */
+    public boolean hasMajor() {
+        return this.major != VERSION_NOT_PRESENT;
+    }
+
+    /**
+     * Get the minor version of the {@code exasol/docker-db} image if possible.
+     *
+     * @return minor version number of the docker image
+     */
+    public int getMinor() {
+        return this.minor;
+    }
+
+    /**
+     * Check if the minor version is available.
+     *
+     * @return {@code true} if the minor version was detected or complemented.
+     */
+    public boolean hasMinor() {
+        return this.minor != VERSION_NOT_PRESENT;
+    }
+
+    /**
+     * Get the fix version of the {@code exasol/docker-db} image if possible.
+     *
+     * @return fix version number of the docker image
+     */
+    public int getFixVersion() {
+        return this.fix;
+    }
+
+    /**
+     * Check if the fix version is available.
+     *
+     * @return {@code true} if the fix version was detected or complemented.
+     */
+    public boolean hasFix() {
+        return this.fix != VERSION_NOT_PRESENT;
+    }
+
+    /**
+     * Get the revision of the {@code exasol/docker-db} image if possible.
+     *
+     * @return revision of the docker image
+     */
+    public int getDockerImageRevision() {
+        return this.dockerImageRevision;
+    }
+
+    /**
+     * Check if the docker image revision is available.
+     *
+     * @return {@code true} if the docker image revision version was detected or complemented.
+     */
+    public boolean hasDockerImageRevision() {
+        return this.dockerImageRevision != VERSION_NOT_PRESENT;
     }
 
     /**

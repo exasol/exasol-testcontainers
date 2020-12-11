@@ -491,6 +491,31 @@ Covers:
 
 Needs: impl, itest
 
+## Workarounds
+
+### Log Rotation Workaround Criteria
+`dsn~log-rotation-workaround-criteria~1`
+
+WorkaroundManager applies the `LogRotatinWorkaround` if the exasol version is 7.0.x or lower.
+
+
+Covers:
+
+* `req~log-rotation-workaround~1`
+
+Needs: impl, utest
+
+### Log Rotation Workaround
+`dsn~log-rotation-workaround~1`
+
+The `LogRotationWorkaround` that loosens the permissions on the log directory.
+
+Covers:
+
+* `req~log-rotation-workaround~1`
+
+Needs: impl, utest
+
 # Cross-cutting Concerns
 
 # Design Decisions

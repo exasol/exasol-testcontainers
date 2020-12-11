@@ -2,6 +2,7 @@ package com.exasol.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -33,6 +34,7 @@ class ExasolDockerImageReferenceTest {
     }
 
     // [utest->dsn~shortened-docker-image-references~1]
+    @SuppressWarnings("deprecation")
     @CsvSource({ //
             "7, 7", //
             "6.1, 6", //
@@ -42,9 +44,68 @@ class ExasolDockerImageReferenceTest {
             "exasol/docker-db:6.2.7-d1, 6", //
             "exasol/docker-db:7.0.1, 7" //
     })
-
     @ParameterizedTest
     void getMajorVersion(final String input, final int expectedVersion) {
-        assertThat(ExasolDockerImageReference.parse(input).getMajorVersion().orElseThrow(), equalTo(expectedVersion));
+        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        assertAll(() -> assertThat(reference.getMajorVersion().orElseThrow(), equalTo(expectedVersion)),
+                () -> assertThat(reference.getMajor(), equalTo(expectedVersion)),
+                () -> assertThat(reference.hasMajor(), equalTo(true)));
+
+    }
+
+    // [utest->dsn~shortened-docker-image-references~1]
+    @CsvSource({ //
+            "7, 0", //
+            "6.1, 1", //
+            "docker-db:8, 0", //
+            "docker-db:9.3, 3", //
+            "docker-db:10.44.2-d13, 44", //
+            "exasol/docker-db:6.2.7-d1, 2", //
+            "exasol/docker-db:7.0.1, 0" //
+    })
+    @ParameterizedTest
+    void getMinorVersion(final String input, final int expectedVersion) {
+        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        assertAll(() -> assertThat(reference.getMinor(), equalTo(expectedVersion)),
+                () -> assertThat(reference.hasMinor(), equalTo(true)));
+    }
+
+    // [utest->dsn~shortened-docker-image-references~1]
+    @CsvSource({ //
+            "7, 0", //
+            "6.1, 0", //
+            "docker-db:8, 0", //
+            "docker-db:9.3, 0", //
+            "docker-db:10.44.2-d13, 2", //
+            "exasol/docker-db:6.2.7-d1, 7", //
+            "exasol/docker-db:7.0.1, 1" //
+    })
+    @ParameterizedTest
+    void getFixVersion(final String input, final int expectedVersion) {
+        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        assertAll(() -> assertThat(reference.getFixVersion(), equalTo(expectedVersion)),
+                () -> assertThat(reference.hasFix(), equalTo(true)));
+    }
+
+    // [utest->dsn~shortened-docker-image-references~1]
+    @CsvSource({ //
+            "7,", //
+            "6.1, 1", //
+            "docker-db:8,", //
+            "docker-db:9.3,", //
+            "docker-db:10.44.2-d13, 13", //
+            "exasol/docker-db:6.2.7-d1, 1", //
+            "exasol/docker-db:7.0.1," //
+    })
+    @ParameterizedTest
+    void getDockerImageRevision(final String input, final Integer expectedVersion) {
+        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        if (expectedVersion == null) {
+            assertThat("no docker image revision expected", reference.hasDockerImageRevision(), equalTo(false));
+        } else {
+            assertAll(() -> assertThat(reference.hasDockerImageRevision(), equalTo(true)),
+                    () -> assertThat("expected docker image revision", reference.getDockerImageRevision(),
+                            equalTo(expectedVersion)));
+        }
     }
 }
