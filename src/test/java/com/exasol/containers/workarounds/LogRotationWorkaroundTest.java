@@ -51,7 +51,7 @@ class LogRotationWorkaroundTest {
         when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         workaround.apply();
-        verify(exasolMock).execInContainer("chmod", "1777", ExasolContainerConstants.EXASOL_LOGS_PATH);
+        verify(exasolMock).execInContainer("chmod", "-R", "1777", ExasolContainerConstants.EXASOL_LOGS_PATH);
     }
 
     @Test

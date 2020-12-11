@@ -43,7 +43,7 @@ public class LogRotationWorkaround implements Workaround {
     @Override
     public void apply() throws WorkaroundException {
         try {
-            final ExecResult result = this.exasol.execInContainer("chmod", "1777", EXASOL_LOGS_PATH);
+            final ExecResult result = this.exasol.execInContainer("chmod", "-R", "1777", EXASOL_LOGS_PATH);
             if (result.getExitCode() != ExitCode.OK) {
                 throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
                         + result.getStderr());

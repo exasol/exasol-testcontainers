@@ -374,7 +374,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         waitUntilStatementCanBeExecuted();
         waitForBucketFs(afterUtc);
         waitForUdfContainer(afterUtc);
-        applyWorkarounds();
         logger().info("Exasol container started after waiting for the following services to become available: {}",
                 this.requiredServices);
 
@@ -400,8 +399,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     protected void containerIsStarted(final InspectContainerResponse containerInfo, final boolean reused) {
-        cleanUpDatabaseIfNecessary();
         super.containerIsStarted(containerInfo, reused);
+        applyWorkarounds();
+        cleanUpDatabaseIfNecessary();
     }
 
     private void applyWorkarounds() {

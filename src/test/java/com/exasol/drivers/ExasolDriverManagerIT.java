@@ -1,13 +1,14 @@
 package com.exasol.drivers;
 
 import static com.exasol.containers.ExasolService.BUCKETFS;
+import static com.exasol.drivers.ExasolDriverManager.DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Instant;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,8 +16,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.google.common.io.Files;
 
-import com.exasol.bucketfs.Bucket;
-import com.exasol.bucketfs.BucketConstants;
+import com.exasol.bucketfs.*;
 import com.exasol.containers.ExasolContainer;
 
 @Testcontainers
@@ -28,8 +28,8 @@ class ExasolDriverManagerIT {
 
     // [itest->dsn~installing-a-jdbc-driver-from-host-filesystem~1]
     @Test
-    void testInstallDriver(@TempDir final Path tempDir) throws IOException {
-        final Instant beforeInstallation = Instant.now();
+    void testInstallDriver(@TempDir final Path tempDir)
+            throws IOException, BucketAccessException, InterruptedException {
         final String expectedDriverContent = "expected driver content";
         final String fileName = "dummy_driver.jar";
         final Path driverFile = tempDir.resolve(fileName);
@@ -41,12 +41,9 @@ class ExasolDriverManagerIT {
                 .mainClass("org.example.DummyDriver").build();
         driverManager.install(driver);
         final Bucket bucket = EXASOL.getDefaultBucket();
-        assertAll(
-                () -> assertThat("Driver file in Bucket",
-                        bucket.isObjectSynchronized(ExasolDriverManager.DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET
-                                + BucketConstants.PATH_SEPARATOR + fileName, beforeInstallation),
-                        equalTo(true)),
-                () -> assertThat("Manifest file in Bucket", bucket.isObjectSynchronized(
-                        ExasolDriverManager.DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET, beforeInstallation), equalTo(true)));
+        final List<String> list = bucket
+                .listContents(DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + BucketConstants.PATH_SEPARATOR);
+        assertAll(() -> assertThat("Driver file in Bucket", list, hasItem(fileName)),
+                () -> assertThat("Manifest file in Bucket", list, hasItem("settings.cfg")));
     }
 }
