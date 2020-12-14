@@ -426,6 +426,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         super.containerIsStarted(containerInfo, reused);
         applyWorkarounds();
         cleanUpDatabaseIfNecessary();
+        cacheContainerStatus();
     }
 
     private void applyWorkarounds() {
@@ -455,6 +456,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         } catch (final SQLException exception) {
             throw new ExasolContainerInitializationException("Failed to purge database", exception);
         }
+    }
+
+    private void cacheContainerStatus() {
+        this.statusCache.write(this.getContainerId(), this.status);
     }
 
     protected void waitUntilClusterConfigurationAvailable() {

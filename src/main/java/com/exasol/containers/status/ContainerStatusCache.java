@@ -74,35 +74,35 @@ public class ContainerStatusCache {
     /**
      * Write the container state to the cache.
      *
-     * @param containerId    ID of the docker container for which a cache entry is written
-     * @param containerState container state to be cached
+     * @param containerId     ID of the docker container for which a cache entry is written
+     * @param containerStatus container state to be cached
      */
-    public void write(final String containerId, final ContainerStatus containerState) {
+    public void write(final String containerId, final ContainerStatus containerStatus) {
         createMissingCacheDirectory();
-        writeToFile(getCacheFileForContainer(containerId), containerState);
+        writeToFile(getCacheFileForContainer(containerId), containerStatus);
     }
 
     private void createMissingCacheDirectory() {
         if (!Files.exists(this.cacheDirectory)) {
-            LOGGER.debug("Container state directory \"{}\" does not exist. Creating.", this.cacheDirectory);
+            LOGGER.debug("Container status directory \"{}\" does not exist. Creating.", this.cacheDirectory);
             try {
                 Files.createDirectories(this.cacheDirectory);
             } catch (final IOException exception) {
                 throw new ContainerStatusCacheException(
-                        "Unable to container state cache directory \"" + this.cacheDirectory + "\".", exception);
+                        "Unable to container status cache directory \"" + this.cacheDirectory + "\".", exception);
             }
         }
     }
 
-    private void writeToFile(final Path cacheFile, final ContainerStatus containerState) {
-        LOGGER.debug("Writing container state to cache file \"{}\".", cacheFile);
+    private void writeToFile(final Path cacheFile, final ContainerStatus containerStatus) {
+        LOGGER.debug("Writing container status to cache file \"{}\".", cacheFile);
         try (final FileOutputStream outputStream = new FileOutputStream(cacheFile.toFile()); //
                 final ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream) //
         ) {
-            objectOutputStream.writeObject(containerState);
+            objectOutputStream.writeObject(containerStatus);
         } catch (final IOException exception) {
             throw new ContainerStatusCacheException(
-                    "Unable to write container state to cache file \"" + cacheFile + "\".", exception);
+                    "Unable to write container status to cache file \"" + cacheFile + "\".", exception);
         }
     }
 }
