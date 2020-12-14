@@ -3,6 +3,9 @@ package com.exasol.containers;
 import static com.exasol.bucketfs.BucketConstants.DEFAULT_BUCKET;
 import static com.exasol.bucketfs.BucketConstants.DEFAULT_BUCKETFS;
 import static com.exasol.containers.ExasolContainerConstants.*;
+import static com.exasol.containers.ExasolService.BUCKETFS;
+import static com.exasol.containers.ExasolService.UDF;
+import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,6 +24,8 @@ import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.status.ContainerStatus;
+import com.exasol.containers.status.ContainerStatusCache;
 import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
 import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.containers.workarounds.*;
@@ -46,7 +51,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private String password = ExasolContainerConstants.DEFAULT_SYS_USER_PASSWORD;
     private final LogPatternDetectorFactory detectorFactory;
     private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
-    private final Set<ExasolService> readyServices = new HashSet<>();
     private final ExaOperation exaOperation;
     private TimeZone timeZone;
     private boolean reused = false;
@@ -54,6 +58,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean portAutodetectFailed = false;
     private int connectionWaitTimeoutSeconds = 200;
     private ExasolDriverManager driverManager = null;
+    private final ContainerStatusCache statusCache = new ContainerStatusCache(
+            Path.of(System.getProperty("java.io.tmpdir")));
+    private ContainerStatus status = null;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -364,6 +371,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void containerIsStarting(final InspectContainerResponse containerInfo, final boolean reused) {
         super.containerIsStarting(containerInfo, reused);
         this.reused = reused;
+        final String containerId = containerInfo.getId();
+        if (reused && this.statusCache.isCacheAvailable(containerId)) {
+            this.status = this.statusCache.read(containerId);
+        } else {
+            this.status = ContainerStatus.create(containerId);
+        }
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]
@@ -380,20 +393,31 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void waitForBucketFs(final Instant afterUtc) {
-        if (this.requiredServices.contains(ExasolService.BUCKETFS)) {
-            if (!this.reused) {
+        if (this.status.isServiceReady(BUCKETFS)) {
+            logger().debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
+        } else {
+            if (this.requiredServices.contains(BUCKETFS)) {
+                this.status.setServiceStatus(BUCKETFS, NOT_READY);
                 new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+                this.status.setServiceStatus(BUCKETFS, READY);
+            } else {
+                this.status.setServiceStatus(BUCKETFS, NOT_CHECKED);
             }
-            this.readyServices.add(ExasolService.BUCKETFS);
         }
     }
 
     private void waitForUdfContainer(final Instant afterUtc) {
-        if (this.requiredServices.contains(ExasolService.UDF)) {
-            if (!this.reused) {
+        if (this.status.isServiceReady(UDF)) {
+            logger().debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
+        } else {
+            if (this.requiredServices.contains(UDF)) {
+                this.status.setServiceStatus(UDF, NOT_READY);
                 new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+                this.status.setServiceStatus(UDF, READY);
+            } else {
+
+                this.status.setServiceStatus(UDF, NOT_CHECKED);
             }
-            this.readyServices.add(ExasolService.UDF);
         }
     }
 
@@ -536,7 +560,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return {@code true} if the service is ready and can be used
      */
     public boolean isServiceReady(final ExasolService service) {
-        return this.readyServices.contains(service);
+        return this.status.isServiceReady(service);
     }
 
     /**
