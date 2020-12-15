@@ -9,3 +9,7 @@ In the 3.4.1 release we added a mitigation for a bug in [`docker-db`](https://gi
 ## Bugfixes
 
 * #118: Worked around log rotation bug in `docker-db`
+
+## Plugin Updates
+
+* Updated `com.exasol:project-keeper-maven-plugin:0.4.1` to `0.4.2`

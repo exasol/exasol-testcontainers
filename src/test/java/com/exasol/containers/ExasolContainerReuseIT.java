@@ -15,7 +15,7 @@ import org.testcontainers.utility.TestcontainersConfiguration;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
 
-class ExasolContainerResuseIT {
+class ExasolContainerReuseIT {
     public static final String TESTCONTAINERS_REUSE_ENABLE = "testcontainers.reuse.enable";
     static String propertyBackup;
 

@@ -14,6 +14,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.*;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
@@ -43,6 +45,7 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -139,11 +142,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 throw new IllegalArgumentException(
                         "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts().");
             } else {
-                logger().warn("Could not detect internal ports for custom image. "
+                LOGGER.warn("Could not detect internal ports for custom image. "
                         + "Don't forget to expose the database and BucketFs ports yourself.");
             }
         }
-        logger().debug("Exposing ports: {}", this.getExposedPorts());
+        LOGGER.debug("Exposing ports: {}", this.getExposedPorts());
         this.setPrivilegedMode(true);
         super.configure();
     }
@@ -362,21 +365,27 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     // [impl->dsn~mapping-the-log-directory-to-the-host~1]
     public T withClusterLogsPath(final Path clusterLogsHostPath) {
-        logger().debug("Mapping cluster log directory to host path: \"{}\"", clusterLogsHostPath);
+        LOGGER.debug("Mapping cluster log directory to host path: \"{}\"", clusterLogsHostPath);
         addFileSystemBind(clusterLogsHostPath.toString(), EXASOL_LOGS_PATH, BindMode.READ_WRITE);
         return self();
     }
 
     @Override
-    protected void containerIsStarting(final InspectContainerResponse containerInfo, final boolean reused) {
-        super.containerIsStarting(containerInfo, reused);
-        this.reused = reused;
+    protected void containerIsStarting(final InspectContainerResponse containerInfo) {
         final String containerId = containerInfo.getId();
-        if (reused && this.statusCache.isCacheAvailable(containerId)) {
+        if (this.statusCache.isCacheAvailable(containerId)) {
             this.status = this.statusCache.read(containerId);
         } else {
+            LOGGER.debug("No status cache found for container \"{}\". Creating fresh status.", containerId);
             this.status = ContainerStatus.create(containerId);
         }
+        super.containerIsStarting(containerInfo);
+    }
+
+    @Override
+    protected void containerIsStarting(final InspectContainerResponse containerInfo, final boolean reused) {
+        this.reused = reused;
+        super.containerIsStarting(containerInfo, reused);
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]
@@ -387,14 +396,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         waitUntilStatementCanBeExecuted();
         waitForBucketFs(afterUtc);
         waitForUdfContainer(afterUtc);
-        logger().info("Exasol container started after waiting for the following services to become available: {}",
+        LOGGER.info("Exasol container started after waiting for the following services to become available: {}",
                 this.requiredServices);
 
     }
 
     private void waitForBucketFs(final Instant afterUtc) {
         if (isServiceReady(BUCKETFS)) {
-            logger().debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
+            LOGGER.debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
         } else {
             if (this.requiredServices.contains(BUCKETFS)) {
                 this.status.setServiceStatus(BUCKETFS, NOT_READY);
@@ -408,7 +417,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void waitForUdfContainer(final Instant afterUtc) {
         if (isServiceReady(UDF)) {
-            logger().debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
+            LOGGER.debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
         } else {
             if (this.requiredServices.contains(UDF)) {
                 this.status.setServiceStatus(UDF, NOT_READY);
@@ -449,7 +458,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     // [impl->dsn~purging~1]
     public void purgeDatabase() {
-        logger().info("Purging database for a clean setup");
+        LOGGER.info("Purging database for a clean setup");
         try (final Connection connection = createConnection();
                 final Statement statement = connection.createStatement()) {
             new ExasolDatabaseCleaner(statement).purge();
@@ -464,7 +473,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     protected void waitUntilClusterConfigurationAvailable() {
         if (!this.reused) {
-            logger().debug("Waiting for cluster configuration to become available.");
+            LOGGER.debug("Waiting for cluster configuration to become available.");
             final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
             strategy.waitUntilReady(this);
         }
@@ -482,10 +491,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
-            logger().debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
+            LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
-            logger().debug(exaconf);
+            LOGGER.debug(exaconf);
             return new ConfigurationParser(exaconf).parse();
         } catch (final UnsupportedOperationException | IOException exception) {
             throw new ExasolContainerInitializationException(
@@ -600,7 +609,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public void stop() {
         if (isShouldBeReused() && TestcontainersConfiguration.getInstance().environmentSupportsReuse()) {
-            logger().warn("Leaving container running since reuse is enabled. " //
+            LOGGER.warn("Leaving container running since reuse is enabled. " //
                     + "Don't forget to stop and remove the container manually using docker rm -f CONTAINER_ID.");
         } else {
             super.stop();
