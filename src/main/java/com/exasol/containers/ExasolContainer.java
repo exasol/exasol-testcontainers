@@ -393,7 +393,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void waitForBucketFs(final Instant afterUtc) {
-        if (this.status.isServiceReady(BUCKETFS)) {
+        if (isServiceReady(BUCKETFS)) {
             logger().debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
         } else {
             if (this.requiredServices.contains(BUCKETFS)) {
@@ -407,7 +407,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void waitForUdfContainer(final Instant afterUtc) {
-        if (this.status.isServiceReady(UDF)) {
+        if (isServiceReady(UDF)) {
             logger().debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
         } else {
             if (this.requiredServices.contains(UDF)) {

@@ -3,13 +3,13 @@ package com.exasol.containers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,17 +33,6 @@ class ExasolContainerTest {
         final ExasolContainer<?> container = new ExasolContainer<>();
         container.withRequiredServices();
         this.containerSpy = spy(container);
-    }
-
-    @Test
-    void testWaitUntilContainerStarted(@Mock final Statement statementMock, @Mock final ResultSet resultSetMock)
-            throws Exception {
-        doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
-        doReturn(this.connectionMock).when(this.containerSpy).createConnection(any());
-        when(this.connectionMock.createStatement()).thenReturn(statementMock);
-        when(statementMock.executeQuery(anyString())).thenReturn(resultSetMock);
-        when(resultSetMock.next()).thenReturn(true);
-        assertDoesNotThrow(() -> this.containerSpy.waitUntilContainerStarted());
     }
 
     @Test
