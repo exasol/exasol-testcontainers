@@ -1,7 +1,5 @@
 package com.exasol.containers.workarounds;
 
-import static com.exasol.containers.ExasolContainerConstants.EXASOL_LOGS_PATH;
-
 import java.io.IOException;
 
 import org.testcontainers.containers.Container.ExecResult;
@@ -14,6 +12,7 @@ import com.exasol.containers.exec.ExitCode;
  * This is a workaround for an issue with broken log rotation present in Exasol's `docker-db` version 7.0.x and below.
  */
 public class LogRotationWorkaround implements Workaround {
+    private static final String CRON_EXA_LOGROTATE = "/etc/cron.daily/exa-logrotate";
     private final ExasolContainer<? extends ExasolContainer<?>> exasol;
 
     /**
@@ -33,17 +32,21 @@ public class LogRotationWorkaround implements Workaround {
     // [impl->dsn~log-rotation-workaround-criteria~1]
     @Override
     public boolean isNecessary() {
-        final ExasolDockerImageReference reference = this.exasol.getDockerImageReference();
-        return (reference.hasMajor() && //
-                ((reference.getMajor() < 7) //
-                        || ((reference.getMajor() == 7) && reference.hasMinor() && (reference.getMinor() < 1))));
+        if (this.exasol.isReused()) {
+            return false;
+        } else {
+            final ExasolDockerImageReference reference = this.exasol.getDockerImageReference();
+            return (reference.hasMajor() && //
+                    ((reference.getMajor() < 7) //
+                            || ((reference.getMajor() == 7) && reference.hasMinor() && (reference.getMinor() < 1))));
+        }
     }
 
     // [impl->dsn~log-rotation-workaround~1]
     @Override
     public void apply() throws WorkaroundException {
         try {
-            final ExecResult result = this.exasol.execInContainer("chmod", "-R", "1777", EXASOL_LOGS_PATH);
+            final ExecResult result = this.exasol.execInContainer("rm", CRON_EXA_LOGROTATE);
             if (result.getExitCode() != ExitCode.OK) {
                 throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
                         + result.getStderr());

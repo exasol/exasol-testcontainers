@@ -19,7 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.ExecResultFactory;
 
-import com.exasol.containers.*;
+import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolDockerImageReference;
 import com.exasol.containers.exec.ExitCode;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,14 +32,23 @@ class LogRotationWorkaroundTest {
 
     // [utest->dsn~log-rotation-workaround-criteria~1]
     @CsvSource({ //
-            "6.2, true", //
-            "7.0, true", //
-            "7.1, false", //
-            "8, false" })
+            "6.2, false, true", //
+            "7.0, false, true", //
+            "7.1, false, false", //
+            "8  , false, false", //
+            "6.2, true , false", //
+            "7.0, true , false", //
+            "7.1, true , false", //
+            "8  , true , false", //
+    })
     @ParameterizedTest
-    void testNecessaryWhenReused(final String reference, final boolean necessary,
+    void testNecessaryWhenReused(final String reference, final boolean reused, final boolean necessary,
             @Mock final ExasolContainer<? extends ExasolContainer<?>> exasolMock) {
-        when(exasolMock.getDockerImageReference()).thenReturn(ExasolDockerImageReference.parse(reference));
+        if (reused) {
+            when(exasolMock.isReused()).thenReturn(reused);
+        } else {
+            when(exasolMock.getDockerImageReference()).thenReturn(ExasolDockerImageReference.parse(reference));
+        }
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         assertThat(workaround.isNecessary(), equalTo(necessary));
     }
@@ -51,7 +61,7 @@ class LogRotationWorkaroundTest {
         when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         workaround.apply();
-        verify(exasolMock).execInContainer("chmod", "-R", "1777", ExasolContainerConstants.EXASOL_LOGS_PATH);
+        verify(exasolMock).execInContainer("rm", "/etc/cron.daily/exa-logrotate");
     }
 
     @Test

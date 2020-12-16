@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -31,7 +32,7 @@ class ExasolDriverManagerIT {
     void testInstallDriver(@TempDir final Path tempDir)
             throws IOException, BucketAccessException, InterruptedException {
         final String expectedDriverContent = "expected driver content";
-        final String fileName = "dummy_driver.jar";
+        final String fileName = "dummy_driver_" + UUID.randomUUID() + ".jar";
         final Path driverFile = tempDir.resolve(fileName);
         Files.write(expectedDriverContent.getBytes(), driverFile.toFile());
         final ExasolDriverManager driverManager = EXASOL.getDriverManager();

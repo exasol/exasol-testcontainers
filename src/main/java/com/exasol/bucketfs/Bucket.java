@@ -415,10 +415,11 @@ public class Bucket {
     private void waitForFileToBeSynchronized(final String pathInBucket, final long millisSinceEpochBeforeUpload)
             throws InterruptedException, TimeoutException, BucketAccessException {
         final long expiry = millisSinceEpochBeforeUpload + BUCKET_SYNC_TIMEOUT_IN_MILLISECONDS;
+        final Instant afterUtc = Instant.ofEpochMilli(millisSinceEpochBeforeUpload);
         final LogPatternDetector detector = createBucketLogPatternDetector(pathInBucket);
         while (System.currentTimeMillis() < expiry) {
             try {
-                if (detector.isPatternPresentAfter(Instant.ofEpochMilli(millisSinceEpochBeforeUpload))) {
+                if (detector.isPatternPresentAfter(afterUtc)) {
                     return;
                 }
             } catch (final IOException exception) {
@@ -427,8 +428,10 @@ public class Bucket {
             }
             Thread.sleep(FILE_SYNC_POLLING_DELAY_IN_MILLISECONDS);
         }
-        throw new TimeoutException("Timeout waiting for object \"" + pathInBucket + "\"to be synchronized in bucket \""
-                + this.bucketFsName + "/" + this.bucketName + "\".");
+        final String message = "Timeout waiting for object \"" + pathInBucket + "\" to be synchronized in bucket \""
+                + this.bucketFsName + "/" + this.bucketName + "\" after " + afterUtc + ".";
+        LOGGER.error(message);
+        throw new TimeoutException(message);
     }
 
     /**
