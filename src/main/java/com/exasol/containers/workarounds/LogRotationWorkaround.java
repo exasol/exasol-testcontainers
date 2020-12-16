@@ -12,7 +12,8 @@ import com.exasol.containers.exec.ExitCode;
  * This is a workaround for an issue with broken log rotation present in Exasol's `docker-db` version 7.0.x and below.
  */
 public class LogRotationWorkaround implements Workaround {
-    private static final String CRON_EXA_LOGROTATE = "/etc/cron.daily/exa-logrotate";
+    static final String CRON_EXA_LOGROTATE = "/etc/cron.daily/exa-logrotate";
+    static final String EXASOL_LOGS_PATH = "/exa/logs";
     private final ExasolContainer<? extends ExasolContainer<?>> exasol;
 
     /**
@@ -46,7 +47,8 @@ public class LogRotationWorkaround implements Workaround {
     @Override
     public void apply() throws WorkaroundException {
         try {
-            final ExecResult result = this.exasol.execInContainer("rm", CRON_EXA_LOGROTATE);
+            final ExecResult result = this.exasol.execInContainer("chmod", "-R", "777", EXASOL_LOGS_PATH);
+            // final ExecResult result = this.exasol.execInContainer("rm", CRON_EXA_LOGROTATE);
             if (result.getExitCode() != ExitCode.OK) {
                 throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
                         + result.getStderr());
