@@ -508,7 +508,7 @@ Needs: impl, utest
 ### Log Rotation Workaround
 `dsn~log-rotation-workaround~1`
 
-The `LogRotationWorkaround` that loosens the permissions on the log directory.
+The `LogRotationWorkaround` changes the timestamp of the Anacron spool file to tomorrow's date to prevent Anacron from executing the log rotation.
 
 Covers:
 

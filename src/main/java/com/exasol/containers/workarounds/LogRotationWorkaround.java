@@ -2,6 +2,8 @@ package com.exasol.containers.workarounds;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.ExasolContainer;
@@ -12,6 +14,7 @@ import com.exasol.containers.exec.ExitCode;
  * This is a workaround for an issue with broken log rotation present in Exasol's `docker-db` version 7.0.x and below.
  */
 public class LogRotationWorkaround implements Workaround {
+    static final Logger LOGGER = LoggerFactory.getLogger(LogRotationWorkaround.class);
     static final String CRON_EXA_LOGROTATE = "/etc/cron.daily/exa-logrotate";
     static final String EXASOL_LOGS_PATH = "/exa/logs";
     private final ExasolContainer<? extends ExasolContainer<?>> exasol;
@@ -34,12 +37,21 @@ public class LogRotationWorkaround implements Workaround {
     @Override
     public boolean isNecessary() {
         if (this.exasol.isReused()) {
+            LOGGER.trace("Log rotation workaround unnecessary, since container is being reused.");
             return false;
         } else {
             final ExasolDockerImageReference reference = this.exasol.getDockerImageReference();
-            return (reference.hasMajor() && //
+            if (reference.hasMajor() && //
                     ((reference.getMajor() < 7) //
-                            || ((reference.getMajor() == 7) && reference.hasMinor() && (reference.getMinor() < 1))));
+                            || ((reference.getMajor() == 7) && reference.hasMinor() && (reference.getMinor() < 1))))
+
+            {
+                LOGGER.trace("Log rotation workaround required, since Exasol version is below 7.1.");
+                return true;
+            } else {
+                LOGGER.trace("Log rotation workaround unnecessary, since Exasol version is 7.1 or higher.");
+                return false;
+            }
         }
     }
 
@@ -47,8 +59,8 @@ public class LogRotationWorkaround implements Workaround {
     @Override
     public void apply() throws WorkaroundException {
         try {
-            final ExecResult result = this.exasol.execInContainer("chmod", "-R", "777", EXASOL_LOGS_PATH);
-            // final ExecResult result = this.exasol.execInContainer("rm", CRON_EXA_LOGROTATE);
+            final ExecResult result = this.exasol.execInContainer("sh", "-c",
+                    "date +%Y%m%d --date tomorrow > /var/spool/anacron/cron.daily");
             if (result.getExitCode() != ExitCode.OK) {
                 throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
                         + result.getStderr());

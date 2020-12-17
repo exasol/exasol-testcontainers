@@ -61,8 +61,7 @@ class LogRotationWorkaroundTest {
         when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         workaround.apply();
-        // verify(exasolMock).execInContainer("rm", "/etc/cron.daily/exa-logrotate");
-        verify(exasolMock).execInContainer("chmod", "-R", "777", LogRotationWorkaround.EXASOL_LOGS_PATH);
+        verify(exasolMock).execInContainer("sh", "-c", "date +%Y%m%d --date tomorrow > /var/spool/anacron/cron.daily");
     }
 
     @Test
