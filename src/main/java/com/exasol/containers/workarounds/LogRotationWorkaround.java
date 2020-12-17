@@ -15,8 +15,8 @@ import com.exasol.containers.exec.ExitCode;
  */
 public class LogRotationWorkaround implements Workaround {
     static final Logger LOGGER = LoggerFactory.getLogger(LogRotationWorkaround.class);
-    static final String CRON_EXA_LOGROTATE = "/etc/cron.daily/exa-logrotate";
-    static final String EXASOL_LOGS_PATH = "/exa/logs";
+    @SuppressWarnings("java:S1075") // This is a fixed path. It won't change.
+    static final String ANACRON_SPOOL = "/var/spool/anacron/cron.daily";
     private final ExasolContainer<? extends ExasolContainer<?>> exasol;
 
     /**
@@ -60,7 +60,7 @@ public class LogRotationWorkaround implements Workaround {
     public void apply() throws WorkaroundException {
         try {
             final ExecResult result = this.exasol.execInContainer("sh", "-c",
-                    "date +%Y%m%d --date tomorrow > /var/spool/anacron/cron.daily");
+                    "date +%Y%m%d --date tomorrow > " + ANACRON_SPOOL);
             if (result.getExitCode() != ExitCode.OK) {
                 throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
                         + result.getStderr());

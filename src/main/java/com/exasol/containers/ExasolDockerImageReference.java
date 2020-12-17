@@ -95,7 +95,7 @@ public class ExasolDockerImageReference {
      *
      * @return major version number of the docker image
      */
-    @Deprecated
+    @Deprecated(since = "3.1.4")
     public Optional<Integer> getMajorVersion() {
         return (this.major == VERSION_NOT_PRESENT) ? Optional.empty() : Optional.of(this.major);
     }

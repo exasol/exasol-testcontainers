@@ -61,7 +61,8 @@ class LogRotationWorkaroundTest {
         when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         workaround.apply();
-        verify(exasolMock).execInContainer("sh", "-c", "date +%Y%m%d --date tomorrow > /var/spool/anacron/cron.daily");
+        verify(exasolMock).execInContainer("sh", "-c",
+                "date +%Y%m%d --date tomorrow > " + LogRotationWorkaround.ANACRON_SPOOL);
     }
 
     @Test
