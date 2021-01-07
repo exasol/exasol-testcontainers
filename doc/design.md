@@ -508,7 +508,7 @@ Needs: impl, utest
 ### Log Rotation Workaround
 `dsn~log-rotation-workaround~1`
 
-The `LogRotationWorkaround` changes the timestamp of the Anacron spool file to tomorrow's date to prevent Anacron from executing the log rotation.
+The `LogRotationWorkaround` removes the BucketFS log file from the list of logs to be rotated in `/etc/cron.daily/exa-logrotate`.
 
 Covers:
 

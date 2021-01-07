@@ -61,8 +61,8 @@ class LogRotationWorkaroundTest {
         when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         workaround.apply();
-        verify(exasolMock).execInContainer("sh", "-c",
-                "date +%Y%m%d --date tomorrow > " + LogRotationWorkaround.ANACRON_SPOOL);
+        verify(exasolMock).execInContainer("sed", "-i", "-es/\"'bucketfsd[^']*log' \"//",
+                "/etc/cron.daily/exa-logrotate");
     }
 
     @Test

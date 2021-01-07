@@ -59,8 +59,8 @@ public class LogRotationWorkaround implements Workaround {
     @Override
     public void apply() throws WorkaroundException {
         try {
-            final ExecResult result = this.exasol.execInContainer("sh", "-c",
-                    "date +%Y%m%d --date tomorrow > " + ANACRON_SPOOL);
+            final ExecResult result = this.exasol.execInContainer("sed", "-i", "-es/\"'bucketfsd[^']*log' \"//",
+                    "/etc/cron.daily/exa-logrotate");
             if (result.getExitCode() != ExitCode.OK) {
                 throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
                         + result.getStderr());
