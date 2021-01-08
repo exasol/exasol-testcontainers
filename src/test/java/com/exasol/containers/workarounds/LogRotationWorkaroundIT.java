@@ -18,7 +18,7 @@ import com.exasol.containers.exec.ExitCode;
 class LogRotationWorkaroundIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogRotationWorkaround.class);
     private static final int LS_SIZE_COLUMN_NUMBER = 3;
-    private final int mILLIS_PER_SECOND = 1000;
+    private static final int MILLIS_PER_SECOND = 1000;
 
     @SuppressWarnings("java:S2925") // sleep is necessary for polling here.
     @Test
@@ -28,7 +28,7 @@ class LogRotationWorkaroundIT {
             for (int round = 0; round < 60; ++round) {
                 assertLogRotationConfigurationContent(exasol, round);
                 assertBucketFsLogNotEmpty(exasol, round);
-                Thread.sleep(60 * this.mILLIS_PER_SECOND);
+                Thread.sleep(60 * LogRotationWorkaroundIT.MILLIS_PER_SECOND);
             }
             if (exasol.isRunning()) {
                 exasol.stop();
