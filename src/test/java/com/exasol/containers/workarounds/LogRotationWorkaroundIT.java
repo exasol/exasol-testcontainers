@@ -17,7 +17,7 @@ import com.exasol.containers.exec.ExitCode;
 @Tag("expensive")
 class LogRotationWorkaroundIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogRotationWorkaround.class);
-    private static final int LS_SIZE_COLUMN_NUMBER = 3;
+    private static final int LS_SIZE_COLUMN_NUMBER = 4;
     private static final int MILLIS_PER_SECOND = 1000;
 
     @SuppressWarnings("java:S2925") // sleep is necessary for polling here.
@@ -42,12 +42,11 @@ class LogRotationWorkaroundIT {
     private void assertLogRotationConfigurationContent(final ExasolContainer<? extends ExasolContainer<?>> exasol,
             final int round) {
         try {
-            final ExecResult result = exasol.execInContainer("grep", "-xq", "bucketfs",
-                    "/etc/cron.daily/exa-logrotate");
+            final ExecResult result = exasol.execInContainer("grep", "bucketfsd", "/etc/cron.daily/exa-logrotate");
             if (result.getExitCode() == ExitCode.OK) {
                 throw new AssertionError(
                         "Found \"bucketfs\" in log rotation configuration that should not be there in round " + round
-                                + ".");
+                                + ":\n" + result.getStdout());
             }
         } catch (final UnsupportedOperationException | IOException exception) {
             throw new AssertionError("Unable to check whether log rotation configuration is correct.", exception);
@@ -62,14 +61,14 @@ class LogRotationWorkaroundIT {
         try {
             final ExecResult result = exasol.execInContainer("ls", "-l", "/exa/logs/cored");
             if (result.getExitCode() == ExitCode.OK) {
-                final String listing = result.getStdout();
+                final String listing = result.getStdout().trim();
                 boolean found = false;
-                for (final String line : listing.split("\n")) {
+                for (final String line : listing.split("\\n")) {
                     if (line.contains("bucketfs")) {
                         LogRotationWorkaroundIT.LOGGER.info("Found BucketFS log entry: " + line);
                         found = true;
                         final String[] columns = line.split("\\s+");
-                        if (columns[LS_SIZE_COLUMN_NUMBER].equals("0")) {
+                        if (Integer.parseInt(columns[LS_SIZE_COLUMN_NUMBER]) == 0) {
                             throw new AssertionError("BucketFS log file is empty in round " + round + ".");
                         }
                     }
