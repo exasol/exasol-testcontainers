@@ -68,7 +68,7 @@ class LogRotationWorkaroundIT {
                     if (line.contains("bucketfs")) {
                         LogRotationWorkaroundIT.LOGGER.info("Found BucketFS log entry: " + line);
                         found = true;
-                        final String[] columns = line.split("\s+");
+                        final String[] columns = line.split("\\s+");
                         if (columns[LS_SIZE_COLUMN_NUMBER].equals("0")) {
                             throw new AssertionError("BucketFS log file is empty in round " + round + ".");
                         }
