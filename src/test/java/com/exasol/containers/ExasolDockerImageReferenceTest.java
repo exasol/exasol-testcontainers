@@ -30,7 +30,7 @@ class ExasolDockerImageReferenceTest {
     })
     @ParameterizedTest
     void toString(final String input, final String expectedReference) {
-        assertThat(ExasolDockerImageReference.parse(input).toString(), equalTo(expectedReference));
+        assertThat(DockerImageReferenceFactory.parse(input).toString(), equalTo(expectedReference));
     }
 
     // [utest->dsn~shortened-docker-image-references~1]
@@ -46,7 +46,7 @@ class ExasolDockerImageReferenceTest {
     })
     @ParameterizedTest
     void getMajorVersion(final String input, final int expectedVersion) {
-        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        final ExasolDockerImageReference reference = DockerImageReferenceFactory.parse(input);
         assertAll(() -> assertThat(reference.getMajorVersion().orElseThrow(), equalTo(expectedVersion)),
                 () -> assertThat(reference.getMajor(), equalTo(expectedVersion)),
                 () -> assertThat(reference.hasMajor(), equalTo(true)));
@@ -65,7 +65,7 @@ class ExasolDockerImageReferenceTest {
     })
     @ParameterizedTest
     void getMinorVersion(final String input, final int expectedVersion) {
-        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        final ExasolDockerImageReference reference = DockerImageReferenceFactory.parse(input);
         assertAll(() -> assertThat(reference.getMinor(), equalTo(expectedVersion)),
                 () -> assertThat(reference.hasMinor(), equalTo(true)));
     }
@@ -82,7 +82,7 @@ class ExasolDockerImageReferenceTest {
     })
     @ParameterizedTest
     void getFixVersion(final String input, final int expectedVersion) {
-        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        final ExasolDockerImageReference reference = DockerImageReferenceFactory.parse(input);
         assertAll(() -> assertThat(reference.getFixVersion(), equalTo(expectedVersion)),
                 () -> assertThat(reference.hasFix(), equalTo(true)));
     }
@@ -99,7 +99,7 @@ class ExasolDockerImageReferenceTest {
     })
     @ParameterizedTest
     void getDockerImageRevision(final String input, final Integer expectedVersion) {
-        final ExasolDockerImageReference reference = ExasolDockerImageReference.parse(input);
+        final ExasolDockerImageReference reference = DockerImageReferenceFactory.parse(input);
         if (expectedVersion == null) {
             assertThat("no docker image revision expected", reference.hasDockerImageRevision(), equalTo(false));
         } else {

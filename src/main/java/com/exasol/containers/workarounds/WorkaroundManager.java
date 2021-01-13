@@ -30,6 +30,7 @@ public class WorkaroundManager {
      *
      * @throws WorkaroundException if any workaround could not be applied.
      */
+    // [impl->dsn~workaround-manager-applies-multiple-of-workarounds~1]]
     public void applyWorkarounds() throws WorkaroundException {
         final List<Workaround> appliedWorkarounds = new ArrayList<>();
         for (final Workaround workaround : this.workarounds) {
@@ -41,13 +42,14 @@ public class WorkaroundManager {
         }
     }
 
-    private String joinWorkaroundNames(final List<Workaround> workarounds) {
-        return workarounds.stream().map(Workaround::getName).collect(Collectors.joining(", "));
-    }
-
+    // [impl->dsn~workaround-manager-checks-criteria~1]
     private void applyWorkaround(final Workaround workaround) throws WorkaroundException {
         if (workaround.isNecessary()) {
             workaround.apply();
         }
+    }
+
+    private String joinWorkaroundNames(final List<Workaround> workarounds) {
+        return workarounds.stream().map(Workaround::getName).collect(Collectors.joining(", "));
     }
 }

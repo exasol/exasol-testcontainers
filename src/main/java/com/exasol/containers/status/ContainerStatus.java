@@ -1,8 +1,7 @@
 package com.exasol.containers.status;
 
 import java.io.Serializable;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.processing.Generated;
 
@@ -75,11 +74,7 @@ public final class ContainerStatus implements Serializable {
     @Generated("org.eclipse.Eclipse")
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((this.containerId == null) ? 0 : this.containerId.hashCode());
-        result = (prime * result) + ((this.serviceStatuses == null) ? 0 : this.serviceStatuses.hashCode());
-        return result;
+        return Objects.hash(this.containerId, this.serviceStatuses);
     }
 
     @Generated("org.eclipse.Eclipse")
@@ -92,20 +87,7 @@ public final class ContainerStatus implements Serializable {
             return false;
         }
         final ContainerStatus other = (ContainerStatus) obj;
-        if (this.containerId == null) {
-            if (other.containerId != null) {
-                return false;
-            }
-        } else if (!this.containerId.equals(other.containerId)) {
-            return false;
-        }
-        if (this.serviceStatuses == null) {
-            if (other.serviceStatuses != null) {
-                return false;
-            }
-        } else if (!this.serviceStatuses.equals(other.serviceStatuses)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.containerId, other.containerId)
+                && Objects.equals(this.serviceStatuses, other.serviceStatuses);
     }
 }

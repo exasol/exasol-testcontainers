@@ -1,6 +1,6 @@
-# Exasol Test Containers 3.4.0, released 2020-12-04
+# Exasol Test Containers 3.4.0, released 2020-13-04
 
-Code name: Matrix testing
+Code name: Workaround for log rotation bug in docker-db
 
 ## Summary
 

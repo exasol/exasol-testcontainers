@@ -493,11 +493,32 @@ Needs: impl, itest
 
 ## Workarounds
 
+### WorkaroundManager Applies Multiple Workarounds
+`dsn~workaround-manager-applies-multiple-of-workarounds~1`
+
+The `WorkaroundManager` applies workarounds in the order they are registered.
+
+Covers:
+
+* `req~log-rotation-workaround~1`
+
+Needs: impl, utest
+
+### WorkaroundManager Checks Criteria
+`dsn~workaround-manager-checks-criteria~1`
+
+The `WorkaroundManager` applies a workaround if that workaround reports that its individual application criteria apply.
+
+Covers:
+
+* `req~log-rotation-workaround~1`
+
+Needs: impl, utest
+
 ### Log Rotation Workaround Criteria
 `dsn~log-rotation-workaround-criteria~1`
 
-WorkaroundManager applies the `LogRotatinWorkaround` if the exasol version is 7.0.x or lower.
-
+the `WorkaroundManager` applies the `LogRotationWorkaround` if the Exasol version is 7.0.x or lower.
 
 Covers:
 
@@ -514,7 +535,7 @@ Covers:
 
 * `req~log-rotation-workaround~1`
 
-Needs: impl, utest
+Needs: impl, utest, itest
 
 # Cross-cutting Concerns
 

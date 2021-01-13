@@ -11,15 +11,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class WorkaroundManagerTest {
+    // [utest->dsn~workaround-manager-checks-criteria~1]
+    // [utest->dsn~workaround-manager-applies-multiple-of-workarounds~1]
     @Test
-    void testApplyNecessaryWorkaround(@Mock final Workaround workaroundMock) throws WorkaroundException {
-        when(workaroundMock.isNecessary()).thenReturn(true);
-        when(workaroundMock.getName()).thenReturn("necessary workaround");
-        final WorkaroundManager manager = WorkaroundManager.create(workaroundMock);
+    void testApplyNecessaryWorkaround(@Mock final Workaround workaroundMockA, @Mock final Workaround workaroundMockB)
+            throws WorkaroundException {
+        when(workaroundMockA.isNecessary()).thenReturn(true);
+        when(workaroundMockA.getName()).thenReturn("necessary workaround");
+        when(workaroundMockB.isNecessary()).thenReturn(true);
+        when(workaroundMockB.getName()).thenReturn("another necessary workaround");
+        final WorkaroundManager manager = WorkaroundManager.create(workaroundMockA, workaroundMockB);
         manager.applyWorkarounds();
-        verify(workaroundMock).apply();
+        verify(workaroundMockA).apply();
+        verify(workaroundMockB).apply();
     }
 
+    // [utest->dsn~workaround-manager-checks-criteria~1]
     @Test
     void testApplyUnnecessaryWorkaround(@Mock final Workaround workaroundMock) throws WorkaroundException {
         when(workaroundMock.isNecessary()).thenReturn(false);

@@ -69,12 +69,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
      *
      * @param dockerImageName name of the Docker image from which the container is created
-     * @see ExasolDockerImageReference#parse(String) Examples for supported reference types
+     * @see DockerImageReferenceFactory#parse(String) Examples for supported reference types
      */
     @SuppressWarnings("java:S1874") // This constructor is different from JdbcDatabaseContainer(String) and not
                                     // deprecated
     public ExasolContainer(final String dockerImageName) {
-        this(ExasolDockerImageReference.parse(getOverridableDockerImageName(dockerImageName)));
+        this(DockerImageReferenceFactory.parse(getOverridableDockerImageName(dockerImageName)));
     }
 
     // [impl->dsn~override-docker-image-via-java-property~1]

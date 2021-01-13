@@ -19,8 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.ExecResultFactory;
 
+import com.exasol.containers.DockerImageReferenceFactory;
 import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExasolDockerImageReference;
 import com.exasol.containers.exec.ExitCode;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +47,7 @@ class LogRotationWorkaroundTest {
         if (reused) {
             when(exasolMock.isReused()).thenReturn(reused);
         } else {
-            when(exasolMock.getDockerImageReference()).thenReturn(ExasolDockerImageReference.parse(reference));
+            when(exasolMock.getDockerImageReference()).thenReturn(DockerImageReferenceFactory.parse(reference));
         }
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         assertThat(workaround.isNecessary(), equalTo(necessary));
