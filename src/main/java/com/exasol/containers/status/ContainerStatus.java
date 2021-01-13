@@ -11,9 +11,10 @@ import com.exasol.containers.ExasolService;
  * State information about the Exasol docker container.
  */
 public final class ContainerStatus implements Serializable {
-    private static final long serialVersionUID = 5014025686797381100L;
+    private static final long serialVersionUID = 8005816552446840053L;
     private final String containerId;
     private final Map<ExasolService, ServiceStatus> serviceStatuses = new EnumMap<>(ExasolService.class);
+    private final Set<String> appliedWorkarounds = new HashSet<>();
 
     private ContainerStatus(final String containerId) {
         this.containerId = containerId;
@@ -71,10 +72,28 @@ public final class ContainerStatus implements Serializable {
         this.serviceStatuses.put(service, serviceStatus);
     }
 
+    /**
+     * Get the applied workarounds.
+     *
+     * @return workarounds that have been applied until now.
+     */
+    public Set<String> getAppliedWorkarounds() {
+        return this.appliedWorkarounds;
+    }
+
+    /**
+     * Add applied workarounds
+     *
+     * @param ids unique identifiers of the workaround
+     */
+    public void addAllAppliedWorkarounds(final Set<String> ids) {
+        this.appliedWorkarounds.addAll(ids);
+    }
+
     @Generated("org.eclipse.Eclipse")
     @Override
     public int hashCode() {
-        return Objects.hash(this.containerId, this.serviceStatuses);
+        return Objects.hash(this.containerId, this.serviceStatuses, this.appliedWorkarounds);
     }
 
     @Generated("org.eclipse.Eclipse")
@@ -88,6 +107,7 @@ public final class ContainerStatus implements Serializable {
         }
         final ContainerStatus other = (ContainerStatus) obj;
         return Objects.equals(this.containerId, other.containerId)
-                && Objects.equals(this.serviceStatuses, other.serviceStatuses);
+                && Objects.equals(this.serviceStatuses, other.serviceStatuses)
+                && Objects.equals(this.appliedWorkarounds, other.appliedWorkarounds);
     }
 }

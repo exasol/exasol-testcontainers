@@ -5,7 +5,7 @@ package com.exasol.containers.workarounds;
  */
 public interface Workaround {
     /**
-     * Get the human-readable name of the workaround.
+     * Get the name of the workaround.
      *
      * @return name of the workaround
      */

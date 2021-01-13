@@ -13,6 +13,7 @@ import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -441,7 +442,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void applyWorkarounds() {
         final LogRotationWorkaround logRotationWorkaround = new LogRotationWorkaround(this);
         try {
-            WorkaroundManager.create(logRotationWorkaround).applyWorkarounds();
+            final Set<String> previouslyAppliedWorkarounds = this.status.getAppliedWorkarounds();
+            final WorkaroundManager manager = WorkaroundManager.create(previouslyAppliedWorkarounds,
+                    logRotationWorkaround);
+            final Set<String> appliedWorkaroundNames = manager.applyWorkarounds().stream().map(Workaround::getName)
+                    .collect(Collectors.toUnmodifiableSet());
+            this.status.addAllAppliedWorkarounds(appliedWorkaroundNames);
         } catch (final WorkaroundException exception) {
             throw new ExasolContainerInitializationException("Failed to apply necessary workarounds", exception);
         }

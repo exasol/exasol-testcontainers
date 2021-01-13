@@ -4,7 +4,10 @@ import static com.exasol.containers.ExasolService.BUCKETFS;
 import static com.exasol.containers.status.ServiceStatus.NOT_CHECKED;
 import static com.exasol.containers.status.ServiceStatus.READY;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,8 +17,8 @@ class ContainerStatusTest {
     @Test
     void testGetContainerId() throws Exception {
         final String containerId = "the_id";
-        final ContainerStatus state = ContainerStatus.create(containerId);
-        assertThat(state.getContainerId(), equalTo(containerId));
+        final ContainerStatus status = ContainerStatus.create(containerId);
+        assertThat(status.getContainerId(), equalTo(containerId));
     }
 
     @Test
@@ -25,16 +28,23 @@ class ContainerStatusTest {
 
     @Test
     void testSetServiceStatus() throws Exception {
-        final ContainerStatus state = ContainerStatus.create("irrelevant");
-        state.setServiceStatus(BUCKETFS, READY);
-        assertThat(state.getServiceStatus(BUCKETFS), equalTo(READY));
+        final ContainerStatus status = ContainerStatus.create("irrelevant");
+        status.setServiceStatus(BUCKETFS, READY);
+        assertThat(status.getServiceStatus(BUCKETFS), equalTo(READY));
     }
 
     @CsvSource({ "NOT_CHECKED, false", "NOT_READY, false", "READY, true" })
     @ParameterizedTest
     void testIsServiceReady(final ServiceStatus serviceStatus, final boolean ready) {
-        final ContainerStatus state = ContainerStatus.create("irrelevant");
-        state.setServiceStatus(BUCKETFS, serviceStatus);
-        assertThat(state.isServiceReady(BUCKETFS), equalTo(ready));
+        final ContainerStatus status = ContainerStatus.create("irrelevant");
+        status.setServiceStatus(BUCKETFS, serviceStatus);
+        assertThat(status.isServiceReady(BUCKETFS), equalTo(ready));
+    }
+
+    @Test
+    void testAddAllAppliedWorkarounds() {
+        final ContainerStatus status = ContainerStatus.create("irrelevant");
+        status.addAllAppliedWorkarounds(Set.of("A", "B"));
+        assertThat(status.getAppliedWorkarounds(), containsInAnyOrder("A", "B"));
     }
 }
