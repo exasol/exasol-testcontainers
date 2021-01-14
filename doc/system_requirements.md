@@ -476,3 +476,18 @@ Covers:
 * [feat~exaoperation-simulation~1](#exaoperation-simulation)
 
 Needs: dsn
+
+### Workarounds
+
+Workarounds are mitigations for bugs that exist outside of ETC.
+
+#### Log Rotation Workaround
+`req~log-rotation-workaround~1`
+
+ETC mitigates the a bug present in Exasol 7.0.x and below that prevents log rotation from succeeding.
+
+Rationale:
+
+This bug causes the logs to not be rotated correctly when the Cron job starts the rotation. By default this happens after 40 minutes.
+
+Needs: dsn

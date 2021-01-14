@@ -43,10 +43,14 @@ public class ExasolDriverManager {
     }
 
     private void installDriver(final DatabaseDriver driver) {
-        LOGGER.debug("Installing  {}", driver);
         registerDriver(driver);
         if (driver.hasSourceFile()) {
+            LOGGER.debug("Installing driver {}", driver);
             uploadDriver(driver);
+        } else {
+            LOGGER.debug(
+                    "Registering driver {} without uploading it. Make sure it is already present when using this feature!",
+                    driver);
         }
         uploadManifest(getManifest());
     }
@@ -57,8 +61,9 @@ public class ExasolDriverManager {
 
     private void uploadDriver(final DatabaseDriver driver) {
         try {
-            this.bucket.uploadFile(driver.getSourcePath(),
-                    DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + BucketConstants.PATH_SEPARATOR + driver.getFileName());
+            final String pathInBucket = DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + BucketConstants.PATH_SEPARATOR
+                    + driver.getFileName();
+            this.bucket.uploadFile(driver.getSourcePath(), pathInBucket);
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new DriverManagerException("Interrupted during database driver upload.", driver, exception);

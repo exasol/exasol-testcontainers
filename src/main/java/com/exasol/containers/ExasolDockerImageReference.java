@@ -1,100 +1,81 @@
 package com.exasol.containers;
 
-import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE_ID;
-import static java.lang.Integer.parseInt;
-
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Reference to an Exasol Docker image.
  */
-public class ExasolDockerImageReference {
-    private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = //
-            Pattern.compile("(?:(?:exasol/)?(?:docker-db:))?" // prefix (optional)
-                    + "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?" // Exasol version (partially optional)
-                    + "(?:-d(\\d+))?"); // docker image revision (optional)
-    private static final Pattern MAJOR_VERSION_PATTERN = Pattern
-            .compile(Pattern.quote(EXASOL_DOCKER_IMAGE_ID) + ":(\\d+).*");
-    private final String reference;
-
-    private ExasolDockerImageReference(final String reference) {
-        this.reference = reference;
-    }
-
-    /**
-     * Create a new instance of an {@link ExasolDockerImageReference} by parsing a reference string.
-     * <p>
-     * The following shortened reference strings are are supported and reference the standard Exasol {@code docker-db}:
-     * </p>
-     * <ul>
-     * <li>&lt;major&gt; (7)</li>
-     * <li>&lt;major&gt;.&lt;minor&gt; (7.1)</li>
-     * <li>&lt;major&gt;.&lt;minor&gt;.&lt;fix&gt; (7.1.5)</li>
-     * <li>&lt;major&gt;.&lt;minor&gt;.&lt;fix&gt;-&lt;docker-image-revision&gt; (7.1.5-d2)</li>
-     * <li>All of the above prefixed by <code>docker-db:</code> or <code>exasol/docker-db:</code></li>
-     * </ul>
-     * <p>
-     * Anything else is treated like a regular Docker image reference string.
-     * </p>
-     *
-     * @param reference docker image reference or Exasol version number
-     * @return reference to a {@code docker-db} image containing Exasol
-     */
-    // [impl->dsn~shortened-docker-image-references~1]
-    public static ExasolDockerImageReference parse(final String reference) {
-        final Matcher matcher = DOCKER_IMAGE_VERSION_PATTERN.matcher(reference);
-        if (matcher.matches()) {
-            final int major = parseInt(matcher.group(1));
-            final int minor = (matcher.group(2)) == null ? 0 : parseInt(matcher.group(2));
-            final int fix = (matcher.group(3)) == null ? 0 : parseInt(matcher.group(3));
-            final String exasolVersion = major + "." + minor + "." + fix;
-            if (matcher.group(4) == null) {
-                if (major < 7) {
-                    return createPreSevenVersionWithDefaultImageRevision(exasolVersion);
-                } else {
-                    return createSevenPlusVersionWithoutImageRevision(exasolVersion);
-                }
-            }
-            final int imageRevision = (matcher.group(4)) == null ? 1 : parseInt(matcher.group(4));
-            return createVersionWithImageRevision(exasolVersion, imageRevision);
-        } else {
-            return new ExasolDockerImageReference(reference);
-        }
-    }
-
-    private static ExasolDockerImageReference createPreSevenVersionWithDefaultImageRevision(
-            final String exasolVersion) {
-        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion + "-d1");
-    }
-
-    private static ExasolDockerImageReference createSevenPlusVersionWithoutImageRevision(final String exasolVersion) {
-        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion);
-    }
-
-    private static ExasolDockerImageReference createVersionWithImageRevision(final String exasolVersion,
-            final int imageRevision) {
-        return new ExasolDockerImageReference(EXASOL_DOCKER_IMAGE_ID + ":" + exasolVersion + "-d" + imageRevision);
-    }
-
+public interface ExasolDockerImageReference {
     /**
      * Get the major version of the {@code exasol/docker-db} image if possible.
      *
      * <p>
-     * If a different image is used, no version is detected.
+     * If a non-standard image is used, no version is detected.
      * </p>
      *
-     * @return major version number of the docker image.
+     * @deprecated As of 3.4.1, use {@link ExasolDockerImageReference#getMajor()} and
+     *             {@link ExasolDockerImageReference#hasMajor()} instead.
+     *
+     * @return major version number of the docker image
      */
-    public Optional<Integer> getMajorVersion() {
-        final Matcher matcher = MAJOR_VERSION_PATTERN.matcher(this.reference);
-        if (matcher.matches()) {
-            return Optional.of(parseInt(matcher.group(1)));
-        } else {
-            return Optional.empty();
-        }
-    }
+    @Deprecated(since = "3.4.1")
+    public Optional<Integer> getMajorVersion();
+
+    /**
+     * Get the major version of the {@code exasol/docker-db} image if possible.
+     *
+     * @return major version number of the docker image
+     */
+    public int getMajor();
+
+    /**
+     * Check if the major version available.
+     *
+     * @return {@code true} if the major version was detected.
+     */
+    public boolean hasMajor();
+
+    /**
+     * Get the minor version of the {@code exasol/docker-db} image if possible.
+     *
+     * @return minor version number of the docker image
+     */
+    public int getMinor();
+
+    /**
+     * Check if the minor version is available.
+     *
+     * @return {@code true} if the minor version was detected or complemented.
+     */
+    public boolean hasMinor();
+
+    /**
+     * Get the fix version of the {@code exasol/docker-db} image if possible.
+     *
+     * @return fix version number of the docker image
+     */
+    public int getFixVersion();
+
+    /**
+     * Check if the fix version is available.
+     *
+     * @return {@code true} if the fix version was detected or complemented.
+     */
+    public boolean hasFix();
+
+    /**
+     * Get the revision of the {@code exasol/docker-db} image if possible.
+     *
+     * @return revision of the docker image
+     */
+    public int getDockerImageRevision();
+
+    /**
+     * Check if the docker image revision is available.
+     *
+     * @return {@code true} if the docker image revision version was detected or complemented.
+     */
+    public boolean hasDockerImageRevision();
 
     /**
      * Get the Docker image reference for an Exasol version number.
@@ -102,7 +83,5 @@ public class ExasolDockerImageReference {
      * @return Docker image Reference
      */
     @Override
-    public String toString() {
-        return this.reference;
-    }
+    public String toString();
 }
