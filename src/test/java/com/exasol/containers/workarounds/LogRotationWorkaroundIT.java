@@ -20,7 +20,7 @@ class LogRotationWorkaroundIT {
     private static final int LS_SIZE_COLUMN_NUMBER = 4;
     private static final int MILLIS_PER_SECOND = 1000;
 
-    // [itest-> dsn~log-rotation-workaround~1]
+    // [itest->dsn~log-rotation-workaround~1]
     @SuppressWarnings("java:S2925") // sleep is necessary for polling here.
     @Test
     void testLogRotationWorkaround() {

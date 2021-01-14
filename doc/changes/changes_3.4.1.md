@@ -1,4 +1,4 @@
-# Exasol Test Containers 3.4.0, released 2020-13-04
+# Exasol Test Containers 3.4.0, released 2020-14-04
 
 Code name: Workaround for log rotation bug in docker-db
 
