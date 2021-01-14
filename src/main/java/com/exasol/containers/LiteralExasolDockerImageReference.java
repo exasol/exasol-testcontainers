@@ -5,9 +5,10 @@ import java.util.Optional;
 /**
  * Docker image reference for images that don't follow the established standard of naming Exasol Docker images.
  */
-public class LiteralExasolDockerImageReference implements ExasolDockerImageReference {
-    private static final String ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE = "F-ETC-DIR-1: Can't version details from a non-standard Exasol image reference."
-            + " Adhere to the naming conventions for docker-db images to use this function.";
+class LiteralExasolDockerImageReference implements ExasolDockerImageReference {
+    private static final String ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE = //
+            "F-ETC-DIR-1: Can't get version details from a non-standard Exasol image reference."
+                    + " Adhere to the naming conventions for docker-db images to use this function.";
     private final String reference;
 
     /**

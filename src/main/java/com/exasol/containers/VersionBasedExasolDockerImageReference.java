@@ -15,7 +15,7 @@ import java.util.Optional;
  * image build.
  * </p>
  */
-public class VersionBasedExasolDockerImageReference implements ExasolDockerImageReference {
+class VersionBasedExasolDockerImageReference implements ExasolDockerImageReference {
     private static final int VERSION_NOT_PRESENT = -1;
     private final int major;
     private final int minor;

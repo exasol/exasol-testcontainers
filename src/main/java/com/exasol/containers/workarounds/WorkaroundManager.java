@@ -40,8 +40,9 @@ public class WorkaroundManager {
     public Set<Workaround> applyWorkarounds() throws WorkaroundException {
         final Set<Workaround> appliedWorkarounds = new HashSet<>();
         for (final Workaround workaround : this.workarounds) {
-            applyWorkaround(workaround);
-            appliedWorkarounds.add(workaround);
+            if (applyWorkaround(workaround)) {
+                appliedWorkarounds.add(workaround);
+            }
         }
         if (!appliedWorkarounds.isEmpty() && LOGGER.isInfoEnabled()) {
             LOGGER.info("Applied workarounds: {}", joinWorkaroundNames(appliedWorkarounds));
@@ -50,11 +51,15 @@ public class WorkaroundManager {
     }
 
     // [impl->dsn~workaround-manager-checks-criteria~1]
-    private void applyWorkaround(final Workaround workaround) throws WorkaroundException {
+    private boolean applyWorkaround(final Workaround workaround) throws WorkaroundException {
         if (isWorkaroundAlreadyApplied(workaround)) {
             LOGGER.trace("Workaround \"{}\" has previously been applied. Skipping application.", workaround.getName());
+            return false;
         } else if (workaround.isNecessary()) {
             workaround.apply();
+            return true;
+        } else {
+            return false;
         }
     }
 

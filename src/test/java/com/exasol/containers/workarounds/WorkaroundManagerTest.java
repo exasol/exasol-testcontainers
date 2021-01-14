@@ -1,5 +1,7 @@
 package com.exasol.containers.workarounds;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -55,5 +57,21 @@ class WorkaroundManagerTest {
         Mockito.doThrow(new WorkaroundException("Dummy exception.", expectedCause)).when(workaroundMock).apply();
         final WorkaroundManager manager = WorkaroundManager.create(Collections.emptySet(), workaroundMock);
         assertThrows(WorkaroundException.class, () -> manager.applyWorkarounds());
+    }
+
+    @Test
+    void testReportAppliedWorkarounds(@Mock final Workaround workaroundMockA, @Mock final Workaround workaroundMockB,
+            @Mock final Workaround workaroundMockC, @Mock final Workaround workaroundMockD) throws WorkaroundException {
+        when(workaroundMockA.isNecessary()).thenReturn(true);
+        when(workaroundMockA.getName()).thenReturn("A");
+        when(workaroundMockB.isNecessary()).thenReturn(true);
+        when(workaroundMockB.getName()).thenReturn("B");
+        when(workaroundMockC.isNecessary()).thenReturn(false);
+        when(workaroundMockC.getName()).thenReturn("C");
+        when(workaroundMockD.getName()).thenReturn("D");
+        final WorkaroundManager manager = WorkaroundManager.create(Set.of("D"), workaroundMockA, workaroundMockB,
+                workaroundMockC, workaroundMockD);
+        final Set<Workaround> appliedWorkarounds = manager.applyWorkarounds();
+        assertThat(appliedWorkarounds, containsInAnyOrder(workaroundMockA, workaroundMockB));
     }
 }
