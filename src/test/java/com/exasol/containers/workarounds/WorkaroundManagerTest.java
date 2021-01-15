@@ -8,12 +8,14 @@ import static org.mockito.Mockito.*;
 import java.util.Collections;
 import java.util.Set;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Tag("fast")
 @ExtendWith(MockitoExtension.class)
 class WorkaroundManagerTest {
     // [utest->dsn~workaround-manager-checks-criteria~1]

@@ -9,10 +9,12 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.util.Set;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+@Tag("fast")
 class ContainerStatusTest {
     @Test
     void testGetContainerId() throws Exception {

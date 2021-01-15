@@ -3,12 +3,14 @@ package com.exasol.config;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 
+@Tag("slow")
 @Testcontainers
 class ClusterConfigAccessIT {
     @Container

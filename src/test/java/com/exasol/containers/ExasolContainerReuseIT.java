@@ -15,6 +15,7 @@ import org.testcontainers.utility.TestcontainersConfiguration;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
 
+@Tag("slow")
 class ExasolContainerReuseIT {
     public static final String TESTCONTAINERS_REUSE_ENABLE = "testcontainers.reuse.enable";
     static String propertyBackup;

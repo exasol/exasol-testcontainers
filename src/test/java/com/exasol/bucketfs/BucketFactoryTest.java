@@ -9,10 +9,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.exasol.config.*;
 
+@Tag("fast")
 class BucketFactoryTest {
     // [utest->dsn~bucket-factory-injects-access-credentials~1]
     @Test

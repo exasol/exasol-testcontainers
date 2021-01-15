@@ -6,11 +6,13 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Tag("fast")
 @ExtendWith(MockitoExtension.class)
 class DriverManagerExceptionTest {
     @Test

@@ -15,6 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 
+@Tag("slow")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Testcontainers
 class ExaOperationEmulatorIT {

@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.*;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Tag("slow")
 // This test case is kept separate because it requires an unmodified container for the test cases.
 @Testcontainers
 class ExasolContainerDefaultsIT {

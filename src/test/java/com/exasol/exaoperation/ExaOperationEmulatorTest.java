@@ -5,20 +5,23 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 import java.io.IOException;
 
-import com.exasol.containers.exec.ExitCode;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.Container;
-
-import com.exasol.exaoperation.plugin.PluginStub;
 import org.testcontainers.containers.ExecResultFactory;
 
+import com.exasol.containers.exec.ExitCode;
+import com.exasol.exaoperation.plugin.PluginStub;
+
+@Tag("fast")
 @ExtendWith(MockitoExtension.class)
 class ExaOperationEmulatorTest {
     @Mock

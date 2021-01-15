@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.junit.jupiter.Container;
@@ -20,6 +21,7 @@ import org.testcontainers.shaded.com.google.common.io.Files;
 import com.exasol.bucketfs.*;
 import com.exasol.containers.ExasolContainer;
 
+@Tag("slow")
 @Testcontainers
 class ExasolDriverManagerIT {
     @Container

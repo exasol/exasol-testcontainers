@@ -4,9 +4,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+@Tag("fast")
 class ExasolDockerImageReferenceTest {
     // [utest->dsn~shortened-docker-image-references~1]
     @CsvSource({ //

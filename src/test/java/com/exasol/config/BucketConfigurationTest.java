@@ -3,8 +3,10 @@ package com.exasol.config;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+@Tag("fast")
 class BucketConfigurationTest {
     @Test
     void testGetName() {

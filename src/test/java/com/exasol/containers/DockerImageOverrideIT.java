@@ -7,9 +7,11 @@ import static org.hamcrest.Matchers.containsString;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Tag("slow")
 @Testcontainers
 class DockerImageOverrideIT {
     private static final String NON_RECENT_VERSION = "6.2.11";
