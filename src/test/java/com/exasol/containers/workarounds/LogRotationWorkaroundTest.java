@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +24,7 @@ import com.exasol.containers.DockerImageReferenceFactory;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
+@Tag("fast")
 @ExtendWith(MockitoExtension.class)
 class LogRotationWorkaroundTest {
     @Test

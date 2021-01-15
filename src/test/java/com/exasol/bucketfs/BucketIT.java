@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
+@Tag("slow")
 @Testcontainers
 class BucketIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketIT.class);

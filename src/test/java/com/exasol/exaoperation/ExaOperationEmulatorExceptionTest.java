@@ -3,9 +3,11 @@ package com.exasol.exaoperation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class ExaOperationEmulatorExceptionTest {
+@Tag("fast")
+class ExaOperationEmulatorExceptionTest {
     @Test
     void testCreateWithOutCause() {
         final String message = "message";

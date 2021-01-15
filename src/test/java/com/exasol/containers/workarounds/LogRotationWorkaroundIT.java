@@ -13,7 +13,6 @@ import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
 @Testcontainers
-@Tag("integration")
 @Tag("expensive")
 class LogRotationWorkaroundIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogRotationWorkaround.class);

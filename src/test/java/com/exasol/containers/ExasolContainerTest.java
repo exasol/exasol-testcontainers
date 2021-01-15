@@ -12,8 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
@@ -22,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
 
+@Tag("slow")
 @ExtendWith(MockitoExtension.class)
 class ExasolContainerTest {
     @Mock

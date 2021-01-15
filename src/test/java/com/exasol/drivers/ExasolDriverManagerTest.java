@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.bucketfs.*;
 
+@Tag("fast")
 @ExtendWith(MockitoExtension.class)
 class ExasolDriverManagerTest {
     // [utest->dsn~installing-a-jdbc-driver-from-host-filesystem~1]

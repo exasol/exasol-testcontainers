@@ -3,9 +3,11 @@ package com.exasol.database;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class DatabaseServiceExceptionTest {
+@Tag("fast")
+class DatabaseServiceExceptionTest {
     @Test
     void testGetDatabaseName() {
         assertThat(new DatabaseServiceException("foo", "a message").getDatabaseName(), equalTo("foo"));

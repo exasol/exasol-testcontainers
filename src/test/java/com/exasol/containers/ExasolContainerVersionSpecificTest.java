@@ -3,12 +3,14 @@ package com.exasol.containers;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
  * Test an Exasol Container with version lower than 7.0.
  */
-public class ExasolContainerVersionSpecificTest {
+@Tag("fast")
+class ExasolContainerVersionSpecificTest {
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V6 = new ExasolContainer<>("6.2.7-d1");
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V7 = new ExasolContainer<>("7.0.0");
 

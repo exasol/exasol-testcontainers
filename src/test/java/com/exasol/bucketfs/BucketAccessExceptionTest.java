@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.net.URI;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+@Tag("fast")
 class BucketAccessExceptionTest {
     private static final URI EXPECTED_URI = URI.create("http://localhost:2580/default");
     private static final String EXPECTED_MESSAGE = "the message";

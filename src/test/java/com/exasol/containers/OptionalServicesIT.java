@@ -3,8 +3,10 @@ package com.exasol.containers;
 import static com.exasol.containers.ExasolService.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+@Tag("slow")
 class OptionalServicesIT {
     // [itest->dsn~defining-required-optional-service~1]
     @Test

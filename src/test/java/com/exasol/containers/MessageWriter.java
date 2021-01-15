@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
 
+@Tag("fast")
 final class MessageWriter implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageWriter.class);
     private final ExasolContainer<? extends ExasolContainer<?>> container;

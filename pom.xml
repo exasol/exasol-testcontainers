@@ -66,6 +66,35 @@
       </snapshots>
     </repository>
   </repositories>
+  <profiles>
+  <profile>
+      <id>fast</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <test.excludeTags>slow,expensive</test.excludeTags>
+      </properties>
+    </profile>
+    <profile>
+      <id>slow</id>
+      <activation>
+        <property>
+          <name>TRAVIS</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+        <test.excludeTags>expensive</test.excludeTags>
+      </properties>
+    </profile>
+    <profile>
+      <id>expensive</id>
+      <properties>
+        <test.excludeTags></test.excludeTags>
+      </properties>
+    </profile>
+  </profiles>
   <dependencies>
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -156,6 +185,7 @@
           <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches 
             in the logging lambdas too. -->
           <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
+          <excludedGroups>${test.excludeTags}</excludedGroups>
         </configuration>
       </plugin>
       <plugin>
@@ -166,6 +196,7 @@
           <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches 
             in the logging lambdas too. -->
           <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
+          <excludedGroups>${test.excludeTags}</excludedGroups>
         </configuration>
         <executions>
           <execution>

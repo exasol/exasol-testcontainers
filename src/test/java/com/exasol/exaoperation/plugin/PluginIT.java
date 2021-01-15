@@ -12,8 +12,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,6 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.exaoperation.ExaOperationEmulatorException;
 
+@Tag("slow")
 @ExtendWith(MockitoExtension.class)
 @Testcontainers
 class PluginIT {

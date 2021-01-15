@@ -11,6 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 
+@Tag("slow")
 @Testcontainers
 class DatabaseServiceIT {
     @Container

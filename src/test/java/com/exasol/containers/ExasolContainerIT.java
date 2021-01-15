@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -18,6 +19,7 @@ import com.exasol.config.ClusterConfiguration;
 
 // This test contains test cases that modify the configuration of the container. Don't add test
 // cases that depend on the default settings!
+@Tag("slow")
 @Testcontainers
 class ExasolContainerIT {
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
