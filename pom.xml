@@ -78,12 +78,6 @@
     </profile>
     <profile>
       <id>slow</id>
-      <activation>
-        <property>
-          <name>TRAVIS</name>
-          <value>true</value>
-        </property>
-      </activation>
       <properties>
         <test.excludeTags>expensive</test.excludeTags>
       </properties>
