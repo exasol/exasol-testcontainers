@@ -9,13 +9,15 @@ address of the host the Exasol docker container runs on. This is useful if you w
 
 Note that this feature is at the moment only available on Linux.
 
+We also updated the default `docker-db` image version to 7.0.6.
+
 ## Features
 
-* #68: Support `getHostIp()` on Linux
+* #58: Support `getHostIp()` on Linux
 
-With release 3.5.0 the Exasol Test Container now provides the function `getHostIp()` that lets you acquire the IP address of the host that runs the Exasol `docker-db`. This is for example useful if you have a debugger or profiler running on the host and want to connect to it from inside the Docker container.
+## Bug fixes
 
-We also updated the default `docker-db` image version to 7.0.6.
+* 122: Updated base Test Containers versions to 1.15.1 to prevent build failures
 
 ## Dependency updates
  
