@@ -71,6 +71,10 @@ The `Plugin` allows controlling functions of an EXAoperation plug-in.
 
 The `ExasolDriverManager` is responsible for installing and uninstalling drivers for external data sources.
 
+## `HostIpDetector`
+
+The `HostIpDetector` detects the IP address of the host the container is running on.
+
 # Runtime
 
 This section describes the runtime behavior of the software.
@@ -213,6 +217,17 @@ Covers:
 * `req~shortened-docker-image-references~1`
 
 Needs: impl, utest
+
+###### Host IP Address Detection 
+`dsn~host-ip-address-detection~1`
+
+The `HostIpDetector` scans the Docker network for the Gateway address and uses this as host address.
+
+Covers:
+
+* `req~reading-the-host-ip-address~1`
+
+Needs: impl, itest
 
 ## Database Access
 

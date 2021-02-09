@@ -222,6 +222,21 @@ Covers:
 
 Needs: dsn
 
+#### Reading the Host IP Address
+`req~reading-the-host-ip-address~1`
+
+Integrators can read the IP address of the host the container is running on.
+
+Rationale:
+
+This is useful for reverse socket connections, the kind of which debugging or profiling agents often use.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+
+Needs: dsn
+
 ### Database Access
 
 #### JDBC Connection With Administrator Privileges

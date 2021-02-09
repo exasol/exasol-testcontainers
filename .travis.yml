@@ -8,8 +8,8 @@ services:
   - docker
 
 env:
-  - DOCKER_DB_VERSION=7.0.4
-  - DOCKER_DB_VERSION=6.2.12
+  - DOCKER_DB_VERSION=7.0.6
+  - DOCKER_DB_VERSION=6.2.13
 
 jdk:
   - openjdk11
