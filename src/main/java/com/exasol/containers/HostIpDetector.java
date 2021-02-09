@@ -27,6 +27,7 @@ public class HostIpDetector {
      *
      * @return host IP
      */
+    // [impl->dsn~host-ip-address-detection~1]
     public String getHostIp() {
         final NetworkSettings networkSettings = this.container.getContainerInfo().getNetworkSettings();
         final Map<String, ContainerNetwork> networks = networkSettings.getNetworks();

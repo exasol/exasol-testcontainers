@@ -19,6 +19,7 @@ class HostIpDetectorTestIT {
     @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>().withReuse(true);
 
+    // [itest->dsn~host-ip-address-detection~1]
     @Test
     @EnabledOnOs({ OS.LINUX })
     void testDetectorOnLinux() throws UnknownHostException, SocketException {
