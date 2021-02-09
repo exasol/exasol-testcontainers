@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.exasol</groupId>
   <artifactId>exasol-testcontainers</artifactId>
-  <version>3.4.1</version>
+  <version>3.5.0</version>
   <name>Test containers for Exasol on Docker</name>
   <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.
@@ -13,9 +13,9 @@
     <project.reporting.outputEncoding>UTF-8
     </project.reporting.outputEncoding>
     <java.version>11</java.version>
-    <junit.version>5.7.0</junit.version>
+    <junit.version>5.7.1</junit.version>
     <maven.surefire-and-failsafe.version>3.0.0-M3</maven.surefire-and-failsafe.version>
-    <testcontainers.version>1.15.0</testcontainers.version>
+    <testcontainers.version>1.15.1</testcontainers.version>
     <gpg.skip>true</gpg.skip>
     <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
@@ -147,7 +147,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>3.6.28</version>
+      <version>3.7.7</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

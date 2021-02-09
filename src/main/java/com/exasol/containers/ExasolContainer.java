@@ -704,4 +704,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
         return this.driverManager;
     }
+
+    /**
+     * Get the IP address of the host running this container.
+     *
+     * @return IP address of the host
+     */
+    public String getHostIp() {
+        final HostIpDetector detector = new HostIpDetector(this);
+        return detector.getHostIp();
+    }
 }
