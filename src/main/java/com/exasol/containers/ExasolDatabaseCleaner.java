@@ -1,8 +1,6 @@
 package com.exasol.containers;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -46,7 +44,7 @@ class ExasolDatabaseCleaner {
 
     private void purgeObjects() throws SQLException {
         try (final ResultSet resultSet = this.statement.executeQuery(
-                "SELECT OBJECT_NAME, OBJECT_TYPE, OBJECT_IS_VIRTUAL FROM SYS.EXA_ALL_OBJECTS WHERE OWNER = 'SYS' ORDER BY CREATED DESC;")) {
+                "SELECT OBJECT_NAME, OBJECT_TYPE, OBJECT_IS_VIRTUAL FROM SYS.EXA_ALL_OBJECTS WHERE ROOT_NAME IS NULL ORDER BY CREATED DESC;")) {
             while (resultSet.next()) {
                 final String objectName = resultSet.getString("OBJECT_NAME");
                 final String objectType = (resultSet.getBoolean("OBJECT_IS_VIRTUAL") ? "VIRTUAL " : "")
