@@ -71,15 +71,23 @@ class ExasolDatabaseCleanerIT {
 
     @Test
     void testPurgeFunction() throws SQLException {
-        createFunction();
+        createFunction("S1");
         PURGER.purge();
-        assertDoesNotThrow(this::createFunction);
+        assertDoesNotThrow(() -> createFunction("S1"));
     }
 
-    private void createFunction() throws SQLException {
-        createSchema();
-        STATEMENT.executeUpdate(
-                "CREATE FUNCTION TEST.MY_FUNCTION () RETURN VARCHAR(10)\n BEGIN\n RETURN 'test';\n END\n /");
+    @Test
+    void testPurgeFunctionWithNonImplicitSchemaName() throws SQLException {
+        createFunction("S1");
+        createFunction("S2");
+        PURGER.purge();
+        assertDoesNotThrow(() -> createFunction("S1"));
+    }
+
+    private void createFunction(final String schemaName) throws SQLException {
+        STATEMENT.executeUpdate("CREATE SCHEMA " + schemaName + ";");
+        STATEMENT.executeUpdate("CREATE FUNCTION " + schemaName
+                + ".MY_FUNCTION () RETURN VARCHAR(10)\n BEGIN\n RETURN 'test';\n END\n /");
     }
 
     private void createRole() throws SQLException {
