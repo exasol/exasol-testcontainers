@@ -5,6 +5,7 @@ package com.exasol.drivers;
  */
 public class DriverManagerException extends RuntimeException {
     private static final long serialVersionUID = -3067281612997655722L;
+    /** @serial */
     private final DatabaseDriver driver;
 
     /**

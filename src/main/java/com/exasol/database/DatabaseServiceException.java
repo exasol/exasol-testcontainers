@@ -5,6 +5,7 @@ package com.exasol.database;
  */
 public class DatabaseServiceException extends RuntimeException {
     private static final long serialVersionUID = 7564249305493337072L;
+    /** @serial */
     private final String databaseName;
 
     /**

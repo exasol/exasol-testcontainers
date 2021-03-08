@@ -7,7 +7,9 @@ import java.net.URI;
  */
 public class BucketAccessException extends Exception {
     private static final long serialVersionUID = -1002852289020779835L;
+    /** @serial */
     private final URI uri;
+    /** @serial */
     private final int statusCode;
 
     /**

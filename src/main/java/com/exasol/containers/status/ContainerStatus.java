@@ -12,8 +12,11 @@ import com.exasol.containers.ExasolService;
  */
 public final class ContainerStatus implements Serializable {
     private static final long serialVersionUID = 8005816552446840053L;
+    /** @serial */
     private final String containerId;
+    /** @serial */
     private final Map<ExasolService, ServiceStatus> serviceStatuses = new EnumMap<>(ExasolService.class);
+    /** @serial */
     private final Set<String> appliedWorkarounds = new HashSet<>();
 
     private ContainerStatus(final String containerId) {
