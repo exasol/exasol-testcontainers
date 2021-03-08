@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>3.5.1</version>
+    <version>3.5.2</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.
@@ -87,7 +87,7 @@
         <profile>
             <id>expensive</id>
             <properties>
-                <test.excludeTags></test.excludeTags>
+                <test.excludeTags/>
             </properties>
         </profile>
     </profiles>
@@ -109,6 +109,11 @@
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.30</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>database-cleaner</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -158,7 +163,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.4.2</version>
+                <version>0.5.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -286,7 +291,7 @@
                 <configuration>
                     <charset>UTF-8</charset>
                     <doclint/>
-                    <serialwarn>false</serialwarn><!-- Serial annotation is introduced with Java 14. -->
+                    <serialwarn>true</serialwarn>
                     <failOnError>true</failOnError>
                     <failOnWarnings>true</failOnWarnings>
                 </configuration>
@@ -391,6 +396,18 @@
                         <phase>deploy</phase>
                         <goals>
                             <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.exasol</groupId>
+                <artifactId>error-code-crawler-maven-plugin</artifactId>
+                <version>0.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>
