@@ -147,7 +147,7 @@ Covers:
 
 * `req~automatic-database-cleanup-with-reused-containers~1`
 
-Needs: impl, utest, itest
+Needs: impl, itest
 
 ### `ExasolContainer` Ready Criteria
 `dsn~exasol-container-ready-criteria~3`

@@ -34,6 +34,7 @@ import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.containers.workarounds.*;
 import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
+import com.exasol.dbcleaner.ExasolDatabaseCleaner;
 import com.exasol.drivers.ExasolDriverManager;
 import com.exasol.exaconf.ConfigurationParser;
 import com.exasol.exaoperation.ExaOperation;
@@ -467,7 +468,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         LOGGER.info("Purging database for a clean setup");
         try (final Connection connection = createConnection();
                 final Statement statement = connection.createStatement()) {
-            new ExasolDatabaseCleaner(statement).purge();
+            new ExasolDatabaseCleaner(statement).cleanDatabase();
         } catch (final SQLException exception) {
             throw new ExasolContainerInitializationException("Failed to purge database", exception);
         }
