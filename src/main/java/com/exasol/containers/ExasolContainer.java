@@ -24,7 +24,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
 import com.exasol.bucketfs.Bucket;
-import com.exasol.bucketfs.BucketFactory;
+import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.status.ContainerStatus;
@@ -332,8 +332,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final BucketFactory manager = new BucketFactory(this.detectorFactory, getContainerIpAddress(),
-                getClusterConfiguration(), getPortMappings());
+        final TestcontainerBucketFactory manager = new TestcontainerBucketFactory(this.detectorFactory,
+                getContainerIpAddress(), getClusterConfiguration(), getPortMappings());
         return manager.getBucket(bucketFsName, bucketName);
     }
 

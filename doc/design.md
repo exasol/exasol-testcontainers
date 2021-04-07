@@ -15,6 +15,7 @@ This document's section structure is derived from the "[arc42](https://arc42.org
 This section introduces technical system constraints.
 
 ## Exasol Docker Container Requires Privileged Mode
+
 `const~exasol-docker-container-requires-privileged-mode~1`
 
 The [Exasol Docker container needs to run in privileged mode](https://github.com/exasol/docker-db#privileged-mode) in order to work properly.
@@ -82,6 +83,7 @@ This section describes the runtime behavior of the software.
 ## Docker-based Exasol Instance
 
 ### `testcontainers` Framework Controls Docker Image Download
+
 `dsn~testcontainer-framework-controls-docker-image-download~1`
 
 The `testcontainers` framework uses Docker's own facilities to download the Exasol docker image in case it is not in the local Docker cache.
@@ -93,6 +95,7 @@ Covers:
 Needs: external
 
 ### `ExasolContainer` Controls Docker Container
+
 `dsn~exasol-container-controls-docker-container~1`
 
 The `ExasolContainer` controls the underlying Exasol Docker container through the `testcontainers` framework.
@@ -104,6 +107,7 @@ Covers:
 Needs: impl, itest
 
 ### `ExasolContainer` Starts with Test
+
 `dsn~exasol-container-starts-with-test~1`
 
 JUnit starts the Exasol Container before the test cases in a test class.
@@ -115,6 +119,7 @@ Covers:
 Needs: itest
 
 ### Optional `ExasolContainer` Reuse
+
 `dsn~control-reuse~1`
 
 The `ExasolContainer` offers control to reuse containers using a switch in code and a second switch on their local machine (in `~/.testcontainers.properties`)
@@ -124,9 +129,10 @@ Covers:
 * `req~reuse-container~1`
 
 ### Keep Container Running if Reuse is Enabled
+
 `dsn~keep-container-running-if-reuse~1`
 
-If reuse is enabled, ETC does not stop the container after the tests are finished. 
+If reuse is enabled, ETC does not stop the container after the tests are finished.
 
 Covers:
 
@@ -135,6 +141,7 @@ Covers:
 Needs: impl, itest
 
 ### Purging
+
 `dsn~purging~1`
 
 The `ExasolContainer` purges the database when reuse is enabled.
@@ -150,6 +157,7 @@ Covers:
 Needs: impl, itest
 
 ### `ExasolContainer` Ready Criteria
+
 `dsn~exasol-container-ready-criteria~3`
 
 The `ExasolContainer` declares itself ready to be used after the following criteria are fulfilled:
@@ -165,6 +173,7 @@ Covers:
 Needs: impl, itest
 
 ### Defining Required Optional Services
+
 `dsn~defining-required-optional-service~1`
 
 The `ExasolContainer` offers an option that controls which services the user requires. The ETC waits for those services to be ready.
@@ -176,6 +185,7 @@ Covers:
 Needs: impl, itest
 
 ### `ExasolContainer` Uses Privileged Mode
+
 `dsn~exasol-container-uses-privileged-mode~1`
 
 The `ExasolContainer` tells the `testcontainers` framework to start the Docker container in privileged mode.
@@ -187,6 +197,7 @@ Covers:
 Needs: impl, itest
 
 ### Override Docker Image via Java Property
+
 `dsn~override-docker-image-via-java-property~1`
 
 If the Java property `com.exasol.dockerdb.image` is set, it overrides the docker image given in the code that creates the container instance.
@@ -202,6 +213,7 @@ Covers:
 Needs: impl, itest
 
 ### Shortened Docker Image References
+
 `dsn~shortened-docker-image-references~1`
 
 The `ExasolDockerImageReference` can be constructed with the following forms of shortened image references as parameter:
@@ -218,7 +230,8 @@ Covers:
 
 Needs: impl, utest
 
-###### Host IP Address Detection 
+###### Host IP Address Detection
+
 `dsn~host-ip-address-detection~1`
 
 The `HostIpDetector` scans the Docker network for the Gateway address and uses this as host address.
@@ -232,6 +245,7 @@ Needs: impl, itest
 ## Database Access
 
 ### `ExasolContainer` Provides a JDBC Connection for Username and Password
+
 `dsn~exasol-container-provides-a-jdbc-connection-for-username-and-password~1`
 
 The `ExasolContainer` can create a JDBC connection for a given combination of username and password.
@@ -243,6 +257,7 @@ Covers:
 Needs: impl, itest
 
 ### Default JDBC Connection With SYS Credentials
+
 `dsn~default-jdbc-connection-with-sys-credentials~1`
 
 Unless the integrator provides database user credentials with the creation of the `ExasolContainer`, the container uses the `SYS` user and its default password.
@@ -258,6 +273,7 @@ Covers:
 Needs: impl, itest
 
 ### IP Address in Common Docker Network
+
 `dsn~ip-address-in-common-docker-network~1`
 
 ETC reports the docker-network internal IP address.
@@ -273,6 +289,7 @@ Covers:
 Needs: impl, itest
 
 ### `DatabaseService` stops the Database
+
 `dsn~database-service-stops-the-database~1`
 
 The `DatabaseService` allows users to stop the database provided by that service.
@@ -284,6 +301,7 @@ Covers:
 Needs: impl, itest
 
 ### `DatabaseService` starts the Database
+
 `dsn~database-service-starts-the-database~1`
 
 The `DatabaseService` allows users to start the database provided by that service.
@@ -296,97 +314,29 @@ Needs: impl, itest
 
 ## BucketFS Access
 
-### List of `Bucket`Contents
-`dsn~bucket-lists-its-contents~1`
+### Use Bucketfs-java Library for BucketFs Access
 
-The `Bucket` lists its contents as a set of object names.
+`dsn~bucket-api~1`
+
+ETC implements a factory for Buckets of the [bucketfs-java](https://github.com/exasol/bucketfs-java/) library.
 
 Covers:
 
 * `req~bucket-content-listing~1`
-
-Needs: impl, itest
-
-### Uploading to `Bucket`
-`dsn~uploading-to-bucket~1`
-
-The `Bucket` offers uploading a file from a locally accessible filesystem to a bucket in BucketFS.
-
-Covers:
-
 * `req~uploading-a-file-to-bucketfs~1`
-
-Needs: impl, itest
-
-### Uploading Strings to `Bucket`
-`dsn~uploading-strings-to-bucket~1`
-
-The `Bucket` offers uploading strings into a file in bucket in BucketFS.
-
-Covers:
-
 * `req~uploading-text-to-a-file-in-bucketfs~1`
-
-Needs: impl, itest
-
-### Uploading InputStream to `Bucket`
-`dsn~uploading-input-stream-to-bucket~1`
-
-The `Bucket` offers uploading of the contents of an `InputStream` into a file in that bucket on BucketFS.
-
-Covers:
-
 * `req~uploading-input-stream-to-a-file-in-bucketfs~1`
-
-Needs: impl, itest
-
-### `BucketFactory` Injects Access Credentials
-`dsn~bucket-factory-injects-access-credentials~1`
-
-The `BucketFactory` injects the bucket access credentials from the `ClusterConfiguration` into a `Bucket` upon creating it.
-
-Covers:
-
 * `req~bucket-authentication~1`
-
-Needs: impl, utest
-
-### Waiting Until File Appears in Target Directory
-`dsn~waiting-until-file-appears-in-target-directory~1`
-
-When uploading a file into a bucket, users can choose to block the call until the file appears in the bucket's target directory.
-
-Covers:
-
+  req~bucket-authentication~1
 * `req~waiting-for-bucket-content-synchronization~1`
-
-Needs: impl, itest
-
-### Waiting Until Archive Extracted
-`dsn~waiting-until-archive-extracted~1`
-
-When uploading an archive of type `.tar.gz` or `.zip` into a bucket, users can choose to block the call until the archive is fully extracted in the bucket's target directory.
-
-Covers:
-
-* `req~waiting-for-bucket-content-synchronization~1`
-
-Needs: impl, itest
-
-### Downloading a file from a `Bucket`
-`dsn~downloading-a-file-from-a-bucket~1`
-
-The `Bucket` offers downloading a file from a bucket in BucketFS to a locally accessible filesystem.
-
-Covers:
-
 * `req~downloading-a-file-from-bucketfs~1`
 
-Needs: impl, itest
+Needs: impl, utest, itest
 
 ## Log Access
 
 ### Mapping the Cluster Log Directory to the Host
+
 `dsn~mapping-the-log-directory-to-the-host~1`
 
 The `ExasolContainer` lets integrators map the cluster log directory to a configurable directory on the host.
@@ -400,6 +350,7 @@ Needs: impl, itest
 ## Driver Management
 
 ### Installing a JDBC Driver
+
 `dsn~installing-a-jdbc-driver-from-host-filesystem~1`
 
 The `ExasolDriverManager` lets integrators install a JDBC driver from the host's filesystem.
@@ -419,6 +370,7 @@ Interface compatibility for plug-ins means that the emulation uses the establish
 EXAoperation's own interfaces are _not_ available. Especially there is no emulation of the XML-RPC interface. What is available though is a control object implementation of a Java interface called "EXAoperation". It is this interface that test authors can use in test code to trigger the emulated features.
 
 #### Extracting Plug-in Packages
+
 `dsn~extracting-plug-in-packages~1`
 
 The `ExaOperationEmulator` unpacks plug-in packages from TAR archives with the suffix `.pgk` inside the Exasol instance.
@@ -430,6 +382,7 @@ Covers:
 Needs: impl, itest
 
 #### Listing Installed Plug-ins
+
 `dsn~listing-plug-ins~1`
 
 The `ExaOperationEmulator` provides a list of installed plug-in packages by name.
@@ -441,6 +394,7 @@ Covers:
 Needs: impl, itest
 
 #### Installing Plug-ins
+
 `dsn~installing-plug-ins~1`
 
 The `Plugin` calls the script "`install`" from the extracted plug-in contents to complete the installation process.
@@ -452,6 +406,7 @@ Covers:
 Needs: impl, itest
 
 #### Uninstalling Plug-ins
+
 `dsn~uninstalling-plug-ins~1`
 
 The `Plugin` calls the script "`uninstall`" from the extracted plug-in contents to uninstall a previously installed plug-in.
@@ -463,6 +418,7 @@ Covers:
 Needs: impl, itest
 
 #### Starting Plug-ins
+
 `dsn~starting-plug-ins~1`
 
 The `Plugin` calls the script "`start`" from the extracted plug-in contents to start services provided by the plug-in.
@@ -474,6 +430,7 @@ Covers:
 Needs: impl, itest
 
 #### Stopping Plug-ins
+
 `dsn~stopping-plug-ins~1`
 
 The `Plugin` calls the script "`stop`" from the extracted plug-in contents to stop services provided by the plug-in.
@@ -485,6 +442,7 @@ Covers:
 Needs: impl, itest
 
 #### Restarting Plug-ins
+
 `dsn~restarting-plug-ins~1`
 
 The `Plugin` calls the script "`restart`" from the extracted plug-in contents to restart running services provided by the plug-in.
@@ -496,6 +454,7 @@ Covers:
 Needs: impl, itest
 
 #### Getting the Plug-in's Status
+
 `dsn~getting-the-plug-ins-status~1`
 
 The `Plugin` calls the script "`status`" from the extracted plug-in contents to obtain the status of the services provided by the plug-in.
@@ -509,6 +468,7 @@ Needs: impl, itest
 ## Workarounds
 
 ### WorkaroundManager Applies Multiple Workarounds
+
 `dsn~workaround-manager-applies-multiple-of-workarounds~1`
 
 The `WorkaroundManager` applies workarounds in the order they are registered.
@@ -520,6 +480,7 @@ Covers:
 Needs: impl, utest
 
 ### WorkaroundManager Checks Criteria
+
 `dsn~workaround-manager-checks-criteria~1`
 
 The `WorkaroundManager` applies a workaround if that workaround reports that its individual application criteria apply.
@@ -531,6 +492,7 @@ Covers:
 Needs: impl, utest
 
 ### Log Rotation Workaround Criteria
+
 `dsn~log-rotation-workaround-criteria~1`
 
 the `WorkaroundManager` applies the `LogRotationWorkaround` if the Exasol version is 7.0.x or lower.
@@ -542,6 +504,7 @@ Covers:
 Needs: impl, utest
 
 ### Log Rotation Workaround
+
 `dsn~log-rotation-workaround~1`
 
 The `LogRotationWorkaround` removes the BucketFS log file from the list of logs to be rotated in `/etc/cron.daily/exa-logrotate`.
@@ -566,40 +529,9 @@ In integration tests run with the ETC, this is important, because reliable tests
 
 ### Alternatives considered
 
-1. Using the `.dest` directory and access timestamps to check for synchronization. We dismissed this idea for two reasons.
-   First, this variant is too tightly coupled with the current BucketFS implementation.
-   Second, the layout of the `.dest` directory is very complex.
+1. Using the `.dest` directory and access timestamps to check for synchronization. We dismissed this idea for two reasons. First, this variant is too tightly coupled with the current BucketFS implementation. Second, the layout of the `.dest` directory is very complex.
 
 2. Checking via HTTP `GET`. Unfortunately this variant is not reliable.
-
-### Decisions
-
-We decided to base the check on entries in the BucketFS log. A matching log entry detected _after_ an upload proves that the object is usable.
-The biggest downside of this approach is that the timestamps only have a resolution of a second.
-
-#### Validating BucketFS Object Synchronization via the BucktFS log
-`dsn~validating-bucketfs-object-synchronization-via-the-bucketfs-log~1`
-
-The `Bucket` uses the `LogPatternDetector` to check the BucketFS log for messages that confirm object synchronization.
-
-Covers:
-
-* `req~waiting-for-bucket-content-synchronization`
-
-Needs: impl, itest
-
-#### BucketFS Object Overwrite Throttle
-`dsn~bucketfs-object-overwrite-throttle~1`
-
-The `Bucket` delays subsequent uploads to the same path in a bucket so that the upload speed does not exceed the log entry resolution.
-
-Comment:
-
-The logs have a timestamp resolution of a second. That is why we delay a subsequent upload to the same path so that it starts after the next second.
-
-Covers:
-
-* `req~waiting-for-bucket-content-synchronization`
 
 Needs: impl, itest
 
