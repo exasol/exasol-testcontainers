@@ -1,6 +1,6 @@
 # Exasol Test Containers 3.5.2, released 2021-04-07
 
-Code name: Refactoring
+Code name: BucketFS and database cleaner as external dependencies
 
 ## Summary
 

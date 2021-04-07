@@ -332,9 +332,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final TestcontainerBucketFactory manager = new TestcontainerBucketFactory(this.detectorFactory,
+        final BucketFactory factory = new TestcontainerBucketFactory(this.detectorFactory,
                 getContainerIpAddress(), getClusterConfiguration(), getPortMappings());
-        return manager.getBucket(bucketFsName, bucketName);
+        return factory.getBucket(bucketFsName, bucketName);
     }
 
     private Map<Integer, Integer> getPortMappings() {
