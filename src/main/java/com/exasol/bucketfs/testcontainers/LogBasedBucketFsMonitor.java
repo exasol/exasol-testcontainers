@@ -10,9 +10,17 @@ import com.exasol.bucketfs.*;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 
+/**
+ * This {@link BucketFsMonitor} detects if a file was successfully uploaded from the Exasol log files.
+ */
 public class LogBasedBucketFsMonitor implements BucketFsMonitor {
     private final LogPatternDetectorFactory detectorFactory;
 
+    /**
+     * Create a new instance of {@link LogBasedBucketFsMonitor}.
+     * 
+     * @param detectorFactory factory for a log pattern detector
+     */
     public LogBasedBucketFsMonitor(final LogPatternDetectorFactory detectorFactory) {
         this.detectorFactory = detectorFactory;
     }
