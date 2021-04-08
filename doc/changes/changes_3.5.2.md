@@ -1,4 +1,4 @@
-# Exasol Test Containers 3.5.2, released 2021-04-07
+# Exasol Test Containers 3.5.2, released 2021-04-08
 
 Code name: BucketFS and database cleaner as external dependencies
 
@@ -15,9 +15,11 @@ In this release we moved the BucketFS Java API and the database cleaner to their
 
 ### Compile Dependency Updates
 
+* Added `com.exasol:bucketfs-java:1.0.0`
 * Added `com.exasol:database-cleaner:1.0.0`
 
 ### Plugin Dependency Updates
 
 * Added `com.exasol:error-code-crawler-maven-plugin:0.1.1`
-* Updated `com.exasol:project-keeper-maven-plugin:0.4.2` to 0.5.0
+* Updated `com.exasol:project-keeper-maven-plugin:0.4.2` to `0.6.0`
+* Added `io.github.zlika:reproducible-build-maven-plugin:0.13`
