@@ -181,6 +181,9 @@
                         <module>integration_tests</module>
                         <module>maven_central</module>
                     </modules>
+                    <excludedFiles>
+                        <excludedFile>.github/workflows/*.yml</excludedFile>
+                    </excludedFiles>
                 </configuration>
             </plugin>
             <plugin>
