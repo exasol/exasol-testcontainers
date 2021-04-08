@@ -21,5 +21,5 @@ In this release we moved the BucketFS Java API and the database cleaner to their
 ### Plugin Dependency Updates
 
 * Added `com.exasol:error-code-crawler-maven-plugin:0.1.1`
-* Updated `com.exasol:project-keeper-maven-plugin:0.4.2` to `0.6.0`
+* Updated `com.exasol:project-keeper-maven-plugin:0.4.2` to `0.6.1`
 * Added `io.github.zlika:reproducible-build-maven-plugin:0.13`
