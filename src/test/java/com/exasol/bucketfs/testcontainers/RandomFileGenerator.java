@@ -1,4 +1,4 @@
-package com.exasol.bucketfs;
+package com.exasol.bucketfs.testcontainers;
 
 import java.io.*;
 import java.nio.file.Path;

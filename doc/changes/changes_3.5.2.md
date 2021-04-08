@@ -1,13 +1,15 @@
-# Exasol Test Containers 3.5.2, released 2021-XX-XX
+# Exasol Test Containers 3.5.2, released 2021-04-07
 
-Code name: 
+Code name: BucketFS and database cleaner as external dependencies
 
 ## Summary
 
+In this release we moved the BucketFS Java API and the database cleaner to their own repositories.
 
 ## Refactoring
 
 * #126: Moved database cleaner to its own repository
+* #130: Refactored to use Bucket from bucketfs-java
 
 ## Dependency Updates
 

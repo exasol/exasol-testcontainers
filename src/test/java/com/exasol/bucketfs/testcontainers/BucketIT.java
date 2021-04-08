@@ -1,4 +1,4 @@
-package com.exasol.bucketfs;
+package com.exasol.bucketfs.testcontainers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -23,11 +23,13 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.exasol.bucketfs.*;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
 @Tag("slow")
 @Testcontainers
+// [itest->dsn~bucket-api~1]
 class BucketIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketIT.class);
 
@@ -42,13 +44,11 @@ class BucketIT {
                 () -> assertThat(defaultBucket.getBucketName(), equalTo(BucketConstants.DEFAULT_BUCKET)));
     }
 
-    // [itest->dsn~bucket-lists-its-contents~1]
     @Test
     void testListBucketContentsWithRootPath() throws BucketAccessException, InterruptedException {
         assertThat(container.getDefaultBucket().listContents(), hasItem("EXAClusterOS"));
     }
 
-    // [itest->dsn~bucket-lists-its-contents~1]
     @ValueSource(strings = { "EXAClusterOS/", "/EXAClusterOS/" })
     @ParameterizedTest
     void testListBucketContents(final String pathInBucket) throws BucketAccessException, InterruptedException {
@@ -59,7 +59,6 @@ class BucketIT {
         assertThrows(BucketAccessException.class, () -> container.getDefaultBucket().listContents("illegal\\path"));
     }
 
-    // [itest->dsn~uploading-to-bucket~1]
     @Test
     void testUploadFile(@TempDir final Path tempDir)
             throws IOException, BucketAccessException, InterruptedException, TimeoutException {
@@ -77,7 +76,6 @@ class BucketIT {
         return path;
     }
 
-    // [itest->dsn~uploading-to-bucket~1]
     @ValueSource(strings = { "dir1/", "dir2/sub2/", "dir3/sub3/subsub3/", "/dir4/", "/dir5/sub5/" })
     @ParameterizedTest
     void testUploadToDirectoryInBucket(final String pathInBucket, @TempDir final Path tempDir)
@@ -89,7 +87,6 @@ class BucketIT {
         assertThat(container.getDefaultBucket().listContents(pathInBucket), contains(fileName));
     }
 
-    // [itest->dsn~uploading-strings-to-bucket~1]
     @Test
     void testUploadStringContent() throws IOException, BucketAccessException, InterruptedException, TimeoutException {
         final String content = "Hello BucketFS!";
@@ -99,7 +96,6 @@ class BucketIT {
         assertThat(bucket.listContents(), hasItem(pathInBucket.toString()));
     }
 
-    // [itest->dsn~uploading-input-stream-to-bucket~1]
     @Test
     void testUploadInputStreamContent() throws BucketAccessException, InterruptedException, TimeoutException {
         final String content = "Hello BucketFS!";
@@ -128,7 +124,6 @@ class BucketIT {
                 .uploadStringContent("irrelevant content", "this\\is\\an\\illegal\\URL"));
     }
 
-    // [itest->dsn~downloading-a-file-from-a-bucket~1]
     @Test
     void testDownloadFile(@TempDir final Path tempDir)
             throws InterruptedException, BucketAccessException, TimeoutException, IOException {
@@ -163,8 +158,6 @@ class BucketIT {
         assertThat(exception.getCause(), instanceOf(IOException.class));
     }
 
-    // [itest->dsn~waiting-until-file-appears-in-target-directory~1]
-    // [itest->dsn~bucketfs-object-overwrite-throttle~1]
     @Test
     void testReplaceFile(@TempDir final Path tempDir) throws InterruptedException, BucketAccessException,
             TimeoutException, IOException, NoSuchAlgorithmException {

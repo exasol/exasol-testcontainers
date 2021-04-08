@@ -1,15 +1,16 @@
-package com.exasol.bucketfs;
+package com.exasol.bucketfs.testcontainers;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.exasol.bucketfs.*;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.*;
 
 /**
  * Factory for objects abstracting buckets in Exasol's BucketFS.
  */
-public final class BucketFactory {
+public final class TestcontainerBucketFactory implements BucketFactory {
     private final Map<String, Bucket> buckets = new HashMap<>();
     private final String ipAddress;
     private final ClusterConfiguration clusterConfiguration;
@@ -17,14 +18,14 @@ public final class BucketFactory {
     private final LogPatternDetectorFactory detectorFactory;
 
     /**
-     * Create a new instance of a BucketFactory.
+     * Create a new instance of a TestcontainerBucketFactory.
      *
      * @param detectorFactory      log entry pattern detector factory
      * @param ipAddress            IP address of the the BucketFS service
      * @param clusterConfiguration configuration of the Exasol Cluster
      * @param portMappings         mapping of container internal to exposed port numbers
      */
-    public BucketFactory(final LogPatternDetectorFactory detectorFactory, final String ipAddress,
+    public TestcontainerBucketFactory(final LogPatternDetectorFactory detectorFactory, final String ipAddress,
             final ClusterConfiguration clusterConfiguration, final Map<Integer, Integer> portMappings) {
         this.ipAddress = ipAddress;
         this.clusterConfiguration = clusterConfiguration;
@@ -43,16 +44,16 @@ public final class BucketFactory {
      * @param bucketName  name of the bucket
      * @return bucket
      */
-    // [impl->dsn~bucket-factory-injects-access-credentials~1]
+    // [impl->dsn~bucket-api~1]
     public synchronized Bucket getBucket(final String serviceName, final String bucketName) {
         final BucketFsServiceConfiguration serviceConfiguration = this.clusterConfiguration
                 .getBucketFsServiceConfiguration(serviceName);
         final BucketConfiguration bucketConfiguration = serviceConfiguration.getBucketConfiguration(bucketName);
         final String bucketPath = serviceName + BucketConstants.PATH_SEPARATOR + bucketName;
         if (!this.buckets.containsKey(bucketPath)) {
-            final Bucket bucket = Bucket //
+            final Bucket bucket = SyncAwareBucket //
                     .builder() //
-                    .detectorFactory(this.detectorFactory) //
+                    .monitor(new LogBasedBucketFsMonitor(this.detectorFactory))//
                     .serviceName(serviceName) //
                     .name(bucketName) //
                     .ipAddress(this.ipAddress) //

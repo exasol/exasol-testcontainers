@@ -117,6 +117,11 @@
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
+            <artifactId>bucketfs-java</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
             <version>7.0.4</version>
             <scope>runtime</scope>
