@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 
 @Tag("fast")
 class JdbcDriverTest {
@@ -87,14 +88,27 @@ class JdbcDriverTest {
 
     @Test
     void testToStringWithSourceFile() {
-        assertThat(JdbcDriver //
-                .builder("the_name") //
-                .prefix("jdbc:the_prefix") //
-                .sourceFile(Path.of("/the/path")) //
-                .mainClass("com.example.Driver") //
-                .build() //
-                .toString(), //
-                equalTo("JDBC driver \"the_name\" (com.example.Driver), source: \"/the/path\""));
+        final String osName = System.getProperty("os.name");
+        final String windowsStr = "Windows";
+        if (StringUtils.containsIgnoreCase(osName, windowsStr)) {
+            assertThat(JdbcDriver //
+                    .builder("the_name") //
+                    .prefix("jdbc:the_prefix") //
+                    .sourceFile(Path.of("/the/path")) //
+                    .mainClass("com.example.Driver") //
+                    .build() //
+                    .toString(), //
+                    equalTo("JDBC driver \"the_name\" (com.example.Driver), source: \"\\the\\path\""));
+        } else {
+            assertThat(JdbcDriver //
+                    .builder("the_name") //
+                    .prefix("jdbc:the_prefix") //
+                    .sourceFile(Path.of("/the/path")) //
+                    .mainClass("com.example.Driver") //
+                    .build() //
+                    .toString(), //
+                    equalTo("JDBC driver \"the_name\" (com.example.Driver), source: \"/the/path\""));
+        }
     }
 
     @Test
