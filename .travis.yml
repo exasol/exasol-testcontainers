@@ -1,13 +1,12 @@
-# https://github.com/DanySK/Gravis-CI
-
-# Java is not yet supported on Windows, so the build would block.
-# You do not need any setup from Travis, use a plain bash build
 language: minimal
-# Enable them all, if you need them.
-# osx
-os:
-  - linux
-  - windows
+
+# Setting sudo to false will cause Travis to use Containers.
+# To use Docker's privileged mode, we need to enable sudo.
+sudo: required
+
+services:
+  - docker
+
 env:
   - DOCKER_DB_VERSION=7.0.6
   - DOCKER_DB_VERSION=6.2.13
@@ -25,25 +24,19 @@ env:
     # the intent is to target the latest release of some Java major release, or if the latest
     # available build differs among platforms.
     - JDK="adopt-openj9@1.11"
+jdk:
+  - openjdk11
+
+addons:
+  sonarcloud:
+    organization: exasol
+
 before_install:
   # Check out the script set
   - travis_retry git clone --depth 1 $GRAVIS_REPO $GRAVIS
   # Install the JDK you configured in the $JDK environment variable
   # Never use travis_retry: hides failures. travis_retry is used internally where possible.
   - source $GRAVIS/install-jdk
-  - source $GRAVIS/install-maven
-##################
-
-# Setting sudo to false will cause Travis to use Containers.
-# To use Docker's privileged mode, we need to enable sudo.
-sudo: required
-
-services:
-  - docker
-
-addons:
-  sonarcloud:
-    organization: exasol
 
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
@@ -56,3 +49,7 @@ script:
 cache:
   directories:
     - $HOME/.m2
+
+os:
+  - windows
+  - linux
