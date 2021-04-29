@@ -1,4 +1,38 @@
-language: java
+# https://github.com/DanySK/Gravis-CI
+
+# Java is not yet supported on Windows, so the build would block.
+# You do not need any setup from Travis, use a plain bash build
+language: minimal
+# Enable them all, if you need them.
+# osx
+os:
+  - linux
+  - windows
+env:
+  - DOCKER_DB_VERSION=7.0.6
+  - DOCKER_DB_VERSION=6.2.13
+  global:
+    # Convenience variables for shortening commands
+    - GRAVIS_REPO="https://github.com/DanySK/Gravis-CI.git"
+    - GRAVIS="$HOME/gravis"
+  matrix:
+    # List any JDK you want to build your software with.
+    # You can see the list of supported environments by installing Jabba and using ls-remote:
+    # https://github.com/shyiko/jabba#usage
+    - JDK="adopt@1.8.212-04"
+    # Partial versions are allowed. They are dynamically resoved by launching jabba ls-remote,
+    # filtering for the provided JDK string, then picking the *first* match. This is useful if
+    # the intent is to target the latest release of some Java major release, or if the latest
+    # available build differs among platforms.
+    - JDK="adopt-openj9@1.11"
+before_install:
+  # Check out the script set
+  - travis_retry git clone --depth 1 $GRAVIS_REPO $GRAVIS
+  # Install the JDK you configured in the $JDK environment variable
+  # Never use travis_retry: hides failures. travis_retry is used internally where possible.
+  - source $GRAVIS/install-jdk
+  - source $GRAVIS/install-maven
+##################
 
 # Setting sudo to false will cause Travis to use Containers.
 # To use Docker's privileged mode, we need to enable sudo.
@@ -6,13 +40,6 @@ sudo: required
 
 services:
   - docker
-
-env:
-  - DOCKER_DB_VERSION=7.0.6
-  - DOCKER_DB_VERSION=6.2.13
-
-jdk:
-  - openjdk11
 
 addons:
   sonarcloud:
@@ -29,7 +56,3 @@ script:
 cache:
   directories:
     - $HOME/.m2
-
-os:
-  - windows
-  - linux
