@@ -28,4 +28,8 @@ script:
 
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
+
+os:
+  - windows
+  - linux
