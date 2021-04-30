@@ -50,4 +50,4 @@ script:
     -Dsonar.login=${SONAR_TOKEN}
     -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
     -Djava.util.logging.config.file=src/test/resources/logging.properties;
-  fi
+    fi
