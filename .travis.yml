@@ -37,8 +37,7 @@ before_install:
   - source $GRAVIS/install-maven
 
 script:
-  # if [ $TRAVIS_OS_NAME = 'osx' ];
-  - if [ ${TRAVIS_OS_NAME} = "windows" ]; then
+  - if [ $TRAVIS_OS_NAME = 'windows' ]; then
     mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
     verify
     -Pslow
