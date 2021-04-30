@@ -38,9 +38,21 @@ before_install:
   - source $GRAVIS/install-maven
 
 script:
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
-    verify sonar:sonar
-    -Pslow
-    -Dsonar.login=${SONAR_TOKEN}
-    -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
-    -Djava.util.logging.config.file=src/test/resources/logging.properties
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
+            verify
+            -Pslow
+            -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
+            -Djava.util.logging.config.file=src/test/resources/logging.properties
+        ;;
+      linux)
+        mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
+            verify sonar:sonar
+            -Pslow
+            -Dsonar.login=${SONAR_TOKEN}
+            -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
+            -Djava.util.logging.config.file=src/test/resources/logging.properties
+        ;;
+    esac
