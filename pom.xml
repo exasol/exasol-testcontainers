@@ -165,24 +165,24 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.exasol</groupId>
-                <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.6.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <modules>
-                        <module>integration_tests</module>
-                        <module>maven_central</module>
-                    </modules>
-                </configuration>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>com.exasol</groupId>-->
+            <!--                <artifactId>project-keeper-maven-plugin</artifactId>-->
+            <!--                <version>0.6.1</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <goals>-->
+            <!--                            <goal>verify</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <modules>-->
+            <!--                        <module>integration_tests</module>-->
+            <!--                        <module>maven_central</module>-->
+            <!--                    </modules>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
