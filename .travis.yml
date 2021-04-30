@@ -37,21 +37,18 @@ before_install:
   - source $GRAVIS/install-maven
 
 script:
-  - |-
-    case "$TRAVIS_OS_NAME" in
-      windows)
-        mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
-            verify
-            -Pslow
-            -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
-            -Djava.util.logging.config.file=src/test/resources/logging.properties
-        ;;
-      linux)
-        mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
-            verify sonar:sonar
-            -Pslow
-            -Dsonar.login=${SONAR_TOKEN}
-            -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
-            -Djava.util.logging.config.file=src/test/resources/logging.properties
-        ;;
-    esac
+  # if [ $TRAVIS_OS_NAME = 'osx' ];
+  - if [ ${TRAVIS_OS_NAME} = "windows" ]; then
+    mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
+    verify
+    -Pslow
+    -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
+    -Djava.util.logging.config.file=src/test/resources/logging.properties;
+    else
+    mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
+    verify sonar:sonar
+    -Pslow
+    -Dsonar.login=${SONAR_TOKEN}
+    -Dcom.exasol.docker.image=${DOCKER_DB_VERSION}
+    -Djava.util.logging.config.file=src/test/resources/logging.properties;
+  fi
