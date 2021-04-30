@@ -1,0 +1,26 @@
+name: Test on windows
+
+on:
+  push:
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Run tests
+        run: mvn clean verify
