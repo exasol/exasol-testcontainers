@@ -38,7 +38,7 @@ before_install:
 
 script:
   - |-
-    case $TRAVIS_OS_NAME in
+    case "$TRAVIS_OS_NAME" in
       windows)
         mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent org.jacoco:jacoco-maven-plugin:prepare-agent-integration
             verify
