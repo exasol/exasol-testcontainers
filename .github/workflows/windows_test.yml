@@ -7,6 +7,8 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
+      - name: Install docker-machine
+        run:  choco install docker-machine
       - name: Checkout the repository
         uses: actions/checkout@v2
         with:
