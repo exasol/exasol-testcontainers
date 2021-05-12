@@ -3,6 +3,7 @@ package com.exasol.exaconf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -110,5 +111,13 @@ class ConfigurationParserTest {
         final ClusterConfiguration clusterConfiguration = parseConfiguration(
                 "[BucketFS : Fred]\nHttpPort=1\n[[Bucket : default]]\n[BucketFS : Wilma]\nHttpPort=2\n[BucketFS : Barney]\nHttpPort=3");
         assertThat(clusterConfiguration.getBucketFsServiceNames(), contains("Fred", "Wilma", "Barney"));
+    }
+
+    @Test
+    void testParseConfigurationWithRootPasswordSet() {
+        assertDoesNotThrow(() -> parseConfiguration("    [[root]]\n" + "        ID = 0\n" + "        Group = root\n"
+                + "        LoginEnabled = True\n"
+                + "        AdditionalGroups = exausers, exadbadm, exastoradm, exabfsadm, exaadm\n"
+                + "        Passwd = $6$ypRK9ia5lkj9/DWF$SxzzizsUp4AZYmk2m2PgKeA8fDT4Ou3FreNQkPFBoTbaR4HI0gNs0o4lEwtAAManFUeU00iq8c/mfAWmtyLQI/\n"));
     }
 }
