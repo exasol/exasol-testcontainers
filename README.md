@@ -2,7 +2,7 @@
 
 <img alt="exasol-testcontainer logo" src="doc/images/exasol-testcontainer_128x128.png" style="float:left; padding:0px 10px 10px 10px;"/>
 
-[![Build Status](https://api.travis-ci.com/exasol/exasol-testcontainers.svg?branch=master)](https://travis-ci.org/exasol/exasol-testcontainers)
+[![Build Status](https://travis-ci.com/exasol/exasol-testcontainers.svg?branch=main)](https://travis-ci.com/exasol/exasol-testcontainers)
 [![Maven Central](https://img.shields.io/maven-central/v/com.exasol/exasol-testcontainers)](https://search.maven.org/artifact/com.exasol/exasol-testcontainers)
 
 SonarCloud results:
