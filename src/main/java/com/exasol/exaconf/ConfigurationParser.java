@@ -12,6 +12,7 @@ public class ConfigurationParser {
     private String subsection = "";
     private final Map<String, String> parameters = new HashMap<>();
     private final String rawConfig;
+    private static final Set<String> BASE64_ENCODED_VALUES = Set.of("ReadPasswd", "WritePasswd");
 
     /**
      * Create a new instance of a {@link ConfigurationParser}.
@@ -28,7 +29,7 @@ public class ConfigurationParser {
      * @return Configuration as object
      */
     public ClusterConfiguration parse() {
-        try (Scanner scanner = new Scanner(this.rawConfig)) {
+        try (final Scanner scanner = new Scanner(this.rawConfig)) {
             while (scanner.hasNext()) {
                 parseLine(scanner.nextLine());
             }
@@ -54,7 +55,7 @@ public class ConfigurationParser {
             if (assignmentOperatorPosition > 0) {
                 final String key = line.substring(0, assignmentOperatorPosition - 1).trim();
                 final String value = line.substring(assignmentOperatorPosition + 1).trim();
-                final String decodedValue = (key.endsWith("Passwd") ? decodePassword(value) : value);
+                final String decodedValue = (BASE64_ENCODED_VALUES.contains(key) ? decodePassword(value) : value);
                 this.parameters.put(this.section + this.subsection + key, decodedValue);
             }
         }

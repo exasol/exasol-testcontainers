@@ -25,6 +25,7 @@ import org.testcontainers.utility.TestcontainersConfiguration;
 
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketFactory;
+import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.status.ContainerStatus;
@@ -34,6 +35,7 @@ import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.containers.workarounds.*;
 import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
+import com.exasol.dbcleaner.ExasolDatabaseCleaner;
 import com.exasol.drivers.ExasolDriverManager;
 import com.exasol.exaconf.ConfigurationParser;
 import com.exasol.exaoperation.ExaOperation;
@@ -331,9 +333,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final BucketFactory manager = new BucketFactory(this.detectorFactory, getContainerIpAddress(),
+        final BucketFactory factory = new TestcontainerBucketFactory(this.detectorFactory, getContainerIpAddress(),
                 getClusterConfiguration(), getPortMappings());
-        return manager.getBucket(bucketFsName, bucketName);
+        return factory.getBucket(bucketFsName, bucketName);
     }
 
     private Map<Integer, Integer> getPortMappings() {
@@ -467,7 +469,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         LOGGER.info("Purging database for a clean setup");
         try (final Connection connection = createConnection();
                 final Statement statement = connection.createStatement()) {
-            new ExasolDatabaseCleaner(statement).purge();
+            new ExasolDatabaseCleaner(statement).cleanDatabase();
         } catch (final SQLException exception) {
             throw new ExasolContainerInitializationException("Failed to purge database", exception);
         }

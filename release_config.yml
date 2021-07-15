@@ -1,0 +1,7 @@
+community-tags:
+  - docker
+  - docker-db
+  - integration-testing
+community-project-name: Exasol Testcontainers
+community-project-description: |
+  Exasol test containers provides an abstraction to Exasol running on Docker for the purpose of integration testing based on Java Testcontainers.

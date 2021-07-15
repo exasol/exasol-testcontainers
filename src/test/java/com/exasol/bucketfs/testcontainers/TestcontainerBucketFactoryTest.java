@@ -1,4 +1,4 @@
-package com.exasol.bucketfs;
+package com.exasol.bucketfs.testcontainers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -12,11 +12,12 @@ import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import com.exasol.bucketfs.Bucket;
 import com.exasol.config.*;
 
 @Tag("fast")
-class BucketFactoryTest {
-    // [utest->dsn~bucket-factory-injects-access-credentials~1]
+class TestcontainerBucketFactoryTest {
+    // [utest->dsn~bucket-api~1]
     @Test
     void testGetBucketInjectsAccessCredentials() {
         final String readPassword = "foo";
@@ -32,7 +33,8 @@ class BucketFactoryTest {
         final BucketFsServiceConfiguration serviceConfiguration = BucketFsServiceConfiguration.builder()
                 .name(serviceName).httpPort(port).addBucketConfiguration(bucketConfiguration).build();
         when(clusterConfigurationMock.getBucketFsServiceConfiguration(any())).thenReturn(serviceConfiguration);
-        final BucketFactory factory = new BucketFactory(null, ipAddress, clusterConfigurationMock, portMappings);
+        final TestcontainerBucketFactory factory = new TestcontainerBucketFactory(null, ipAddress,
+                clusterConfigurationMock, portMappings);
         final Bucket bucket = factory.getBucket(serviceName, bucketName);
         assertAll(() -> assertThat(bucket.getReadPassword(), equalTo(readPassword)),
                 () -> assertThat(bucket.getWritePassword(), equalTo(writePassword)));
