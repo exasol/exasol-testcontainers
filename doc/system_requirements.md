@@ -77,7 +77,7 @@ Needs: req
 ### EXAoperation Simulation
 `feat~exaoperation-simulation~1`
 
-ETC simulates selected functions of [EXAoperation](https://docs.exasol.com/administration/on-premise/exaoperation.htm#EXAoperation).
+ETC simulates selected functions of [EXAoperation](https://docs.exasol.com/administration/on-premise/admin_interface/exaoperation.htm).
 
 Needs: req
 

@@ -376,7 +376,7 @@ private static final ExasolContainer<? extends ExasolContainer<?>> container
 
 #### Don't mix Annotations That Depend on Each Other
 
-Note that you should not use the [`@TempDir` annotation of JUnit](https://junit.org/junit5/docs/current/api/org/junit/jupiter/api/io/TempDir.html) in this particular situation because the _initialization order of annotated fields is not guaranteed_.
+Note that you should not use the [`@TempDir` annotation of JUnit](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/io/TempDir.html) in this particular situation because the _initialization order of annotated fields is not guaranteed_.
 
 If you combine two or more annotations and the initialization of one of them depends on the other one being initialized already you can end up with a `NullPointerException`.
 
