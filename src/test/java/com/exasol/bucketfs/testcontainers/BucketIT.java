@@ -142,7 +142,7 @@ class BucketIT {
         final Bucket bucket = container.getDefaultBucket();
         final BucketAccessException exception = assertThrows(BucketAccessException.class,
                 () -> bucket.downloadFile(pathInBucket, pathToFile));
-        assertThat(exception.getMessage(), startsWith("Unable to downolad file \"" + pathToFile));
+        assertThat(exception.getMessage(), startsWith("E-BFSJ-2: File or directory not found trying to download "));
     }
 
     @Test
