@@ -4,8 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
@@ -108,7 +107,7 @@ class BucketIT {
     @Test
     void testUploadNonExistentFileThrowsException() {
         final Path file = Path.of("/this/path/does/not/exist");
-        assertThrows(BucketAccessException.class, () -> container.getDefaultBucket().uploadFile(file, "nowhere.txt"));
+        assertThrows(FileNotFoundException.class, () -> container.getDefaultBucket().uploadFile(file, "nowhere.txt"));
     }
 
     @Test
