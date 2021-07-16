@@ -178,6 +178,8 @@ When you set this property, the `ExasolTestcontainer` will start the Exasol dock
 
 You can use this in a continuous integration build for example to iterate through a list of Exasol versions that you want to test your software against.
 
+If you explicitly want to prevent overriding, you can use the constructor `ExasolContainer(final String dockerImageName, final boolean allowImageOverride)` while setting `allowImageOverride` to `false`.
+
 ## Automatic Cluster Configuration Parsing
 
 Many integration tests rely on knowing the setup of the cluster. The Exasol test container comes with a parser that reads the cluster configuration from the running docker container.
