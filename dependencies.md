@@ -75,13 +75,13 @@
 [31]: https://www.eclipse.org/legal/epl-2.0/
 [48]: https://maven.apache.org/plugins/maven-deploy-plugin/
 [11]: http://www.eclipse.org/legal/epl-v10.html
+[21]: https://github.com/mockito/mockito/blob/main/LICENSE
 [54]: http://zlika.github.io/reproducible-build-maven-plugin
 [35]: https://www.gnu.org/licenses/gpl-3.0.html
 [60]: http://maven.apache.org/plugins/maven-jar-plugin/
 [5]: http://www.opensource.org/licenses/mit-license.php
 [27]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [46]: https://maven.apache.org/enforcer/maven-enforcer-plugin/
-[21]: https://github.com/mockito/mockito/blob/release/3.x/LICENSE
 [22]: http://www.exasol.com
 [15]: https://www.eclipse.org/legal/epl-v20.html
 [62]: http://maven.apache.org/plugins/maven-install-plugin/

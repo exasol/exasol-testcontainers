@@ -1,7 +1,5 @@
 package com.exasol.containers;
 
-import java.util.Optional;
-
 /**
  * Docker image reference for images that don't follow the established standard of naming Exasol Docker images.
  */
@@ -18,12 +16,6 @@ class LiteralExasolDockerImageReference implements ExasolDockerImageReference {
      */
     public LiteralExasolDockerImageReference(final String reference) {
         this.reference = reference;
-    }
-
-    @Override
-    @Deprecated(since = "3.4.1")
-    public Optional<Integer> getMajorVersion() {
-        throw new IllegalStateException(ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE);
     }
 
     @Override

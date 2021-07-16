@@ -2,8 +2,6 @@ package com.exasol.containers;
 
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE_ID;
 
-import java.util.Optional;
-
 /**
  * Docker image reference for all Exasol docker images that have the established standard layout.
  * <p>
@@ -51,12 +49,6 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
      */
     public VersionBasedExasolDockerImageReference(final int major, final int minor, final int fix) {
         this(major, minor, fix, (major < 7) ? 1 : VERSION_NOT_PRESENT);
-    }
-
-    @Override
-    @Deprecated(since = "3.4.1")
-    public Optional<Integer> getMajorVersion() {
-        return (this.major == VERSION_NOT_PRESENT) ? Optional.empty() : Optional.of(this.major);
     }
 
     @Override
