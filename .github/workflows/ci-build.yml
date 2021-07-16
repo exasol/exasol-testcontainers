@@ -34,9 +34,9 @@ jobs:
           echo
           mvn --batch-mode --update-snapshots clean verify sonar:sonar --file pom.xml \
           -DtrimStackTrace=false -Dsonar.organization=exasol -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=$SONAR_TOKEN \
+          -Dsonar.login="$SONAR_TOKEN" \
           -Pslow \
-          -Dcom.exasol.docker.image= \
+          -Dcom.exasol.docker.image="$DOCKER_DB_VERSION" \
           -Djava.util.logging.config.file=src/test/resources/logging.properties
         env:
           DOCKER_DB_VERSION: ${{ matrix.docker_db_version }}
