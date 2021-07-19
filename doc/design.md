@@ -214,23 +214,24 @@ Needs: impl, itest
 
 ### Shortened Docker Image References
 
-`dsn~shortened-docker-image-references~1`
+`dsn~shortened-docker-image-references~2`
 
 The `ExasolDockerImageReference` can be constructed with the following forms of shortened image references as parameter:
 
-* `<major>`
-* `<major>.<minor>`
-* `<major>.<minor>.<fix>`
-* `<major>.<minor>.<fix>-d<docker-image-revision>`
+* `<major>[-suffix][-d<docker-image-revision>]`
+* `<major>.<minor>[-suffix][-d<docker-image-revision>]`
+* `<major>.<minor>.<fix>[-suffix][-d<docker-image-revision>]`
 * All of the above prefixed with `docker-db:` or `exasol/docker-db:`.
+
+Optional parts are indicated by square brackets.
 
 Covers:
 
-* `req~shortened-docker-image-references~1`
+* `req~shortened-docker-image-references~2`
 
 Needs: impl, utest
 
-###### Host IP Address Detection
+### Host IP Address Detection
 
 `dsn~host-ip-address-detection~1`
 

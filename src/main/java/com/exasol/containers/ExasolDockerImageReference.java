@@ -61,10 +61,28 @@ public interface ExasolDockerImageReference {
     public boolean hasDockerImageRevision();
 
     /**
+     * Get the version suffix of the {@code exasol/docker-db} image if possible.
+     * <p>
+     * Version suffixes are typically found in development versions like "alpha", "beta" or "RC1".
+     * </p>
+     *
+     * @return version suffix
+     */
+    public String getSuffix();
+
+    /**
+     * Check if a version suffix is available.
+     *
+     * @return {@code true} if a version suffix.
+     */
+    public boolean hasSuffix();
+
+    /**
      * Get the Docker image reference for an Exasol version number.
      *
      * @return Docker image Reference
      */
     @Override
     public String toString();
+
 }

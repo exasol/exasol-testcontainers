@@ -62,4 +62,16 @@ class LiteralExasolDockerImageReference implements ExasolDockerImageReference {
     public String toString() {
         return this.reference;
     }
+
+    @Override
+    public String getSuffix() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean hasSuffix() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }
