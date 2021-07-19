@@ -8,10 +8,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker_db_version: [7.0.11, 6.2.13]
+        docker_db_version: [7.0.11, 6.2.14]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
+      - name: "Checkout the repository"
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -19,14 +19,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Cache local Maven repository
+      - name: "Cache local Maven repository"
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Run tests and build with Maven
+      - name: "Prepare container reuse"
+        run: |
+          echo 'testcontainers.reuse.enable=true' > "$HOME/.testcontainers.properties"
+      - name: "Run tests and build with Maven"
         run: |
           echo
           echo "-------------------------------------------------------------"
