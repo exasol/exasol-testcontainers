@@ -208,7 +208,7 @@ Needs: dsn
 #### Shortened Docker Image References
 `req~shortened-docker-image-references~2`
 
-Users can reference an Exasol Docker image image names of the following kind:
+Users can reference an Exasol Docker image names of the following kind:
 
 * `<major>[-suffix][-d<docker-image-revision>]`
 * `<major>.<minor>[-suffix][-d<docker-image-revision>]`

@@ -223,6 +223,8 @@ The `ExasolDockerImageReference` can be constructed with the following forms of 
 * `<major>.<minor>.<fix>[-suffix][-d<docker-image-revision>]`
 * All of the above prefixed with `docker-db:` or `exasol/docker-db:`.
 
+Where `major`, `minor`, `fix` and `docker-image-revision` cab only contain numbers.
+
 Optional parts are indicated by square brackets.
 
 Covers:

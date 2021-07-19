@@ -14,6 +14,7 @@ import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE
  * </p>
  */
 class VersionBasedExasolDockerImageReference implements ExasolDockerImageReference {
+    private static final int DEFAULT_DOCKER_IMAGE_REVISION = 1;
     public static final int VERSION_NOT_PRESENT = -1;
     public static final String SUFFIX_NOT_PRESENT = null;
     private final int major;
@@ -93,13 +94,25 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
 
     @Override
     public String toString() {
-        if (!this.hasDockerImageRevision() && isExasolSevenOrLater()) {
-            return EXASOL_DOCKER_IMAGE_ID + ":" + this.major + "." + this.minor + "." + this.fix
-                    + (this.suffix == null ? "" : "-" + this.suffix);
+        return EXASOL_DOCKER_IMAGE_ID + ":" //
+                + constructVersionPart() //
+                + constructOptionalSuffixPart() //
+                + constructOptionalDockerImageRevisionPart();
+    }
+
+    private String constructVersionPart() {
+        return this.major + "." + this.minor + "." + this.fix;
+    }
+
+    private String constructOptionalSuffixPart() {
+        return this.suffix == null ? "" : "-" + this.suffix;
+    }
+
+    private String constructOptionalDockerImageRevisionPart() {
+        if (isExasolSevenOrLater()) {
+            return this.hasDockerImageRevision() ? "-d" + this.dockerImageRevision : "";
         } else {
-            return EXASOL_DOCKER_IMAGE_ID + ":" + this.major + "." + this.minor + "." + this.fix
-                    + (this.suffix == null ? "" : "-" + this.suffix) + "-d"
-                    + (this.hasDockerImageRevision() ? this.dockerImageRevision : 1);
+            return "-d" + (this.hasDockerImageRevision() ? this.dockerImageRevision : DEFAULT_DOCKER_IMAGE_REVISION);
         }
     }
 
