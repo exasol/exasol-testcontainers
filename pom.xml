@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>3.5.3</version>
+    <version>4.0.0</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.
@@ -15,9 +13,9 @@
         <project.reporting.outputEncoding>UTF-8
         </project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <junit.version>5.7.1</junit.version>
+        <junit.version>5.7.2</junit.version>
         <maven.surefire-and-failsafe.version>3.0.0-M3</maven.surefire-and-failsafe.version>
-        <testcontainers.version>1.15.1</testcontainers.version>
+        <testcontainers.version>1.15.3</testcontainers.version>
         <gpg.skip>true</gpg.skip>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -107,7 +105,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.31</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -118,19 +116,19 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>bucketfs-java</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
-            <version>7.0.4</version>
+            <version>7.0.7</version>
             <scope>runtime</scope>
         </dependency>
         <!-- Overrides Junit 4.12 which is used in test containers but contains a security issue: https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -159,7 +157,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.7.7</version>
+            <version>3.11.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -168,7 +166,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.6.1</version>
+                <version>0.10.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -181,6 +179,11 @@
                         <module>integration_tests</module>
                         <module>maven_central</module>
                     </modules>
+                    <linkReplacements>
+                        <linkReplacement>
+                            LICENSE-exasol-jdbc.txt|https://docs.exasol.com/connect_exasol/drivers/jdbc.htm
+                        </linkReplacement>
+                    </linkReplacements>
                 </configuration>
             </plugin>
             <plugin>
@@ -218,33 +221,47 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.6</version>
                 <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>prepare-agent-integration</id>
-                        <goals>
-                            <goal>prepare-agent-integration</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report-integration</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report-integration</goal>
-                        </goals>
-                    </execution>
-                </executions>
+        <execution>
+            <id>prepare-agent</id>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>prepare-agent-integration</id>
+            <goals>
+                <goal>prepare-agent-integration</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>merge-results</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>merge</goal>
+            </goals>
+            <configuration>
+                <fileSets>
+                    <fileSet>
+                        <directory>${project.build.directory}/</directory>
+                        <includes>
+                            <include>jacoco*.exec</include>
+                        </includes>
+                    </fileSet>
+                </fileSets>
+                <destFile>${project.build.directory}/aggregate.exec</destFile>
+            </configuration>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+            <configuration>
+                <dataFile>${project.build.directory}/aggregate.exec</dataFile>
+            </configuration>
+        </execution>
+    </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

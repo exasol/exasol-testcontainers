@@ -36,7 +36,6 @@ class ExasolDockerImageReferenceTest {
     }
 
     // [utest->dsn~shortened-docker-image-references~1]
-    @SuppressWarnings("deprecation")
     @CsvSource({ //
             "7, 7", //
             "6.1, 6", //
@@ -49,8 +48,7 @@ class ExasolDockerImageReferenceTest {
     @ParameterizedTest
     void getMajorVersion(final String input, final int expectedVersion) {
         final ExasolDockerImageReference reference = DockerImageReferenceFactory.parse(input);
-        assertAll(() -> assertThat(reference.getMajorVersion().orElseThrow(), equalTo(expectedVersion)),
-                () -> assertThat(reference.getMajor(), equalTo(expectedVersion)),
+        assertAll(() -> assertThat(reference.getMajor(), equalTo(expectedVersion)),
                 () -> assertThat(reference.hasMajor(), equalTo(true)));
 
     }

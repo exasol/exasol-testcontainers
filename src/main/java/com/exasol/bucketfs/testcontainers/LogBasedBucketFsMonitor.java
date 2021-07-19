@@ -18,7 +18,7 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
 
     /**
      * Create a new instance of {@link LogBasedBucketFsMonitor}.
-     * 
+     *
      * @param detectorFactory factory for a log pattern detector
      */
     public LogBasedBucketFsMonitor(final LogPatternDetectorFactory detectorFactory) {
@@ -35,13 +35,20 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
     }
 
     @Override
+    @SuppressWarnings("java:S112")
     public boolean isObjectSynchronized(final ReadOnlyBucket bucket, final String pathInBucket, final Instant afterUTC)
-            throws InterruptedException, BucketAccessException {
+            throws BucketAccessException {
         try {
             return createBucketLogPatternDetector(pathInBucket).isPatternPresentAfter(afterUTC);
         } catch (final IOException exception) {
             throw new BucketAccessException(
                     "Unable to check if object \"" + pathInBucket + "\" is synchronized in bucket \""
+                            + bucket.getBucketFsName() + "/" + bucket.getBucketName() + "\".",
+                    exception);
+        } catch (final InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(
+                    "Caught interrupt trying to check if object \"" + pathInBucket + "\" is synchronized in bucket \""
                             + bucket.getBucketFsName() + "/" + bucket.getBucketName() + "\".",
                     exception);
         }

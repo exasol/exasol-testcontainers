@@ -4,8 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
@@ -108,7 +107,7 @@ class BucketIT {
     @Test
     void testUploadNonExistentFileThrowsException() {
         final Path file = Path.of("/this/path/does/not/exist");
-        assertThrows(BucketAccessException.class, () -> container.getDefaultBucket().uploadFile(file, "nowhere.txt"));
+        assertThrows(FileNotFoundException.class, () -> container.getDefaultBucket().uploadFile(file, "nowhere.txt"));
     }
 
     @Test
@@ -143,7 +142,7 @@ class BucketIT {
         final Bucket bucket = container.getDefaultBucket();
         final BucketAccessException exception = assertThrows(BucketAccessException.class,
                 () -> bucket.downloadFile(pathInBucket, pathToFile));
-        assertThat(exception.getMessage(), startsWith("Unable to downolad file \"" + pathToFile));
+        assertThat(exception.getMessage(), startsWith("E-BFSJ-2: File or directory not found trying to download "));
     }
 
     @Test

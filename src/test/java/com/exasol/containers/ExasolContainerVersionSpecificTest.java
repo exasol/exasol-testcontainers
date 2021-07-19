@@ -11,8 +11,10 @@ import org.junit.jupiter.api.Test;
  */
 @Tag("fast")
 class ExasolContainerVersionSpecificTest {
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V6 = new ExasolContainer<>("6.2.7-d1");
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V7 = new ExasolContainer<>("7.0.0");
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V6 = new ExasolContainer<>("6.2.7-d1",
+            false);
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V7 = new ExasolContainer<>("7.0.0",
+            false);
 
     @Test
     void testBucketfsPortOnV6() {

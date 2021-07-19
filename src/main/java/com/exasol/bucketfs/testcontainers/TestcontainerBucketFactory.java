@@ -45,6 +45,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
      * @return bucket
      */
     // [impl->dsn~bucket-api~1]
+    @Override
     public synchronized Bucket getBucket(final String serviceName, final String bucketName) {
         final BucketFsServiceConfiguration serviceConfiguration = this.clusterConfiguration
                 .getBucketFsServiceConfiguration(serviceName);

@@ -11,3 +11,7 @@ In this release we fixed a bug that lead to a crash when the root password was s
 * #136: Fixed parsing of EXAConfig with root password set
 
 ## Dependency Updates
+
+### Plugin Dependency Updates
+
+* Updated `com.exasol:project-keeper-maven-plugin:0.6.1` to `0.10.0`

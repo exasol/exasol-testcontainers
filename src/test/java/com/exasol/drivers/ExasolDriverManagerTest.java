@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
@@ -57,14 +58,15 @@ class ExasolDriverManagerTest {
     @Test
     void testInstallDriverHandlesBucketAccessException(@Mock final Bucket bucketMock,
             @Mock final DatabaseDriver driverMock)
-            throws InterruptedException, BucketAccessException, TimeoutException {
+            throws InterruptedException, BucketAccessException, TimeoutException, FileNotFoundException {
         final IllegalArgumentException cause = new IllegalArgumentException("the cause");
         final Throwable exception = new BucketAccessException("access denied", cause);
         assertExecptionHandled(bucketMock, driverMock, exception);
     }
 
     private void assertExecptionHandled(final Bucket bucketMock, final DatabaseDriver driverMock,
-            final Throwable exception) throws InterruptedException, BucketAccessException, TimeoutException {
+            final Throwable exception)
+            throws InterruptedException, BucketAccessException, TimeoutException, FileNotFoundException {
         final String fileName = "irrelevant";
         final Path localPath = Path.of("/host/path/" + fileName);
         when(driverMock.hasSourceFile()).thenReturn(true);
@@ -77,16 +79,8 @@ class ExasolDriverManagerTest {
 
     @Test
     void testInstallDriverHandlesTimeoutException(@Mock final Bucket bucketMock, @Mock final DatabaseDriver driverMock)
-            throws InterruptedException, BucketAccessException, TimeoutException {
+            throws InterruptedException, BucketAccessException, TimeoutException, FileNotFoundException {
         final Throwable exception = new TimeoutException("timed out");
-        assertExecptionHandled(bucketMock, driverMock, exception);
-    }
-
-    @Test
-    void testInstallDriverHandlesInterruptedException(@Mock final Bucket bucketMock,
-            @Mock final DatabaseDriver driverMock)
-            throws InterruptedException, BucketAccessException, TimeoutException {
-        final Throwable exception = new InterruptedException("interrupted");
         assertExecptionHandled(bucketMock, driverMock, exception);
     }
 }

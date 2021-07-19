@@ -1,5 +1,6 @@
 package com.exasol.drivers;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -64,9 +65,8 @@ public class ExasolDriverManager {
             final String pathInBucket = DEFAULT_JDBC_DRIVER_PATH_IN_BUCKET + BucketConstants.PATH_SEPARATOR
                     + driver.getFileName();
             this.bucket.uploadFile(driver.getSourcePath(), pathInBucket);
-        } catch (final InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new DriverManagerException("Interrupted during database driver upload.", driver, exception);
+        } catch (final FileNotFoundException exception) {
+            throw new DriverManagerException("Driver file not found.", driver, exception);
         } catch (final BucketAccessException | TimeoutException exception) {
             throw new DriverManagerException("Unable to upload database driver.", driver, exception);
         }

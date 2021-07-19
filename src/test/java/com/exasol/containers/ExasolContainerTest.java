@@ -96,7 +96,7 @@ class ExasolContainerTest {
 
     @Test
     void testCouldNotExtractPort() {
-        try (final ExasolContainer<?> container = new ExasolContainer<>("unknown:1.2.3")) {
+        try (final ExasolContainer<?> container = new ExasolContainer<>("unknown:1.2.3", false)) {
             final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                     container::configure);
             assertThat(exception.getMessage(), equalTo(

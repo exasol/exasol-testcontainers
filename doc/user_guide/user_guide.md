@@ -178,6 +178,8 @@ When you set this property, the `ExasolTestcontainer` will start the Exasol dock
 
 You can use this in a continuous integration build for example to iterate through a list of Exasol versions that you want to test your software against.
 
+If you explicitly want to prevent overriding, you can use the constructor `ExasolContainer(final String dockerImageName, final boolean allowImageOverride)` while setting `allowImageOverride` to `false`.
+
 ## Automatic Cluster Configuration Parsing
 
 Many integration tests rely on knowing the setup of the cluster. The Exasol test container comes with a parser that reads the cluster configuration from the running docker container.
@@ -376,7 +378,7 @@ private static final ExasolContainer<? extends ExasolContainer<?>> container
 
 #### Don't mix Annotations That Depend on Each Other
 
-Note that you should not use the [`@TempDir` annotation of JUnit](https://junit.org/junit5/docs/current/api/org/junit/jupiter/api/io/TempDir.html) in this particular situation because the _initialization order of annotated fields is not guaranteed_.
+Note that you should not use the [`@TempDir` annotation of JUnit](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/io/TempDir.html) in this particular situation because the _initialization order of annotated fields is not guaranteed_.
 
 If you combine two or more annotations and the initialization of one of them depends on the other one being initialized already you can end up with a `NullPointerException`.
 

@@ -1,26 +1,9 @@
 package com.exasol.containers;
 
-import java.util.Optional;
-
 /**
  * Reference to an Exasol Docker image.
  */
 public interface ExasolDockerImageReference {
-    /**
-     * Get the major version of the {@code exasol/docker-db} image if possible.
-     *
-     * <p>
-     * If a non-standard image is used, no version is detected.
-     * </p>
-     *
-     * @deprecated As of 3.4.1, use {@link ExasolDockerImageReference#getMajor()} and
-     *             {@link ExasolDockerImageReference#hasMajor()} instead.
-     *
-     * @return major version number of the docker image
-     */
-    @Deprecated(since = "3.4.1")
-    public Optional<Integer> getMajorVersion();
-
     /**
      * Get the major version of the {@code exasol/docker-db} image if possible.
      *
