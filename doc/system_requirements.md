@@ -206,15 +206,16 @@ Covers:
 Needs: dsn
 
 #### Shortened Docker Image References
-`req~shortened-docker-image-references~1`
+`req~shortened-docker-image-references~2`
 
+Users can reference an Exasol Docker image names of the following kind:
 
-
-* `<major>`
-* `<major>.<minor>`
-* `<major>.<minor>.<fix>`
-* `<major>.<minor>.<fix>-d<docker-image-revision>`
+* `<major>[-suffix][-d<docker-image-revision>]`
+* `<major>.<minor>[-suffix][-d<docker-image-revision>]`
+* `<major>.<minor>.<fix>[-suffix][-d<docker-image-revision>]`
 * All of the above prefixed with `docker-db:` or `exasol/docker-db:`.
+
+Optional parts are indicated by square brackets.
 
 Covers:
 

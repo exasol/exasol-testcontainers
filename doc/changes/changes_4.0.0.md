@@ -4,7 +4,7 @@ Code name: Compatibility for Development Versions of docker-db
 
 ## Summary
 
-Release 4.0.0 brings compatibility with development versions of Exasol's [docker-db](https://github.com/exasol/docker-db).
+Release 4.0.0 brings compatibility with development versions of Exasol's [docker-db](https://github.com/exasol/docker-db). This allows writing integration tests at an earlier stage in the development cycle.
 
 Matrix tests now run with multiple Exasol versions on GitHub.
 
@@ -12,6 +12,10 @@ Matrix tests now run with multiple Exasol versions on GitHub.
 
 * `bucket-fs-java` was updated to 2.0.1, which changed the method signature or some methods in order to offer better exceptions.
 * Deprecated methods were removed from `ExasolDockerImageReference`.
+
+## Features
+
+* #142: ETC now accepts non-development version numbers like `7.1-RC1`.
 
 ## Bugfixes
 
