@@ -76,6 +76,10 @@ The `ExasolDriverManager` is responsible for installing and uninstalling drivers
 
 The `HostIpDetector` detects the IP address of the host the container is running on.
 
+## `SupportInformationRetriever`
+
+The `SupportInformationRetriever` module provides access to cluster logs, configuration and core-dumps.
+
 # Runtime
 
 This section describes the runtime behavior of the software.
@@ -244,6 +248,49 @@ Covers:
 * `req~reading-the-host-ip-address~1`
 
 Needs: impl, itest
+
+### Support Archive Retrieval
+
+To make sure that the support packages have the same content, we us the `exasupport` utility that ships with all Exasol variants.
+`exasupport` creates a standardized archive containing all relevant information for investigating problems with an Exasol cluster.
+
+#### Configure `SupportInformationRetriever` via API
+`dsn~configure-support-information-retriever-via-api~1`
+
+The `SupportInformationRetriever` provides an API to retrieve the support archive as produced by the `exasupport` utility.
+
+Covers:
+
+* `req~retrieving-the-support-archive-via-api~1`
+
+Needs: impl, itest
+
+#### Configure `SupportInformationRetriever` via system Properties
+`dsn~configure-support-information-retriever-via-system-properties~1`
+
+The `SupportInformationRetriever` provides an API to retrieve the support archive as produced by the `exasupport` utility.
+
+Covers:
+
+* `req~retrieving-the-support-archive-via-system-properties~1`
+
+Needs: impl, itest
+
+#### `SupportInformationRetriever` Creates Support Archive Depending on Exit Type
+`dsn~support-information-retriever-creates-support-archive-depending-on-exit-type~1`
+
+The `SupportInformationRetriever` offers a configuration option that decides whether the support archive is created at
+
+* Exit with error
+* Exit with success
+* Both
+* None (default)
+
+Covers:
+
+* `req~exit-dependent-support-archive-generation~1`
+
+Needs: dsn
 
 ## Database Access
 

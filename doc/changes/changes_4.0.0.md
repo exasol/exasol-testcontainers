@@ -1,10 +1,12 @@
-# Exasol Test Containers 4.0.0, released 2021-07-16
+# Exasol Test Containers 4.0.0, released 2021-07-20
 
 Code name: Compatibility for Development Versions of docker-db
 
 ## Summary
 
-Release 4.0.0 brings compatibility with development versions of Exasol's [docker-db](https://github.com/exasol/docker-db). This allows writing integration tests at an earlier stage in the development cycle.
+Release 4.0.0 brings compatibility with development versions of Exasol's [docker-db](https://github.com/exasol/docker-db). This allows writing integration tests at an earlier stage in the development cycle. For example ETC now accepts docker images with names like `exasol/docker-db:7.1-RC` or short forms containing suffixes like `7.1-beta`.
+
+Users can now download an archive bundle that contains the server logs, configuration and core-dumps. This is especially useful in continuous integration scenarios, as it opens a convenient way of getting all relevant information for a root-cause analysis in one place.
 
 Matrix tests now run with multiple Exasol versions on GitHub.
 
@@ -16,6 +18,7 @@ Matrix tests now run with multiple Exasol versions on GitHub.
 ## Features
 
 * #142: ETC now accepts non-development version numbers like `7.1-RC1`.
+* #143: API to download server logs
 
 ## Bugfixes
 
