@@ -290,7 +290,7 @@ Covers:
 
 * `req~exit-dependent-support-archive-generation~1`
 
-Needs: dsn
+Needs: impl, itest
 
 ## Database Access
 

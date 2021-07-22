@@ -88,7 +88,7 @@ class SupportInformationRetrieverIT {
         throw new AssertionError("Unable to find archive file in directory '" + directory + "'");
     }
 
-    // [dsn~configure-support-information-retriever-via-system-properties~1]
+    // [itest->dsn~configure-support-information-retriever-via-system-properties~1]
     @Test
     void testWriteSupportBundleOnExitConfiguredByProperty(@TempDir final Path tempDir) {
         System.setProperty(TARGET_DIRECTORY_PROPERTY, tempDir.toString());
@@ -100,7 +100,7 @@ class SupportInformationRetrieverIT {
         assertTarArchiveContainsEntry(getHostSupportBundlePath(tempDir), SYSINFO_FILENAME);
     }
 
-    // [itest->req~exit-dependent-support-archive-generation~1]
+    // [itest->dsn~support-information-retriever-creates-support-archive-depending-on-exit-type~1]
     @Test
     void testArchiveProducedWhenExitWithErrorTriggerIsConfigured(@TempDir final Path tempDir) {
         unsetControlProperties();
@@ -127,7 +127,7 @@ class SupportInformationRetrieverIT {
         return exceptionThrown;
     }
 
-    // [itest->req~exit-dependent-support-archive-generation~1]
+    // [itest->dsn~support-information-retriever-creates-support-archive-depending-on-exit-type~1]
     @Test
     void testArchiveNotProducedWhenExitWithSuccessTriggerIsConfigured(@TempDir final Path tempDir) {
         unsetControlProperties();

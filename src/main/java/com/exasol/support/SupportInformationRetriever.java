@@ -74,9 +74,9 @@ public class SupportInformationRetriever {
     /**
      * Produce the support information bundle archive in the mapped directory.
      *
-     * @param exitType
+     * @param exitType type of exit that occurred
      */
-    // [impl->req~exit-dependent-support-archive-generation~1]
+    // [impl->dsn~support-information-retriever-creates-support-archive-depending-on-exit-type~1]
     public void run(final ExitType exitType) {
         if ((this.monitoredExitType == ExitType.EXIT_ANY) || (exitType == this.monitoredExitType)) {
             createArchiveBundle(exitType);
