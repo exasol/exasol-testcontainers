@@ -20,10 +20,10 @@ import com.exasol.errorreporting.ExaError;
 public class SupportInformationRetriever {
     public static final String TARGET_DIRECTORY_PROPERTY = "com.exasol.containers.support_information_target_dir";
     public static final String MONITORED_EXIT_PROPERTY = "com.exasol.containers.monitored_exit";
-    static final String BUNDLE_ARCHIVE_FILENAME = "exasol_support_bundle.tar.gz";
+    static final String SUPPORT_ARCHIVE_PREFIX = "exacluster_debuginfo_";
     private static final String EXASUPPORT_EXECUTABLE = "exasupport";
     private static final Logger LOGGER = LoggerFactory.getLogger(SupportInformationRetriever.class);
-    private static final String MAPPED_HOST_DIRECTORY = "/exa/tmp/support/mapped_host_dir";
+    private static final String MAPPED_HOST_DIRECTORY = "/exa/tmp/support";
     private static final ExitType DEFAULT_MONITORED_EXIT_TYPE = ExitType.EXIT_NONE;
     private final Container<? extends Container<?>> container;
     private Path targetDirectory;
@@ -86,30 +86,32 @@ public class SupportInformationRetriever {
     @SuppressWarnings("java:S112")
     private void createArchiveBundle(final ExitType exitType) {
         try {
-            LOGGER.info(
-                    "Container exiting with {}. Monitoring is set to {}."
-                            + " Writing support information archive '{}' to mapped host directory '{}'",
-                    exitType, this.monitoredExitType, BUNDLE_ARCHIVE_FILENAME, this.targetDirectory);
-            final ExecResult result = this.container.execInContainer(EXASUPPORT_EXECUTABLE, "-o",
-                    getContainerSupportBundlePath());
-            if (result.getExitCode() != ExitCode.OK) {
-                final String message = ExaError.messageBuilder("E-ETC-2") //
-                        .message("exasupport exited with code {{exit-code}}.\n{{stderr-output}}", result.getExitCode(),
-                                result.getStderr()) //
-                        .toString();
-                LOGGER.error(message);
+            final ExecResult result = this.container.execInContainer(EXASUPPORT_EXECUTABLE);
+            if (result.getExitCode() == ExitCode.OK) {
+                logSuccessfulArchiveCreationAttempt(exitType, result);
+            } else {
+                logFailedSupportArchiveCreationAttempt(exitType, result.getStderr());
             }
         } catch (final UnsupportedOperationException | IOException exception) {
-            LOGGER.error(ExaError.messageBuilder("E-ETC-1")
-                    .message("Unable to create support bundle archive. Cause: {{cause}}", exception.getMessage())
-                    .toString());
+            logFailedSupportArchiveCreationAttempt(exitType, exception.getMessage());
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(exception);
         }
     }
 
-    private String getContainerSupportBundlePath() {
-        return MAPPED_HOST_DIRECTORY + "/" + BUNDLE_ARCHIVE_FILENAME;
+    @SuppressWarnings("java:S2629")
+    private void logSuccessfulArchiveCreationAttempt(final ExitType exitType, final ExecResult result) {
+        final String consoleMessage = result.getStdout().strip();
+        LOGGER.info("Container exiting with {}. Monitoring is set to {}. Mapped '{}' to host directory '{}'. {}",
+                exitType, this.monitoredExitType, MAPPED_HOST_DIRECTORY, this.targetDirectory, consoleMessage);
+    }
+
+    @SuppressWarnings("java:S2629")
+    private void logFailedSupportArchiveCreationAttempt(final ExitType exitType, final String cause) {
+        LOGGER.error(ExaError.messageBuilder("E-ETC-2") //
+                .message("Container exiting with {}. Monitoring is set to {}. Unable to create support archive failed."
+                        + "\nCause: {{cause}}", exitType, this.monitoredExitType, this.targetDirectory, cause) //
+                .toString());
     }
 }

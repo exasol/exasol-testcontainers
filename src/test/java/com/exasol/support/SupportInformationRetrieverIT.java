@@ -74,7 +74,18 @@ class SupportInformationRetrieverIT {
     }
 
     private Path getHostSupportBundlePath(final Path parentDirectory) {
-        return parentDirectory.resolve(SupportInformationRetriever.BUNDLE_ARCHIVE_FILENAME);
+        final String filename = findSupportArchive(parentDirectory);
+        return parentDirectory.resolve(filename);
+    }
+
+    private String findSupportArchive(final Path directory) {
+        for (final String filename : directory.toFile().list()) {
+            LOGGER.debug("Found file in output dir: " + filename);
+            if (filename.startsWith(SupportInformationRetriever.SUPPORT_ARCHIVE_PREFIX)) {
+                return filename;
+            }
+        }
+        throw new AssertionError("Unable to find archive file in directory '" + directory + "'");
     }
 
     // [dsn~configure-support-information-retriever-via-system-properties~1]
