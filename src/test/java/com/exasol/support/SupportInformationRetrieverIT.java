@@ -80,7 +80,6 @@ class SupportInformationRetrieverIT {
 
     private String findSupportArchive(final Path directory) {
         for (final String filename : directory.toFile().list()) {
-            LOGGER.debug("Found file in output dir: " + filename);
             if (filename.startsWith(SupportInformationRetriever.SUPPORT_ARCHIVE_PREFIX)) {
                 return filename;
             }
