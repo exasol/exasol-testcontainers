@@ -384,9 +384,51 @@ If you combine two or more annotations and the initialization of one of them dep
 
 In this concrete example the container got initialized before the temporary directory during experiments with `@TempDir`.
 
-We therefore recommend the more inconvenient but safer way shown in the example code above. 
+We therefore recommend the more inconvenient but safer way shown in the example code above.
 
-## Networking
+### Producing Support Information Archives
+
+Exasol ships with a utility called `exasupport`. This programs creates an archive that contains all the important information for debugging issues in the database in a standardized format:
+
+* System information
+* Logs
+* Configuration
+* Core-dumps (if any)
+
+You can tell the ETC to create such a package, given that you are working with Exasol 7 or later.
+
+One way is to request that via the API:
+
+```java
+.withSupportInformationRecordedAtExit(<target-directory-on-the-host>, <exit-type>)a
+```
+
+This configures the ETC to map a host directory so that support archives are created there.
+
+On log level `INFO` you will see a message like the one below, taken from a JUnit test where the feature was enabled:
+
+```
+2021-07-23 09:26:22.514 [INFO   ] Container exiting with EXIT_SUCCESS. Monitoring is set to EXIT_ANY.
+Wrote support archive to: /tmp/junit16072898015769568356/exacluster_debuginfo_2021_07_23-09_26_16.tar.gz 
+```
+
+As you can see, `exasupport` created an archive `exacluster_debuginfo_<date>-<time>.tar.gz` that then appears in the mapped host directory. Since the monitored exit type included the actual exit type, ETC triggered `exasupport`.
+
+You can pick the exit type to be monitored from the following list:
+
+* `EXIT_ANY`
+* `EXIT_SUCCESS`
+* `EXIT_ERROR`
+* `EXIT_NONE` (default)
+
+If you run the ETC in a CI build, it is more convenient to configure this feature via system properties:
+
+* `com.exasol.containers.support_information_target_dir`
+* `com.exasol.containers.monitored_exit`
+
+The effect is the same, but you get better decoupling from your code and need to configure this in one place only instead of many tests.
+
+## Networkingg
 
 ### Running the Exasol Test Container in a Docker Network
 

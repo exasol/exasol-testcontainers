@@ -5,8 +5,9 @@ import static com.exasol.containers.ExitType.*;
 import static com.exasol.support.SupportInformationRetriever.MONITORED_EXIT_PROPERTY;
 import static com.exasol.support.SupportInformationRetriever.TARGET_DIRECTORY_PROPERTY;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyArray;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
@@ -25,8 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExitType;
+import com.exasol.containers.*;
 
 @Tag("slow")
 @Testcontainers
@@ -38,6 +38,7 @@ class SupportInformationRetrieverIT {
     @Test
     void testWriteSupportBundleOnExit(@TempDir final Path tempDir) {
         try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>()) {
+            assumeExasolSevenOrLater(exasol);
             unsetControlProperties();
             exasol.withRequiredServices() //
                     .withSupportInformationRecordedAtExit(tempDir, EXIT_ANY) //
@@ -45,6 +46,12 @@ class SupportInformationRetrieverIT {
             exasol.stop();
         }
         assertTarArchiveContainsEntry(getHostSupportBundlePath(tempDir), SYSINFO_FILENAME);
+    }
+
+    private void assumeExasolSevenOrLater(final ExasolContainer<? extends ExasolContainer<?>> exasol) {
+        final ExasolDockerImageReference dockerImageReference = exasol.getDockerImageReference();
+        assumeTrue(dockerImageReference.hasMajor());
+        assumeThat(dockerImageReference.getMajor(), greaterThanOrEqualTo(7));
     }
 
     private void unsetControlProperties() {
@@ -93,6 +100,7 @@ class SupportInformationRetrieverIT {
         System.setProperty(TARGET_DIRECTORY_PROPERTY, tempDir.toString());
         System.setProperty(MONITORED_EXIT_PROPERTY, EXIT_SUCCESS.toString());
         try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>()) {
+            assumeExasolSevenOrLater(exasol);
             exasol.withRequiredServices().start();
             exasol.stop();
         }
