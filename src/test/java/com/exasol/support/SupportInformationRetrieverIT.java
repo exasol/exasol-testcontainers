@@ -1,5 +1,6 @@
 package com.exasol.support;
 
+import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
 import static com.exasol.containers.ExasolService.UDF;
 import static com.exasol.containers.ExitType.*;
 import static com.exasol.support.SupportInformationRetriever.MONITORED_EXIT_PROPERTY;
@@ -18,8 +19,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +34,24 @@ class SupportInformationRetrieverIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(SupportInformationRetrieverIT.class);
     private static final String SYSINFO_FILENAME = "sysinfo.txt";
 
+    @BeforeAll
+    void beforeAll() {
+        assumeDockerDbVersionNotOverriddenToBelowExasolSeven();
+    }
+
+    private void assumeDockerDbVersionNotOverriddenToBelowExasolSeven() {
+        final String dockerImageProteryValue = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+        if (dockerImageProteryValue != null) {
+            final ExasolDockerImageReference dockerImageReference = DockerImageReferenceFactory
+                    .parse(dockerImageProteryValue);
+            assumeTrue(dockerImageReference.hasMajor() && (dockerImageReference.getMajor() >= 7));
+        }
+    }
+
     // [itest->dsn~configure-support-information-retriever-via-api~1]
     @Test
     void testWriteSupportBundleOnExit(@TempDir final Path tempDir) {
         try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>()) {
-            assumeExasolSevenOrLater(exasol);
             unsetControlProperties();
             exasol.withRequiredServices() //
                     .withSupportInformationRecordedAtExit(tempDir, EXIT_ANY) //
@@ -46,11 +59,6 @@ class SupportInformationRetrieverIT {
             exasol.stop();
         }
         assertTarArchiveContainsEntry(getHostSupportBundlePath(tempDir), SYSINFO_FILENAME);
-    }
-
-    private void assumeExasolSevenOrLater(final ExasolContainer<? extends ExasolContainer<?>> exasol) {
-        final ExasolDockerImageReference dockerImageReference = exasol.getDockerImageReference();
-        assumeTrue(dockerImageReference.hasMajor() && (dockerImageReference.getMajor() >= 7));
     }
 
     private void unsetControlProperties() {
@@ -99,7 +107,6 @@ class SupportInformationRetrieverIT {
         System.setProperty(TARGET_DIRECTORY_PROPERTY, tempDir.toString());
         System.setProperty(MONITORED_EXIT_PROPERTY, EXIT_SUCCESS.toString());
         try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>()) {
-            assumeExasolSevenOrLater(exasol);
             exasol.withRequiredServices().start();
             exasol.stop();
         }
