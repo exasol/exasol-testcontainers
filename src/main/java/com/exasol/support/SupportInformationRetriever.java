@@ -18,6 +18,7 @@ import com.exasol.errorreporting.ExaError;
  * Manages getting support information (like cluster logs, configuration settings and core-dumps) from the database.
  */
 public class SupportInformationRetriever {
+    private static final String PATH_SEPARATOR = "/";
     public static final String TARGET_DIRECTORY_PROPERTY = "com.exasol.containers.support_information_target_dir";
     public static final String MONITORED_EXIT_PROPERTY = "com.exasol.containers.monitored_exit";
     static final String SUPPORT_ARCHIVE_PREFIX = "exacluster_debuginfo_";
@@ -88,7 +89,10 @@ public class SupportInformationRetriever {
         try {
             final ExecResult result = this.container.execInContainer(EXASUPPORT_EXECUTABLE);
             if (result.getExitCode() == ExitCode.OK) {
-                logSuccessfulArchiveCreationAttempt(exitType, result);
+                final String filename = extractFilenameFromConsoleMessage(result);
+                final String hostPath = getHostPath(filename);
+                logSuccessfulArchiveCreationAttempt(exitType, hostPath);
+                makeArchiveWorldReadable(filename);
             } else {
                 logFailedSupportArchiveCreationAttempt(exitType, result.getStderr());
             }
@@ -101,10 +105,31 @@ public class SupportInformationRetriever {
     }
 
     @SuppressWarnings("java:S2629")
-    private void logSuccessfulArchiveCreationAttempt(final ExitType exitType, final ExecResult result) {
+    private void logSuccessfulArchiveCreationAttempt(final ExitType exitType, final String pathOfArchiveOnHost) {
+        LOGGER.info("Container exiting with {}. Monitoring is set to {}. Wrote support archive to: {}", exitType,
+                this.monitoredExitType, pathOfArchiveOnHost);
+    }
+
+    private String extractFilenameFromConsoleMessage(final ExecResult result) {
         final String consoleMessage = result.getStdout().strip();
-        LOGGER.info("Container exiting with {}. Monitoring is set to {}. Mapped '{}' to host directory '{}'. {}",
-                exitType, this.monitoredExitType, MAPPED_HOST_DIRECTORY, this.targetDirectory, consoleMessage);
+        return consoleMessage.substring(consoleMessage.indexOf(SUPPORT_ARCHIVE_PREFIX));
+    }
+
+    private String getHostPath(final String filename) {
+        return this.targetDirectory.resolve(filename).toString();
+    }
+
+    private void makeArchiveWorldReadable(final String filename)
+            throws UnsupportedOperationException, IOException, InterruptedException {
+        final String supportArchivePath = MAPPED_HOST_DIRECTORY + PATH_SEPARATOR + filename;
+        final ExecResult result = this.container.execInContainer("chmod", "a+rwx", supportArchivePath);
+        if (result.getExitCode() != ExitCode.OK) {
+            final String message = ExaError.messageBuilder("E-ETC-3")
+                    .message("Unable to make support archive {{path}} world-readable." + "\n{}", supportArchivePath,
+                            result.getStderr())
+                    .toString();
+            LOGGER.error(message);
+        }
     }
 
     @SuppressWarnings("java:S2629")
