@@ -5,8 +5,8 @@ import static com.exasol.containers.ExitType.*;
 import static com.exasol.support.SupportInformationRetriever.MONITORED_EXIT_PROPERTY;
 import static com.exasol.support.SupportInformationRetriever.TARGET_DIRECTORY_PROPERTY;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assume.assumeThat;
+import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -50,8 +50,7 @@ class SupportInformationRetrieverIT {
 
     private void assumeExasolSevenOrLater(final ExasolContainer<? extends ExasolContainer<?>> exasol) {
         final ExasolDockerImageReference dockerImageReference = exasol.getDockerImageReference();
-        assumeTrue(dockerImageReference.hasMajor());
-        assumeThat(dockerImageReference.getMajor(), greaterThanOrEqualTo(7));
+        assumeTrue(dockerImageReference.hasMajor() && (dockerImageReference.getMajor() >= 7));
     }
 
     private void unsetControlProperties() {
