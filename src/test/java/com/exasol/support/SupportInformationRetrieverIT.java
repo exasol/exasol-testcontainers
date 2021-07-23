@@ -35,11 +35,11 @@ class SupportInformationRetrieverIT {
     private static final String SYSINFO_FILENAME = "sysinfo.txt";
 
     @BeforeAll
-    void beforeAll() {
+    static void beforeAll() {
         assumeDockerDbVersionNotOverriddenToBelowExasolSeven();
     }
 
-    private void assumeDockerDbVersionNotOverriddenToBelowExasolSeven() {
+    private static void assumeDockerDbVersionNotOverriddenToBelowExasolSeven() {
         final String dockerImageProteryValue = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
         if (dockerImageProteryValue != null) {
             final ExasolDockerImageReference dockerImageReference = DockerImageReferenceFactory
