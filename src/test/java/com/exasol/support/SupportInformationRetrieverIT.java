@@ -121,7 +121,7 @@ class SupportInformationRetrieverIT {
         if (failed) {
             assertTarArchiveContainsEntry(getHostSupportBundlePath(tempDir), SYSINFO_FILENAME);
         } else {
-            fail("Since container startup is suppoed to fail, this line should not be reached!");
+            fail("Since container startup is supposed to fail, this line should not be reached!");
         }
     }
 
