@@ -227,7 +227,7 @@ The `ExasolDockerImageReference` can be constructed with the following forms of 
 * `<major>.<minor>.<fix>[-suffix][-d<docker-image-revision>]`
 * All of the above prefixed with `docker-db:` or `exasol/docker-db:`.
 
-Where `major`, `minor`, `fix` and `docker-image-revision` cab only contain numbers.
+Where `major`, `minor`, `fix` and `docker-image-revision` can only contain numbers.
 
 Optional parts are indicated by square brackets.
 
@@ -279,7 +279,7 @@ Needs: impl, itest
 #### `SupportInformationRetriever` Creates Support Archive Depending on Exit Type
 `dsn~support-information-retriever-creates-support-archive-depending-on-exit-type~1`
 
-The `SupportInformationRetriever` offers a configuration option that decides whether the support archive is created at
+The `SupportInformationRetriever` offers a configuration option that decides whether the support archive is created at on one of the following exit types:
 
 * Exit with error
 * Exit with success

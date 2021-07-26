@@ -240,7 +240,7 @@ Needs: dsn
 
 #### Retrieving Support Information
 
-Exasol contains a utility that collects all relevant data required for investigating database problems. This utility creates an archive that is standardize accross Exasol versions.
+Exasol contains a utility that collects all relevant data required for investigating database problems. This utility creates an archive that is standardized accross Exasol versions.
 
 The support archive contains:
 
