@@ -5,6 +5,9 @@ import static com.exasol.bucketfs.BucketConstants.DEFAULT_BUCKETFS;
 import static com.exasol.containers.ExasolContainerConstants.*;
 import static com.exasol.containers.ExasolService.BUCKETFS;
 import static com.exasol.containers.ExasolService.UDF;
+import static com.exasol.containers.ExitType.EXIT_ERROR;
+import static com.exasol.containers.ExitType.EXIT_SUCCESS;
+import static com.exasol.containers.exec.ExitCode.OK;
 import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
@@ -37,10 +40,13 @@ import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
 import com.exasol.dbcleaner.ExasolDatabaseCleaner;
 import com.exasol.drivers.ExasolDriverManager;
+import com.exasol.errorreporting.ExaError;
 import com.exasol.exaconf.ConfigurationParser;
 import com.exasol.exaoperation.ExaOperation;
 import com.exasol.exaoperation.ExaOperationEmulator;
+import com.exasol.support.SupportInformationRetriever;
 import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
 // [external->dsn~testcontainer-framework-controls-docker-image-download~1]
@@ -67,6 +73,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final ContainerStatusCache statusCache = new ContainerStatusCache(
             Path.of(System.getProperty("java.io.tmpdir")));
     private ContainerStatus status = null;
+    private SupportInformationRetriever supportInformationRetriever = null;
+    private boolean errorWhileWaitingForServices = false;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -92,6 +100,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public ExasolContainer(final String dockerImageName, final boolean allowImageOverride) {
         this(DockerImageReferenceFactory
                 .parse(allowImageOverride ? getOverridableDockerImageName(dockerImageName) : dockerImageName));
+        this.supportInformationRetriever = new SupportInformationRetriever(this);
     }
 
     // [impl->dsn~override-docker-image-via-java-property~1]
@@ -408,17 +417,21 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
-        waitUntilClusterConfigurationAvailable();
-        final Instant afterUtc = Instant.now();
-        waitUntilStatementCanBeExecuted();
-        waitForBucketFs(afterUtc);
-        waitForUdfContainer(afterUtc);
-        LOGGER.info("Exasol container started after waiting for the following services to become available: {}",
-                this.requiredServices);
-
+        try {
+            waitUntilClusterConfigurationAvailable();
+            final Instant afterUtc = Instant.now();
+            waitUntilStatementCanBeExecuted();
+            waitForBucketFs(afterUtc);
+            waitForUdfContainer(afterUtc);
+            LOGGER.info("Exasol container started after waiting for the following services to become available: {}",
+                    this.requiredServices);
+        } catch (final Exception exception) {
+            this.errorWhileWaitingForServices = true;
+            throw exception;
+        }
     }
 
-    private void waitForBucketFs(final Instant afterUtc) {
+    protected void waitForBucketFs(final Instant afterUtc) {
         if (isServiceReady(BUCKETFS)) {
             LOGGER.debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
         } else {
@@ -432,7 +445,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    private void waitForUdfContainer(final Instant afterUtc) {
+    protected void waitForUdfContainer(final Instant afterUtc) {
         if (isServiceReady(UDF)) {
             LOGGER.debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
         } else {
@@ -627,14 +640,35 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return this.timeZone;
     }
 
+    @Override
+    protected void containerIsStopping(final InspectContainerResponse containerInfo) {
+        final ContainerState state = containerInfo.getState();
+        final ExitType exitType = (this.errorWhileWaitingForServices || state.getOOMKilled()
+                || (state.getExitCodeLong() != OK) || state.getDead()) ? EXIT_ERROR //
+                        : EXIT_SUCCESS;
+        collectSupportInformation(exitType);
+        super.containerIsStopping(containerInfo);
+    }
+
     // [impl->dsn~keep-container-running-if-reuse~1]
     @Override
     public void stop() {
         if (isShouldBeReused() && TestcontainersConfiguration.getInstance().environmentSupportsReuse()) {
-            LOGGER.warn("Leaving container running since reuse is enabled. " //
+            LOGGER.info("Leaving container running since reuse is enabled. " //
                     + "Don't forget to stop and remove the container manually using docker rm -f CONTAINER_ID.");
         } else {
             super.stop();
+        }
+    }
+
+    private void collectSupportInformation(final ExitType exitType) {
+        if (this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 7)) {
+            this.supportInformationRetriever.run(exitType);
+        } else {
+            final String message = ExaError.messageBuilder("I-ETC-1") //
+                    .message("Fetching support bundle requires Exasol 7 or later.") //
+                    .toString();
+            LOGGER.info(message);
         }
     }
 
@@ -729,5 +763,19 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public String getHostIp() {
         final HostIpDetector detector = new HostIpDetector(this);
         return detector.getHostIp();
+    }
+
+    /**
+     * Define a directory into which you want support information (like cluster logs) to be dumped.
+     *
+     * @param targetDirectory directory where to put the logs
+     * @param exitType        type of exit for which the support information should be dumped
+     * @return self
+     */
+    public ExasolContainer<T> withSupportInformationRecordedAtExit(final Path targetDirectory,
+            final ExitType exitType) {
+        this.supportInformationRetriever.monitorExit(exitType);
+        this.supportInformationRetriever.mapTargetDirectory(targetDirectory);
+        return this;
     }
 }

@@ -38,7 +38,8 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
         this.minor = minor;
         this.fix = fix;
         this.suffix = suffix;
-        this.dockerImageRevision = ((dockerImageRevision == VERSION_NOT_PRESENT) && !isExasolSevenOrLater()) ? 1
+        this.dockerImageRevision = ((dockerImageRevision == VERSION_NOT_PRESENT) && !isExasolSevenOrLater())
+                ? DEFAULT_DOCKER_IMAGE_REVISION
                 : dockerImageRevision;
     }
 

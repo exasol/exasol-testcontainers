@@ -238,6 +238,67 @@ Covers:
 
 Needs: dsn
 
+#### Retrieving Support Information
+
+Exasol contains a utility that collects all relevant data required for investigating database problems. This utility creates an archive that is standardized accross Exasol versions.
+
+The support archive contains:
+
+* system information
+* server logs
+* configuration files
+* core-dumps (if any)
+
+##### Retrieving the Support Archive via API
+`req~retrieving-the-support-archive-via-api~1`
+
+Integrators can configure ETC to produce a standard support package when the dockerized database shuts down via the ETC API.
+
+Rationale:
+
+This is useful in cases where single test cases should produce the standard support archive.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)t
+
+Needs: dsn
+
+##### Retrieving the Support Archive via System Properties
+`req~retrieving-the-support-archive-via-system-properties~1`
+
+Integrators can configure ETC to produce a standard support package when the dockerized database shuts down via Java properties.
+
+Rationale:
+
+This is targeted at CI builds as it decouples test case definition and decision over whether to collect the support information.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)t
+
+Needs: dsn
+
+##### Exit-dependent Support Archive Generation
+`req~exit-dependent-support-archive-generation~1`
+
+Integrators can choose whether the support archive should be generated on
+
+* exits with errors
+* successful exits
+* both
+* none (default)
+
+Rationale:
+
+During regular tests integrators usually don't need the archive. In CI builds the runs with errors are the interesting ones. And in performance tests all information are relevant.
+
+Covers:
+
+* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)t
+
+Needs: dsn
+
 ### Database Access
 
 #### JDBC Connection With Administrator Privileges

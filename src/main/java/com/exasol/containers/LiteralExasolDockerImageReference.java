@@ -65,13 +65,11 @@ class LiteralExasolDockerImageReference implements ExasolDockerImageReference {
 
     @Override
     public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new IllegalStateException(ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE);
     }
 
     @Override
     public boolean hasSuffix() {
-        // TODO Auto-generated method stub
         return false;
     }
 }
