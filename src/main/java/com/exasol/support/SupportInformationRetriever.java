@@ -120,7 +120,7 @@ public class SupportInformationRetriever {
     @SuppressWarnings("java:S2629")
     private void logFailedSupportArchiveCreationAttempt(final ExitType exitType, final String cause) {
         LOGGER.error(ExaError.messageBuilder("E-ETC-2") //
-                .message("Container exiting with {}. Monitoring is set to {}. Unable to create support archive failed."
+                .message("Container exiting with {}. Monitoring is set to {}. Unable to create support archive."
                         + "\nCause: {{cause}}", exitType, this.monitoredExitType, this.targetDirectory, cause) //
                 .toString());
     }
