@@ -1,4 +1,4 @@
-# Exasol Test Containers 4.0.0, released 2021-07-26
+# Exasol Test Containers 4.0.0, released 2021-07-27
 
 Code name: Compatibility for Development Versions of docker-db
 
@@ -23,6 +23,7 @@ Matrix tests now run with multiple Exasol versions on GitHub.
 ## Bugfixes
 
 * #139: Migrated from Travis CI to GitHub actions
+* #146: Fixed Sonar findings
 
 ## Dependency Updates
 

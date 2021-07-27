@@ -28,7 +28,7 @@ public class Plugin {
     @SuppressWarnings("squid:S4784") // This is a test framework RegEx DoS attacks are unrealistic since this would mean
                                      // the testers are attacking themselves.
     private static final Pattern PLUGIN_PACKAGE_FILENAME_PATTERN = Pattern
-            .compile("Plugin\\.([-.\\w]+?-\\d+(?:\\.\\d+)*).*?");
+            .compile("Plugin\\.([-.\\w]+?-\\d+(?:\\.\\d{1,20}){1,20}).*");
     private final Path sourcePath;
     private final String name;
     private final Container<? extends Container<?>> container;

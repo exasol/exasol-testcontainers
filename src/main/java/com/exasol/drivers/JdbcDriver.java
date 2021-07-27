@@ -6,16 +6,17 @@ import java.nio.file.Path;
  * The {@link JdbcDriver} represents a driver file and the related driver meta-information
  */
 public class JdbcDriver implements DatabaseDriver {
+    private static final long serialVersionUID = 8538768853929154698L;
     private final String name;
     private final String prefix;
-    private final Path sourcePath;
+    private final String sourcePath; // String instead of Path to allow serialization
     private final String mainClass;
     private final boolean securityManagerEnabled;
 
     private JdbcDriver(final Builder builder) {
         this.name = builder.name;
         this.prefix = builder.prefix;
-        this.sourcePath = builder.localPath;
+        this.sourcePath = builder.localPath == null ? null : builder.localPath.toString();
         this.mainClass = builder.mainClass;
         this.securityManagerEnabled = builder.securityManagerEnabled;
     }
@@ -51,12 +52,12 @@ public class JdbcDriver implements DatabaseDriver {
 
     @Override
     public Path getSourcePath() {
-        return this.sourcePath;
+        return Path.of(this.sourcePath);
     }
 
     @Override
     public String getFileName() {
-        return this.sourcePath.getFileName().toString();
+        return this.getSourcePath().getFileName().toString();
     }
 
     /**

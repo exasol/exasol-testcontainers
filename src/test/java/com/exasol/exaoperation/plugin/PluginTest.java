@@ -35,7 +35,8 @@ class PluginTest {
     @ValueSource(strings = { "Plugin.Foo+Bar-1.0.0.pkg", "Foo.Bar-1.0.0.pkg", "Plugin-Foo.Bar-1.0.0.pkg", "" })
     @ParameterizedTest
     void testGetNameFromPackageThrowsExceptionForIllegalNames(final String pathAsString) {
-        assertThrows(IllegalArgumentException.class, () -> new Plugin(Path.of(pathAsString), null));
+        final Path path = Path.of(pathAsString);
+        assertThrows(IllegalArgumentException.class, () -> new Plugin(path, null));
     }
 
     @Test

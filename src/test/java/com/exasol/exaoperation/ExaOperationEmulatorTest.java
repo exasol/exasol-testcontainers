@@ -32,7 +32,7 @@ class ExaOperationEmulatorTest {
         doThrow(new UnsupportedOperationException()).when(this.containerMock).execInContainer(eq("tar"), eq("xf"),
                 any(), eq("-C"), any());
         doReturn(ExecResultFactory.mockResult(0, "/tmp/tmp.asdf", "")).when(this.containerMock)
-                .execInContainer(eq("/bin/mktemp"), eq("--directory"), eq("--tmpdir=/tmp"), eq("tmp.XXXXXXXX-plugin"));
+                .execInContainer("/bin/mktemp", "--directory", "--tmpdir=/tmp", "tmp.XXXXXXXX-plugin");
         assertWrappedException(this.containerMock, "Unable to install plug-in");
     }
 
@@ -49,7 +49,7 @@ class ExaOperationEmulatorTest {
         doThrow(new IOException()).when(this.containerMock).execInContainer(eq("tar"), eq("xf"), any(), eq("-C"),
                 any());
         doReturn(ExecResultFactory.mockResult(ExitCode.OK, "/tmp/tmp.asdf", "")).when(this.containerMock)
-                .execInContainer(eq("/bin/mktemp"), eq("--directory"), eq("--tmpdir=/tmp"), eq("tmp.XXXXXXXX-plugin"));
+                .execInContainer("/bin/mktemp", "--directory", "--tmpdir=/tmp", "tmp.XXXXXXXX-plugin");
         assertWrappedException(this.containerMock, "Unable to install plug-in");
     }
 }

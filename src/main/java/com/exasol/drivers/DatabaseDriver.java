@@ -1,11 +1,12 @@
 package com.exasol.drivers;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 
 /**
  * Common interface for all database Drivers
  */
-public interface DatabaseDriver {
+public interface DatabaseDriver extends Serializable {
     /**
      * Get the human-readable driver name.
      *

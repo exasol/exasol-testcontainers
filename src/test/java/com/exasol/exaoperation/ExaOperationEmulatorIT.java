@@ -20,59 +20,62 @@ import com.exasol.containers.ExasolContainer;
 @Testcontainers
 class ExaOperationEmulatorIT {
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
+    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>()
             .withRequiredServices();
 
     @Order(1)
     @Test
     void testHasPluginFalseBeforeInstallation() {
-        assertThat(CONTAINER.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(false));
+        assertThat(EXASOL.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(false));
     }
 
     // [itest->dsn~extracting-plug-in-packages~1]
     @Order(2)
     @Test
     void testInstallPluginPackage() throws UnsupportedOperationException, IOException, InterruptedException {
-        final ExaOperation exaOperation = CONTAINER.getExaOperation();
+        final ExaOperation exaOperation = EXASOL.getExaOperation();
         exaOperation.installPluginPackage(PLUGIN_PACKAGE_PATH);
-        final ExecResult result = CONTAINER.execInContainer("ls", "/usr/opt/EXAplugins");
+        final ExecResult result = EXASOL.execInContainer("ls", "/usr/opt/EXAplugins");
         assertThat(result.getStdout(), containsString(PLUGIN_NAME));
     }
 
     @Order(3)
     @Test
     void testHasPluginTrueAfterInstallation() {
-        assertThat(CONTAINER.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(true));
+        assertThat(EXASOL.getExaOperation().hasPlugin(PLUGIN_NAME), equalTo(true));
     }
 
     @Order(4)
     @Test
     void testGetPlugin() {
-        assertThat(CONTAINER.getExaOperation().getPlugin(PLUGIN_NAME).getName(), equalTo(PLUGIN_NAME));
+        assertThat(EXASOL.getExaOperation().getPlugin(PLUGIN_NAME).getName(), equalTo(PLUGIN_NAME));
     }
 
     @Order(5)
     @Test
     void testSecondInstallationThrows() {
-        assertThrows(ExaOperationEmulatorException.class,
-                () -> CONTAINER.getExaOperation().installPluginPackage(PLUGIN_PACKAGE_PATH));
+        final ExaOperation exaOperation = EXASOL.getExaOperation();
+        assertThrows(ExaOperationEmulatorException.class, () -> exaOperation.installPluginPackage(PLUGIN_PACKAGE_PATH));
     }
 
     @Test
     void testGetPluginThrowsIllegalArgumentExceptionForUnknownPluginName() {
-        assertThrows(IllegalArgumentException.class, () -> CONTAINER.getExaOperation().getPlugin("Non.Existant-1.0.0"));
+        final ExaOperation exaOperation = EXASOL.getExaOperation();
+        assertThrows(IllegalArgumentException.class, () -> exaOperation.getPlugin("Non.Existant-1.0.0"));
     }
 
     @Test
     void testInstallPluginPackageThrowsExceptionOnNonExistantPath() {
-        assertThrows(IllegalArgumentException.class,
-                () -> CONTAINER.getExaOperation().installPluginPackage(Path.of("does", "not", "exist")));
+        final ExaOperation exaOperation = EXASOL.getExaOperation();
+        final Path nonexistentPath = Path.of("does", "not", "exist");
+        assertThrows(IllegalArgumentException.class, () -> exaOperation.installPluginPackage(nonexistentPath));
     }
 
     @Test
     void testBrokenPackageException() {
+        final ExaOperation exaOperation = EXASOL.getExaOperation();
         final ExaOperationEmulatorException exception = assertThrows(ExaOperationEmulatorException.class,
-                () -> CONTAINER.getExaOperation().installPluginPackage(BROKEN_PACKAGE_PATH));
+                () -> exaOperation.installPluginPackage(BROKEN_PACKAGE_PATH));
         assertAll("exception", () -> assertThat(exception.getMessage(), equalTo("Unable to install plug-in.")), () -> {
             assertNotNull(exception.getCause());
             assertThat(exception.getCause().getMessage(), startsWith("Extract plugin package"));

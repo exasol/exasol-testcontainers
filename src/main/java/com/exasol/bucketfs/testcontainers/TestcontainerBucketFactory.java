@@ -51,19 +51,16 @@ public final class TestcontainerBucketFactory implements BucketFactory {
                 .getBucketFsServiceConfiguration(serviceName);
         final BucketConfiguration bucketConfiguration = serviceConfiguration.getBucketConfiguration(bucketName);
         final String bucketPath = serviceName + BucketConstants.PATH_SEPARATOR + bucketName;
-        if (!this.buckets.containsKey(bucketPath)) {
-            final Bucket bucket = SyncAwareBucket //
-                    .builder() //
-                    .monitor(new LogBasedBucketFsMonitor(this.detectorFactory))//
-                    .serviceName(serviceName) //
-                    .name(bucketName) //
-                    .ipAddress(this.ipAddress) //
-                    .httpPort(mapPort(serviceConfiguration.getHttpPort())) //
-                    .readPassword(bucketConfiguration.getReadPassword()) //
-                    .writePassword(bucketConfiguration.getWritePassword()) //
-                    .build();
-            this.buckets.put(bucketPath, bucket);
-        }
+        this.buckets.computeIfAbsent(bucketPath, key -> SyncAwareBucket //
+                .builder() //
+                .monitor(new LogBasedBucketFsMonitor(this.detectorFactory))//
+                .serviceName(serviceName) //
+                .name(bucketName) //
+                .ipAddress(this.ipAddress) //
+                .httpPort(mapPort(serviceConfiguration.getHttpPort())) //
+                .readPassword(bucketConfiguration.getReadPassword()) //
+                .writePassword(bucketConfiguration.getWritePassword()) //
+                .build());
         return this.buckets.get(bucketPath);
     }
 }
