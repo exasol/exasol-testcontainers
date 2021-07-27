@@ -16,7 +16,7 @@ public class JdbcDriver implements DatabaseDriver {
     private JdbcDriver(final Builder builder) {
         this.name = builder.name;
         this.prefix = builder.prefix;
-        this.sourcePath = builder.localPath.toString();
+        this.sourcePath = builder.localPath == null ? null : builder.localPath.toString();
         this.mainClass = builder.mainClass;
         this.securityManagerEnabled = builder.securityManagerEnabled;
     }
