@@ -20,14 +20,13 @@ The release also now contributes to Exasol's central [error catalog](https://exa
 ## Features
 
 * #142: Added support for non-development Exasol docker version numbers like `7.1-RC1`.
-* #143: Added API to download server logs
+* #144: Added API to download server logs
 
 ## Bugfixes
 
 * #139: Migrated from Travis CI to GitHub actions
-* #146: Fixed Sonar findings
+* #146: Fixed Sonar findings. Pinned transitive dependency `org.apache.commons:commons-compress` to version 1.21 to fix CVE-2021-36090.
 * #148: Fixed main branch in SonarCloud.
-* #149: Pinned transitive dependency `org.apache.commons:commons-compress` to version 1.21 to fix CVE-2021-36090.
 
 ## Dependency Updates
 
