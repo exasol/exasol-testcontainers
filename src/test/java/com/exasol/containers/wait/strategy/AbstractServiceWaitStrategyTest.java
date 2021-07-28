@@ -11,13 +11,16 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 
+@ExtendWith(MockitoExtension.class)
 abstract class AbstractServiceWaitStrategyTest {
     @Mock
     private LogPatternDetectorFactory detectorFactoryMock;

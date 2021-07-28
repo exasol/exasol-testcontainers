@@ -45,18 +45,24 @@ public class DatabaseService {
     // [impl->dsn~database-service-starts-the-database~1]
     public void start() throws InterruptedException {
         LOGGER.debug("Starting database \"{}\".", this.databaseName);
+        changeDatabaseState("start", "start-wait", "started");
+    }
+
+    private void changeDatabaseState(final String action, final String dwadCommand, final String resultState)
+            throws InterruptedException {
         try {
             final long before = System.currentTimeMillis();
-            final ExecResult result = this.container.execInContainer("dwad_client", "start-wait", this.databaseName);
+            final ExecResult result = this.container.execInContainer("dwad_client", dwadCommand, this.databaseName);
             if (result.getExitCode() == ExitCode.OK) {
-                LOGGER.debug("Database \"{}\" started {} ms after start request.", this.databaseName,
-                        System.currentTimeMillis() - before);
+                LOGGER.debug("Database \"{}\" {} {} ms after {} request.", this.databaseName, resultState,
+                        System.currentTimeMillis() - before, action);
             } else {
                 throw new DatabaseServiceException(this.databaseName,
-                        "Attempt to start the database \"" + this.databaseName + "\" failed");
+                        "Attempt to " + action + " the database \"" + this.databaseName + "\" failed");
             }
         } catch (UnsupportedOperationException | IOException exception) {
-            throw new DatabaseServiceException(this.databaseName, "Unable to start database service.", exception);
+            throw new DatabaseServiceException(this.databaseName, "Unable to " + action + " database service.",
+                    exception);
         }
     }
 
@@ -68,18 +74,6 @@ public class DatabaseService {
     // [impl->dsn~database-service-stops-the-database~1]
     public void stop() throws InterruptedException {
         LOGGER.debug("Stopping database \"{}\".", this.databaseName);
-        try {
-            final long before = System.currentTimeMillis();
-            final ExecResult result = this.container.execInContainer("dwad_client", "stop-wait", this.databaseName);
-            if (result.getExitCode() == ExitCode.OK) {
-                LOGGER.debug("Database \"{}\" stopped {} ms after stop request.", this.databaseName,
-                        System.currentTimeMillis() - before);
-            } else {
-                throw new DatabaseServiceException(this.databaseName,
-                        "Attempt to stop the database \"" + this.databaseName + "\" failed");
-            }
-        } catch (UnsupportedOperationException | IOException exception) {
-            throw new DatabaseServiceException(this.databaseName, "Unable to stop database service.", exception);
-        }
+        changeDatabaseState("stop", "stop-wait", "stopped");
     }
 }
