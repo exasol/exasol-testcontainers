@@ -33,9 +33,10 @@ Matrix tests now run with multiple Exasol versions on GitHub.
 
 * Updated `com.exasol:bucketfs-java:1.0.0` to `2.0.1`
 * Updated `junit:junit:4.13.1` to `4.13.2`
+* Added `org.apache.commons:commons-compress:1.21`
 * Updated `org.slf4j:slf4j-jdk14:1.7.30` to `1.7.31`
-* Updated `org.testcontainers:jdbc:1.15.1` to `1.15.3`
-* Updated `org.testcontainers:testcontainers:1.15.1` to `1.15.3`
+* Updated `org.testcontainers:jdbc:1.15.1` to `1.16.0`
+* Updated `org.testcontainers:testcontainers:1.15.1` to `1.16.0`
 
 ### Runtime Dependency Updates
 
@@ -46,7 +47,7 @@ Matrix tests now run with multiple Exasol versions on GitHub.
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.7.1` to `5.7.2`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.7.1` to `5.7.2`
 * Updated `org.mockito:mockito-junit-jupiter:3.7.7` to `3.11.2`
-* Updated `org.testcontainers:junit-jupiter:1.15.1` to `1.15.3`
+* Updated `org.testcontainers:junit-jupiter:1.15.1` to `1.16.0`
 
 ### Plugin Dependency Updates
 
