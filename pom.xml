@@ -15,7 +15,7 @@
         <java.version>11</java.version>
         <junit.version>5.7.2</junit.version>
         <maven.surefire-and-failsafe.version>3.0.0-M3</maven.surefire-and-failsafe.version>
-        <testcontainers.version>1.15.3</testcontainers.version>
+        <testcontainers.version>1.16.0</testcontainers.version>
         <gpg.skip>true</gpg.skip>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -90,6 +90,12 @@
         </profile>
     </profiles>
     <dependencies>
+        <!-- Testcontainers depend on 1.20, which has CVE-2021-36090 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
+        </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
@@ -105,8 +111,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.31</version>
-            <scope>compile</scope>
+            <version>1.7.32</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -121,7 +126,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
-            <version>7.0.7</version>
+            <version>7.0.11</version>
             <scope>runtime</scope>
         </dependency>
         <!-- Overrides Junit 4.12 which is used in test containers but contains a security issue: https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
@@ -191,8 +196,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire-and-failsafe.version}</version>
                 <configuration>
-                    <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches
-                      in the logging lambdas too. -->
+                    <!-- Set the highest log level for coverage testing, so that we have a chance to 
+                        reach branches in the logging lambdas too. -->
                     <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
                     <excludedGroups>${test.excludeTags}</excludedGroups>
                 </configuration>
@@ -202,8 +207,8 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven.surefire-and-failsafe.version}</version>
                 <configuration>
-                    <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches
-                      in the logging lambdas too. -->
+                    <!-- Set the highest log level for coverage testing, so that we have a chance to 
+                        reach branches in the logging lambdas too. -->
                     <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
                     <excludedGroups>${test.excludeTags}</excludedGroups>
                 </configuration>
@@ -221,47 +226,47 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.6</version>
                 <executions>
-        <execution>
-            <id>prepare-agent</id>
-            <goals>
-                <goal>prepare-agent</goal>
-            </goals>
-        </execution>
-        <execution>
-            <id>prepare-agent-integration</id>
-            <goals>
-                <goal>prepare-agent-integration</goal>
-            </goals>
-        </execution>
-        <execution>
-            <id>merge-results</id>
-            <phase>verify</phase>
-            <goals>
-                <goal>merge</goal>
-            </goals>
-            <configuration>
-                <fileSets>
-                    <fileSet>
-                        <directory>${project.build.directory}/</directory>
-                        <includes>
-                            <include>jacoco*.exec</include>
-                        </includes>
-                    </fileSet>
-                </fileSets>
-                <destFile>${project.build.directory}/aggregate.exec</destFile>
-            </configuration>
-        </execution>
-        <execution>
-            <id>report</id>
-            <phase>verify</phase>
-            <goals>
-                <goal>report</goal>
-            </goals>
-            <configuration>
-                <dataFile>${project.build.directory}/aggregate.exec</dataFile>
-            </configuration>
-        </execution>
-    </executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>merge-results</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}/</directory>
+                                    <includes>
+                                        <include>jacoco*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/aggregate.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/aggregate.exec</dataFile>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -352,8 +357,8 @@
                 </executions>
                 <configuration>
                     <excludeVulnerabilityIds>
-                        <!-- Ignores CVE-2020-15250, because we use Java 11 and junit 4.13.1 which contains a fix:
-                          https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
+                        <!-- Ignores CVE-2020-15250, because we use Java 11 and junit 4.13.1 which contains 
+                            a fix: https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
                         <exclude>7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
@@ -425,7 +430,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>error-code-crawler-maven-plugin</artifactId>
-                <version>0.1.1</version>
+                <version>0.5.0</version>
                 <executions>
                     <execution>
                         <goals>

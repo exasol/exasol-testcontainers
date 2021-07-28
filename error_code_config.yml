@@ -1,0 +1,6 @@
+error-tags:
+  ETC:
+    packages:
+      - com.exasol.containers
+      - com.exasol.support
+    highest-index: 4
