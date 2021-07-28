@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers</artifactId>
@@ -15,7 +18,7 @@
         <java.version>11</java.version>
         <junit.version>5.7.2</junit.version>
         <maven.surefire-and-failsafe.version>3.0.0-M3</maven.surefire-and-failsafe.version>
-        <testcontainers.version>1.15.3</testcontainers.version>
+        <testcontainers.version>1.16.0</testcontainers.version>
         <gpg.skip>true</gpg.skip>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -85,11 +88,17 @@
         <profile>
             <id>expensive</id>
             <properties>
-                <test.excludeTags/>
+                <test.excludeTags />
             </properties>
         </profile>
     </profiles>
     <dependencies>
+        <!-- Testcontainers depend on 1.20, which has CVE-2021-36090 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
+        </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
@@ -191,9 +200,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire-and-failsafe.version}</version>
                 <configuration>
-                    <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches
-                      in the logging lambdas too. -->
-                    <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
+                    <!-- Set the highest log level for coverage testing, so that we have a chance to 
+                        reach branches in the logging lambdas too. -->
+                    <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties
+                        ${argLine}</argLine>
                     <excludedGroups>${test.excludeTags}</excludedGroups>
                 </configuration>
             </plugin>
@@ -202,9 +212,10 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven.surefire-and-failsafe.version}</version>
                 <configuration>
-                    <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches
-                      in the logging lambdas too. -->
-                    <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
+                    <!-- Set the highest log level for coverage testing, so that we have a chance to 
+                        reach branches in the logging lambdas too. -->
+                    <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties
+                        ${argLine}</argLine>
                     <excludedGroups>${test.excludeTags}</excludedGroups>
                 </configuration>
                 <executions>
@@ -221,47 +232,47 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.6</version>
                 <executions>
-        <execution>
-            <id>prepare-agent</id>
-            <goals>
-                <goal>prepare-agent</goal>
-            </goals>
-        </execution>
-        <execution>
-            <id>prepare-agent-integration</id>
-            <goals>
-                <goal>prepare-agent-integration</goal>
-            </goals>
-        </execution>
-        <execution>
-            <id>merge-results</id>
-            <phase>verify</phase>
-            <goals>
-                <goal>merge</goal>
-            </goals>
-            <configuration>
-                <fileSets>
-                    <fileSet>
-                        <directory>${project.build.directory}/</directory>
-                        <includes>
-                            <include>jacoco*.exec</include>
-                        </includes>
-                    </fileSet>
-                </fileSets>
-                <destFile>${project.build.directory}/aggregate.exec</destFile>
-            </configuration>
-        </execution>
-        <execution>
-            <id>report</id>
-            <phase>verify</phase>
-            <goals>
-                <goal>report</goal>
-            </goals>
-            <configuration>
-                <dataFile>${project.build.directory}/aggregate.exec</dataFile>
-            </configuration>
-        </execution>
-    </executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>prepare-agent-integration</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>merge-results</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}/</directory>
+                                    <includes>
+                                        <include>jacoco*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/aggregate.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/aggregate.exec</dataFile>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -312,7 +323,7 @@
                 </executions>
                 <configuration>
                     <charset>UTF-8</charset>
-                    <doclint/>
+                    <doclint />
                     <serialwarn>true</serialwarn>
                     <failOnError>true</failOnError>
                     <failOnWarnings>true</failOnWarnings>
@@ -352,8 +363,8 @@
                 </executions>
                 <configuration>
                     <excludeVulnerabilityIds>
-                        <!-- Ignores CVE-2020-15250, because we use Java 11 and junit 4.13.1 which contains a fix:
-                          https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
+                        <!-- Ignores CVE-2020-15250, because we use Java 11 and junit 4.13.1 which contains 
+                            a fix: https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
                         <exclude>7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>

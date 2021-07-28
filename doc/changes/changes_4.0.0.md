@@ -24,7 +24,8 @@ Matrix tests now run with multiple Exasol versions on GitHub.
 
 * #139: Migrated from Travis CI to GitHub actions
 * #146: Fixed Sonar findings
-* #148: Fixed main branch in SonarCloud
+* #148: Fixed main branch in SonarCloud.
+* #149: Pinned transitive dependency `org.apache.commons:commons-compress` to version 1.21 to fix CVE-2021-36090.
 
 ## Dependency Updates
 
