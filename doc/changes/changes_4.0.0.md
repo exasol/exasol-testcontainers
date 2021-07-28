@@ -10,6 +10,8 @@ Users can now download an archive bundle that contains the server logs, configur
 
 Matrix tests now run with multiple Exasol versions on GitHub.
 
+The release also now contributes to Exasol's central [error catalog](https://exasol.github.io/error-catalog/).
+
 ## Breaking Changes
 
 * `bucket-fs-java` was updated to 2.0.1, which changed the method signature or some methods in order to offer better exceptions.

@@ -7,10 +7,15 @@ import java.nio.file.Path;
  */
 public class JdbcDriver implements DatabaseDriver {
     private static final long serialVersionUID = 8538768853929154698L;
+    /** @serial */
     private final String name;
+    /** @serial */
     private final String prefix;
+    /** @serial */
     private final String sourcePath; // String instead of Path to allow serialization
+    /** @serial */
     private final String mainClass;
+    /** @serial */
     private final boolean securityManagerEnabled;
 
     private JdbcDriver(final Builder builder) {

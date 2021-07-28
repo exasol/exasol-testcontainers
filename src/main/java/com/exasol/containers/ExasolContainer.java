@@ -40,7 +40,6 @@ import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
 import com.exasol.dbcleaner.ExasolDatabaseCleaner;
 import com.exasol.drivers.ExasolDriverManager;
-import com.exasol.errorreporting.ExaError;
 import com.exasol.exaconf.ConfigurationParser;
 import com.exasol.exaoperation.ExaOperation;
 import com.exasol.exaoperation.ExaOperationEmulator;
@@ -664,11 +663,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void collectSupportInformation(final ExitType exitType) {
         if (this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 7)) {
             this.supportInformationRetriever.run(exitType);
-        } else {
-            final String message = ExaError.messageBuilder("I-ETC-1") //
-                    .message("Fetching support bundle requires Exasol 7 or later.") //
-                    .toString();
-            LOGGER.info(message);
         }
     }
 

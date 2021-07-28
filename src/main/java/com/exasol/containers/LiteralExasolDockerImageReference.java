@@ -1,12 +1,15 @@
 package com.exasol.containers;
 
+import com.exasol.errorreporting.ExaError;
+
 /**
  * Docker image reference for images that don't follow the established standard of naming Exasol Docker images.
  */
 class LiteralExasolDockerImageReference implements ExasolDockerImageReference {
-    private static final String ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE = //
-            "F-ETC-DIR-1: Can't get version details from a non-standard Exasol image reference."
-                    + " Adhere to the naming conventions for docker-db images to use this function.";
+    private static final String ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE = ExaError.messageBuilder("F-ETC-4")
+            .message("Can't get version details from a non-standard Exasol image reference." //
+                    + " Adhere to the naming conventions for docker-db images to use this function.") //
+            .toString();
     private final String reference;
 
     /**

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.testcontainers.containers.Container;
 
+import com.exasol.errorreporting.ExaError;
 import com.github.dockerjava.api.model.ContainerNetwork;
 import com.github.dockerjava.api.model.NetworkSettings;
 
@@ -32,8 +33,12 @@ public class HostIpDetector {
         final NetworkSettings networkSettings = this.container.getContainerInfo().getNetworkSettings();
         final Map<String, ContainerNetwork> networks = networkSettings.getNetworks();
         if (networks.size() == 0) {
-            throw new IllegalStateException("F-ETC-HID-1: Unable to determine host IP for \""
-                    + this.container.getDockerImageName() + "\" container because the docker network had no entries");
+            throw new IllegalStateException(ExaError //
+                    .messageBuilder("F-ETC-3") //
+                    .message("Unable to determine host IP for {{docker-image}} container" + //
+                            " because the docker network had no entries.") //
+                    .parameter("docker-image", this.container.getDockerImageName(), "Docker image name") //
+                    .toString());
         } else {
             return networks.values().iterator().next().getGateway();
         }
