@@ -24,7 +24,7 @@ Matrix tests now run with multiple Exasol versions on GitHub.
 
 * #139: Migrated from Travis CI to GitHub actions
 * #146: Fixed Sonar findings
-* #148: Run CI on pull request too
+* #148: Fixed main branch in SonarCloud
 
 ## Dependency Updates
 
