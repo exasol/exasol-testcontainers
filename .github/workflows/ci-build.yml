@@ -32,18 +32,18 @@ jobs:
       - name: "Run tests and build with Maven"
         run: |
           echo
-          echo "-------------------------------------------------------------"
-          echo "Running matrix test with dockerdb_version $DOCKER_DB_VERSION"
-          echo "-------------------------------------------------------------"
+          echo "--------------------------------------------------------------"
+          echo " Running matrix test with dockerdb_version $DOCKER_DB_VERSION "
+          echo "--------------------------------------------------------------"
           echo
-          echo "Support information archives are written to ${{ SUPPORT_DIR }}
+          echo "Support information archives are written to $SUPPORT_DIR"
           echo
-          mkdir -p ${{ SUPPORT_DIR }}
+          mkdir -p "$SUPPORT_DIR"
           mvn --batch-mode --update-snapshots clean verify sonar:sonar --file pom.xml \
           -DtrimStackTrace=false -Dsonar.organization=exasol -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login="$SONAR_TOKEN" \
           -Dcom.exasol.dockerdb.image="$DOCKER_DB_VERSION" \
-          -Dcom.exasol.containers.support_information_target_dir=${{ SUPPORT_DIR }} \
+          -Dcom.exasol.containers.support_information_target_dir="$SUPPORT_DIR" \
           -Pslow
         env:
           DOCKER_DB_VERSION: ${{ matrix.docker_db_version }}
