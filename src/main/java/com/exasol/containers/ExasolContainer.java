@@ -655,6 +655,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         if (isShouldBeReused() && TestcontainersConfiguration.getInstance().environmentSupportsReuse()) {
             LOGGER.info("Leaving container running since reuse is enabled. " //
                     + "Don't forget to stop and remove the container manually using docker rm -f CONTAINER_ID.");
+            collectSupportInformation(EXIT_SUCCESS);
         } else {
             super.stop();
         }
