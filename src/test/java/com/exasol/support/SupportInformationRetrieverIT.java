@@ -51,8 +51,8 @@ class SupportInformationRetrieverIT {
     // [itest->dsn~configure-support-information-retriever-via-api~1]
     @Test
     void testWriteSupportBundleOnExit(@TempDir final Path tempDir) {
+        unsetControlProperties();
         try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>()) {
-            unsetControlProperties();
             exasol.withRequiredServices() //
                     .withSupportInformationRecordedAtExit(tempDir, EXIT_ANY) //
                     .start();
