@@ -53,6 +53,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SUPPORT_DIR: ${{ github.workspace }}/target/support
       - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
           name: support
           path: target/support 
