@@ -44,6 +44,7 @@ jobs:
           -Dsonar.login="$SONAR_TOKEN" \
           -Dcom.exasol.dockerdb.image="$DOCKER_DB_VERSION" \
           -Dcom.exasol.containers.support_information_target_dir="$SUPPORT_DIR" \
+          -Dcom.exasol.containers.monitored_exit=EXIT_ANY \
           -Pslow
         env:
           DOCKER_DB_VERSION: ${{ matrix.docker_db_version }}
