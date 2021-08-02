@@ -55,5 +55,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: support
+          name: support-job-${{ github.job }}
           path: target/support 
