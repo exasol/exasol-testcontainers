@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-maven-
       - name: "Prepare container reuse"
         run: |
-          echo 'testcontainers.reuse.enable=true' > "$HOME/.testcontainers.properties"
+          echo 'testcontainers.reuse.enable=true' > "/home/runner/.testcontainers.properties"
       - name: "Run tests and build with Maven"
         run: |
           echo
