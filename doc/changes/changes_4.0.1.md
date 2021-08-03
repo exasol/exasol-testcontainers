@@ -11,3 +11,7 @@ Release 4.0.1 contains a small update that allows using dots as separators for r
 * #152: Version parser now accepts suffixes starting with a dot
 
 ## Dependency Updates
+
+### Compile Dependency Updates
+
+* Updated `com.exasol:bucketfs-java:2.0.1` to `2.1.0`
