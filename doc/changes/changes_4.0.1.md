@@ -15,3 +15,4 @@ Release 4.0.1 contains a small update that allows using dots as separators for r
 ### Compile Dependency Updates
 
 * Updated `com.exasol:bucketfs-java:2.0.1` to `2.1.0`
+* Updated `com.exasol:database-cleaner:1.0.0` to `1.0.1`
