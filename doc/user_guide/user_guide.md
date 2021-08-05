@@ -638,7 +638,7 @@ Then Exasol testcontainers will keep your container running after the tests and 
 Since testcontainers will not terminate the container any more you have to manually terminate it. 
 You can find the container id using `docker ps` command and terminate it by running `docker rm -f <CONTAINER-ID>`.
 
-Please note that the reuse capability works reliably with Exasol version 7 and above. We do not recommend the reuse option for older versions.
+Please note that the reuse capability works reliably with Exasol version 7 and above. We disabled that option for older versions.
 
 ## Troubleshooting
 

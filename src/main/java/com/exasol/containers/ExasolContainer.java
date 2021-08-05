@@ -318,7 +318,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             return super.withReuse(reuse);
         } else {
             LOGGER.info("Docker instance reuse requested, but Exasol version is below 7. Using normal mode instead.");
-            return super.withReuse(false);
+            return self();
         }
     }
 

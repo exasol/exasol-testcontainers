@@ -6,6 +6,8 @@ Code name: Allow dots in release candidate suffix
 
 Release 4.0.1 contains a small update that allows using dots as separators for release candidate versions.
 
+We also disabled the `withReuse()` feature for Exasol versions below 7, where it did not work reliably.
+
 ## Features
 
 * #152: Version parser now accepts suffixes starting with a dot
