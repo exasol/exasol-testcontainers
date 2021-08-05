@@ -312,6 +312,16 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return self();
     }
 
+    @Override
+    public T withReuse(final boolean reuse) {
+        if (getDockerImageReference().getMajor() >= 7) {
+            return super.withReuse(reuse);
+        } else {
+            LOGGER.info("Docker instance reuse requested, but Exasol version is below 7. Using normal mode instead.");
+            return super.withReuse(false);
+        }
+    }
+
     /**
      * Define which optional services you require.
      * <p>

@@ -1,6 +1,6 @@
 package com.exasol.support;
 
-import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
+import static com.exasol.containers.ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolSeven;
 import static com.exasol.containers.ExasolService.UDF;
 import static com.exasol.containers.ExitType.*;
 import static com.exasol.support.SupportInformationRetriever.MONITORED_EXIT_PROPERTY;
@@ -8,7 +8,6 @@ import static com.exasol.support.SupportInformationRetriever.TARGET_DIRECTORY_PR
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
@@ -26,7 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.exasol.containers.*;
+import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExitType;
 
 @Tag("slow")
 @Testcontainers
@@ -37,15 +37,6 @@ class SupportInformationRetrieverIT {
     @BeforeAll
     static void beforeAll() {
         assumeDockerDbVersionNotOverriddenToBelowExasolSeven();
-    }
-
-    private static void assumeDockerDbVersionNotOverriddenToBelowExasolSeven() {
-        final String dockerImageProteryValue = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
-        if (dockerImageProteryValue != null) {
-            final ExasolDockerImageReference dockerImageReference = DockerImageReferenceFactory
-                    .parse(dockerImageProteryValue);
-            assumeTrue(dockerImageReference.hasMajor() && (dockerImageReference.getMajor() >= 7));
-        }
     }
 
     // [itest->dsn~configure-support-information-retriever-via-api~1]
