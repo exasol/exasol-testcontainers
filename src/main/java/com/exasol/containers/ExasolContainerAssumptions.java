@@ -1,8 +1,7 @@
+package com.exasol.containers;
+
 import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
 import static org.junit.Assume.assumeTrue;
-
-import com.exasol.containers.DockerImageReferenceFactory;
-import com.exasol.containers.ExasolDockerImageReference;
 
 /**
  * This class contains shared assumptions about the Exasol container used in the tests.
