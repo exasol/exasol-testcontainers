@@ -14,7 +14,7 @@ public final class DockerImageReferenceFactory {
     private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = //
             Pattern.compile("(?:(?:exasol/)?(?:docker-db:))?" // prefix (optional)
                     + "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?" // Exasol version (partially optional)
-                    + "(?:-(\\w+))??" // suffix (optional)
+                    + "(?:([-.])([a-zA-Z]\\w*))??" // suffix (optional)
                     + "(?:-d(\\d+))?"); // docker image revision (optional)
 
     private DockerImageReferenceFactory() {
@@ -47,10 +47,12 @@ public final class DockerImageReferenceFactory {
             final int major = parseInt(matcher.group(1));
             final int minor = (matcher.group(2) == null) ? 0 : parseInt(matcher.group(2));
             final int fix = (matcher.group(3) == null) ? 0 : parseInt(matcher.group(3));
-            final String suffix = (matcher.group(4) == null) ? SUFFIX_NOT_PRESENT : matcher.group(4);
-            final int dockerImageRevision = (matcher.group(5) == null) ? VERSION_NOT_PRESENT
-                    : parseInt(matcher.group(5));
-            return new VersionBasedExasolDockerImageReference(major, minor, fix, suffix, dockerImageRevision);
+            final String suffixSeparator = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(4);
+            final String suffix = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5);
+            final int dockerImageRevision = (matcher.group(6) == null) ? VERSION_NOT_PRESENT
+                    : parseInt(matcher.group(6));
+            return new VersionBasedExasolDockerImageReference(major, minor, fix, suffixSeparator, suffix,
+                    dockerImageRevision);
         } else {
             return new LiteralExasolDockerImageReference(reference);
         }

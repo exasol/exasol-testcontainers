@@ -22,6 +22,8 @@ class ExasolDockerImageReferenceTest {
             "8.1.55-alpha-d1, exasol/docker-db:8.1.55-alpha-d1", //
             "8.12.9-delta-d77, exasol/docker-db:8.12.9-delta-d77", // "
             "8.12.9-d1x-d2, exasol/docker-db:8.12.9-d1x-d2", // "
+            "7.1.rc1, exasol/docker-db:7.1.0.rc1", //
+            "7.1.rc1-d4, exasol/docker-db:7.1.0.rc1-d4", //
             // prefixed image references:
             "docker-db:8, exasol/docker-db:8.0.0", //
             "docker-db:8.3, exasol/docker-db:8.3.0", //
@@ -128,7 +130,8 @@ class ExasolDockerImageReferenceTest {
             "8-delta, delta", //
             "8-d6f-d1, d6f", //
             "8-d6-d1, d6", //
-            "9.0.5-RC1, RC1" //
+            "9.0.5-RC1, RC1", //
+            "7.1.rc1, rc1" //
     })
     @ParameterizedTest
     void testGetSuffix(final String input, final String expectedSuffix) {

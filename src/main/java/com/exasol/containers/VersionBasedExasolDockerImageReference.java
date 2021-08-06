@@ -22,6 +22,7 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
     private final int fix;
     private final int dockerImageRevision;
     private final String suffix;
+    private final String suffixSeparator;
 
     /**
      * Create a docker image reference from a fully specified version.
@@ -29,14 +30,16 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
      * @param major               major database version
      * @param minor               minor database version
      * @param fix                 fix version (aka. "patch level")
+     * @param suffixSeparator     separator between version and suffix
      * @param suffix              suffix like "RC1" or "beta"
      * @param dockerImageRevision revision number of the docker image
      */
-    public VersionBasedExasolDockerImageReference(final int major, final int minor, final int fix, final String suffix,
-            final int dockerImageRevision) {
+    public VersionBasedExasolDockerImageReference(final int major, final int minor, final int fix,
+            final String suffixSeparator, final String suffix, final int dockerImageRevision) {
         this.major = major;
         this.minor = minor;
         this.fix = fix;
+        this.suffixSeparator = suffixSeparator;
         this.suffix = suffix;
         this.dockerImageRevision = ((dockerImageRevision == VERSION_NOT_PRESENT) && !isExasolSevenOrLater())
                 ? DEFAULT_DOCKER_IMAGE_REVISION
@@ -106,7 +109,7 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
     }
 
     private String constructOptionalSuffixPart() {
-        return this.suffix == null ? "" : "-" + this.suffix;
+        return this.suffix == null ? "" : this.suffixSeparator + this.suffix;
     }
 
     private String constructOptionalDockerImageRevisionPart() {
