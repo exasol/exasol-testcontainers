@@ -29,9 +29,8 @@ class ExasolContainerReuseIT {
 
     @AfterAll
     static void afterAll() throws NoSuchFieldException, IllegalAccessException {
-        final Properties testcontainerProperties = getTestcontainerProperties();
-        if (testcontainerProperties != null) {
-            testcontainerProperties.setProperty(TESTCONTAINERS_REUSE_ENABLE, propertyBackup);
+        if (propertyBackup != null) {
+            getTestcontainerProperties().setProperty(TESTCONTAINERS_REUSE_ENABLE, propertyBackup);
         }
     }
 
