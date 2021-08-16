@@ -162,6 +162,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
+        configureExposedPorts();
+        configurePrivilegedMode();
+        super.configure();
+    }
+
+    private void configureExposedPorts() {
         if (this.portAutodetectFailed) {
             if (getExposedPorts().isEmpty()) {
                 throw new IllegalArgumentException(
@@ -172,8 +178,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             }
         }
         LOGGER.debug("Exposing ports: {}", this.getExposedPorts());
+    }
+
+    private void configurePrivilegedMode() {
         this.setPrivilegedMode(true);
-        super.configure();
     }
 
     private static UnsupportedOperationException getTimeoutNotSupportedException() {
@@ -227,7 +235,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(getFirstDatabasePort());
+        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(getFirstDatabasePort())
+                + ";validateservercertificate=0";
     }
 
     @Override
@@ -561,7 +570,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 return;
             }
         }
-        throw new ContainerLaunchException("Exasol container start-up timed out in connection test.");
+        throw new ContainerLaunchException("Exasol container start-up timed out trying connection to " + getJdbcUrl()
+                + " using query '" + getTestQueryString() + "'\"");
     }
 
     private void sleepBeforeNextConnectionAttempt() {
@@ -587,6 +597,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                     "Unable to determine start status of container, because the referenced JDBC driver was not found.",
                     exception);
         } catch (final SQLException exception) {
+            LOGGER.warn(exception.getMessage());
+            exception.printStackTrace();
             sleepBeforeNextConnectionAttempt();
         }
         return false;
