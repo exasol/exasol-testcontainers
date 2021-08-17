@@ -37,6 +37,7 @@ class ExasolContainerTest {
 
     @Test
     void testWaitUntilContainerStartedTimesOut() throws Exception {
+        doReturn(1234).when(this.containerSpy).getFirstMappedDatabasePort();
         doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
         doReturn(this.connectionMock).when(this.containerSpy).createConnection(any());
         when(this.connectionMock.createStatement()).thenThrow(new SQLException("Mock Exception"));
