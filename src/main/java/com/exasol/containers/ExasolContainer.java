@@ -54,9 +54,9 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final long MILLIS_PER_SECOND = 1000L;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
+    private static final long MILLIS_PER_SECOND = 1000L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;

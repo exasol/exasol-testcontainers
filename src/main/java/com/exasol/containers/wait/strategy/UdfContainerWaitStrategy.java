@@ -14,10 +14,9 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
  * Strategy for waiting until the UDF language container is ready.
  */
 public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
-    protected static final long WAIT_DURATION_IN_MILLISECONDS = 600000;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(UdfContainerWaitStrategy.class);
     public static final String SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
+    private static final long WAIT_FOR_UDF_CONTAINER_DURATION_IN_MILLISECONDS = 600000;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UdfContainerWaitStrategy.class);
 
     /**
      * Create a new instance of a {@link UdfContainerWaitStrategy}.
@@ -35,5 +34,10 @@ public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
         LOGGER.debug("Waiting for UDF language container to be ready.");
         super.waitUntilReady();
         LOGGER.debug("UDF language container is ready.");
+    }
+
+    @Override
+    protected long getWaitTimeOutMilliseconds() {
+        return WAIT_FOR_UDF_CONTAINER_DURATION_IN_MILLISECONDS;
     }
 }
