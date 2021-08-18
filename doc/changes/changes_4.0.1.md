@@ -1,4 +1,4 @@
-# Exasol Test Containers 4.0.1, released 2021-07-29
+# Exasol Test Containers 4.0.1, released 2021-08-18
 
 Code name: Allow dots in release candidate suffix
 
