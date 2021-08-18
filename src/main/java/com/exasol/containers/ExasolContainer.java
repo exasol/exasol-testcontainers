@@ -9,7 +9,6 @@ import static com.exasol.containers.ExitType.EXIT_ERROR;
 import static com.exasol.containers.ExitType.EXIT_SUCCESS;
 import static com.exasol.containers.exec.ExitCode.OK;
 import static com.exasol.containers.status.ServiceStatus.*;
-import static java.util.concurrent.TimeUnit.MICROSECONDS;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,6 +16,7 @@ import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -577,7 +577,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
         final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < MICROSECONDS
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < TimeUnit.MILLISECONDS
                 .toMillis(this.connectionWaitTimeoutSeconds)) {
             if (isConnectionAvailable()) {
                 return;
