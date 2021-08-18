@@ -51,7 +51,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        final long expiry = System.currentTimeMillis() + WAIT_DURATION_IN_MILLISECONDS;
+        final long expiry = System.currentTimeMillis() + getWaitTimeOutMilliseconds();
         while (System.currentTimeMillis() < expiry) {
             try {
                 if (this.detector.isPatternPresentAfter(this.afterUTC)) {
@@ -66,5 +66,9 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
             }
         }
         throw new ContainerLaunchException("Timeout: " + this.detector.describe());
+    }
+
+    protected long getWaitTimeOutMilliseconds() {
+        return WAIT_DURATION_IN_MILLISECONDS;
     }
 }

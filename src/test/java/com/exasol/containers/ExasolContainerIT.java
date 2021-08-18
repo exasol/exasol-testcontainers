@@ -38,7 +38,7 @@ class ExasolContainerIT {
 
     @Test
     void testGetJdbcUrl() throws Exception {
-        assertThat(CONTAINER.getJdbcUrl(), matchesPattern("jdbc:exa:localhost:\\d{1,5}"));
+        assertThat(CONTAINER.getJdbcUrl(), matchesPattern("jdbc:exa:localhost:\\d{1,5};validateservercertificate=0"));
     }
 
     @Test

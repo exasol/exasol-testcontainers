@@ -3,4 +3,4 @@ error-tags:
     packages:
       - com.exasol.containers
       - com.exasol.support
-    highest-index: 4
+    highest-index: 5

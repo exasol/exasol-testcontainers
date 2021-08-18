@@ -40,6 +40,7 @@ import com.exasol.database.DatabaseService;
 import com.exasol.database.DatabaseServiceFactory;
 import com.exasol.dbcleaner.ExasolDatabaseCleaner;
 import com.exasol.drivers.ExasolDriverManager;
+import com.exasol.errorreporting.ExaError;
 import com.exasol.exaconf.ConfigurationParser;
 import com.exasol.exaoperation.ExaOperation;
 import com.exasol.exaoperation.ExaOperationEmulator;
@@ -54,7 +55,8 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
-    private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 100L;
+    private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
+    private static final long MILLIS_PER_SECOND = 1000L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
@@ -74,6 +76,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private ContainerStatus status = null;
     private SupportInformationRetriever supportInformationRetriever = null;
     private boolean errorWhileWaitingForServices = false;
+    private SQLException lastConnectionException = null;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -162,6 +165,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-uses-privileged-mode~1]
     @Override
     protected void configure() {
+        configureExposedPorts();
+        configurePrivilegedMode();
+        super.configure();
+    }
+
+    private void configureExposedPorts() {
         if (this.portAutodetectFailed) {
             if (getExposedPorts().isEmpty()) {
                 throw new IllegalArgumentException(
@@ -172,8 +181,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             }
         }
         LOGGER.debug("Exposing ports: {}", this.getExposedPorts());
+    }
+
+    private void configurePrivilegedMode() {
         this.setPrivilegedMode(true);
-        super.configure();
     }
 
     private static UnsupportedOperationException getTimeoutNotSupportedException() {
@@ -213,7 +224,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public Set<Integer> getLivenessCheckPortNumbers() {
-        return Set.of(getMappedPort(getFirstDatabasePort()));
+        return Set.of(getFirstMappedDatabasePort());
     }
 
     private int getFirstDatabasePort() {
@@ -227,7 +238,17 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getMappedPort(getFirstDatabasePort());
+        return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
+                + ";validateservercertificate=0";
+    }
+
+    /**
+     * Get the port to which the first database port in the Exasol configuration is mapped.
+     *
+     * @return mapped first database port
+     */
+    public Integer getFirstMappedDatabasePort() {
+        return getMappedPort(getFirstDatabasePort());
     }
 
     @Override
@@ -246,7 +267,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return host (list) and port
      */
     public String getExaConnectionAddress() {
-        return this.getContainerIpAddress() + ":" + getMappedPort(getFirstDatabasePort());
+        return this.getContainerIpAddress() + ":" + getFirstMappedDatabasePort();
     }
 
     /**
@@ -556,12 +577,21 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
         final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < (this.connectionWaitTimeoutSeconds * 1000L)) {
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < (this.connectionWaitTimeoutSeconds
+                * MILLIS_PER_SECOND)) {
             if (isConnectionAvailable()) {
                 return;
             }
         }
-        throw new ContainerLaunchException("Exasol container start-up timed out in connection test.");
+        throw new ContainerLaunchException(ExaError.messageBuilder("F-ETC-5")
+                .message("Exasol container start-up timed out trying connection to {{url}} using query {{query}}."
+                        + " Last connection exception was: {{exception}}")
+                .parameter("url", getJdbcUrl(), "JDBC URL of the connection to the Exasol Testcontainer")
+                .parameter("query", getTestQueryString(), "Query used to test the connection")
+                .parameter("exception",
+                        (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
+                        "exception thrown on last connection attempt")
+                .toString());
     }
 
     private void sleepBeforeNextConnectionAttempt() {
@@ -587,6 +617,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                     "Unable to determine start status of container, because the referenced JDBC driver was not found.",
                     exception);
         } catch (final SQLException exception) {
+            this.lastConnectionException = exception;
             sleepBeforeNextConnectionAttempt();
         }
         return false;
