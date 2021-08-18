@@ -9,6 +9,7 @@ import static com.exasol.containers.ExitType.EXIT_ERROR;
 import static com.exasol.containers.ExitType.EXIT_SUCCESS;
 import static com.exasol.containers.exec.ExitCode.OK;
 import static com.exasol.containers.status.ServiceStatus.*;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -56,7 +57,6 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
-    private static final long MILLIS_PER_SECOND = 1000L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
     private String username = ExasolContainerConstants.DEFAULT_ADMIN_USER;
@@ -577,8 +577,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
         final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < (this.connectionWaitTimeoutSeconds
-                * MILLIS_PER_SECOND)) {
+        while ((System.currentTimeMillis() - beforeConnectionCheck) < MICROSECONDS
+                .toMillis(this.connectionWaitTimeoutSeconds)) {
             if (isConnectionAvailable()) {
                 return;
             }
