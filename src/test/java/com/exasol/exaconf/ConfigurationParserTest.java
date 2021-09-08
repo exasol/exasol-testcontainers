@@ -69,6 +69,13 @@ class ConfigurationParserTest {
                 () -> assertThat(config.getDefaultBucketWritePassword(), nullValue()));
     }
 
+    @Test
+    void testGetDefaultAuthenticationToken() {
+        final ClusterConfiguration config = parseConfiguration("[Global]\n" //
+                + "    AuthenticationToken = AuthToken\n");
+        assertThat(config.getDefaultAuthenticationToken(), equalTo("AuthToken"));
+    }
+
     // The following situations should not occur, but we want to be fault-tolerant here.
     @ValueSource(strings = { "    Ignore this illegal line.", "Ignore this illegal line.",
             "    Ignore #this illegal line.", "=valueWithoutKey", "     " })

@@ -118,6 +118,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         try {
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
+            addExposedPorts(getDefaultInternalRpcPort());
         } catch (final PortDetectionException exception) {
             this.portAutodetectFailed = true;
         }
@@ -716,7 +717,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * since the port number was changed with version 7.
      * </p>
      *
-     * @return default internal port of the database
+     * @return default internal port of the BucketFS
      */
     public int getDefaultInternalBucketfsPort() {
         if (this.dockerImageReference.hasMajor()) {
@@ -729,6 +730,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             throw new UnsupportedOperationException("Could not detect internal BucketFS port for custom image. " //
                     + "Please specify the port explicitly using withExposedPorts().");
         }
+    }
+
+    /**
+     * Get the default internal port of the RPC interface.
+     *
+     * @return default internal port of the RPC interface
+     */
+    public int getDefaultInternalRpcPort() {
+        return DEFAULT_CONTAINER_INTERNAL_RPC_PORT;
     }
 
     /**

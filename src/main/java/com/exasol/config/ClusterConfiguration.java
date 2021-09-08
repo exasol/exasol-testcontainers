@@ -30,6 +30,15 @@ public class ClusterConfiguration {
     }
 
     /**
+     * Get the default RPC token required for accessing the RPC interface.
+     *
+     * @return default RPC token
+     */
+    public String getDefaultAuthenticationToken() {
+        return this.parameters.get(GLOBAL_SECTION + "/AuthenticationToken");
+    }
+
+    /**
      * Get the read password for the default Bucket ({@code bfsdefault/default}).
      *
      * @return read password
