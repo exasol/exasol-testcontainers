@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>4.0.1</version>
+    <version>4.1.0-SNAPSHOT</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
-            <version>7.0.11</version>
+            <version>7.1.0</version>
             <scope>runtime</scope>
         </dependency>
         <!-- Overrides Junit 4.12 which is used in test containers but contains a security issue: https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->
@@ -162,7 +162,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.11.2</version>
+            <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -171,7 +171,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>0.10.0</version>
+                <version>1.0.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -224,7 +224,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.7</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -280,7 +280,7 @@
             <plugin>
                 <groupId>org.itsallcode</groupId>
                 <artifactId>openfasttrace-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>1.2.0</version>
                 <executions>
                     <execution>
                         <id>trace-requirements</id>
@@ -306,7 +306,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -326,7 +326,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -383,22 +383,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.0.0</version>
                 <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>3.3.9</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
+        <execution>
+            <id>enforce-maven</id>
+            <goals>
+                <goal>enforce</goal>
+            </goals>
+            <configuration>
+                <rules>
+                    <requireMavenVersion>
+                        <version>3.3.9</version>
+                    </requireMavenVersion>
+                </rules>
+            </configuration>
+        </execution>
+    </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -430,7 +430,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>error-code-crawler-maven-plugin</artifactId>
-                <version>0.5.0</version>
+                <version>0.6.0</version>
                 <executions>
                     <execution>
                         <goals>
