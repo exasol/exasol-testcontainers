@@ -4,15 +4,15 @@ Code name: JSON-RPC Support
 
 ## Summary
 
-Release 4.1.0 now supports using the JSON-RPC interface of the Exasol database container.
+Release 4.1.0 now supports using the RPC interface of the Exasol database container.
 
-It automatically forwards the relevant port and allows retrieving the mapped port. You can also retrieve the token required for Bearer token authentication of the JSON-RPC interface.
+It automatically forwards the relevant port and allows retrieving the mapped port. You can also retrieve the token required for Bearer token authentication of the RPC interface.
 
-JSON-RPC allows you to manage buckets and more. You can use the version 2.2.0 and later of [bucketfs-java](https://github.com/exasol/bucketfs-java) to do this.
+RPC allows you to manage buckets and more. You can use the version 2.2.0 and later of [bucketfs-java](https://github.com/exasol/bucketfs-java) to do this.
 
 ## Features
 
-* [#161](https://github.com/exasol/exasol-testcontainers/issues/161): Support using JSON-RPC interface
+* [#161](https://github.com/exasol/exasol-testcontainers/issues/161): Support using RPC interface
 
 ## Dependency Updates
 
