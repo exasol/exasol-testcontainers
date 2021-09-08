@@ -30,7 +30,7 @@ class ClusterConfigAccessIT {
     void testGetAuthenticationToken() {
         this.clusterConfiguration = CONTAINER.getClusterConfiguration();
         final String token = this.clusterConfiguration.getDefaultAuthenticationToken();
-        assertThat(token, not(emptyString()));
+        assertThat(token, not(emptyOrNullString()));
         assertThat(token.length(), greaterThan(20));
     }
 }
