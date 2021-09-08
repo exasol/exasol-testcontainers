@@ -10,8 +10,7 @@
     <url>https://github.com/exasol/exasol-testcontainers</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8
-        </project.reporting.outputEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
         <junit.version>5.7.2</junit.version>
         <maven.surefire-and-failsafe.version>3.0.0-M3</maven.surefire-and-failsafe.version>
