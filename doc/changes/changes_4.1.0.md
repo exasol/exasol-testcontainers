@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 4.1.0, released 2021-09-08
+# Test containers for Exasol on Docker 4.1.0, released 2021-09-09
 
 Code name: RPC Support
 
@@ -27,7 +27,7 @@ RPC allows you to manage buckets and more. You can use the version 2.2.0 and lat
 ### Plugin Dependency Updates
 
 * Updated `com.exasol:error-code-crawler-maven-plugin:0.5.0` to `0.6.0`
-* Updated `com.exasol:project-keeper-maven-plugin:0.10.0` to `1.0.0`
+* Updated `com.exasol:project-keeper-maven-plugin:0.10.0` to `1.1.0`
 * Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.0.0-M3` to `3.0.0`
 * Updated `org.apache.maven.plugins:maven-gpg-plugin:1.6` to `3.0.1`
 * Updated `org.apache.maven.plugins:maven-javadoc-plugin:3.2.0` to `3.3.1`
