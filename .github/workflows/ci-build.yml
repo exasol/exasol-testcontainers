@@ -62,4 +62,5 @@ jobs:
         if: ${{ always() }}
         with:
           name: support-${{ github.run_id }}
-          path: target/support 
+          path: target/support
+          if-no-files-found: warn # or ignore
