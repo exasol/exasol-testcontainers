@@ -1,7 +1,6 @@
 package com.exasol.containers.wait.strategy;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 
 import org.testcontainers.containers.ContainerLaunchException;
@@ -14,7 +13,7 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
  * Strategy that waits for a container to be ready by checking when the language container is unpacked completely.
  */
 public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
-    private static final Duration WAIT_DURATION = Duration.ofMinutes(2);
+    private static final long WAIT_DURATION_IN_MILLISECONDS = 120000;
     private static final long POLLING_DELAY_IN_MILLISECONDS = 1000;
     private final LogPatternDetector detector;
     private final Instant afterUTC;
@@ -52,7 +51,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        final long expiry = System.currentTimeMillis() + getWaitTimeOutMilliseconds().toMillis();
+        final long expiry = System.currentTimeMillis() + getWaitTimeOutMilliseconds();
         while (System.currentTimeMillis() < expiry) {
             try {
                 if (this.detector.isPatternPresentAfter(this.afterUTC)) {
@@ -69,7 +68,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
         throw new ContainerLaunchException("Timeout: " + this.detector.describe());
     }
 
-    protected Duration getWaitTimeOutMilliseconds() {
-        return WAIT_DURATION;
+    protected long getWaitTimeOutMilliseconds() {
+        return WAIT_DURATION_IN_MILLISECONDS;
     }
 }

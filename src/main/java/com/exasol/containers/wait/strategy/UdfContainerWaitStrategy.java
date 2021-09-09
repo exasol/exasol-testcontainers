@@ -3,7 +3,6 @@ package com.exasol.containers.wait.strategy;
 import static com.exasol.containers.ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
 
-import java.time.Duration;
 import java.time.Instant;
 
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
  */
 public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
     public static final String SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
-    private static final Duration WAIT_FOR_UDF_CONTAINER_DURATION = Duration.ofMinutes(15);
+    private static final long WAIT_FOR_UDF_CONTAINER_DURATION_IN_MILLISECONDS = 600000;
     private static final Logger LOGGER = LoggerFactory.getLogger(UdfContainerWaitStrategy.class);
 
     /**
@@ -38,7 +37,7 @@ public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
     }
 
     @Override
-    protected Duration getWaitTimeOutMilliseconds() {
-        return WAIT_FOR_UDF_CONTAINER_DURATION;
+    protected long getWaitTimeOutMilliseconds() {
+        return WAIT_FOR_UDF_CONTAINER_DURATION_IN_MILLISECONDS;
     }
 }
