@@ -74,12 +74,14 @@ public class SupportInformationRetriever {
     /**
      * Produce the support information bundle archive in the mapped directory.
      *
-     * @param exitType type of exit that occurred
+     * @param exitType        type of exit that occurred
+     * @param testDescription a description of the current test that will be added to the filename. May be
+     *                        <code>null</code>.
      */
     // [impl->dsn~support-information-retriever-creates-support-archive-depending-on-exit-type~1]
-    public void run(final ExitType exitType) {
+    public void run(final ExitType exitType, final String testDescription) {
         if ((this.monitoredExitType == ExitType.EXIT_ANY) || (exitType == this.monitoredExitType)) {
-            createArchiveBundle(exitType);
+            createArchiveBundle(exitType, testDescription);
         } else {
             LOGGER.debug("Skipping support package creation. Exit type is {}, monitoring {}", exitType,
                     this.monitoredExitType);
@@ -87,11 +89,11 @@ public class SupportInformationRetriever {
     }
 
     @SuppressWarnings("java:S112")
-    private void createArchiveBundle(final ExitType exitType) {
+    private void createArchiveBundle(final ExitType exitType, final String testDescription) {
         try {
             final ExecResult result = this.container.execInContainer(EXASUPPORT_EXECUTABLE);
             if (result.getExitCode() == ExitCode.OK) {
-                final String filename = extractFilenameFromConsoleMessage(result);
+                final String filename = getFilename(result, testDescription);
                 final String hostPath = getHostPath(filename);
                 logSuccessfulArchiveCreationAttempt(exitType, hostPath);
             } else {
@@ -102,6 +104,14 @@ public class SupportInformationRetriever {
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(exception);
+        }
+    }
+
+    private String getFilename(final ExecResult result, final String testDescription) {
+        if (testDescription == null) {
+            return extractFilenameFromConsoleMessage(result);
+        } else {
+            return testDescription + "_" + extractFilenameFromConsoleMessage(result);
         }
     }
 
