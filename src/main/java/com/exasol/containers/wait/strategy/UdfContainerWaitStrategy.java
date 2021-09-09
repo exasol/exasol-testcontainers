@@ -15,7 +15,7 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
  */
 public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
     public static final String SCRIPT_LANGUAGE_CONTAINER_READY_PATTERN = "ScriptLanguages.*extracted$";
-    private static final long WAIT_FOR_UDF_CONTAINER_DURATION_IN_MILLISECONDS = 600000;
+    private static final long WAIT_FOR_UDF_CONTAINER_DURATION_IN_MILLISECONDS = 15 * 60 * 1000;
     private static final Logger LOGGER = LoggerFactory.getLogger(UdfContainerWaitStrategy.class);
 
     /**
