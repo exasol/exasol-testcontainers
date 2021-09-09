@@ -3,6 +3,7 @@ package com.exasol.support;
 import static org.testcontainers.containers.BindMode.READ_WRITE;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.slf4j.Logger;
@@ -93,8 +94,14 @@ public class SupportInformationRetriever {
         try {
             final ExecResult result = this.container.execInContainer(EXASUPPORT_EXECUTABLE);
             if (result.getExitCode() == ExitCode.OK) {
-                final String filename = getFilename(result, testDescription);
-                final String hostPath = getHostPath(filename);
+                final String filename = extractFilenameFromConsoleMessage(result);
+                Path hostPath = getHostPath(filename);
+                if (testDescription != null) {
+                    final Path pathWithDescription = hostPath.getParent()
+                            .resolve(testDescription + "_" + hostPath.getFileName().toString());
+                    Files.move(hostPath, pathWithDescription);
+                    hostPath = pathWithDescription;
+                }
                 logSuccessfulArchiveCreationAttempt(exitType, hostPath);
             } else {
                 logFailedSupportArchiveCreationAttempt(exitType, result.getStderr());
@@ -107,16 +114,8 @@ public class SupportInformationRetriever {
         }
     }
 
-    private String getFilename(final ExecResult result, final String testDescription) {
-        if (testDescription == null) {
-            return extractFilenameFromConsoleMessage(result);
-        } else {
-            return testDescription + "_" + extractFilenameFromConsoleMessage(result);
-        }
-    }
-
     @SuppressWarnings("java:S2629")
-    private void logSuccessfulArchiveCreationAttempt(final ExitType exitType, final String pathOfArchiveOnHost) {
+    private void logSuccessfulArchiveCreationAttempt(final ExitType exitType, final Path pathOfArchiveOnHost) {
         LOGGER.info("Container exiting with {}. Monitoring is set to {}. Wrote support archive to: {}", exitType,
                 this.monitoredExitType, pathOfArchiveOnHost);
     }
@@ -126,8 +125,8 @@ public class SupportInformationRetriever {
         return consoleMessage.substring(consoleMessage.indexOf(SUPPORT_ARCHIVE_PREFIX));
     }
 
-    private String getHostPath(final String filename) {
-        return this.targetDirectory.resolve(filename).toString();
+    private Path getHostPath(final String filename) {
+        return this.targetDirectory.resolve(filename);
     }
 
     @SuppressWarnings("java:S2629")
