@@ -6,9 +6,9 @@ Code name: RPC Support
 
 Release 4.1.0 now supports using the RPC interface of the Exasol database container.
 
-It automatically forwards the RPC port. You can also retrieve the token required for Bearer token authentication of the RPC interface.
+It automatically forwards the RPC port. You can also retrieve the token required for bearer token authentication of the RPC interface.
 
-RPC allows you to manage buckets and more. You can use the version 2.2.0 and later of [bucketfs-java](https://github.com/exasol/bucketfs-java) to do this.
+RPC allows you to manage buckets and more. You can use [bucketfs-java](https://github.com/exasol/bucketfs-java) version 2.2.0 or later of to do this.
 
 ## Features
 
