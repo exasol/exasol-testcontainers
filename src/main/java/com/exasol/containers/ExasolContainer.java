@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.*;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-import org.testcontainers.lifecycle.TestDescription;
-import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
@@ -56,8 +54,7 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 // [impl->dsn~exasol-container-controls-docker-container~1]
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
-public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T>
-        implements TestLifecycleAware {
+public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
     private ClusterConfiguration clusterConfiguration = null;
@@ -708,12 +705,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void collectSupportInformation(final ExitType exitType) {
-        this.collectSupportInformation(exitType, null);
-    }
-
-    private void collectSupportInformation(final ExitType exitType, final String testDescription) {
         if (this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 7)) {
-            this.supportInformationRetriever.run(exitType, testDescription);
+            this.supportInformationRetriever.run(exitType);
         } else {
             LOGGER.info("Skipping support information retrieval for version {}, only supported with version >= 7",
                     this.dockerImageReference);
@@ -834,24 +827,5 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.supportInformationRetriever.monitorExit(exitType);
         this.supportInformationRetriever.mapTargetDirectory(targetDirectory);
         return this;
-    }
-
-    @Override
-    public void beforeTest(final TestDescription description) {
-        // ignore
-    }
-
-    @Override
-    public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
-        final ExitType exitType;
-        if (throwable.isPresent()) {
-            LOGGER.warn("Test {} failed with exception {}", description.getTestId(), throwable.get().getMessage(),
-                    throwable.get());
-            exitType = EXIT_ERROR;
-        } else {
-            exitType = EXIT_SUCCESS;
-            LOGGER.info("Test {} finished successfully", description.getTestId());
-        }
-        collectSupportInformation(exitType, description.getFilesystemFriendlyName());
     }
 }
