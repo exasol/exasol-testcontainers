@@ -66,6 +66,6 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: support-${{ github.run_id }}
+          name: support-db-${{ matrix.docker_db_version }}-run-${{ github.run_id }}
           path: target/support
           if-no-files-found: warn # or ignore
