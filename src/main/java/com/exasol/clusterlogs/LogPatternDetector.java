@@ -125,6 +125,21 @@ public class LogPatternDetector {
      */
     public String describe() {
         return "Scanning for log message pattern \"" + this.pattern + " in \"" + this.logPath + "/"
-                + this.logNamePattern + "\".";
+                + this.logNamePattern + "\"." //
+                + "\n\nActual file content: " + getLogFileContent();
+    }
+
+    private String getLogFileContent() {
+        try {
+            final Container.ExecResult result = this.container.execInContainer("cat", this.logPath);
+            return result.getStdout();
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.warn("Exception retrieving content of file {}", this.logPath, e);
+            return "(error reading file)";
+        } catch (UnsupportedOperationException | IOException e) {
+            LOGGER.warn("Exception retrieving content of file {}", this.logPath, e);
+            return "(error reading file)";
+        }
     }
 }
