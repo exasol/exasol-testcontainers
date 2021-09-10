@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.*;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.lifecycle.TestDescription;
+import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
@@ -54,7 +56,8 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 // [impl->dsn~exasol-container-controls-docker-container~1]
 
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
-public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
+public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T>
+        implements TestLifecycleAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
     private ClusterConfiguration clusterConfiguration = null;
@@ -827,5 +830,19 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.supportInformationRetriever.monitorExit(exitType);
         this.supportInformationRetriever.mapTargetDirectory(targetDirectory);
         return this;
+    }
+
+    @Override
+    public void beforeTest(final TestDescription description) {
+        System.out.println(
+                "------ Before test " + description.getTestId() + " / " + description.getFilesystemFriendlyName());
+    }
+
+    @Override
+    public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
+        System.out.println(
+                "------ After test " + description.getTestId() + " / " + description.getFilesystemFriendlyName());
+        System.out.println("------ throwable: " + throwable);
+        collectSupportInformation(ExitType.EXIT_ERROR);
     }
 }

@@ -48,6 +48,7 @@ public class SupportInformationRetriever {
         if (targetDirectoryPropertyValue != null) {
             mapTargetDirectory(Path.of(targetDirectoryPropertyValue));
         }
+        LOGGER.debug("Monitoring exit type {}, writing to target dir {}", this.monitoredExitType, this.targetDirectory);
     }
 
     /**
