@@ -13,6 +13,7 @@ RPC allows you to manage buckets and more. You can use [bucketfs-java](https://g
 ## Features
 
 * [#161](https://github.com/exasol/exasol-testcontainers/issues/161): Support using RPC interface
+* Use docker image `exasol/docker-db:7.1.0-d1` by default
 
 ## Dependency Updates
 
