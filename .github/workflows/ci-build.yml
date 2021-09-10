@@ -52,7 +52,8 @@ jobs:
           -Dcom.exasol.containers.support_information_target_dir="$SUPPORT_DIR" \
           -Dcom.exasol.containers.monitored_exit=EXIT_ANY \
           -Pslow \
-          -Dtest=com.exasol.containers.HostIpDetectorIT
+          -Dtest=com.exasol.containers.HostIpDetectorIT \
+          -Dit.test=com.exasol.containers.HostIpDetectorIT
         env:
           DOCKER_DB_VERSION: ${{ matrix.docker_db_version }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
