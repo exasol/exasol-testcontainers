@@ -17,10 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class HostIpDetectorIT {
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>() //
-            .withReuse(true) //
-            .withSupportInformationRecordedAtExit(Constants.SUPPORT_INFORMATION_PATH,
-                    Constants.SUPPORT_INFORMATION_EXIT_TYPE);
+    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>().withReuse(true);
 
     // [itest->dsn~host-ip-address-detection~1]
     @Test

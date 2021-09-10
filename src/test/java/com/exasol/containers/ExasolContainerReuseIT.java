@@ -61,10 +61,7 @@ class ExasolContainerReuseIT {
     void testDatabaseIsPurgedBeforeReuse() throws NoSuchFieldException, IllegalAccessException, SQLException {
         getTestcontainerProperties().setProperty(TESTCONTAINERS_REUSE_ENABLE, "true");
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
-            container.withReuse(true) //
-                    .withSupportInformationRecordedAtExit(Constants.SUPPORT_INFORMATION_PATH,
-                            Constants.SUPPORT_INFORMATION_EXIT_TYPE) //
-                    .start();
+            container.withReuse(true).start();
             final Connection connection = container.createConnectionForUser(container.getUsername(),
                     container.getPassword());
             final Statement statement = connection.createStatement();
@@ -80,10 +77,7 @@ class ExasolContainerReuseIT {
 
     private boolean startAndStopContainerAndCheckIfRunning() {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
-            container.withReuse(true) //
-                    .withSupportInformationRecordedAtExit(Constants.SUPPORT_INFORMATION_PATH,
-                            Constants.SUPPORT_INFORMATION_EXIT_TYPE) //
-                    .start();
+            container.withReuse(true).start();
             final DockerClient dockerClient = container.getDockerClient();
             final String containerId = container.getContainerId();
             container.stop();
