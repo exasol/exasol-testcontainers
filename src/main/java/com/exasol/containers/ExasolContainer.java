@@ -564,7 +564,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
-            LOGGER.debug(exaconf);
             return new ConfigurationParser(exaconf).parse();
         } catch (final UnsupportedOperationException | IOException exception) {
             throw new ExasolContainerInitializationException(
