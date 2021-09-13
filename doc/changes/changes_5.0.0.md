@@ -37,8 +37,6 @@ RPC allows you to manage buckets and more. You can use [bucketfs-java](https://g
 
 ### Test Dependency Updates
 
-* Updated `org.junit.jupiter:junit-jupiter-engine:5.7.2` to `5.8.0`
-* Updated `org.junit.jupiter:junit-jupiter-params:5.7.2` to `5.8.0`
 * Updated `org.mockito:mockito-junit-jupiter:3.11.2` to `3.12.4`
 
 ### Plugin Dependency Updates
