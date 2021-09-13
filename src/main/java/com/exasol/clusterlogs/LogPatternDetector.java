@@ -82,23 +82,18 @@ public class LogPatternDetector {
      * @throws InterruptedException if the check for a pattern was interrupted
      */
     public boolean isPatternPresent() throws IOException, InterruptedException {
-        final LocalDateTime afterLocal = convertUtcToLowResulionLocal(this.afterUtc);
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
                 "-name", this.logNamePattern, //
                 "-exec", "awk", "/" + this.pattern.replace("/", "\\/") + "/{a=$0}END{print a}", "{}", "+");
         if (result.getExitCode() == ExitCode.OK) {
-            return isLogMessageFoundAfter(result.getStdout(), afterLocal);
+            return isLogMessageFound(result.getStdout());
         } else {
             return false;
         }
     }
 
-    private LocalDateTime convertUtcToLowResulionLocal(final Instant afterUTC) {
-        final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, this.timeZone.toZoneId());
-        return localDateTime.withNano(0);
-    }
-
-    private boolean isLogMessageFoundAfter(final String stdout, final LocalDateTime afterLocal) throws IOException {
+    private boolean isLogMessageFound(final String stdout) throws IOException {
+        final LocalDateTime afterLocal = convertUtcToLowResulionLocal(this.afterUtc);
         try (final BufferedReader reader = new BufferedReader(new StringReader(stdout))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -118,6 +113,11 @@ public class LogPatternDetector {
             }
             return false;
         }
+    }
+
+    private LocalDateTime convertUtcToLowResulionLocal(final Instant afterUTC) {
+        final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, this.timeZone.toZoneId());
+        return localDateTime.withNano(0);
     }
 
     /**
