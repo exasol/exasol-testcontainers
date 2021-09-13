@@ -25,6 +25,7 @@ public class LogPatternDetector {
     private final String pattern;
     private final String logNamePattern;
     private final TimeZone timeZone;
+    private final Instant afterUtc;
 
     /**
      * Create a new instance of the {@link LogPatternDetector}.
@@ -34,14 +35,16 @@ public class LogPatternDetector {
      * @param logNamePattern pattern used to find the file name
      * @param pattern        regular expression pattern for which to look out
      * @param timeZone       time zone that serves as context for the short timestamps in the logs
+     * @param afterUtc       earliest time in the log after which the log message must appear
      */
     LogPatternDetector(final Container<? extends Container<?>> container, final String logPath,
-            final String logNamePattern, final String pattern, final TimeZone timeZone) {
+            final String logNamePattern, final String pattern, final TimeZone timeZone, final Instant afterUtc) {
         this.container = container;
         this.logPath = logPath;
         this.logNamePattern = logNamePattern;
         this.pattern = pattern;
         this.timeZone = timeZone;
+        this.afterUtc = afterUtc;
         LOGGER.debug("Created log detector that scans for \"{}\" in \"{}/{}\" with time zone \"{}\"", pattern, logPath,
                 logNamePattern, timeZone.getDisplayName());
     }
@@ -74,13 +77,12 @@ public class LogPatternDetector {
      * But this would require pipes.
      * </p>
      *
-     * @param afterUTC UTC point in time after which the message is relevant
      * @return {@code true} if the pattern is found in the log file
      * @throws IOException          if the underlying check mechanism caused an I/O problem
      * @throws InterruptedException if the check for a pattern was interrupted
      */
-    public boolean isPatternPresentAfter(final Instant afterUTC) throws IOException, InterruptedException {
-        final LocalDateTime afterLocal = convertUtcToLowResulionLocal(afterUTC);
+    public boolean isPatternPresent() throws IOException, InterruptedException {
+        final LocalDateTime afterLocal = convertUtcToLowResulionLocal(this.afterUtc);
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
                 "-name", this.logNamePattern, //
                 "-exec", "awk", "/" + this.pattern.replace("/", "\\/") + "/{a=$0}END{print a}", "{}", "+");

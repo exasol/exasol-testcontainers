@@ -1,5 +1,6 @@
 package com.exasol.clusterlogs;
 
+import java.time.Instant;
 import java.util.TimeZone;
 
 import org.testcontainers.containers.Container;
@@ -27,11 +28,12 @@ public class LogPatternDetectorFactory {
      * @param logPath        path in which to look for logs
      * @param logNamePattern pattern for log names
      * @param pattern        pattern for which to search inside logs
+     * @param afterUtc       earliest time in the log after which the log message must appear
      * @return detector instance
      */
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
-            final String pattern) {
+            final String pattern, final Instant afterUtc) {
         final TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
-        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern, timeZone);
+        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern, timeZone, afterUtc);
     }
 }
