@@ -85,6 +85,7 @@ public class LogPatternDetector {
                 "-name", this.logNamePattern, //
                 "-exec", "awk", "/" + this.pattern.replace("/", "\\/") + "/{a=$0}END{print a}", "{}", "+");
         if (result.getExitCode() == ExitCode.OK) {
+            System.out.println("===== found lines '" + result.getStdout() + "'");
             return isLogMessageFoundAfter(result.getStdout(), afterLocal);
         } else {
             return false;
@@ -112,6 +113,7 @@ public class LogPatternDetector {
                         LOGGER.debug("Found matching log entry {} (after {}): {}", timestamp, afterLocal, line);
                         return true;
                     }
+                    System.out.println("-------- Log entry timestamp " + timestamp + " invalid, isAfter=" + afterLocal);
                 }
             }
             return false;
