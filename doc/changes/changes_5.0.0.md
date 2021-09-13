@@ -1,8 +1,8 @@
 # Test containers for Exasol on Docker 5.0.0, released 2021-09-??
 
-Code name: Improve test stability
+Code name: Improve UDF container status detection
 
-This release improves test stability when running multiple tests while reusing containers (`withReuse(true)`). Before, the availiability check for the UDF service (`.withRequiredServices(ExasolService.UDF)`) could cause the startup to fail with a timeout because the log pattern detector ignored log entries with an outdated timestamp:
+Version 5.0.0 of the Exasol Testcontainers improves test stability when running multiple tests while reusing containers (`withReuse(true)`). Before, the availiability check for the UDF service (`.withRequiredServices(ExasolService.UDF)`) could cause the startup to fail with a timeout because the log pattern detector ignored log entries with an outdated timestamp:
 
 ```
 org.testcontainers.containers.ContainerLaunchException: Container startup failed

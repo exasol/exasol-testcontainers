@@ -10,6 +10,9 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This {@link LogEntryPatternVerifier} verifies that log entries appear after the given timestamp.
+ */
 class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
     private static final Logger LOGGER = LoggerFactory.getLogger(TimestampLogEntryPatternVerifier.class);
     private static final Pattern LOG_ENTRY_PATTERN = Pattern
