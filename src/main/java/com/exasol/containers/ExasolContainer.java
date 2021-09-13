@@ -482,7 +482,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         } else {
             if (this.requiredServices.contains(UDF)) {
                 this.status.setServiceStatus(UDF, NOT_READY);
-                new UdfContainerWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+                new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
                 this.status.setServiceStatus(UDF, READY);
             } else {
 

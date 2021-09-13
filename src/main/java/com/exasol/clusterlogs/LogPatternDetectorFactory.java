@@ -23,7 +23,7 @@ public class LogPatternDetectorFactory {
     }
 
     /**
-     * Create a new {@link LogPatternDetector}.
+     * Create a new {@link LogPatternDetector} that verifies that log entries appear after the given timestamp.
      *
      * @param logPath        path in which to look for logs
      * @param logNamePattern pattern for log names
@@ -36,5 +36,19 @@ public class LogPatternDetectorFactory {
         final TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
         return new LogPatternDetector(this.container, logPath, logNamePattern, pattern,
                 new TimestampLogEntryPatternVerifier(afterUtc, timeZone));
+    }
+
+    /**
+     * Create a new {@link LogPatternDetector} that ignores log entry timestamps.
+     *
+     * @param logPath        path in which to look for logs
+     * @param logNamePattern pattern for log names
+     * @param pattern        pattern for which to search inside logs
+     * @return detector instance
+     */
+    public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
+            final String pattern) {
+        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern,
+                new LogEntryPresentPatternVerifier());
     }
 }
