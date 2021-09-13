@@ -1,7 +1,7 @@
 package com.exasol.config;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -24,5 +24,13 @@ class ClusterConfigAccessIT {
         this.clusterConfiguration = CONTAINER.getClusterConfiguration();
         assertThat(this.clusterConfiguration.getBucketFsServiceConfiguration("bfsdefault").getName(),
                 equalTo("bfsdefault"));
+    }
+
+    @Test
+    void testGetAuthenticationToken() {
+        this.clusterConfiguration = CONTAINER.getClusterConfiguration();
+        final String token = this.clusterConfiguration.getDefaultAuthenticationToken();
+        assertThat(token, not(emptyOrNullString()));
+        assertThat(token.length(), greaterThan(20));
     }
 }

@@ -29,6 +29,7 @@ public final class ExasolContainerConstants {
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE = 8563;
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE = 2580;
+    static final int DEFAULT_CONTAINER_INTERNAL_RPC_PORT = 443;
 
     private ExasolContainerConstants() {
         // prevent instantiation
