@@ -20,20 +20,6 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
 
     /**
      * Create a new instance of the {@link LogFileEntryWaitStrategy} where the log message is expected to appear after
-     * the call to this method.
-     *
-     * @param detectorFactory log entry pattern detector factory
-     * @param logPath         path of the log file to search
-     * @param logNamePattern  pattern used to find the file name
-     * @param pattern         regular expression pattern for which to look out
-     */
-    public LogFileEntryWaitStrategy(final LogPatternDetectorFactory detectorFactory, final String logPath,
-            final String logNamePattern, final String pattern) {
-        this(detectorFactory, logPath, logNamePattern, pattern, Instant.now());
-    }
-
-    /**
-     * Create a new instance of the {@link LogFileEntryWaitStrategy} where the log message is expected to appear after
      * the time specified in the parameter {@code afterUTc}.
      *
      * @param detectorFactory log entry pattern detector factory
@@ -44,7 +30,6 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
      */
     public LogFileEntryWaitStrategy(final LogPatternDetectorFactory detectorFactory, final String logPath,
             final String logNamePattern, final String pattern, final Instant afterUtc) {
-        super();
         this.afterUTC = afterUtc;
         this.detector = detectorFactory.createLogPatternDetector(logPath, logNamePattern, pattern);
     }
