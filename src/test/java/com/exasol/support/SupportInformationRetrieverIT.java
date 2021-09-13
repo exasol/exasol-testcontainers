@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Instant;
+import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -84,12 +84,14 @@ class SupportInformationRetrieverIT {
     }
 
     private String findSupportArchive(final Path directory) {
-        for (final String filename : directory.toFile().list()) {
+        final String[] files = directory.toFile().list();
+        for (final String filename : files) {
             if (filename.startsWith(SupportInformationRetriever.SUPPORT_ARCHIVE_PREFIX)) {
                 return filename;
             }
         }
-        throw new AssertionError("Unable to find archive file in directory '" + directory + "'");
+        throw new AssertionError("Unable to find archive file in directory '" + directory + "'. Directory contains "
+                + files.length + " files: " + Arrays.toString(files));
     }
 
     // [itest->dsn~configure-support-information-retriever-via-system-properties~1]
@@ -150,8 +152,8 @@ class SupportInformationRetrieverIT {
     private static class WaitFailSimulationContainer<T extends WaitFailSimulationContainer<T>>
             extends ExasolContainer<T> {
         @Override
-        protected void waitForUdfContainer(final Instant afterUtc) {
-            super.waitForUdfContainer(afterUtc);
+        protected void waitForUdfContainer() {
+            super.waitForUdfContainer();
             // We need the timeout late in the upstart process so that at least the facilities that exasupport needs are
             // available.
             LOGGER.info("Injecting fake ContainerLaunchException");
