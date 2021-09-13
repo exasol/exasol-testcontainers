@@ -34,6 +34,7 @@ public class LogPatternDetectorFactory {
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
             final String pattern, final Instant afterUtc) {
         final TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
-        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern, timeZone, afterUtc);
+        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern,
+                new TimestampLogEntryPatternVerifier(afterUtc, timeZone));
     }
 }
