@@ -16,9 +16,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 11
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
       - name: "Cache local Maven repository"
         uses: actions/cache@v2
         with:
@@ -26,6 +27,12 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+      - name: Cache SonarQube packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
       - name: "Prepare container reuse"
         run: |
           echo 'testcontainers.reuse.enable=true' > "/home/runner/.testcontainers.properties"
@@ -48,12 +55,16 @@ jobs:
           -Pslow
         env:
           DOCKER_DB_VERSION: ${{ matrix.docker_db_version }}
-          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SUPPORT_DIR: ${{ github.workspace }}/target/support
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: support-${{ github.run_id }}
+          name: support-db-${{ matrix.docker_db_version }}-run-${{ github.run_id }}
           path: target/support 
+      - name: Publish Test Report for ${{ matrix.docker_db_version }}
+        uses: scacap/action-surefire-report@v1
+        if: ${{ always() }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
