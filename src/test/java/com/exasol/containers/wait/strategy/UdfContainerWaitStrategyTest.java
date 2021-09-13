@@ -1,20 +1,28 @@
 package com.exasol.containers.wait.strategy;
 
+import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
+import static org.mockito.Mockito.when;
+
 import java.time.Instant;
 
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import com.exasol.containers.ExasolContainerConstants;
 
-@Tag("slow")
 @ExtendWith(MockitoExtension.class)
 class UdfContainerWaitStrategyTest extends AbstractServiceWaitStrategyTest {
+    @BeforeEach
+    void beforeEach() {
+        when(this.detectorFactoryMock.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH, getLogFilenamePattern(),
+                getLogEntryPattern())).thenReturn(this.detectorMock);
+    }
+
     @Override
-    protected WaitStrategy createWaitStrategy() {
-        return new UdfContainerWaitStrategy(getDetectorFactory(), Instant.now());
+    protected WaitStrategy createWaitStrategy(final Instant afterUtc) {
+        return new UdfContainerWaitStrategy(getDetectorFactory());
     }
 
     @Override

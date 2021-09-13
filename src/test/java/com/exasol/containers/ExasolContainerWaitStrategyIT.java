@@ -4,6 +4,8 @@ import static com.exasol.containers.ExasolContainerConstants.EXASOL_LOGS_PATH;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.Instant;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.ContainerLaunchException;
@@ -22,7 +24,7 @@ class ExasolContainerWaitStrategyIT {
     @Test
     void testWaitForNonExistingLogTimesOut() {
         final WaitStrategy strategy = new LogFileEntryWaitStrategy(container.getLogPatternDetectorFactory(),
-                "/non/existing/log/", "file", ".*");
+                "/non/existing/log/", "file", ".*", Instant.now());
         assertThrows(ContainerLaunchException.class, () -> strategy.waitUntilReady(container));
     }
 
@@ -31,7 +33,7 @@ class ExasolContainerWaitStrategyIT {
         final String expectedMessage = "ping";
         final String logFileName = "test.log";
         final WaitStrategy strategy = new LogFileEntryWaitStrategy(container.getLogPatternDetectorFactory(),
-                EXASOL_LOGS_PATH, logFileName, expectedMessage);
+                EXASOL_LOGS_PATH, logFileName, expectedMessage, Instant.now());
         final Thread writerThread = new Thread(
                 new MessageWriter(container, EXASOL_LOGS_PATH + "/" + logFileName, expectedMessage));
         writerThread.start();
