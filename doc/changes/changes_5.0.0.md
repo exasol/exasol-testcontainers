@@ -10,11 +10,20 @@ org.testcontainers.containers.ContainerLaunchException: Container startup failed
 Caused by: org.testcontainers.containers.ContainerLaunchException: Timeout: Scanning for log message pattern "ScriptLanguages.*extracted$ in "/exa/logs/cored/bucketfsd.*.log".
 ```
 
+Version 5.0.0 also supports using the RPC interface of the Exasol database container.
+
+It automatically forwards the RPC port. You can also retrieve the token required for bearer token authentication of the RPC interface.
+
+RPC allows you to manage buckets and more. You can use [bucketfs-java](https://github.com/exasol/bucketfs-java) version 2.2.0 or later of to do this.
+
 ## Breaking changes
 
 * The API and constructor of class `LogPatternDetector` has changed. It now delegates checking of the log entries to a separate class. If you created new instances using `LogPatternDetectorFactory` you won't have to change anything.
 
 ## Features
+
+* [#161](https://github.com/exasol/exasol-testcontainers/issues/161): Added support for using RPC interface
+* Changed to use docker image `exasol/docker-db:7.1.0-d1` by default
 
 ## Bugfixes
 
