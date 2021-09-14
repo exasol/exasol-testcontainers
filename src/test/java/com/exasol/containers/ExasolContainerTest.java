@@ -114,6 +114,16 @@ class ExasolContainerTest {
     }
 
     @Test
+    void testGetRpcUrl() {
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            container.withReuse(true).start();
+            final String expectedUrl = "https://" + container.getContainerIpAddress() + ":"
+                    + container.getMappedPort(container.getDefaultInternalRpcPort()) + "/jrpc";
+            assertThat(container.getRpcUrl(), equalTo(expectedUrl));
+        }
+    }
+
+    @Test
     void testGetDefaultInternalRpcPortReturnsPort() {
         assertThat(this.containerSpy.getDefaultInternalRpcPort(), equalTo(443));
     }

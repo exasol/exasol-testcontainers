@@ -58,11 +58,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SUPPORT_DIR: ${{ github.workspace }}/target/support
-      - uses: actions/upload-artifact@v2
+      - name: Publish support package for ${{ matrix.docker_db_version }}
+        uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
           name: support-db-${{ matrix.docker_db_version }}-run-${{ github.run_id }}
-          path: target/support 
+          path: target/support
       - name: Publish Test Report for ${{ matrix.docker_db_version }}
         uses: scacap/action-surefire-report@v1
         if: ${{ always() }}

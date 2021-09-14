@@ -14,7 +14,7 @@ Caused by: org.testcontainers.containers.ContainerLaunchException: Timeout: Scan
 
 Version 5.0.0 also supports using the RPC interface of the Exasol database container.
 
-It automatically forwards the RPC port. You can also retrieve the token required for bearer token authentication of the RPC interface using method `ExasolContainer.getClusterConfiguration().getAuthenticationToken()`.
+It automatically forwards the RPC port. You can also retrieve the token required for bearer token authentication of the RPC interface using method `ExasolContainer.getClusterConfiguration().getAuthenticationToken()` and you can get the mapped RPC URL by calling method `ExasolContainer.getRpcUrl()`.
 
 RPC allows you to manage buckets and more. You can use [bucketfs-java](https://github.com/exasol/bucketfs-java) version 2.2.0 or later to do this.
 

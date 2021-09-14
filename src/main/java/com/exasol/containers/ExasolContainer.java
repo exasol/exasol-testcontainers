@@ -244,6 +244,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
+     * Get the mapped URL of the RPC interface.
+     *
+     * @return mapped URL of the RPC interface
+     */
+    public String getRpcUrl() {
+        return "https://" + getContainerIpAddress() + ":" + getMappedPort(getDefaultInternalRpcPort()) + "/jrpc";
+    }
+
+    /**
      * Get the port to which the first database port in the Exasol configuration is mapped.
      *
      * @return mapped first database port
