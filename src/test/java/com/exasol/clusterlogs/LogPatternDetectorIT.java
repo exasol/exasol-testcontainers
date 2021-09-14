@@ -3,7 +3,8 @@ package com.exasol.clusterlogs;
 import static com.exasol.containers.ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 
@@ -28,10 +29,7 @@ class LogPatternDetectorIT {
     void testGetActualLog() {
         final LogPatternDetector detector = createPatternDetector("dummypattern");
 
-        assertThat(detector.getActualLog(), allOf( //
-                containsString("UNPACK THREAD started"), //
-                containsString("RSYNC THREAD started"), //
-                containsString("bfsdefault server started in rsync mode")));
+        assertThat(detector.getActualLog(), containsString("UNPACK THREAD started"));
     }
 
     @Test
