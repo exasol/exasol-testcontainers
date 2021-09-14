@@ -2,7 +2,7 @@
 
 Code name: Improve UDF container status detection
 
-Version 5.0.0 of the Exasol Testcontainers improves test stability when running multiple tests while reusing containers (`withReuse(true)`). Before, the availiability check for the UDF service (`.withRequiredServices(ExasolService.UDF)`) could cause the startup to fail with a timeout because the log pattern detector ignored log entries with an outdated timestamp:
+Version 5.0.0 of the Exasol Testcontainers improves test stability when running multiple tests while reusing containers (`.withReuse(true)`). Before, the availiability check for the UDF service (`.withRequiredServices(ExasolService.UDF)`) could cause the startup to fail with a timeout because the log pattern detector ignored log entries with an outdated timestamp:
 
 ```
 org.testcontainers.containers.ContainerLaunchException: Container startup failed
@@ -14,7 +14,7 @@ Version 5.0.0 also supports using the RPC interface of the Exasol database conta
 
 It automatically forwards the RPC port. You can also retrieve the token required for bearer token authentication of the RPC interface.
 
-RPC allows you to manage buckets and more. You can use [bucketfs-java](https://github.com/exasol/bucketfs-java) version 2.2.0 or later of to do this.
+RPC allows you to manage buckets and more. You can use [bucketfs-java](https://github.com/exasol/bucketfs-java) version 2.2.0 or later to do this.
 
 ## Breaking changes
 
@@ -23,11 +23,11 @@ RPC allows you to manage buckets and more. You can use [bucketfs-java](https://g
 ## Features
 
 * [#161](https://github.com/exasol/exasol-testcontainers/issues/161): Added support for using RPC interface
-* Changed to use docker image `exasol/docker-db:7.1.0-d1` by default
+* Changed to use docker image `exasol/docker-db:7.1.0-d1` instead of `7.0.10` by default
 
 ## Bugfixes
 
-* [#163](https://github.com/exasol/exasol-testcontainers/issues/163): Startup fails with a timeout when reusing containers.
+* [#163](https://github.com/exasol/exasol-testcontainers/issues/163): Fixed timeout during startup when reusing containers.
 
 ## Dependency Updates
 
