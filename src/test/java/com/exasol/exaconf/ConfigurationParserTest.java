@@ -70,10 +70,10 @@ class ConfigurationParserTest {
     }
 
     @Test
-    void testGetDefaultAuthenticationToken() {
+    void testGetAuthenticationToken() {
         final ClusterConfiguration config = parseConfiguration("[Global]\n" //
                 + "    AuthenticationToken = AuthToken\n");
-        assertThat(config.getDefaultAuthenticationToken(), equalTo("AuthToken"));
+        assertThat(config.getAuthenticationToken(), equalTo("AuthToken"));
     }
 
     // The following situations should not occur, but we want to be fault-tolerant here.

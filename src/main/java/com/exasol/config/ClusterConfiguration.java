@@ -34,7 +34,7 @@ public class ClusterConfiguration {
      *
      * @return RPC token
      */
-    public String getDefaultAuthenticationToken() {
+    public String getAuthenticationToken() {
         return this.parameters.get(GLOBAL_SECTION + "/AuthenticationToken");
     }
 
