@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 5.0.0, released 2021-09-??
+# Test containers for Exasol on Docker 5.0.0, released 2021-09-14
 
 Code name: Improve UDF container status detection
 
