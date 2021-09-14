@@ -65,6 +65,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
 
     @Override
     public String toString() {
-        return "TimestampLogEntryPatternVerifier [afterUtc=" + this.afterUtc + ", timeZone=" + this.timeZone + "]";
+        return "TimestampLogEntryPatternVerifier [afterUtc=" + this.afterUtc + ", timeZone=" + this.timeZone.getID()
+                + "]";
     }
 }
