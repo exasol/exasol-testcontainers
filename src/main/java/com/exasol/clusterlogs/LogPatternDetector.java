@@ -1,6 +1,7 @@
 package com.exasol.clusterlogs;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,5 +90,28 @@ public class LogPatternDetector {
     public String describe() {
         return "Scanning for log message pattern \"" + this.pattern + " in \"" + this.logPath + "/"
                 + this.logNamePattern + "\". using " + this.logEntryVerifier;
+    }
+
+    /**
+     * Returns the complete actual log content from all matching files. This can be useful for debugging log related
+     * issues.
+     * <p>
+     * Note that the order in which log files are read is not defined.
+     *
+     * @return complete actual log content from all matching files.
+     */
+    public String getActualLog() {
+        try {
+            final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
+                    "-name", this.logNamePattern, //
+                    "-exec", "cat", "{}", "+");
+            return result.getStdout();
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("InterruptedException when reading log file content", e);
+        } catch (final IOException e) {
+            throw new UncheckedIOException(
+                    "Exception reading content of file(s) " + this.logPath + "/" + this.logNamePattern, e);
+        }
     }
 }

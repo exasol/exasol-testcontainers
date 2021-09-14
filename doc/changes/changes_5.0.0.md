@@ -26,6 +26,7 @@ RPC allows you to manage buckets and more. You can use [bucketfs-java](https://g
 
 * [#161](https://github.com/exasol/exasol-testcontainers/issues/161): Added support for using RPC interface
 * Changed to use docker image `exasol/docker-db:7.1.1` instead of `7.0.10` by default
+* Added method `getActualLog()` to class `LogPatternDetector`. This is useful for reading the actual log file content when debugging timeout issues.
 
 ## Bugfixes
 

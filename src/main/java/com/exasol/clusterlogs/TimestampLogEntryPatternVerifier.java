@@ -62,4 +62,9 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
         final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, this.timeZone.toZoneId());
         return localDateTime.withNano(0);
     }
+
+    @Override
+    public String toString() {
+        return "TimestampLogEntryPatternVerifier [afterUtc=" + this.afterUtc + ", timeZone=" + this.timeZone + "]";
+    }
 }
