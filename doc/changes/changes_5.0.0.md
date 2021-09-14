@@ -12,7 +12,7 @@ Caused by: org.testcontainers.containers.ContainerLaunchException: Timeout: Scan
 
 Version 5.0.0 also supports using the RPC interface of the Exasol database container.
 
-It automatically forwards the RPC port. You can also retrieve the token required for bearer token authentication of the RPC interface.
+It automatically forwards the RPC port. You can also retrieve the token required for bearer token authentication of the RPC interface using method `ExasolContainer.getClusterConfiguration().getDefaultAuthenticationToken()`.
 
 RPC allows you to manage buckets and more. You can use [bucketfs-java](https://github.com/exasol/bucketfs-java) version 2.2.0 or later to do this.
 
@@ -42,7 +42,7 @@ RPC allows you to manage buckets and more. You can use [bucketfs-java](https://g
 ### Plugin Dependency Updates
 
 * Updated `com.exasol:error-code-crawler-maven-plugin:0.5.0` to `0.6.0`
-* Updated `com.exasol:project-keeper-maven-plugin:0.10.0` to `1.0.0`
+* Updated `com.exasol:project-keeper-maven-plugin:0.10.0` to `1.1.0`
 * Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.0.0-M3` to `3.0.0`
 * Updated `org.apache.maven.plugins:maven-gpg-plugin:1.6` to `3.0.1`
 * Updated `org.apache.maven.plugins:maven-javadoc-plugin:3.2.0` to `3.3.1`

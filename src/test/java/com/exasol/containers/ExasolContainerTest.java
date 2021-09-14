@@ -92,6 +92,7 @@ class ExasolContainerTest {
             final int countBefore = container.getExposedPorts().size();
             container.addExposedPorts(1000);
             assertThat(container.getExposedPorts().size(), equalTo(countBefore + 1));
+            assertThat(container.getExposedPorts(), hasItem(1000));
         }
     }
 

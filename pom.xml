@@ -10,8 +10,7 @@
     <url>https://github.com/exasol/exasol-testcontainers</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8
-        </project.reporting.outputEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
         <junit.version>5.7.2</junit.version>
         <maven.surefire-and-failsafe.version>3.0.0-M3</maven.surefire-and-failsafe.version>
@@ -171,7 +170,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>1.1.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -385,20 +384,20 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
-        <execution>
-            <id>enforce-maven</id>
-            <goals>
-                <goal>enforce</goal>
-            </goals>
-            <configuration>
-                <rules>
-                    <requireMavenVersion>
-                        <version>3.3.9</version>
-                    </requireMavenVersion>
-                </rules>
-            </configuration>
-        </execution>
-    </executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.3.9</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

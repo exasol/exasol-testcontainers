@@ -30,9 +30,9 @@ public class ClusterConfiguration {
     }
 
     /**
-     * Get the default RPC token required for accessing the RPC interface.
+     * Get the RPC token required for accessing the RPC interface.
      *
-     * @return default RPC token
+     * @return RPC token
      */
     public String getDefaultAuthenticationToken() {
         return this.parameters.get(GLOBAL_SECTION + "/AuthenticationToken");
