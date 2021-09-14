@@ -2,6 +2,8 @@
 
 Code name: Improve UDF container status detection
 
+## Summary
+
 Version 5.0.0 of the Exasol Testcontainers improves test stability when running multiple tests while reusing containers (`.withReuse(true)`). Before, the availiability check for the UDF service (`.withRequiredServices(ExasolService.UDF)`) could cause the startup to fail with a timeout because the log pattern detector ignored log entries with an outdated timestamp:
 
 ```
