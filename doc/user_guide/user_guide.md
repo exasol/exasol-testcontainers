@@ -400,7 +400,7 @@ You can tell the ETC to create such a package, given that you are working with E
 One way is to request that via the API:
 
 ```java
-.withSupportInformationRecordedAtExit(<target-directory-on-the-host>, <exit-type>)a
+.withSupportInformationRecordedAtExit(<target-directory-on-the-host>, <exit-type>)
 ```
 
 This configures the ETC to map a host directory so that support archives are created there.
@@ -428,7 +428,7 @@ If you run the ETC in a CI build, it is more convenient to configure this featur
 
 The effect is the same, but you get better decoupling from your code and need to configure this in one place only instead of many tests.
 
-## Networkingg
+## Networking
 
 ### Running the Exasol Test Container in a Docker Network
 

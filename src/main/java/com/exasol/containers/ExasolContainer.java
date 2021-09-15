@@ -118,6 +118,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         try {
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
+            addExposedPorts(getDefaultInternalRpcPort());
         } catch (final PortDetectionException exception) {
             this.portAutodetectFailed = true;
         }
@@ -240,6 +241,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public String getJdbcUrl() {
         return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
                 + ";validateservercertificate=0";
+    }
+
+    /**
+     * Get the mapped URL of the RPC interface.
+     *
+     * @return mapped URL of the RPC interface
+     */
+    public String getRpcUrl() {
+        return "https://" + getContainerIpAddress() + ":" + getMappedPort(getDefaultInternalRpcPort()) + "/jrpc";
     }
 
     /**
@@ -560,7 +570,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
-            LOGGER.debug(exaconf);
             return new ConfigurationParser(exaconf).parse();
         } catch (final UnsupportedOperationException | IOException exception) {
             throw new ExasolContainerInitializationException(
@@ -591,7 +600,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 .parameter("exception",
                         (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
                         "exception thrown on last connection attempt")
-                .toString());
+                .toString(), this.lastConnectionException);
     }
 
     private void sleepBeforeNextConnectionAttempt() {
@@ -706,6 +715,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void collectSupportInformation(final ExitType exitType) {
         if (this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 7)) {
             this.supportInformationRetriever.run(exitType);
+        } else {
+            LOGGER.info("Skipping support information retrieval for version {}, only supported with version >= 7",
+                    this.dockerImageReference);
         }
     }
 
@@ -716,7 +728,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * since the port number was changed with version 7.
      * </p>
      *
-     * @return default internal port of the database
+     * @return default internal port of the BucketFS
      */
     public int getDefaultInternalBucketfsPort() {
         if (this.dockerImageReference.hasMajor()) {
@@ -729,6 +741,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             throw new UnsupportedOperationException("Could not detect internal BucketFS port for custom image. " //
                     + "Please specify the port explicitly using withExposedPorts().");
         }
+    }
+
+    /**
+     * Get the default internal port of the RPC interface.
+     *
+     * @return default internal port of the RPC interface
+     */
+    public int getDefaultInternalRpcPort() {
+        return DEFAULT_CONTAINER_INTERNAL_RPC_PORT;
     }
 
     /**

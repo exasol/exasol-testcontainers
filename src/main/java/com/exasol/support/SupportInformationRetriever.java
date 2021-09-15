@@ -80,6 +80,9 @@ public class SupportInformationRetriever {
     public void run(final ExitType exitType) {
         if ((this.monitoredExitType == ExitType.EXIT_ANY) || (exitType == this.monitoredExitType)) {
             createArchiveBundle(exitType);
+        } else {
+            LOGGER.debug("Skipping support package creation. Exit type is {}, monitoring {}", exitType,
+                    this.monitoredExitType);
         }
     }
 

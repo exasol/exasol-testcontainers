@@ -59,7 +59,8 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
                 throw new ContainerLaunchException("Waiting for log entry got interrupted.", exception);
             }
         }
-        throw new ContainerLaunchException("Timeout: " + this.detector.describe());
+        throw new ContainerLaunchException("Timeout: " + this.detector.describe() + "\nActual log file content: \""
+                + this.detector.getActualLog() + "\"");
     }
 
     protected long getWaitTimeOutMilliseconds() {

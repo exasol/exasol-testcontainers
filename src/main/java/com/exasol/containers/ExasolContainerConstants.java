@@ -6,7 +6,7 @@ import java.util.Set;
  * Constants for the Exasol Docker containers (like image ID and version).
  */
 public final class ExasolContainerConstants {
-    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.0.10";
+    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.1.1";
     public static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
     public static final String EXASOL_DOCKER_IMAGE_REFERENCE = EXASOL_DOCKER_IMAGE_ID + ":"
             + EXASOL_DOCKER_IMAGE_VERSION;
@@ -29,6 +29,7 @@ public final class ExasolContainerConstants {
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE = 8563;
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE = 2580;
+    static final int DEFAULT_CONTAINER_INTERNAL_RPC_PORT = 443;
 
     private ExasolContainerConstants() {
         // prevent instantiation

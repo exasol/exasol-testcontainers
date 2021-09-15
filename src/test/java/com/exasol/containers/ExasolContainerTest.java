@@ -1,8 +1,7 @@
 package com.exasol.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -83,15 +82,17 @@ class ExasolContainerTest {
     @Test
     void testWithDefaultExposedPorts() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
-            assertThat(container.getExposedPorts().size(), equalTo(2));
+            assertThat(container.getExposedPorts().size(), equalTo(3));
         }
     }
 
     @Test
     void testAddExposedPorts() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            final int countBefore = container.getExposedPorts().size();
             container.addExposedPorts(1000);
-            assertThat(container.getExposedPorts().size(), equalTo(3));
+            assertThat(container.getExposedPorts().size(), equalTo(countBefore + 1));
+            assertThat(container.getExposedPorts(), hasItem(1000));
         }
     }
 
@@ -110,5 +111,25 @@ class ExasolContainerTest {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
             assertThat(container.withJdbcConnectionTimeout(123).getJdbcConnectionTimeout(), equalTo(123));
         }
+    }
+
+    @Test
+    void testGetRpcUrl() {
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            container.withReuse(true).start();
+            final String expectedUrl = "https://" + container.getContainerIpAddress() + ":"
+                    + container.getMappedPort(container.getDefaultInternalRpcPort()) + "/jrpc";
+            assertThat(container.getRpcUrl(), equalTo(expectedUrl));
+        }
+    }
+
+    @Test
+    void testGetDefaultInternalRpcPortReturnsPort() {
+        assertThat(this.containerSpy.getDefaultInternalRpcPort(), equalTo(443));
+    }
+
+    @Test
+    void testRpcPortExposed() {
+        assertThat(this.containerSpy.getExposedPorts(), hasItem(443));
     }
 }
