@@ -36,8 +36,7 @@ class LogPatternDetectorTest {
     }
 
     @Test
-    void getActualLogSucceeds() throws UnsupportedOperationException, IOException, InterruptedException {
-        new ExecResultFactory();
+    void testGetActualLogSucceeds() throws UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(any()))
                 .thenReturn(ExecResultFactory.mockResult(0, STD_OUT_RESULT, "stderr"));
 
@@ -45,17 +44,16 @@ class LogPatternDetectorTest {
     }
 
     @Test
-    void getActualLogFailsWithInterruptedException()
+    void testGetActualLogFailsWithInterruptedException()
             throws UnsupportedOperationException, IOException, InterruptedException {
-        new ExecResultFactory();
         when(this.containerMock.execInContainer(any())).thenThrow(new InterruptedException("expected"));
 
         assertThrows(IllegalStateException.class, () -> this.detector.getActualLog());
     }
 
     @Test
-    void getActualLogFailsWithIOException() throws UnsupportedOperationException, IOException, InterruptedException {
-        new ExecResultFactory();
+    void testGetActualLogFailsWithIOException()
+            throws UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(any())).thenThrow(new IOException("expected"));
 
         assertThrows(UncheckedIOException.class, () -> this.detector.getActualLog());
