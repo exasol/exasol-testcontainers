@@ -457,6 +457,26 @@ Check the method `getDockerNetworkInternalIpAddress()` in the `ExasolContainer` 
 
 If your are looking for an example, please check the integration test `ExaLoaderBetweenTwoContainersIT`.
 
+### Getting the SSL Certificate
+
+The docker container automatically generates a new SSL certificate at startup. You can retrieve it with method `ExasolContainer.getSslCertificate()`. This returns a `java.security.cert.X509Certificate` which you can use like this to create an `HttpClient`:
+
+```java
+X509Certificate certificate = CONTAINER.getSslCertificate();
+
+KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+keyStore.load(null);
+keyStore.setCertificateEntry("caCert", certificate);
+
+TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+trustManagerFactory.init(keyStore);
+
+SSLContext sslContext = SSLContext.getInstance("TLS");
+sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+
+HttpClient httpClient = HttpClient.newBuilder().sslContext(sslContext).build()
+```
+
 ## Installing Drivers for External Data Sources and Sinks
 
 You can install JDBC drivers that you can use in the ExaLoader (for `IMPORT` statements) and User Defined Functions (UDFs) like this:

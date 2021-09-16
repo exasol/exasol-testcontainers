@@ -12,6 +12,7 @@ import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -32,6 +33,7 @@ import com.exasol.bucketfs.BucketFactory;
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.ssl.CertificateProvider;
 import com.exasol.containers.status.ContainerStatus;
 import com.exasol.containers.status.ContainerStatusCache;
 import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
@@ -65,6 +67,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final LogPatternDetectorFactory detectorFactory;
     private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
     private final ExaOperation exaOperation;
+    private final CertificateProvider certificateProvider;
     private TimeZone timeZone;
     private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
@@ -115,6 +118,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
+        final ContainerFileOperations containerFileOperations = new ContainerFileOperations(this);
+        this.certificateProvider = new CertificateProvider(this, containerFileOperations);
         try {
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
@@ -835,5 +840,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.supportInformationRetriever.monitorExit(exitType);
         this.supportInformationRetriever.mapTargetDirectory(targetDirectory);
         return this;
+    }
+
+    public X509Certificate getSslCertificate() {
+        return this.certificateProvider.getCertificate();
     }
 }

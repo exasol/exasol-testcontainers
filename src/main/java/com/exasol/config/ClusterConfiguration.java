@@ -16,6 +16,7 @@ public class ClusterConfiguration {
     private static final String DATABASE_KEY_PREFIX = "DB" + KEY_SEPARATOR;
     private static final String SECTION_SEPARATOR = "/";
     private static final String GLOBAL_SECTION = "Global";
+    private static final String SSL_SECTION = "SSL";
     private static final String DEFAULT_BUCKET_SECTION = "BucketFS:bfsdefault/Bucket:default";
     private static final String DEFAULT_DATABASE_NAME = "DB1";
     private final Map<String, String> parameters;
@@ -54,6 +55,15 @@ public class ClusterConfiguration {
      */
     public String getDefaultBucketWritePassword() {
         return this.parameters.get(DEFAULT_BUCKET_SECTION + "/WritePasswd");
+    }
+
+    /**
+     * Get the path inside the container to the SSL certificate file, e.g. {@code "/exa/etc/ssl/ssl.crt"}.
+     *
+     * @return the path inside the container to the SSL certificate file
+     */
+    public String getSslCertificatePath() {
+        return this.parameters.get(SSL_SECTION + "/Cert");
     }
 
     /**
