@@ -6,6 +6,9 @@ import java.nio.charset.Charset;
 
 import org.testcontainers.containers.Container;
 
+/**
+ * Provides methods for accessing the container filesystem.
+ */
 public class ContainerFileOperations {
 
     private final ExasolContainer<? extends ExasolContainer<?>> container;
@@ -14,12 +17,20 @@ public class ContainerFileOperations {
         this.container = container;
     }
 
-    public String readFile(final String pathInContainer, final Charset outputCharset) {
+    /**
+     * Reads a file from a given path.
+     *
+     * @param pathInContainer the paht inside the container
+     * @param outputCharset   the charset in which to read the file
+     * @return the file content
+     * @throws ExasolContainerException when the file is not found.
+     */
+    public String readFile(final String pathInContainer, final Charset outputCharset) throws ExasolContainerException {
         try {
             final Container.ExecResult result = this.container.execInContainer(outputCharset, "cat", pathInContainer);
             if (!result.getStderr().isBlank()) {
-                throw new IllegalStateException(
-                        "Error reading file '" + pathInContainer + "': '" + result.getStderr().trim() + "'");
+                throw new ExasolContainerException(
+                        "Error reading file '" + pathInContainer + "': '" + result.getStderr().trim() + "'", null);
             }
             return result.getStdout();
         } catch (final InterruptedException e) {

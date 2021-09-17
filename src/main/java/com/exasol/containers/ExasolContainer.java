@@ -244,8 +244,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
-                + ";validateservercertificate=0";
+        final Optional<String> fingerprint = this.certificateProvider.getSha256Fingerprint();
+        if (fingerprint.isPresent() && (this.clusterConfiguration != null)) {
+            return "jdbc:exa:" + getContainerIpAddress() + "/" + fingerprint.get() + ":" + getFirstMappedDatabasePort()
+                    + ";validateservercertificate=1";
+        } else {
+            return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
+                    + ";validateservercertificate=0";
+        }
     }
 
     /**
@@ -842,7 +848,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return this;
     }
 
-    public X509Certificate getSslCertificate() {
+    /**
+     * Reads and converts the self-signed SSL certificate used by the database in the container for database connections
+     * and the RPC interface.
+     *
+     * @return the SSL certificate or an empty {@link Optional} when the certificate file does not exist.
+     */
+    public Optional<X509Certificate> getSslCertificate() {
         return this.certificateProvider.getCertificate();
     }
 }

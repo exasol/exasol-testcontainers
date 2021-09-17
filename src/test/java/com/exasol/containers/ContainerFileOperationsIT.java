@@ -25,7 +25,7 @@ class ContainerFileOperationsIT {
     }
 
     @Test
-    void testReadExistingFile() {
+    void testReadExistingFile() throws ExasolContainerException {
         final String exaConfContent = this.containerFileOperations.readFile("/exa/etc/EXAConf", StandardCharsets.UTF_8);
         assertThat(exaConfContent, allOf( //
                 startsWith("[Global]"), //
@@ -34,7 +34,7 @@ class ContainerFileOperationsIT {
 
     @Test
     void testReadMissingFileFails() {
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+        final ExasolContainerException exception = assertThrows(ExasolContainerException.class,
                 () -> this.containerFileOperations.readFile("/noSuchFile", StandardCharsets.UTF_8));
         assertThat(exception.getMessage(),
                 equalTo("Error reading file '/noSuchFile': 'cat: /noSuchFile: No such file or directory'"));
