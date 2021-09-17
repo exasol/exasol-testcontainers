@@ -471,9 +471,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void waitUntilContainerStarted() {
         try {
             waitUntilClusterConfigurationAvailable();
-            final Instant afterUtc = Instant.now();
             waitUntilStatementCanBeExecuted();
-            waitForBucketFs(afterUtc);
+            waitForBucketFs();
             waitForUdfContainer();
             LOGGER.info("Exasol container started after waiting for the following services to become available: {}",
                     this.requiredServices);
@@ -483,13 +482,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    protected void waitForBucketFs(final Instant afterUtc) {
+    protected void waitForBucketFs() {
         if (isServiceReady(BUCKETFS)) {
             LOGGER.debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
         } else {
             if (this.requiredServices.contains(BUCKETFS)) {
                 this.status.setServiceStatus(BUCKETFS, NOT_READY);
-                new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+                new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
                 this.status.setServiceStatus(BUCKETFS, READY);
             } else {
                 this.status.setServiceStatus(BUCKETFS, NOT_CHECKED);

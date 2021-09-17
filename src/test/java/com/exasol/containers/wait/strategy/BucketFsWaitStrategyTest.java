@@ -18,12 +18,12 @@ class BucketFsWaitStrategyTest extends AbstractServiceWaitStrategyTest {
     @BeforeEach
     void beforeEach() {
         when(this.detectorFactoryMock.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH, getLogFilenamePattern(),
-                getLogEntryPattern(), AFTER_UTC)).thenReturn(this.detectorMock);
+                getLogEntryPattern())).thenReturn(this.detectorMock);
     }
 
     @Override
     protected WaitStrategy createWaitStrategy(final Instant afterUtc) {
-        return new BucketFsWaitStrategy(getDetectorFactory(), afterUtc);
+        return new BucketFsWaitStrategy(getDetectorFactory());
     }
 
     @Override
