@@ -45,7 +45,7 @@ public class CertificateProvider {
             LOGGER.debug("Read certificate from file {} contains {} chars", certPath, certContent.length());
             return Optional.of(certContent);
         } catch (final ExasolContainerException e) {
-            LOGGER.warn("Error reading certificate: {} {}", e.getClass(), e.getMessage());
+            LOGGER.info("Error reading certificate, returning empty Optional. {} {}", e.getClass(), e.getMessage());
             return Optional.empty();
         }
     }
@@ -97,17 +97,22 @@ public class CertificateProvider {
         }
     }
 
-    private static byte[] sha256(final byte[] der) {
+    private static byte[] sha256(final byte[] data) {
         try {
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(der);
+            md.update(data);
             return md.digest();
         } catch (final NoSuchAlgorithmException e) {
             throw new IllegalStateException("Error creating message digest");
         }
     }
 
-    private static String bytesToHex(final byte[] bytes) {
-        return new BigInteger(1, bytes).toString(16);
+    static String bytesToHex(final byte[] bytes) {
+        final String hex = new BigInteger(1, bytes).toString(16);
+        if ((hex.length() % 2) == 0) {
+            return hex;
+        } else {
+            return "0" + hex;
+        }
     }
 }
