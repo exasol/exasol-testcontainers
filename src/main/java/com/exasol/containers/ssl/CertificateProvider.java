@@ -7,10 +7,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.*;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.*;
 
 /**
@@ -19,13 +21,18 @@ import com.exasol.containers.*;
 public class CertificateProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateProvider.class);
 
-    private final ExasolContainer<? extends ExasolContainer<?>> container;
+    private final Supplier<Optional<ClusterConfiguration>> configProvider;
     private final ContainerFileOperations fileOperations;
 
-    public CertificateProvider(final ExasolContainer<? extends ExasolContainer<?>> container,
+    public CertificateProvider(final Supplier<Optional<ClusterConfiguration>> configProvider,
             final ContainerFileOperations fileOperations) {
-        this.container = container;
+        this.configProvider = configProvider;
         this.fileOperations = fileOperations;
+    }
+
+    CertificateProvider(final ExasolContainer<? extends ExasolContainer<?>> container,
+            final ContainerFileOperations fileOperations) {
+        this(() -> Optional.of(container.getClusterConfiguration()), fileOperations);
     }
 
     /**
@@ -39,13 +46,18 @@ public class CertificateProvider {
     }
 
     private Optional<String> readCertificate() {
-        final String certPath = this.container.getClusterConfiguration().getSslCertificatePath();
+        final Optional<ClusterConfiguration> configuration = this.configProvider.get();
+        if (configuration.isEmpty()) {
+            return Optional.empty();
+        }
+        final String certPath = configuration.get().getSslCertificatePath();
         try {
             final String certContent = this.fileOperations.readFile(certPath, StandardCharsets.UTF_8);
             LOGGER.debug("Read certificate from file {} contains {} chars", certPath, certContent.length());
             return Optional.of(certContent);
         } catch (final ExasolContainerException e) {
-            LOGGER.info("Error reading certificate, returning empty Optional. {} {}", e.getClass(), e.getMessage());
+            LOGGER.info("Certificate does not exist yet, returning empty Optional. {} {}", e.getClass().getName(),
+                    e.getMessage());
             return Optional.empty();
         }
     }

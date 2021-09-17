@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -119,7 +118,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
         final ContainerFileOperations containerFileOperations = new ContainerFileOperations(this);
-        this.certificateProvider = new CertificateProvider(this, containerFileOperations);
+        this.certificateProvider = new CertificateProvider(this::getOptionalClusterConfiguration,
+                containerFileOperations);
         try {
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
@@ -398,6 +398,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                     "Tried to access Exasol cluster configuration before it was read from the container.");
         }
         return this.clusterConfiguration;
+    }
+
+    private Optional<ClusterConfiguration> getOptionalClusterConfiguration() {
+        return Optional.ofNullable(this.clusterConfiguration);
     }
 
     /**
