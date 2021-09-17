@@ -1,4 +1,4 @@
-package com.exasol.containers.ssl;
+package com.exasol.containers.tls;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -27,7 +27,7 @@ import com.exasol.containers.*;
 
 @Tag("slow")
 @Testcontainers
-class SslConnectionIT {
+class TlsConnectionIT {
 
     @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
@@ -162,7 +162,7 @@ class SslConnectionIT {
 
     private SSLContext createSslContextWithCertificate() throws KeyStoreException, IOException,
             NoSuchAlgorithmException, CertificateException, KeyManagementException {
-        final X509Certificate certificate = CONTAINER.getSslCertificate().get();
+        final X509Certificate certificate = CONTAINER.getTlsCertificate().get();
         final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(null);
         keyStore.setCertificateEntry("caCert", certificate);

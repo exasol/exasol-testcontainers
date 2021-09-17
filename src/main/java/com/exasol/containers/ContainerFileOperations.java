@@ -20,8 +20,8 @@ public class ContainerFileOperations {
     /**
      * Reads a file from a given path.
      *
-     * @param pathInContainer the paht inside the container
-     * @param outputCharset   the charset in which to read the file
+     * @param pathInContainer path inside the container
+     * @param outputCharset   charset in which to read the file
      * @return the file content
      * @throws ExasolContainerException when the file is not found.
      */
@@ -33,11 +33,11 @@ public class ContainerFileOperations {
                         "Error reading file '" + pathInContainer + "': '" + result.getStderr().trim() + "'", null);
             }
             return result.getStdout();
-        } catch (final InterruptedException e) {
+        } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("InterruptedException when reading file content", e);
-        } catch (final IOException e) {
-            throw new UncheckedIOException("Exception reading content of file '" + pathInContainer + "'", e);
+            throw new IllegalStateException("InterruptedException when reading file content", exception);
+        } catch (final IOException exception) {
+            throw new UncheckedIOException("Exception reading content of file '" + pathInContainer + "'", exception);
         }
     }
 }

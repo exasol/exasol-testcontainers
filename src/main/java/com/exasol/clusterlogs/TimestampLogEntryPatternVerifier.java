@@ -53,8 +53,8 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
                 }
             }
             return false;
-        } catch (final IOException e) {
-            throw new UncheckedIOException("Error reading string", e);
+        } catch (final IOException exception) {
+            throw new UncheckedIOException("Error reading string", exception);
         }
     }
 

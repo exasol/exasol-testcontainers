@@ -1,4 +1,4 @@
-package com.exasol.containers.ssl;
+package com.exasol.containers.tls;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -16,7 +16,7 @@ import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.*;
 
 /**
- * This class allows reading the SSL certificate used by the Exasol container.
+ * This class allows reading the TLS certificate used by the Exasol container.
  */
 public class CertificateProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateProvider.class);
@@ -36,10 +36,10 @@ public class CertificateProvider {
     }
 
     /**
-     * Reads and converts the self-signed SSL certificate used by the database in the container for database connections
+     * Read and convert the self-signed TLS certificate used by the database in the container for database connections
      * and the RPC interface.
      *
-     * @return the SSL certificate or an empty {@link Optional} when the certificate file does not exist.
+     * @return the TLS certificate or an empty {@link Optional} when the certificate file does not exist.
      */
     public Optional<X509Certificate> getCertificate() {
         return readCertificate().map(this::parseCertificate);
@@ -50,14 +50,14 @@ public class CertificateProvider {
         if (configuration.isEmpty()) {
             return Optional.empty();
         }
-        final String certPath = configuration.get().getSslCertificatePath();
+        final String certPath = configuration.get().getTlsCertificatePath();
         try {
             final String certContent = this.fileOperations.readFile(certPath, StandardCharsets.UTF_8);
             LOGGER.debug("Read certificate from file {} contains {} chars", certPath, certContent.length());
             return Optional.of(certContent);
-        } catch (final ExasolContainerException e) {
-            LOGGER.info("Certificate does not exist yet, returning empty Optional. {} {}", e.getClass().getName(),
-                    e.getMessage());
+        } catch (final ExasolContainerException exception) {
+            LOGGER.info("Certificate does not exist yet, returning empty Optional. {} {}",
+                    exception.getClass().getName(), exception.getMessage());
             return Optional.empty();
         }
     }
@@ -68,8 +68,8 @@ public class CertificateProvider {
             final X509Certificate certificate = (X509Certificate) cf.generateCertificate(is);
             logCertificate(certificate);
             return certificate;
-        } catch (final CertificateException | IOException e) {
-            throw new IllegalStateException("Error parsing certificate '" + certContent + "'", e);
+        } catch (final CertificateException | IOException exception) {
+            throw new IllegalStateException("Error parsing certificate '" + certContent + "'", exception);
         }
     }
 
@@ -104,8 +104,8 @@ public class CertificateProvider {
         }
         try {
             return Optional.of(certificate.get().getEncoded());
-        } catch (final CertificateEncodingException e) {
-            throw new IllegalStateException("Error encoding certificate", e);
+        } catch (final CertificateEncodingException exception) {
+            throw new IllegalStateException("Error encoding certificate", exception);
         }
     }
 
@@ -114,8 +114,8 @@ public class CertificateProvider {
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(data);
             return md.digest();
-        } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Error creating message digest");
+        } catch (final NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("Error creating message digest", exception);
         }
     }
 

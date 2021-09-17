@@ -1,4 +1,4 @@
-package com.exasol.containers.ssl;
+package com.exasol.containers.tls;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -27,14 +27,14 @@ class CertificateProviderIT {
     void testGetCertificate() {
         final Date now = new Date();
 
-        final Optional<X509Certificate> optionalSslCertificate = CONTAINER.getSslCertificate();
+        final Optional<X509Certificate> optionalCertificate = CONTAINER.getTlsCertificate();
 
-        final var sslCertificate = optionalSslCertificate.get();
-        assertAll(() -> assertThat(sslCertificate, notNullValue()),
-                () -> assertThat(sslCertificate.getIssuerDN().getName(), equalTo("CN=exacluster.local")),
-                () -> assertThat(sslCertificate.getSubjectDN().getName(), equalTo("CN=*.exacluster.local")),
-                () -> assertThat(sslCertificate.getNotBefore(), lessThan(now)),
-                () -> assertThat(sslCertificate.getNotAfter(), greaterThan(now)));
+        final var certificate = optionalCertificate.get();
+        assertAll(() -> assertThat(certificate, notNullValue()),
+                () -> assertThat(certificate.getIssuerDN().getName(), equalTo("CN=exacluster.local")),
+                () -> assertThat(certificate.getSubjectDN().getName(), equalTo("CN=*.exacluster.local")),
+                () -> assertThat(certificate.getNotBefore(), lessThan(now)),
+                () -> assertThat(certificate.getNotAfter(), greaterThan(now)));
     }
 
     @Test

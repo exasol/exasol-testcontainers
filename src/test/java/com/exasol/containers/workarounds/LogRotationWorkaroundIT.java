@@ -33,7 +33,7 @@ class LogRotationWorkaroundIT {
             if (exasol.isRunning()) {
                 exasol.stop();
             }
-        } catch (final InterruptedException e) {
+        } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new AssertionError("Interrupted during sleep between check rounds.");
         }

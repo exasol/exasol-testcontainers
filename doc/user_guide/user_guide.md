@@ -457,12 +457,12 @@ Check the method `getDockerNetworkInternalIpAddress()` in the `ExasolContainer` 
 
 If your are looking for an example, please check the integration test `ExaLoaderBetweenTwoContainersIT`.
 
-### Getting the SSL Certificate
+### Getting the TLS Certificate
 
-The docker container automatically generates a new SSL certificate at startup. You can retrieve it with method `ExasolContainer.getSslCertificate()`. This returns a `java.security.cert.X509Certificate` which you can use like this to create an `HttpClient`:
+The docker container automatically generates a new TLS certificate at startup. You can retrieve it with method `ExasolContainer.getTlsCertificate()`. This returns a `java.security.cert.X509Certificate` which you can use like this to create an `HttpClient`:
 
 ```java
-X509Certificate certificate = CONTAINER.getSslCertificate();
+X509Certificate certificate = CONTAINER.getTlsCertificate();
 
 KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 keyStore.load(null);

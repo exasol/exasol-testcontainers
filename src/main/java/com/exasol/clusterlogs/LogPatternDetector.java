@@ -106,12 +106,12 @@ public class LogPatternDetector {
                     "-name", this.logNamePattern, //
                     "-exec", "cat", "{}", "+");
             return result.getStdout();
-        } catch (final InterruptedException e) {
+        } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("InterruptedException when reading log file content", e);
-        } catch (final IOException e) {
+            throw new IllegalStateException("InterruptedException when reading log file content", exception);
+        } catch (final IOException exception) {
             throw new UncheckedIOException(
-                    "Exception reading content of file(s) " + this.logPath + "/" + this.logNamePattern, e);
+                    "Exception reading content of file(s) " + this.logPath + "/" + this.logNamePattern, exception);
         }
     }
 }

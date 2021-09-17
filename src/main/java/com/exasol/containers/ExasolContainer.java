@@ -32,9 +32,9 @@ import com.exasol.bucketfs.BucketFactory;
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.ssl.CertificateProvider;
 import com.exasol.containers.status.ContainerStatus;
 import com.exasol.containers.status.ContainerStatusCache;
+import com.exasol.containers.tls.CertificateProvider;
 import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
 import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.containers.workarounds.*;
@@ -852,12 +852,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * Reads and converts the self-signed SSL certificate used by the database in the container for database connections
+     * Read and convert the self-signed TLS certificate used by the database in the container for database connections
      * and the RPC interface.
      *
-     * @return the SSL certificate or an empty {@link Optional} when the certificate file does not exist.
+     * @return the TLS certificate or an empty {@link Optional} when the certificate file does not exist.
      */
-    public Optional<X509Certificate> getSslCertificate() {
+    public Optional<X509Certificate> getTlsCertificate() {
         return this.certificateProvider.getCertificate();
     }
 }

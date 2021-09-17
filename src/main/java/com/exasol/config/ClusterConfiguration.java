@@ -58,11 +58,11 @@ public class ClusterConfiguration {
     }
 
     /**
-     * Get the path inside the container to the SSL certificate file, e.g. {@code "/exa/etc/ssl/ssl.crt"}.
+     * Get the path inside the container to the TLS certificate file, e.g. {@code "/exa/etc/ssl/ssl.crt"}.
      *
-     * @return the path inside the container to the SSL certificate file
+     * @return the path inside the container to the TLS certificate file
      */
-    public String getSslCertificatePath() {
+    public String getTlsCertificatePath() {
         return this.parameters.get(SSL_SECTION + "/Cert");
     }
 

@@ -1,4 +1,4 @@
-package com.exasol.containers.ssl;
+package com.exasol.containers.tls;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
