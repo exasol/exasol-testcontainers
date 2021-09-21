@@ -72,8 +72,10 @@ public class CertificateProvider {
             logCertificate(certificate);
             return certificate;
         } catch (final CertificateException | IOException exception) {
-            throw new IllegalStateException(messageBuilder("F-ETC-6")
-                    .message("Error parsing certificate {{certificateContent}}", certContent).toString(), exception);
+            throw new IllegalStateException(
+                    messageBuilder("F-ETC-7").message("Error parsing certificate {{certificateContent}}", certContent)
+                            .ticketMitigation().toString(),
+                    exception);
         }
     }
 
@@ -109,9 +111,9 @@ public class CertificateProvider {
         try {
             return Optional.of(certificate.get().getEncoded());
         } catch (final CertificateEncodingException exception) {
-            throw new IllegalStateException(messageBuilder("F-ETC-7")
-                    .message("Unable get encoded certificate for {{certificate}}", certificate.get()).toString(),
-                    exception);
+            throw new IllegalStateException(messageBuilder("F-ETC-8")
+                    .message("Unable get encoded certificate for {{certificate}}", certificate.get()).ticketMitigation()
+                    .toString(), exception);
         }
     }
 
@@ -121,8 +123,8 @@ public class CertificateProvider {
             md.update(data);
             return md.digest();
         } catch (final NoSuchAlgorithmException exception) {
-            throw new IllegalStateException(
-                    messageBuilder("F-ETC-7").message("Unable to calculate SHA-256 of certificate content").toString(),
+            throw new IllegalStateException(messageBuilder("F-ETC-9")
+                    .message("Unable to calculate SHA-256 of certificate content").ticketMitigation().toString(),
                     exception);
         }
     }
