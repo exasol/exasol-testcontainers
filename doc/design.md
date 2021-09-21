@@ -584,6 +584,30 @@ In integration tests run with the ETC, this is important, because reliable tests
 
 Needs: impl, itest
 
+## How to Use HTTPS connections with Self-Signed TLS Certificates
+
+At startup the container generates a self signed TLS certificate and uses it to encrypt database and HTTPS connections. The certificate contains an invalid hostname, that is why hostname validation will fail. To solve this we would need to inject a new certificate with correct hostname into the container.
+
+We decided to not add this feature.
+
+### Rationale
+
+1. Installing a new certificate requires restarting multiple database services. Restarting the complete docker container would be a good alternative but is not supported by testcontainers-java because [docker assigns new ports after restart](https://github.com/testcontainers/testcontainers-java/issues/606).
+2. Stopping and starting individual database services using `cosrm` and `cosexec` requires knowledge about database internals and creates tight coupling.
+3. Modifying the startup command of the container to execute a custom script adds too much complexity.
+
+### Workarounds
+
+To use HTTPS connections with the self-signed certificate the user has the following options:
+
+#### `java.net.http.HttpClient`
+
+Set system property `jdk.internal.httpclient.disableHostnameVerificationdokumentieren` to `true`. This disables hostname verification for the complete VM and must not be used in production.
+
+#### `javax.net.ssl.HttpsURLConnection`
+
+Use method [setHostnameVerifier()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/net/ssl/HttpsURLConnection.html#setHostnameVerifier(javax.net.ssl.HostnameVerifier)) to set a custom hostname verifier.
+
 # Quality Scenarios
 
 # Risks
