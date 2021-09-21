@@ -1,5 +1,7 @@
 package com.exasol.containers.tls;
 
+import static com.exasol.errorreporting.ExaError.messageBuilder;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +41,8 @@ public class CertificateProvider {
      * Read and convert the self-signed TLS certificate used by the database in the container for database connections
      * and the RPC interface.
      *
-     * @return the TLS certificate or an empty {@link Optional} when the certificate file does not exist.
+     * @return the TLS certificate or an empty {@link Optional} when no configuration exists or the certificate file
+     *         does not exist.
      */
     public Optional<X509Certificate> getCertificate() {
         return readCertificate().map(this::parseCertificate);
@@ -69,7 +72,8 @@ public class CertificateProvider {
             logCertificate(certificate);
             return certificate;
         } catch (final CertificateException | IOException exception) {
-            throw new IllegalStateException("Error parsing certificate '" + certContent + "'", exception);
+            throw new IllegalStateException(messageBuilder("F-ETC-6")
+                    .message("Error parsing certificate {{certificateContent}}", certContent).toString(), exception);
         }
     }
 
@@ -90,8 +94,8 @@ public class CertificateProvider {
      * Get the SHA-256 checksum of the encoded certificate as a hex string. This is required as a fingerprint when
      * connecting to the database via JDBC using property {@code validateservercertificate=1}.
      *
-     * @return the SHA-256 checksum of the certificate as a hex string or an empty {@link Optional} when the certificate
-     *         file does not exist
+     * @return the SHA-256 checksum of the certificate as a hex string or an empty {@link Optional} when no
+     *         configuration exists or the certificate file does not exist
      */
     public Optional<String> getSha256Fingerprint() {
         return getEncodedCertificate().map(CertificateProvider::sha256).map(CertificateProvider::bytesToHex);
@@ -105,17 +109,21 @@ public class CertificateProvider {
         try {
             return Optional.of(certificate.get().getEncoded());
         } catch (final CertificateEncodingException exception) {
-            throw new IllegalStateException("Error encoding certificate", exception);
+            throw new IllegalStateException(messageBuilder("F-ETC-7")
+                    .message("Unable get encoded certificate for {{certificate}}", certificate.get()).toString(),
+                    exception);
         }
     }
 
-    private static byte[] sha256(final byte[] data) {
+    static byte[] sha256(final byte[] data) {
         try {
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(data);
             return md.digest();
         } catch (final NoSuchAlgorithmException exception) {
-            throw new IllegalStateException("Error creating message digest", exception);
+            throw new IllegalStateException(
+                    messageBuilder("F-ETC-7").message("Unable to calculate SHA-256 of certificate content").toString(),
+                    exception);
         }
     }
 

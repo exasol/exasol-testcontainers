@@ -15,7 +15,7 @@ import com.exasol.containers.ExasolContainer;
 class ClusterConfigAccessIT {
     @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
-            .withRequiredServices();
+            .withRequiredServices().withReuse(true);
 
     private ClusterConfiguration clusterConfiguration;
 
@@ -32,5 +32,12 @@ class ClusterConfigAccessIT {
         final String token = this.clusterConfiguration.getAuthenticationToken();
         assertThat(token, not(emptyOrNullString()));
         assertThat(token.length(), greaterThan(20));
+    }
+
+    @Test
+    void testGetTlsCertificatePath() {
+        this.clusterConfiguration = CONTAINER.getClusterConfiguration();
+        final String token = this.clusterConfiguration.getTlsCertificatePath();
+        assertThat(token, equalTo("/exa/etc/ssl/ssl.crt"));
     }
 }

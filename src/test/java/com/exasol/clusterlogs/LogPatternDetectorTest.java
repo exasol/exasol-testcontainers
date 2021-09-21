@@ -56,7 +56,10 @@ class LogPatternDetectorTest {
             throws UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(any())).thenThrow(new IOException("expected"));
 
-        assertThrows(UncheckedIOException.class, () -> this.detector.getActualLog());
+        final UncheckedIOException exception = assertThrows(UncheckedIOException.class,
+                () -> this.detector.getActualLog());
+        assertThat(exception.getMessage(),
+                equalTo("F-ETC-6: Exception reading content of file(s) '" + LOG_PATH + "'/'" + LOG_NAME_PATTERN + "'"));
     }
 
     @Test
