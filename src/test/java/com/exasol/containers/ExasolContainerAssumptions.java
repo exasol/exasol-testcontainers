@@ -40,4 +40,14 @@ public final class ExasolContainerAssumptions {
                             && dockerImageReference.hasMinor() && (dockerImageReference.getMinor() == 0)));
         }
     }
+
+    /**
+     * Assume that the given container uses an image reference has version 7.0.0 or above.
+     *
+     * @param container container to check
+     */
+    public static void assumeVersionAboveSevenZero(final ExasolContainer<? extends ExasolContainer<?>> container) {
+        final ExasolDockerImageReference dockerImageReference = container.getDockerImageReference();
+        assumeTrue(dockerImageReference.hasMajor() && (dockerImageReference.getMajor() >= 7));
+    }
 }

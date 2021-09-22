@@ -38,7 +38,9 @@ class ExasolContainerIT {
     }
 
     @Test
-    void testGetJdbcUrl() throws Exception {
+    void testGetJdbcUrlContainsFingerprint() throws Exception {
+        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
+
         final String zeroTo255 = "([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])";
         final String ipRegexp = zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255;
         final String hostNamePattern = "(localhost|" + ipRegexp + ")";
@@ -48,6 +50,8 @@ class ExasolContainerIT {
 
     @Test
     void testJdbcUrlValidatesServerCertificate() throws SQLException {
+        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
+
         assertThat(CONTAINER.getJdbcUrl(), endsWith(";validateservercertificate=1"));
     }
 

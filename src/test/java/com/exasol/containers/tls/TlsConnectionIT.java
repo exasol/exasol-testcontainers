@@ -35,6 +35,7 @@ class TlsConnectionIT {
     @Test
     void testJdbcConnectionWithCertificate()
             throws SQLException, CertificateEncodingException, NoSuchAlgorithmException {
+        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
 
         final String fingerprint = createCertificateProvider().getSha256Fingerprint().get();
         final String url = "jdbc:exa:" + CONTAINER.getContainerIpAddress() + "/" + fingerprint + ":"
@@ -86,6 +87,8 @@ class TlsConnectionIT {
 
     @Test
     void testJdbcUrlContainsFingerprint() {
+        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
+
         final String jdbcUrl = CONTAINER.getJdbcUrl();
         final String expectedFingerprint = createCertificateProvider().getSha256Fingerprint().get();
         assertThat(jdbcUrl, containsString("/" + expectedFingerprint + ":"));
@@ -120,7 +123,7 @@ class TlsConnectionIT {
 
         final HttpsURLConnection connection = prepareHttpsURLConnection(sslContext, hostnameVerifier);
 
-        assertThat(connection.getResponseCode(), either(equalTo(401)).or(equalTo(404)));
+        assertThat(connection.getResponseCode(), either(equalTo(401)).or(equalTo(404)).or(equalTo(405)));
     }
 
     private HttpsURLConnection prepareHttpsURLConnection(final SSLContext sslContext,
