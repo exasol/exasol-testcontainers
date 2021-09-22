@@ -2,6 +2,7 @@ package com.exasol.containers.tls;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -112,7 +113,7 @@ class TlsConnectionIT {
 
         final SSLHandshakeException exception = assertThrows(SSLHandshakeException.class,
                 () -> connection.getResponseCode());
-        assertThat(exception.getMessage(), equalTo("No subject alternative names present"));
+        assertThat(exception.getMessage(), either(equalTo("No subject alternative names present")).or(equalTo("No name matching localhost found")));
     }
 
     @Test
@@ -148,7 +149,7 @@ class TlsConnectionIT {
         final SSLContext sslContext = createSslContextWithCertificate();
 
         final IOException exception = assertThrows(IOException.class, () -> sendRequestWithHttpClient(sslContext));
-        assertThat(exception.getMessage(), equalTo("No subject alternative names present"));
+        assertThat(exception.getMessage(), either(equalTo("No subject alternative names present")).or(equalTo("No name matching localhost found")));
     }
 
     private HttpResponse<String> sendRequestWithHttpClient(final SSLContext sslContext)

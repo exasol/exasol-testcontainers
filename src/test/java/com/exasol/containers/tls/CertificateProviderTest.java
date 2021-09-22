@@ -94,7 +94,7 @@ class CertificateProviderTest {
         simulateTlsCert(INVALID_CERTIFICATE_CONTENT);
 
         assertThrowsWithMessage(IllegalStateException.class, () -> this.certificateProvider.getCertificate(),
-                "F-ETC-7: Error parsing certificate '" + INVALID_CERTIFICATE_CONTENT + "'");
+                startsWith("F-ETC-7: Error parsing certificate '" + INVALID_CERTIFICATE_CONTENT + "'."));
     }
 
     @Test
