@@ -124,7 +124,7 @@ class TlsConnectionIT {
 
         final HttpsURLConnection connection = prepareHttpsURLConnection(sslContext, hostnameVerifier);
 
-        assertThat(connection.getResponseCode(), equalTo(401));
+        assertThat(connection.getResponseCode(), either(equalTo(401)).or(equalTo(404)));
     }
 
     private HttpsURLConnection prepareHttpsURLConnection(final SSLContext sslContext,
