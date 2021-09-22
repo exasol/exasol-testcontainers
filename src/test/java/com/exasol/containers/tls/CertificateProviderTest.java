@@ -136,7 +136,7 @@ class CertificateProviderTest {
     }
 
     @Test
-    void testBytesToHexAddsPaddingToFingerprint() {
+    void testBytesToHexAddsPaddingToFingerprintWhenFirstByteIsSingleDigit() {
         assertBytesToHex(
                 new byte[] { 0x2, 0x29, (byte) 0xbd, (byte) 0xb8, 0x15, (byte) 0xfd, (byte) 0xfe, (byte) 0xc1, 0x73,
                         0x18, 0x18, (byte) 0xb2, 0x6c, (byte) 0xaf, 0x44, 0x21, 0x59, (byte) 0x88, 0x35, (byte) 0xce,
@@ -145,8 +145,38 @@ class CertificateProviderTest {
                 "0229bdb815fdfec1731818b26caf4421598835ce44288c28f6e59c7154812af1");
     }
 
+    @Test
+    void testBytesToHexWithPaddingNoPaddingNecessary() {
+        assertBytesToHexWithPadding(new byte[] { 1, 2, 3 }, 3, "010203");
+    }
+
+    @Test
+    void testBytesToHexWithPaddingPaddingRequired() {
+        assertBytesToHexWithPadding(new byte[] { 1, 2, 3 }, 5, "0000010203");
+    }
+
+    @Test
+    void testBytesToHexWithPaddingPaddingRequiredFirstByteZero() {
+        assertBytesToHexWithPadding(new byte[] { 0, 1, 2, 3 }, 5, "0000010203");
+    }
+
+    @Test
+    void testBytesToHexWithPaddingAddsPaddingWhenFirstByteIsZero() {
+        assertBytesToHexWithPadding(
+                new byte[] { 0x0, 0x29, (byte) 0xbd, (byte) 0xb8, 0x15, (byte) 0xfd, (byte) 0xfe, (byte) 0xc1, 0x73,
+                        0x18, 0x18, (byte) 0xb2, 0x6c, (byte) 0xaf, 0x44, 0x21, 0x59, (byte) 0x88, 0x35, (byte) 0xce,
+                        0x44, 0x28, (byte) 0x8c, 0x28, (byte) 0xf6, (byte) 0xe5, (byte) 0x9c, 0x71, 0x54, (byte) 0x81,
+                        0x2a, (byte) 0xf1 }, //
+                32, //
+                "0029bdb815fdfec1731818b26caf4421598835ce44288c28f6e59c7154812af1");
+    }
+
     private void assertBytesToHex(final byte[] bytes, final String expectedHex) {
         assertThat(CertificateProvider.bytesToHex(bytes), equalTo(expectedHex));
+    }
+
+    private void assertBytesToHexWithPadding(final byte[] bytes, final int padding, final String expectedHex) {
+        assertThat(CertificateProvider.bytesToHexWithPadding(bytes, padding), equalTo(expectedHex));
     }
 
     @Test

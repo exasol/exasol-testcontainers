@@ -102,7 +102,7 @@ public class CertificateProvider {
     public Optional<String> getSha256Fingerprint() {
         return getEncodedCertificate() //
                 .map(CertificateProvider::sha256) //
-                .map(CertificateProvider::bytesToHex);
+                .map(bytes -> bytesToHexWithPadding(bytes, 32));
     }
 
     private Optional<byte[]> getEncodedCertificate() {
@@ -129,6 +129,14 @@ public class CertificateProvider {
                     .message("Unable to calculate SHA-256 of certificate content.").ticketMitigation().toString(),
                     exception);
         }
+    }
+
+    static String bytesToHexWithPadding(final byte[] bytes, final int byteCount) {
+        final String hex = bytesToHex(bytes);
+        if (hex.length() >= (byteCount * 2)) {
+            return hex;
+        }
+        return "0".repeat((byteCount * 2) - hex.length()) + hex;
     }
 
     static String bytesToHex(final byte[] bytes) {
