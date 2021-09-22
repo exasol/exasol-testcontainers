@@ -2,7 +2,6 @@ package com.exasol.clusterlogs;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -16,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ExecResultFactory;
+
+import com.exasol.testutil.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
 class LogPatternDetectorTest {
@@ -48,7 +49,8 @@ class LogPatternDetectorTest {
             throws UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(any())).thenThrow(new InterruptedException("expected"));
 
-        assertThrows(IllegalStateException.class, () -> this.detector.getActualLog());
+        ExceptionAssertions.assertThrowsWithMessage(IllegalStateException.class, () -> this.detector.getActualLog(),
+                "InterruptedException when reading log file content");
     }
 
     @Test
@@ -56,10 +58,8 @@ class LogPatternDetectorTest {
             throws UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(any())).thenThrow(new IOException("expected"));
 
-        final UncheckedIOException exception = assertThrows(UncheckedIOException.class,
-                () -> this.detector.getActualLog());
-        assertThat(exception.getMessage(),
-                equalTo("F-ETC-6: Exception reading content of file(s) '" + LOG_PATH + "'/'" + LOG_NAME_PATTERN + "'"));
+        ExceptionAssertions.assertThrowsWithMessage(UncheckedIOException.class, () -> this.detector.getActualLog(),
+                "F-ETC-6: Exception reading content of file(s) '" + LOG_PATH + "'/'" + LOG_NAME_PATTERN + "'");
     }
 
     @Test

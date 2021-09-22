@@ -1,5 +1,7 @@
 package com.exasol.containers;
 
+import static com.exasol.errorreporting.ExaError.messageBuilder;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
@@ -29,15 +31,19 @@ public class ContainerFileOperations {
         try {
             final Container.ExecResult result = this.container.execInContainer(outputCharset, "cat", pathInContainer);
             if (!result.getStderr().isBlank()) {
-                throw new ExasolContainerException(
-                        "Error reading file '" + pathInContainer + "': '" + result.getStderr().trim() + "'", null);
+                final String errorMessage = result.getStderr().trim();
+                throw new ExasolContainerException(messageBuilder("F-ETC-10")
+                        .message("Unable to read file {{path}} from container. Error message: {{errorMessage}}.")
+                        .parameter("path", pathInContainer, "path inside the container")
+                        .parameter("errorMessage", errorMessage, "error message returned by command").toString(), null);
             }
             return result.getStdout();
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("InterruptedException when reading file content", exception);
         } catch (final IOException exception) {
-            throw new UncheckedIOException("Exception reading content of file '" + pathInContainer + "'", exception);
+            throw new UncheckedIOException(messageBuilder("F-ETC-11")
+                    .message("Unable to read file {{path}} from container.", pathInContainer).toString(), exception);
         }
     }
 }

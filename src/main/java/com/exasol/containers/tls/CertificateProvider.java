@@ -100,7 +100,9 @@ public class CertificateProvider {
      *         configuration exists or the certificate file does not exist
      */
     public Optional<String> getSha256Fingerprint() {
-        return getEncodedCertificate().map(CertificateProvider::sha256).map(CertificateProvider::bytesToHex);
+        return getEncodedCertificate() //
+                .map(CertificateProvider::sha256) //
+                .map(CertificateProvider::bytesToHex);
     }
 
     private Optional<byte[]> getEncodedCertificate() {
@@ -112,8 +114,8 @@ public class CertificateProvider {
             return Optional.of(certificate.get().getEncoded());
         } catch (final CertificateEncodingException exception) {
             throw new IllegalStateException(messageBuilder("F-ETC-8")
-                    .message("Unable get encoded certificate for {{certificate}}.", certificate.get()).ticketMitigation()
-                    .toString(), exception);
+                    .message("Unable get encoded certificate for {{certificate}}.", certificate.get())
+                    .ticketMitigation().toString(), exception);
         }
     }
 

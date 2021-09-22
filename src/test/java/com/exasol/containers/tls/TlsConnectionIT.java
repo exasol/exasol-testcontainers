@@ -1,10 +1,7 @@
 package com.exasol.containers.tls;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.either;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -25,6 +22,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.*;
+import com.exasol.testutil.ExceptionAssertions;
 
 @Tag("slow")
 @Testcontainers
@@ -98,10 +96,8 @@ class TlsConnectionIT {
             KeyStoreException, NoSuchAlgorithmException, CertificateException {
         final HttpsURLConnection connection = prepareHttpsURLConnection(null, null);
 
-        final SSLHandshakeException exception = assertThrows(SSLHandshakeException.class,
-                () -> connection.getResponseCode());
-        assertThat(exception.getMessage(), equalTo(
-                "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target"));
+        ExceptionAssertions.assertThrowsWithMessage(SSLHandshakeException.class, () -> connection.getResponseCode(),
+                "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target");
     }
 
     @Test
@@ -111,9 +107,9 @@ class TlsConnectionIT {
 
         final HttpsURLConnection connection = prepareHttpsURLConnection(sslContext, null);
 
-        final SSLHandshakeException exception = assertThrows(SSLHandshakeException.class,
-                () -> connection.getResponseCode());
-        assertThat(exception.getMessage(), either(equalTo("No subject alternative names present")).or(equalTo("No name matching localhost found")));
+        ExceptionAssertions.assertThrowsWithMessage(SSLHandshakeException.class, () -> connection.getResponseCode(),
+                either(equalTo("No subject alternative names present"))
+                        .or(equalTo("No name matching localhost found")));
     }
 
     @Test
@@ -148,8 +144,9 @@ class TlsConnectionIT {
 
         final SSLContext sslContext = createSslContextWithCertificate();
 
-        final IOException exception = assertThrows(IOException.class, () -> sendRequestWithHttpClient(sslContext));
-        assertThat(exception.getMessage(), either(equalTo("No subject alternative names present")).or(equalTo("No name matching localhost found")));
+        ExceptionAssertions.assertThrowsWithMessage(IOException.class, () -> sendRequestWithHttpClient(sslContext),
+                either(equalTo("No subject alternative names present"))
+                        .or(equalTo("No name matching localhost found")));
     }
 
     private HttpResponse<String> sendRequestWithHttpClient(final SSLContext sslContext)

@@ -244,9 +244,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        if ((this.clusterConfiguration != null) && getDockerImageReference().getMajor() >= 7) {
+        if ((this.clusterConfiguration != null) && (getDockerImageReference().getMajor() >= 7)) {
             final Optional<String> fingerprint = this.certificateProvider.getSha256Fingerprint();
-            if(fingerprint.isEmpty()) {
+            if (fingerprint.isEmpty()) {
                 return getJdbcUrlWithoutFingerprint();
             }
             return getJdbcUrlWithFingerprint(fingerprint.get());
@@ -254,15 +254,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             return getJdbcUrlWithoutFingerprint();
         }
     }
-    
-    private String getJdbcUrlWithFingerprint(String fingerprint) {
-        System.out.println("With fingerprint "+fingerprint);
+
+    private String getJdbcUrlWithFingerprint(final String fingerprint) {
         return "jdbc:exa:" + getContainerIpAddress() + "/" + fingerprint + ":" + getFirstMappedDatabasePort()
                 + ";validateservercertificate=1";
     }
 
     private String getJdbcUrlWithoutFingerprint() {
-        System.out.println("without fingerpritn");
         return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
                 + ";validateservercertificate=0";
     }
