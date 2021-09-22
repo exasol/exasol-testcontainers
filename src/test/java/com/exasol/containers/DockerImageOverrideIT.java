@@ -14,7 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Tag("slow")
 @Testcontainers
 class DockerImageOverrideIT {
-    private static final String NON_RECENT_VERSION = "6.2.11";
+    private static final String NON_RECENT_VERSION = "7.0.12";
 
     // [itest->dsn~override-docker-image-via-java-property~1]
     @Test
