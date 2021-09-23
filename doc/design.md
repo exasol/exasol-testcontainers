@@ -582,9 +582,8 @@ In integration tests run with the ETC, this is important, because reliable tests
 
 2. Checking via HTTP `GET`. Unfortunately this variant is not reliable.
 
-Needs: impl, itest
 
-## How to Use HTTPS connections with Self-Signed TLS Certificates
+## How to use HTTPS Connections with Self-Signed TLS Certificates
 
 At startup the container generates a self signed TLS certificate and uses it to encrypt database and HTTPS connections. The certificate contains an invalid hostname, that is why hostname validation will fail. To solve this we would need to inject a new certificate with correct hostname into the container.
 

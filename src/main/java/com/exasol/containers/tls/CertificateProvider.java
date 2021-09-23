@@ -26,6 +26,13 @@ public class CertificateProvider {
     private final Supplier<Optional<ClusterConfiguration>> configProvider;
     private final ContainerFileOperations fileOperations;
 
+    /**
+     * Create a new instance.
+     *
+     * @param configProvider {@link Supplier} for {@link ClusterConfiguration}. May return an empty optional in case no
+     *                       configuration is available.
+     * @param fileOperations file operations allowing access to the containers files
+     */
     public CertificateProvider(final Supplier<Optional<ClusterConfiguration>> configProvider,
             final ContainerFileOperations fileOperations) {
         this.configProvider = configProvider;

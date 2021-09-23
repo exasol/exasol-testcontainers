@@ -24,7 +24,6 @@ import com.exasol.containers.ExasolContainerException;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateProviderTest {
-
     private static final String INVALID_CERTIFICATE_CONTENT = "invalid certificate content";
     private static final String TLS_CERT_PATH = "tls cert path";
     @Mock
