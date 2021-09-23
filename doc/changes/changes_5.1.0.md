@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 5.1.0, released 2021-09-23
+# Test containers for Exasol on Docker 5.1.0, released 2021-09-24
 
 Code name: Support TLS Certificates
 
