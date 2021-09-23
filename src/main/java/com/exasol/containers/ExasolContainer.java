@@ -71,7 +71,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
-    private int connectionWaitTimeoutSeconds = 200;
+    private int connectionWaitTimeoutSeconds = 250;
     private ExasolDriverManager driverManager = null;
     private final ContainerStatusCache statusCache = new ContainerStatusCache(
             Path.of(System.getProperty("java.io.tmpdir")));
