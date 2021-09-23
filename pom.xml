@@ -125,7 +125,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
-            <version>7.1.0</version>
+            <version>7.1.1</version>
             <scope>runtime</scope>
         </dependency>
         <!-- Overrides Junit 4.12 which is used in test containers but contains a security issue: https://ossindex.sonatype.org/vuln/7ea56ad4-8a8b-4e51-8ed9-5aad83d8efb1 -->

@@ -16,6 +16,10 @@ Version 5.1.0 of the Exasol Testcontainers adds support for TLS encrypted connec
 
 ## Dependency Updates
 
+### Runtime Dependency Updates
+
+* Updated `com.exasol:exasol-jdbc:7.1.0` to `7.1.1`
+
 ### Plugin Dependency Updates
 
 * Updated `com.exasol:project-keeper-maven-plugin:1.1.0` to `1.2.0`
