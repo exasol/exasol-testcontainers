@@ -43,9 +43,7 @@ class CertificateProviderTest {
     @Test
     void testGetCertificateSucceeds() throws ExasolContainerException {
         simulateTlsCert(readResource("/ssl.crt"));
-
         final Optional<X509Certificate> certificate = this.certificateProvider.getCertificate();
-
         assertThat(certificate.isPresent(), is(true));
         assertThat(certificate.get(), notNullValue());
         assertThat(certificate.get().getIssuerDN().getName(), equalTo("CN=exacluster.local"));
@@ -70,9 +68,7 @@ class CertificateProviderTest {
     @Test
     void testGetCertificateReturnsEmptyOptionalForMissingConfiguration() throws ExasolContainerException {
         when(this.configSupplierMock.get()).thenReturn(Optional.empty());
-
         final Optional<X509Certificate> certificate = this.certificateProvider.getCertificate();
-
         assertThat(certificate.isPresent(), is(false));
     }
 
@@ -82,16 +78,13 @@ class CertificateProviderTest {
         when(this.clusterConfigMock.getTlsCertificatePath()).thenReturn(TLS_CERT_PATH);
         when(this.fileOperationsMock.readFile(TLS_CERT_PATH, StandardCharsets.UTF_8))
                 .thenThrow(new ExasolContainerException("expected", null));
-
         final Optional<X509Certificate> certificate = this.certificateProvider.getCertificate();
-
         assertThat(certificate.isPresent(), is(false));
     }
 
     @Test
     void testGetCertificateFailsForInvalidCertificate() throws ExasolContainerException {
         simulateTlsCert(INVALID_CERTIFICATE_CONTENT);
-
         assertThrowsWithMessage(IllegalStateException.class, () -> this.certificateProvider.getCertificate(),
                 startsWith("F-ETC-7: Error parsing certificate '" + INVALID_CERTIFICATE_CONTENT + "'."));
     }
@@ -99,14 +92,12 @@ class CertificateProviderTest {
     @Test
     void testGetCertificateReturnsEmptyOptionalWhenNoConfigurationAvailable() throws ExasolContainerException {
         when(this.configSupplierMock.get()).thenReturn(Optional.empty());
-
         assertThat(this.certificateProvider.getCertificate().isEmpty(), is(true));
     }
 
     @Test
     void testGetSha256Fingerprint() throws ExasolContainerException {
         simulateTlsCert(readResource("/ssl.crt"));
-
         final Optional<String> fingerprint = this.certificateProvider.getSha256Fingerprint();
         assertThat(fingerprint.isPresent(), is(true));
         assertThat(fingerprint.get(), equalTo("74d65659d86a6316b2b1ec395e83d8136cd0b26a121da4d128c4ba84f2ebf6d1"));
@@ -115,7 +106,6 @@ class CertificateProviderTest {
     @Test
     void testGetSha256FingerprintReturnsEmptyOptionalWhenNoConfigurationAvailable() throws ExasolContainerException {
         when(this.configSupplierMock.get()).thenReturn(Optional.empty());
-
         assertThat(this.certificateProvider.getSha256Fingerprint().isEmpty(), is(true));
     }
 

@@ -18,7 +18,6 @@ import com.exasol.containers.*;
 @Tag("slow")
 @Testcontainers
 class CertificateProviderIT {
-
     @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true).withRequiredServices(ExasolService.JDBC);
@@ -26,9 +25,7 @@ class CertificateProviderIT {
     @Test
     void testGetCertificate() {
         final Date now = new Date();
-
         final Optional<X509Certificate> optionalCertificate = CONTAINER.getTlsCertificate();
-
         final var certificate = optionalCertificate.get();
         assertAll(() -> assertThat(certificate, notNullValue()),
                 () -> assertThat(certificate.getIssuerDN().getName(), equalTo("CN=exacluster.local")),
@@ -41,7 +38,6 @@ class CertificateProviderIT {
     @Test
     void testGetSha256Fingerprint() {
         final Optional<String> fingerprint = createCertificateProvider().getSha256Fingerprint();
-
         assertThat(fingerprint.isPresent(), is(true));
         assertThat(fingerprint.get(), matchesPattern("\\w{64}"));
     }
