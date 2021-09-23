@@ -63,4 +63,14 @@ class ContainerFileOperationsTest {
                 () -> this.fileOperations.readFile(PATH, CHARSET),
                 "F-ETC-11: Unable to read file 'path' from container.");
     }
+
+    @Test
+    void testReadFileFailsWithInterruptedException()
+            throws ExasolContainerException, UnsupportedOperationException, IOException, InterruptedException {
+        when(this.containerMock.execInContainer(CHARSET, "cat", PATH)).thenThrow(new InterruptedException("expected"));
+
+        ExceptionAssertions.assertThrowsWithMessage(IllegalStateException.class,
+                () -> this.fileOperations.readFile(PATH, CHARSET),
+                "F-ETC-12: InterruptedException when reading file content");
+    }
 }

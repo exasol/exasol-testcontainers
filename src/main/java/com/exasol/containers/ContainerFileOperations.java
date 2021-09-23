@@ -40,7 +40,9 @@ public class ContainerFileOperations {
             return result.getStdout();
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("InterruptedException when reading file content", exception);
+            throw new IllegalStateException(
+                    messageBuilder("F-ETC-12").message("InterruptedException when reading file content").toString(),
+                    exception);
         } catch (final IOException exception) {
             throw new UncheckedIOException(messageBuilder("F-ETC-11")
                     .message("Unable to read file {{path}} from container.", pathInContainer).toString(), exception);
