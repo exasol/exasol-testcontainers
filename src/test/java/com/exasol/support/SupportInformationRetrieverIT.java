@@ -1,5 +1,6 @@
 package com.exasol.support;
 
+import static com.exasol.containers.ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolSeven;
 import static com.exasol.containers.ExasolService.UDF;
 import static com.exasol.containers.ExitType.*;
 import static com.exasol.support.SupportInformationRetriever.MONITORED_EXIT_PROPERTY;
@@ -17,8 +18,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +33,11 @@ import com.exasol.containers.ExitType;
 class SupportInformationRetrieverIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(SupportInformationRetrieverIT.class);
     private static final String SYSINFO_FILENAME = "sysinfo.txt";
+
+    @BeforeAll
+    static void beforeAll() {
+        assumeDockerDbVersionNotOverriddenToBelowExasolSeven();
+    }
 
     // [itest->dsn~configure-support-information-retriever-via-api~1]
     @Test
