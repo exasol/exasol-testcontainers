@@ -20,6 +20,7 @@ import org.testcontainers.shaded.com.google.common.io.Files;
 
 import com.exasol.bucketfs.*;
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolContainerAssumptions;
 
 @Tag("slow")
 @Testcontainers
@@ -33,6 +34,8 @@ class ExasolDriverManagerIT {
     @Test
     void testInstallDriver(@TempDir final Path tempDir)
             throws IOException, BucketAccessException, InterruptedException {
+        ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolSeven();
+
         final String expectedDriverContent = "expected driver content";
         final String fileName = "dummy_driver_" + UUID.randomUUID() + ".jar";
         final Path driverFile = tempDir.resolve(fileName);
