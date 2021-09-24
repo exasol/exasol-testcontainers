@@ -736,10 +736,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void collectSupportInformation(final ExitType exitType) {
-        if (this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 7)) {
+        if (this.dockerImageReference.hasMajor() && ((this.dockerImageReference.getMajor() >= 7)
+                || ((this.dockerImageReference.getMajor() == 6) && (this.dockerImageReference.getMinor() == 2)
+                        && (this.dockerImageReference.getFixVersion() >= 12)))) {
             this.supportInformationRetriever.run(exitType);
         } else {
-            LOGGER.info("Skipping support information retrieval for version {}, only supported with version >= 7",
+            LOGGER.info("Skipping support information retrieval for version {}, only supported with version >= 6.2.12",
                     this.dockerImageReference);
         }
     }
