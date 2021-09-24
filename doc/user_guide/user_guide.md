@@ -457,6 +457,42 @@ Check the method `getDockerNetworkInternalIpAddress()` in the `ExasolContainer` 
 
 If your are looking for an example, please check the integration test `ExaLoaderBetweenTwoContainersIT`.
 
+### Secure Connections with TLS
+
+Exasol uses TLS certificates to encrypt JDBC connection, bucket access and the RPC API. In a normal installation you can [configure a custom certificate](https://docs.exasol.com/administration/on-premise/access_management/tls_certificate.htm). The docker container automatically generates a new self-signed certificate at startup.
+
+#### Securing JDBC Connections
+
+The Exasol JDBC driver verifies the server's certificate by default or when option `validateservercertificate=1` is specified. If the server's hostname does not match the hostname specified in the certificate, the connection will fail. To avoid this, you can specify a fingerprint of the certificate in the JDBC URL.
+
+When startup is finished, ETC will automatically add this fingerprint the the JDBC URL returned by `ExasolContainer.getJdbcUrl()` and enable certificate validation. This is also true for all connections you create e.g. using `ExasolContainer.createConnection()`.
+
+#### Securing HTTPS Connections
+
+In order to connect via HTTPS (e.g. BucketFS or the RPC API) either can disable the certificate check completely using a custom `X509TrustManager` or add the container's self-signed certificate to the trust store. You can retrieve the certificate as a `java.security.cert.X509Certificate` with method `ExasolContainer.getTlsCertificate()` and then use it to create a `java.net.http.HttpClient`:
+
+```java
+X509Certificate certificate = CONTAINER.getTlsCertificate();
+
+KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+keyStore.load(null);
+keyStore.setCertificateEntry("caCert", certificate);
+
+TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+trustManagerFactory.init(keyStore);
+
+SSLContext sslContext = SSLContext.getInstance("TLS");
+sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+
+HttpClient httpClient = HttpClient.newBuilder().sslContext(sslContext).build();
+```
+
+In case the hostname specified in the certificate does not match the docker container's hostname, you may need to disable hostname verification by adding system property `jdk.internal.httpclient.disableHostnameVerification` with value `true`. We recommend starting the Java VM with argument `-Djdk.internal.httpclient.disableHostnameVerification=true` to avoid timing issues.
+
+**Note:** This disables hostname verification globally. You should not use this in a production environment.
+
+To use the certificate with `javax.net.ssl.HttpsURLConnection`, you need to call [setSSLSocketFactory()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/net/ssl/HttpsURLConnection.html#setSSLSocketFactory(javax.net.ssl.SSLSocketFactory)) and [setHostnameVerifier()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/net/ssl/HttpsURLConnection.html#setHostnameVerifier(javax.net.ssl.HostnameVerifier)).
+
 ## Installing Drivers for External Data Sources and Sinks
 
 You can install JDBC drivers that you can use in the ExaLoader (for `IMPORT` statements) and User Defined Functions (UDFs) like this:

@@ -76,6 +76,13 @@ class ConfigurationParserTest {
         assertThat(config.getAuthenticationToken(), equalTo("AuthToken"));
     }
 
+    @Test
+    void testGetTlsCertificatePath() {
+        final ClusterConfiguration config = parseConfiguration("[SSL]\n" //
+                + "    Cert = /path/to/ssl.crt\n");
+        assertThat(config.getTlsCertificatePath(), equalTo("/path/to/ssl.crt"));
+    }
+
     // The following situations should not occur, but we want to be fault-tolerant here.
     @ValueSource(strings = { "    Ignore this illegal line.", "Ignore this illegal line.",
             "    Ignore #this illegal line.", "=valueWithoutKey", "     " })

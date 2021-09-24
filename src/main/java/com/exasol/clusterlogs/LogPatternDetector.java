@@ -1,5 +1,7 @@
 package com.exasol.clusterlogs;
 
+import static com.exasol.errorreporting.ExaError.messageBuilder;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
@@ -106,12 +108,14 @@ public class LogPatternDetector {
                     "-name", this.logNamePattern, //
                     "-exec", "cat", "{}", "+");
             return result.getStdout();
-        } catch (final InterruptedException e) {
+        } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("InterruptedException when reading log file content", e);
-        } catch (final IOException e) {
-            throw new UncheckedIOException(
-                    "Exception reading content of file(s) " + this.logPath + "/" + this.logNamePattern, e);
+            throw new IllegalStateException("InterruptedException when reading log file content", exception);
+        } catch (final IOException exception) {
+            throw new UncheckedIOException(messageBuilder("F-ETC-6")
+                    .message("Exception reading content of file(s) {{logPath}}/{{logNamePattern}}", this.logPath,
+                            this.logNamePattern)
+                    .toString(), exception);
         }
     }
 }

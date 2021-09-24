@@ -9,7 +9,7 @@ interface LogEntryPatternVerifier {
     /**
      * Check if the given {@link String} contains the expected log entries.
      *
-     * @param text the {@link String} to check, may contain multiple lines.
+     * @param text {@link String} to check, may contain multiple lines.
      * @return <code>true</code> if the {@link String} contains the expected log entries, else <code>false</code>.
      */
     boolean isLogMessageFound(final String text);

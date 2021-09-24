@@ -12,9 +12,9 @@ import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -34,6 +34,7 @@ import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.status.ContainerStatus;
 import com.exasol.containers.status.ContainerStatusCache;
+import com.exasol.containers.tls.CertificateProvider;
 import com.exasol.containers.wait.strategy.BucketFsWaitStrategy;
 import com.exasol.containers.wait.strategy.UdfContainerWaitStrategy;
 import com.exasol.containers.workarounds.*;
@@ -65,11 +66,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private final LogPatternDetectorFactory detectorFactory;
     private Set<ExasolService> requiredServices = Set.of(ExasolService.values());
     private final ExaOperation exaOperation;
+    private final CertificateProvider certificateProvider;
     private TimeZone timeZone;
     private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
-    private int connectionWaitTimeoutSeconds = 200;
+    private int connectionWaitTimeoutSeconds = 250;
     private ExasolDriverManager driverManager = null;
     private final ContainerStatusCache statusCache = new ContainerStatusCache(
             Path.of(System.getProperty("java.io.tmpdir")));
@@ -115,6 +117,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.dockerImageReference = dockerImageReference;
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
+        final ContainerFileOperations containerFileOperations = new ContainerFileOperations(this);
+        this.certificateProvider = new CertificateProvider(this::getOptionalClusterConfiguration,
+                containerFileOperations);
         try {
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
@@ -239,6 +244,21 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
+        final Optional<String> fingerprint = this.certificateProvider.getSha256Fingerprint();
+        if ((this.clusterConfiguration != null) && (getDockerImageReference().getMajor() >= 7)
+                && fingerprint.isPresent()) {
+            return getJdbcUrlWithFingerprint(fingerprint.get());
+        } else {
+            return getJdbcUrlWithoutFingerprint();
+        }
+    }
+
+    private String getJdbcUrlWithFingerprint(final String fingerprint) {
+        return "jdbc:exa:" + getContainerIpAddress() + "/" + fingerprint + ":" + getFirstMappedDatabasePort()
+                + ";validateservercertificate=1";
+    }
+
+    private String getJdbcUrlWithoutFingerprint() {
         return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
                 + ";validateservercertificate=0";
     }
@@ -389,6 +409,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return this.clusterConfiguration;
     }
 
+    private Optional<ClusterConfiguration> getOptionalClusterConfiguration() {
+        return Optional.ofNullable(this.clusterConfiguration);
+    }
+
     /**
      * Get a bucket control object.
      *
@@ -460,9 +484,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void waitUntilContainerStarted() {
         try {
             waitUntilClusterConfigurationAvailable();
-            final Instant afterUtc = Instant.now();
             waitUntilStatementCanBeExecuted();
-            waitForBucketFs(afterUtc);
+            waitForBucketFs();
             waitForUdfContainer();
             LOGGER.info("Exasol container started after waiting for the following services to become available: {}",
                     this.requiredServices);
@@ -472,13 +495,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    protected void waitForBucketFs(final Instant afterUtc) {
+    protected void waitForBucketFs() {
         if (isServiceReady(BUCKETFS)) {
             LOGGER.debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
         } else {
             if (this.requiredServices.contains(BUCKETFS)) {
                 this.status.setServiceStatus(BUCKETFS, NOT_READY);
-                new BucketFsWaitStrategy(this.detectorFactory, afterUtc).waitUntilReady(this);
+                new BucketFsWaitStrategy(this.detectorFactory).waitUntilReady(this);
                 this.status.setServiceStatus(BUCKETFS, READY);
             } else {
                 this.status.setServiceStatus(BUCKETFS, NOT_CHECKED);
@@ -835,5 +858,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.supportInformationRetriever.monitorExit(exitType);
         this.supportInformationRetriever.mapTargetDirectory(targetDirectory);
         return this;
+    }
+
+    /**
+     * Read and convert the self-signed TLS certificate used by the database in the container for database connections
+     * and the RPC interface.
+     *
+     * @return the TLS certificate or an empty {@link Optional} when the certificate file does not exist.
+     */
+    public Optional<X509Certificate> getTlsCertificate() {
+        return this.certificateProvider.getCertificate();
     }
 }

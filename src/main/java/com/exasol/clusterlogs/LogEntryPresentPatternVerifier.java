@@ -9,4 +9,9 @@ class LogEntryPresentPatternVerifier implements LogEntryPatternVerifier {
     public boolean isLogMessageFound(final String text) {
         return !text.isBlank();
     }
+
+    @Override
+    public String toString() {
+        return "LogEntryPresentPatternVerifier []";
+    }
 }

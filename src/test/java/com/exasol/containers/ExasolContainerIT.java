@@ -23,7 +23,8 @@ import com.exasol.config.ClusterConfiguration;
 @Testcontainers
 class ExasolContainerIT {
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>();
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
+            .withReuse(true).withRequiredServices(ExasolService.JDBC);
 
     // [itest->dsn~exasol-container-uses-privileged-mode~1]
     @Test
@@ -37,8 +38,21 @@ class ExasolContainerIT {
     }
 
     @Test
-    void testGetJdbcUrl() throws Exception {
-        assertThat(CONTAINER.getJdbcUrl(), matchesPattern("jdbc:exa:localhost:\\d{1,5};validateservercertificate=0"));
+    void testGetJdbcUrlContainsFingerprint() throws Exception {
+        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
+
+        final String zeroTo255 = "([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])";
+        final String ipRegexp = zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255;
+        final String hostNamePattern = "(localhost|" + ipRegexp + ")";
+        assertThat(CONTAINER.getJdbcUrl(),
+                matchesPattern("jdbc:exa:" + hostNamePattern + "/\\w{64}:\\d{1,5};validateservercertificate=1"));
+    }
+
+    @Test
+    void testJdbcUrlValidatesServerCertificate() throws SQLException {
+        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
+
+        assertThat(CONTAINER.getJdbcUrl(), endsWith(";validateservercertificate=1"));
     }
 
     @Test
