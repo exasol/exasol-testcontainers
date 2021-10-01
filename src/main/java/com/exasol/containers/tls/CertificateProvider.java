@@ -63,7 +63,6 @@ public class CertificateProvider {
         final String certPath = configuration.get().getTlsCertificatePath();
         try {
             final String certContent = this.fileOperations.readFile(certPath, StandardCharsets.UTF_8);
-            LOGGER.debug("Read certificate from file {} contains {} chars", certPath, certContent.length());
             return Optional.of(certContent);
         } catch (final ExasolContainerException exception) {
             LOGGER.info("Certificate does not exist yet, returning empty Optional. {} {}",
@@ -75,28 +74,13 @@ public class CertificateProvider {
     private X509Certificate parseCertificate(final String certContent) {
         try (final InputStream is = new ByteArrayInputStream(certContent.getBytes(StandardCharsets.UTF_8))) {
             final CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            final X509Certificate certificate = (X509Certificate) cf.generateCertificate(is);
-            logCertificate(certificate);
-            return certificate;
+            return (X509Certificate) cf.generateCertificate(is);
         } catch (final CertificateException | IOException exception) {
             throw new IllegalStateException(
                     messageBuilder("F-ETC-7").message("Error parsing certificate {{certificateContent}}.", certContent)
                             .ticketMitigation().toString(),
                     exception);
         }
-    }
-
-    private void logCertificate(final X509Certificate certificate) {
-        if (!LOGGER.isDebugEnabled()) {
-            return;
-        }
-        LOGGER.debug("Certificate type: {}, version: {}", certificate.getType(), certificate.getVersion());
-        LOGGER.debug("Certificate issuerDN: '{}', subjectDN: '{}'", certificate.getIssuerDN(),
-                certificate.getSubjectDN());
-        LOGGER.debug("Certificate sigAlgName: {}, sigAlgOID: {}", certificate.getSigAlgName(),
-                certificate.getSigAlgOID());
-        LOGGER.debug("Certificate valid not before: {}, not after: {}", certificate.getNotBefore(),
-                certificate.getNotAfter());
     }
 
     /**
