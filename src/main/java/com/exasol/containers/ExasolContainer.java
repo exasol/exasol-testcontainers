@@ -15,8 +15,8 @@ import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -608,21 +608,24 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
-        final long expiry = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.connectionWaitTimeoutSeconds);
-        while (System.currentTimeMillis() < expiry) {
+        final Instant before = Instant.now();
+        final Instant expiry = before.plusSeconds(this.connectionWaitTimeoutSeconds);
+        while (Instant.now().isBefore(expiry)) {
             if (isConnectionAvailable()) {
                 return;
             }
         }
+        final Duration timeoutAfter = Duration.between(before, Instant.now());
         throw new ContainerLaunchException(ExaError.messageBuilder("F-ETC-5")
-                .message("Exasol container start-up timed out trying connection to {{url}} using query {{query}}."
-                        + " Last connection exception was: {{exception}}")
+                .message("Exasol container start-up timed out trying connection to {{url}} using query {{query}}"
+                        + " after {{after}} seconds. Last connection exception was: {{exception}}")
                 .parameter("url", getJdbcUrl(), "JDBC URL of the connection to the Exasol Testcontainer")
                 .parameter("query", getTestQueryString(), "Query used to test the connection")
+                .parameter("after", timeoutAfter.toSeconds() + "." + timeoutAfter.toSecondsPart())
                 .parameter("exception",
                         (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
                         "exception thrown on last connection attempt")
-                .toString(), this.lastConnectionException);
+                .toString());
     }
 
     private void sleepBeforeNextConnectionAttempt() {
