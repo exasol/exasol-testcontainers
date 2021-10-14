@@ -14,6 +14,4 @@ Code name: Timeout fixes
 
 ### Test Dependency Updates
 
-* Updated `org.junit.jupiter:junit-jupiter-engine:5.7.2` to `5.8.1`
-* Updated `org.junit.jupiter:junit-jupiter-params:5.7.2` to `5.8.1`
 * Updated `org.mockito:mockito-junit-jupiter:3.12.4` to `4.0.0`
