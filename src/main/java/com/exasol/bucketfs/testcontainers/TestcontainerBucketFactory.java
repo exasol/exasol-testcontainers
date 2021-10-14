@@ -57,7 +57,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
                 .serviceName(serviceName) //
                 .name(bucketName) //
                 .ipAddress(this.ipAddress) //
-                .httpPort(mapPort(serviceConfiguration.getHttpPort())) //
+                .port(mapPort(serviceConfiguration.getHttpPort())) //
                 .readPassword(bucketConfiguration.getReadPassword()) //
                 .writePassword(bucketConfiguration.getWritePassword()) //
                 .build());

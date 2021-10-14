@@ -608,9 +608,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void waitUntilStatementCanBeExecuted() {
         sleepBeforeNextConnectionAttempt();
-        final long beforeConnectionCheck = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - beforeConnectionCheck) < TimeUnit.MILLISECONDS
-                .toMillis(this.connectionWaitTimeoutSeconds)) {
+        final long expiry = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.connectionWaitTimeoutSeconds);
+        while (System.currentTimeMillis() < expiry) {
             if (isConnectionAvailable()) {
                 return;
             }
