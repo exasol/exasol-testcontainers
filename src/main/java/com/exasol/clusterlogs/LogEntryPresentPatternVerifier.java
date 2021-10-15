@@ -1,7 +1,7 @@
 package com.exasol.clusterlogs;
 
 /**
- * This {@link LogEntryPatternVerifier} only ensures that log entries are found, i.e. the log is not empty.
+ * This {@class LogEntryPresentPatternVerifier} only ensures that log entries are found, i.e. the log is not empty.
  */
 class LogEntryPresentPatternVerifier implements LogEntryPatternVerifier {
 

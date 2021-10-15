@@ -9,3 +9,5 @@
 *.iml
 
 /.DS_Store
+.dbeaver
+.settings/org.sonarlint.eclipse.core.prefs
