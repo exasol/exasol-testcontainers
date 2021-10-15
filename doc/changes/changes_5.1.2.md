@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 5.1.2, released 2021-10-??
+# Test containers for Exasol on Docker 5.1.2, released 2021-10-15
 
 Code name: Timeout fixes
 
