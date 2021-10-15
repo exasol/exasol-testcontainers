@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 5.1.1, released 2021-10-12
+# Test containers for Exasol on Docker 5.1.1, released 2021-10-15
 
 Code name: Reduced log verbosity and fixed connection timeout
 
