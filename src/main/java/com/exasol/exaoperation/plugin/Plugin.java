@@ -23,6 +23,7 @@ import com.exasol.exaoperation.ExaOperationEmulatorException;
  * </p>
  */
 public class Plugin {
+    /** Plugin package prefix */
     public static final String PLUGIN_PACKAGE_PREFIX = "Plugin.";
     private static final Logger LOGGER = LoggerFactory.getLogger(Plugin.class);
     @SuppressWarnings("squid:S4784") // This is a test framework RegEx DoS attacks are unrealistic since this would mean

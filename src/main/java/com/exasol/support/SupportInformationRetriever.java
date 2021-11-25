@@ -18,7 +18,9 @@ import com.exasol.errorreporting.ExaError;
  * Manages getting support information (like cluster logs, configuration settings and core-dumps) from the database.
  */
 public class SupportInformationRetriever {
+    /** Target directory where support information packages will be stored */
     public static final String TARGET_DIRECTORY_PROPERTY = "com.exasol.containers.support_information_target_dir";
+    /** Name of the property that allows overriding the monitored container exit */
     public static final String MONITORED_EXIT_PROPERTY = "com.exasol.containers.monitored_exit";
     static final String SUPPORT_ARCHIVE_PREFIX = "exacluster_debuginfo_";
     private static final String EXASUPPORT_EXECUTABLE = "exasupport";

@@ -20,6 +20,12 @@ public class DatabaseServiceException extends RuntimeException {
         this.databaseName = databaseName;
     }
 
+    /**
+     * Create a new instance of a {@link DatabaseServiceException}.
+     *
+     * @param databaseName name of the affected database
+     * @param message      error message
+     */
     public DatabaseServiceException(final String databaseName, final String message) {
         super(message);
         this.databaseName = databaseName;

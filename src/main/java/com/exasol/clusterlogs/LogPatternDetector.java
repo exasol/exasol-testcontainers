@@ -43,7 +43,7 @@ public class LogPatternDetector {
 
     /**
      * Check whether a certain pattern appears in a log message.
-     * <h2>Implementation notes</h2>
+     * <h4>Implementation notes</h4>
      * <p>
      * We use {@code find} to locate the log file(s) matching the filename search pattern. This {@code find} command
      * then executes a command that searches the files.

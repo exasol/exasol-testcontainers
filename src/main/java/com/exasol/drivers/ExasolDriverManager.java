@@ -85,6 +85,11 @@ public class ExasolDriverManager {
         }
     }
 
+    /**
+     * Get a list of all installed drivers.
+     *
+     * @return list of installed drivers
+     */
     public Collection<DatabaseDriver> getDrivers() {
         return this.installedDrivers.values();
     }

@@ -219,15 +219,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    public static class PortDetectionException extends UnsupportedOperationException {
-        private static final long serialVersionUID = -1871794026177194823L;
-
-        public PortDetectionException(final String service) {
-            super("Could not detect internal " + service + " port for custom image. "
-                    + "Please specify the port explicitly using withExposedPorts().");
-        }
-    }
-
     @Override
     public Set<Integer> getLivenessCheckPortNumbers() {
         return Set.of(getFirstMappedDatabasePort());
@@ -495,6 +486,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
+    /**
+     * Wait for BucketFS to become operational.
+     */
     protected void waitForBucketFs() {
         if (isServiceReady(BUCKETFS)) {
             LOGGER.debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
@@ -509,6 +503,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
+    /**
+     * Wait until the UDF container is available.
+     */
     protected void waitForUdfContainer() {
         if (isServiceReady(UDF)) {
             LOGGER.debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
@@ -570,6 +567,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.statusCache.write(this.getContainerId(), this.status);
     }
 
+    /**
+     * Wait until we can read from the Exasol cluster configuration.
+     */
     protected void waitUntilClusterConfigurationAvailable() {
         if (!this.reused) {
             LOGGER.debug("Waiting for cluster configuration to become available.");

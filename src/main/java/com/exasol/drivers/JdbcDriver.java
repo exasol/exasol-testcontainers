@@ -91,6 +91,9 @@ public class JdbcDriver implements DatabaseDriver {
                 + "INSERTSIZE=-1";
     }
 
+    /**
+     * Builder for {@link JdbcDriver} instances.
+     */
     public static class Builder {
         private final String name;
         private String prefix;

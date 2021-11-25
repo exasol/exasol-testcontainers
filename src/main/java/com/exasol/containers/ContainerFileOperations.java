@@ -15,6 +15,11 @@ public class ContainerFileOperations {
 
     private final ExasolContainer<? extends ExasolContainer<?>> container;
 
+    /**
+     * Creates a new instance of the {@link ContainerFileOperations}.
+     * 
+     * @param container Container reference required executing commands inside the container.
+     */
     public ContainerFileOperations(final ExasolContainer<? extends ExasolContainer<?>> container) {
         this.container = container;
     }

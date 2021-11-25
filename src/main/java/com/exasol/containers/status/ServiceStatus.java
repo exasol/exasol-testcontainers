@@ -6,7 +6,10 @@ import java.io.Serializable;
  * Status of a service (like BucketFs).
  */
 public enum ServiceStatus implements Serializable {
-    NOT_READY, // service is no available yet
-    READY, // service can be used
-    NOT_CHECKED // service state has not yet been determined
+    /** service is no available yet */
+    NOT_READY,
+    /** service can be used */
+    READY,
+    /** service state has not yet been determined */
+    NOT_CHECKED
 }
