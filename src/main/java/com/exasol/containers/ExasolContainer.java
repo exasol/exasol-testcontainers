@@ -51,9 +51,17 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
+/**
+ * Exasol-specific extension of the {@link JdbcDatabaseContainer} concept.
+ * <p>
+ * Adds fine-grained service readiness checks, BucketFS access, driver management and a lot more Exasol-specific
+ * functions on top of basic JDBC connection support.
+ * </p>
+ *
+ * @param <T> container type self reference
+ */
 // [external->dsn~testcontainer-framework-controls-docker-image-download~1]
 // [impl->dsn~exasol-container-controls-docker-container~1]
-
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
