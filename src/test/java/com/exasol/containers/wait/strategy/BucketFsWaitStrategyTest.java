@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
+import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.containers.ExasolContainerConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,7 +24,7 @@ class BucketFsWaitStrategyTest extends AbstractServiceWaitStrategyTest {
 
     @Override
     protected WaitStrategy createWaitStrategy(final Instant afterUtc) {
-        return new BucketFsWaitStrategy(getDetectorFactory());
+        return new ShortTimeoutBucketFsWaitStrategy(getDetectorFactory());
     }
 
     @Override
@@ -34,5 +35,19 @@ class BucketFsWaitStrategyTest extends AbstractServiceWaitStrategyTest {
     @Override
     protected String getLogFilenamePattern() {
         return ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
+    }
+
+    /**
+     * This class is used to reduce the timeout and speed up the tests.
+     */
+    static class ShortTimeoutBucketFsWaitStrategy extends BucketFsWaitStrategy {
+        public ShortTimeoutBucketFsWaitStrategy(final LogPatternDetectorFactory detectorFactory) {
+            super(detectorFactory);
+        }
+
+        @Override
+        protected long getWaitTimeOutMilliseconds() {
+            return 2000;
+        }
     }
 }

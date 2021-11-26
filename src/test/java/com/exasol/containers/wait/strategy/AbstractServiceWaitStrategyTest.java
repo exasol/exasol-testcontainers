@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -66,7 +65,8 @@ abstract class AbstractServiceWaitStrategyTest {
         assertTimeout(Duration.ofMillis(1500), () -> createWaitStrategy(AFTER_UTC).waitUntilReady(null));
     }
 
-    @Tag("slow")
+    // This test can take very long, depending on the timeout configured in the tested class.
+    // It is therefore recommended to reduce the timeout in the test.
     @Test
     void testWaitUntilReadyTimesOut() throws IOException, InterruptedException {
         when(this.detectorMock.isPatternPresent()).thenReturn(false);
