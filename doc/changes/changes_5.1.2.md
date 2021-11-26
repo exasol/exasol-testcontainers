@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 5.1.2, released 2021-11-25
+# Test containers for Exasol on Docker 5.1.2, released 2021-11-26
 
 Code name: 5.1.2 -- Dependency updates
 
