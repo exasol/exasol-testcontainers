@@ -63,6 +63,11 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
                 + this.detector.getActualLog() + "\"");
     }
 
+    /**
+     * Get the timeout in milliseconds.
+     *
+     * @return timeout in milliseconds
+     */
     protected long getWaitTimeOutMilliseconds() {
         return WAIT_DURATION_IN_MILLISECONDS;
     }

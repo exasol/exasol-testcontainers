@@ -51,9 +51,17 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.model.ContainerNetwork;
 
+/**
+ * Exasol-specific extension of the {@link JdbcDatabaseContainer} concept.
+ * <p>
+ * Adds fine-grained service readiness checks, BucketFS access, driver management and a lot more Exasol-specific
+ * functions on top of basic JDBC connection support.
+ * </p>
+ *
+ * @param <T> container type self reference
+ */
 // [external->dsn~testcontainer-framework-controls-docker-image-download~1]
 // [impl->dsn~exasol-container-controls-docker-container~1]
-
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
@@ -216,15 +224,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             }
         } else {
             throw (new PortDetectionException("database"));
-        }
-    }
-
-    public static class PortDetectionException extends UnsupportedOperationException {
-        private static final long serialVersionUID = -1871794026177194823L;
-
-        public PortDetectionException(final String service) {
-            super("Could not detect internal " + service + " port for custom image. "
-                    + "Please specify the port explicitly using withExposedPorts().");
         }
     }
 
@@ -495,6 +494,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
+    /**
+     * Wait for BucketFS to become operational.
+     */
     protected void waitForBucketFs() {
         if (isServiceReady(BUCKETFS)) {
             LOGGER.debug("BucketFS marked running in container status cache. Skipping startup monitoring.");
@@ -509,6 +511,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
+    /**
+     * Wait until the UDF container is available.
+     */
     protected void waitForUdfContainer() {
         if (isServiceReady(UDF)) {
             LOGGER.debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
@@ -570,6 +575,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.statusCache.write(this.getContainerId(), this.status);
     }
 
+    /**
+     * Wait until we can read from the Exasol cluster configuration.
+     */
     protected void waitUntilClusterConfigurationAvailable() {
         if (!this.reused) {
             LOGGER.debug("Waiting for cluster configuration to become available.");

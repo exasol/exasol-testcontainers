@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Manager for automatically applied workarounds for container version quirks.
+ */
 public class WorkaroundManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkaroundManager.class);
     private final Workaround[] workarounds;
