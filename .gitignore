@@ -30,3 +30,5 @@ pom.xml.versionsBackup
 *.orig
 *.old
 *.md.html
+/.apt_generated/
+/.apt_generated_tests/
