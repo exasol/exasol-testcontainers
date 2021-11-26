@@ -1,10 +1,16 @@
 # Test containers for Exasol on Docker 5.1.2, released 2021-11-26
 
-Code name: 5.1.2 -- Dependency updates
+Code name: 5.1.2 -- Dependency updates and test speed improvements
+
+In version 5.1.2 of the Exasol Testcontainers we sped up the tests and updated the dependencies to the general test containers.
 
 ## Features
 
-* #174: Upgaded `testcontainers` to 1.16.2 to fix security issue.
+* #174: Upgraded `testcontainers` to 1.16.2 to fix security issue.
+
+## Refactoring
+
+* #165: Sped up test for wait strategies.
 
 ## Dependency Updates
 
