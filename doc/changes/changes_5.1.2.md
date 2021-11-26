@@ -10,6 +10,7 @@ Code name: 5.1.2 -- Dependency updates
 
 ### Compile Dependency Updates
 
+* Removed `junit:junit:4.13.2`
 * Updated `org.testcontainers:jdbc:1.16.0` to `1.16.2`
 * Updated `org.testcontainers:testcontainers:1.16.0` to `1.16.2`
 
