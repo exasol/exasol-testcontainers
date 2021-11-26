@@ -27,4 +27,6 @@ Code name: 5.1.2 -- Dependency updates
 
 ### Plugin Dependency Updates
 
-* Updated `com.exasol:project-keeper-maven-plugin:1.2.0` to `1.3.3`
+* Updated `com.exasol:error-code-crawler-maven-plugin:0.6.0` to `0.7.1`
+* Updated `com.exasol:project-keeper-maven-plugin:1.2.0` to `1.3.4`
+* Updated `io.github.zlika:reproducible-build-maven-plugin:0.13` to `0.14`
