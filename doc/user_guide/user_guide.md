@@ -33,7 +33,7 @@ Note that you only need the `exasol-testcontainers` dependency in the `test` sco
 
 ### Exasol JDBC Driver as Maven Dependency
 
-You also need the Exasol JDBC Driver as this is not available on Maven Centra, you need to add the Exasol Artifactory as a source:
+You also need the Exasol JDBC Driver as this is not available on Maven Central, you need to add the Exasol Artifactory as a source:
 
 ```xml
 <repositories>
