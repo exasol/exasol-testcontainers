@@ -124,7 +124,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private static final int MINOR_DEPRECATED_VERSION = 2;
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
         super(DockerImageName.parse(dockerImageReference.toString()));
-        ExasolDatabaseSupportedVersionCheck(dockerImageReference);
+        //ExasolDatabaseSupportedVersionCheck(dockerImageReference);
         this.dockerImageReference = dockerImageReference;
 
         this.detectorFactory = new LogPatternDetectorFactory(this);
@@ -148,9 +148,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void ThrowDBVersionNotSupportedException() {
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-13")
-                    .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION + " and lower are no longer supported in this version of Exasol Testcontainers.").toString());
-        }
+        throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-13")
+                .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION + " and lower are no longer supported in this version of Exasol Testcontainers.").toString());
     }
 
     /**
