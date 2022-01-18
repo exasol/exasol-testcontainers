@@ -17,6 +17,7 @@ import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -141,7 +142,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void ExasolDatabaseSupportedVersionCheck(ExasolDockerImageReference dockerImageReference) {
-        if (dockerImageReference.getMajor() <= MAJOR_DEPRECATED_VERSION && dockerImageReference.getMinor() <= MINOR_DEPRECATED_VERSION ) {
+        if (dockerImageReference instanceof VersionBasedExasolDockerImageReference && dockerImageReference.getMajor() <= MAJOR_DEPRECATED_VERSION && dockerImageReference.getMinor() <= MINOR_DEPRECATED_VERSION ) {
+            ThrowDBVersionNotSupportedException();
+        }
+    }
+
+    private void ThrowDBVersionNotSupportedException() {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-13")
                     .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION + " and lower are no longer supported in this version of Exasol Testcontainers.").toString());
         }
