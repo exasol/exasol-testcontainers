@@ -492,7 +492,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.reused = reused;
         super.containerIsStarting(containerInfo, reused);
     }
-
+    @Override
+    public void start() {
+        super.start();
+        CheckClusterConfigurationForMinimumSupportedDBVersion();
+    }
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
@@ -604,7 +608,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void clusterConfigurationIsAvailable() {
         this.clusterConfiguration = readClusterConfiguration();
-        CheckClusterConfigurationForMinimumSupportedDBVersion();
         this.timeZone = this.clusterConfiguration.getTimeZone();
         if (this.timeZone == null) {
             throw new IllegalStateException(
