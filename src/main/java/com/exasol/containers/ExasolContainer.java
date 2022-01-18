@@ -599,10 +599,22 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void clusterConfigurationIsAvailable() {
         this.clusterConfiguration = readClusterConfiguration();
+        CheckClusterConfigurationForMinimumSupportedDBVersion();
         this.timeZone = this.clusterConfiguration.getTimeZone();
         if (this.timeZone == null) {
             throw new IllegalStateException(
                     "Unable to get timezone from cluster configuration. Log entry detection does not work without TZ.");
+        }
+    }
+
+    private void CheckClusterConfigurationForMinimumSupportedDBVersion() {
+        //do the check
+        String dbVersion = clusterConfiguration.getDBVersion();
+        String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
+        int majorVersion = Integer.parseInt(dbVersionSplit[0]);
+        int minorVersion = Integer.parseInt(dbVersionSplit[1]);
+        if (majorVersion <= MAJOR_DEPRECATED_VERSION && minorVersion <= MINOR_DEPRECATED_VERSION){
+            ThrowDBVersionNotSupportedException();
         }
     }
 
