@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 5.1.3, released 2022-??-??
+# Test containers for Exasol on Docker 5.1.3, released 2022-01-20
 
 Code name:
 
