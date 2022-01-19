@@ -22,19 +22,12 @@ class ExasolContainerVersionSpecificTest {
 
     @Test
     void testContainer62x() {
-        String dockerImage = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
-        System.clearProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
-        
-        ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1");
 
-        try {
-            var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
-            assertThat(exception.getMessage(), containsString("E-ETC-13"));
-        } finally {
-            if (dockerImage != null) {
-                System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, dockerImage);
-            }
-        }
+        ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1", false);
+
+        var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
+        assertThat(exception.getMessage(), containsString("E-ETC-13"));
+
     }
 
     @Test
