@@ -120,11 +120,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private static String getOverridableDockerImageName(final String dockerImageName) {
         return System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, dockerImageName);
     }
-    private static final int MAJOR_DEPRECATED_VERSION = 6;
-    private static final int MINOR_DEPRECATED_VERSION = 2;
+
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
         super(DockerImageName.parse(dockerImageReference.toString()));
-        //ExasolDatabaseSupportedVersionCheck(dockerImageReference);
         this.dockerImageReference = dockerImageReference;
 
         this.detectorFactory = new LogPatternDetectorFactory(this);
@@ -139,17 +137,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         } catch (final PortDetectionException exception) {
             this.portAutodetectFailed = true;
         }
-    }
-
-    private void ExasolDatabaseSupportedVersionCheck(ExasolDockerImageReference dockerImageReference) {
-        if (dockerImageReference instanceof VersionBasedExasolDockerImageReference && dockerImageReference.getMajor() <= MAJOR_DEPRECATED_VERSION && dockerImageReference.getMinor() <= MINOR_DEPRECATED_VERSION ) {
-            ThrowDBVersionNotSupportedException();
-        }
-    }
-
-    private void ThrowDBVersionNotSupportedException() {
-        throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-13")
-                .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION + " and lower are no longer supported in this version of Exasol Testcontainers.").toString());
     }
 
     /**
@@ -615,6 +602,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
+    private static final int MAJOR_DEPRECATED_VERSION = 6;
+    private static final int MINOR_DEPRECATED_VERSION = 2;
+    private void ThrowDBVersionNotSupportedException() {
+        throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-13")
+                .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION + " and lower are no longer supported in this version of Exasol Testcontainers.").toString());
+    }
     private void CheckClusterConfigurationForMinimumSupportedDBVersion() {
         //do the check
         String dbVersion = clusterConfiguration.getDBVersion();

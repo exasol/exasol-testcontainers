@@ -13,36 +13,18 @@ import org.testcontainers.containers.ContainerLaunchException;
  */
 @Tag("fast")
 class ExasolContainerVersionSpecificTest {
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V6 = new ExasolContainer<>("6.2.7-d1",
-            false);
+
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V7 = new ExasolContainer<>("7.0.0",
             false);
 
-//    @Test
-//    void testContainer62x(){
-//        assertThrows(IllegalArgumentException.class,() -> {ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V6 = new ExasolContainer<>("6.2.7-d1");});
-//    }
 @Test
-void testContainer62x2() {
+void testContainer62x() {
     ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1");
-    var exception = assertThrows(IllegalArgumentException.class,
+    var exception = assertThrows(ContainerLaunchException.class,
     () -> {
         containerV62.start();
-
     });
-    //containerV62.getRpcUrl();
-    assertThat(exception.getCause().getClass() , equalTo(  IllegalArgumentException.class));
 }
-    @Test
-    void testBucketfsPortOnV6() {
-        assertThat(CONTAINER_V6.getDefaultInternalBucketfsPort(), equalTo(6583));
-    }
-
-    @Test
-    void testDatabasePortOnV6() {
-        assertThat(CONTAINER_V6.getDefaultInternalDatabasePort(), equalTo(8888));
-    }
-
     @Test
     void testBucketfsPortOnV7() {
         assertThat(CONTAINER_V7.getDefaultInternalBucketfsPort(), equalTo(2580));
