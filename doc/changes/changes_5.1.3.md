@@ -2,9 +2,10 @@
 
 Code name:
 
-## Features
+## Refactoring
 
-* ISSUE_NUMBER: description
+* #178 : Remove support for Exasol Database version 6.2 and lower. Throw Exception when starting Exasol 6.2 and below.
+
 ## Dependency Updates
 
 ### Compile Dependency Updates

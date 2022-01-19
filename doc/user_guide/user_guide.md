@@ -128,6 +128,8 @@ Also put all builder methods &mdash; recognizable by the prefix `with` &mdash; _
 
 ### Choosing the Version of Exasol in the Container
 
+Note: Containers using Exasol version 6.2 and below are no longer supported since exasol-testcontainers version 5.1.3.
+
 If you use the constructor without parameters, the test container picks a fixed version for you. More precisely the following two lines are equivalent:
 
 ```java
@@ -143,13 +145,13 @@ If you need a different Exasol version for your tests, replace the value of the 
 
 You can specify a complete docker image name as in the example below
 
-    exasol/docker-db:6.2.7-d1
+    exasol/docker-db:7.2.1-d1
 
 Alternatively you can use the Exasol version for convenience:
 
-    7
-    6.2
-    6.1.14
+    7.0.12
+    7.0.11
+    7.1
 
 If necessary you can even pick a specific Docker image revision (though in most cases only one will exist anyway):
 
