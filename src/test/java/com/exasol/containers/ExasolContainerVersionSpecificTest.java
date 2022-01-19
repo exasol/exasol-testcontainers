@@ -1,7 +1,10 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Tag;
@@ -19,11 +22,19 @@ class ExasolContainerVersionSpecificTest {
 
 @Test
 void testContainer62x() {
+
     ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1");
-    var exception = assertThrows(ContainerLaunchException.class,
-    () -> {
-        containerV62.start();
-    });
+    String dockerImage = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+    System.clearProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+    try {
+        var exception = assertThrows(ContainerLaunchException.class,
+                containerV62::start);
+        assertThat(exception.getMessage(), containsString("E-ETC-13"));
+    } finally {
+        if (dockerImage != null) {
+            System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, dockerImage);
+        }
+    }
 }
     @Test
     void testBucketfsPortOnV7() {
