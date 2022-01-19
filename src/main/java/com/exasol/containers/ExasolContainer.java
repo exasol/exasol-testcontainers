@@ -479,11 +479,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         this.reused = reused;
         super.containerIsStarting(containerInfo, reused);
     }
+
     @Override
     public void start() {
         super.start();
         CheckClusterConfigurationForMinimumSupportedDBVersion();
     }
+
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
@@ -604,17 +606,22 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private static final int MAJOR_DEPRECATED_VERSION = 6;
     private static final int MINOR_DEPRECATED_VERSION = 2;
+
     private void ThrowDBVersionNotSupportedException() {
-        throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-13")
-                .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION + " and lower are no longer supported in this version of Exasol Testcontainers.").toString());
+        throw new ContainerLaunchException(
+                ExaError.messageBuilder("E-ETC-13")
+                        .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION
+                                + " and lower are no longer supported in this version of Exasol Testcontainers.")
+                        .toString());
     }
+
     private void CheckClusterConfigurationForMinimumSupportedDBVersion() {
-        //do the check
+        // do the check
         String dbVersion = clusterConfiguration.getDBVersion();
         String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
         int majorVersion = Integer.parseInt(dbVersionSplit[0]);
         int minorVersion = Integer.parseInt(dbVersionSplit[1]);
-        if (majorVersion <= MAJOR_DEPRECATED_VERSION && minorVersion <= MINOR_DEPRECATED_VERSION){
+        if (majorVersion <= MAJOR_DEPRECATED_VERSION && minorVersion <= MINOR_DEPRECATED_VERSION) {
             ThrowDBVersionNotSupportedException();
         }
     }

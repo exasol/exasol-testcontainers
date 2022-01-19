@@ -20,22 +20,22 @@ class ExasolContainerVersionSpecificTest {
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V7 = new ExasolContainer<>("7.0.0",
             false);
 
-@Test
-void testContainer62x() {
+    @Test
+    void testContainer62x() {
 
-    ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1");
-    String dockerImage = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
-    System.clearProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
-    try {
-        var exception = assertThrows(ContainerLaunchException.class,
-                containerV62::start);
-        assertThat(exception.getMessage(), containsString("E-ETC-13"));
-    } finally {
-        if (dockerImage != null) {
-            System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, dockerImage);
+        ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1");
+        String dockerImage = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+        System.clearProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+        try {
+            var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
+            assertThat(exception.getMessage(), containsString("E-ETC-13"));
+        } finally {
+            if (dockerImage != null) {
+                System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, dockerImage);
+            }
         }
     }
-}
+
     @Test
     void testBucketfsPortOnV7() {
         assertThat(CONTAINER_V7.getDefaultInternalBucketfsPort(), equalTo(2580));
