@@ -21,7 +21,6 @@ Code name:
 
 ### Test Dependency Updates
 
-* Added `org.apache.commons:commons-text:1.9`
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.7.2` to `5.8.1`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.7.2` to `5.8.1`
 * Updated `org.mockito:mockito-junit-jupiter:4.0.0` to `4.1.0`

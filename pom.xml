@@ -160,12 +160,6 @@
             <version>4.1.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>1.9</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
