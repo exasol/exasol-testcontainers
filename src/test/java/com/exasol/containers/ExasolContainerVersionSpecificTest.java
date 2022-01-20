@@ -24,7 +24,6 @@ class ExasolContainerVersionSpecificTest {
     void testContainer62x() {
 
         ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1", false);
-
         var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
         assertThat(exception.getMessage(), containsString("E-ETC-13"));
 

@@ -1,10 +1,10 @@
-# Test containers for Exasol on Docker 5.1.3, released 2022-01-20
+# Test containers for Exasol on Docker 6.0.0, released 2022-??-??
 
-Code name: Remove 6.2 and below support
+Code name: Remove Exasol 6.2 (and below) support
 
 ## Refactoring
 
-* #178 : Remove support for Exasol Database version 6.2 and lower. Throw Exception when starting Exasol 6.2 and below.
+* #178 : Remove support for Exasol Database version 6.2 and lower. Throws an exception when starting Exasol 6.2 and below.
 
 ## Dependency Updates
 
