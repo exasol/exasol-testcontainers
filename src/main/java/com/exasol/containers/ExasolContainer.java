@@ -610,7 +610,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
         if (dbVersionSplit.length != 3) {
             throw new ContainerLaunchException(
-                    ExaError.messageBuilder("E-ETC-14").message("Failed to parse database version").toString());
+                    ExaError.messageBuilder("E-ETC-14").message("Failed to parse database version.").ticketMitigation().toString());
         }
         int majorVersion = Integer.parseInt(dbVersionSplit[0]);
         int minorVersion = Integer.parseInt(dbVersionSplit[1]);
