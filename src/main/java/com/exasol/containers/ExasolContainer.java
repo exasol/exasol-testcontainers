@@ -608,6 +608,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void checkClusterConfigurationForMinimumSupportedDBVersion() {
         String dbVersion = clusterConfiguration.getDBVersion();
         String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
+        if (dbVersionSplit.length != 3) {
+            throw new ContainerLaunchException(
+                    ExaError.messageBuilder("E-ETC-14").message("Failed to parse database version").toString());
+        }
         int majorVersion = Integer.parseInt(dbVersionSplit[0]);
         int minorVersion = Integer.parseInt(dbVersionSplit[1]);
         if ((majorVersion == MAJOR_DEPRECATED_VERSION && minorVersion <= MINOR_DEPRECATED_VERSION)
