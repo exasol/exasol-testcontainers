@@ -39,7 +39,7 @@ public class ClusterConfiguration {
         return this.parameters.get(GLOBAL_SECTION + "/AuthenticationToken");
     }
     /**
-     * Get the database version from the Global section.
+     * Get the database version.
      *
      * @return DBVersion
      */

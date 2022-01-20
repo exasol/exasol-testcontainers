@@ -126,7 +126,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
         super(DockerImageName.parse(dockerImageReference.toString()));
         this.dockerImageReference = dockerImageReference;
-
         this.detectorFactory = new LogPatternDetectorFactory(this);
         this.exaOperation = new ExaOperationEmulator(this);
         final ContainerFileOperations containerFileOperations = new ContainerFileOperations(this);
@@ -607,7 +606,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void checkClusterConfigurationForMinimumSupportedDBVersion() {
-        // do the check
         String dbVersion = clusterConfiguration.getDBVersion();
         String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
         int majorVersion = Integer.parseInt(dbVersionSplit[0]);
