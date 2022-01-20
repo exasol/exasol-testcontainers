@@ -661,7 +661,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 .parameter("exception",
                         (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
                         "exception thrown on last connection attempt")
-                .toString());
+                .toString(), this.lastConnectionException);
     }
 
     private void sleepBeforeNextConnectionAttempt() {
