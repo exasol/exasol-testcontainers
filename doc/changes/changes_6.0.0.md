@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 6.0.0, released 2022-??-??
+# Test containers for Exasol on Docker 6.0.0, released 2022-01-24
 
 Code name: Remove Exasol 6.2 (and below) support
 
