@@ -6,11 +6,21 @@ import com.exasol.errorreporting.ExaError;
 
 import org.testcontainers.containers.ContainerLaunchException;
 
+/**
+ * Utility class for checking supported database versions.
+ */
 public class DBVersionChecker {
+    /** Major deprecated version */
     private static final int MAJOR_DEPRECATED_VERSION = 6;
+    /** Minor deprecated version */
     private static final int MINOR_DEPRECATED_VERSION = 2;
 
-    public static void minSupportedDbVersionCheck(String dbVersion) {
+    /**
+     * Check if the DB version string is valid and the version is supported.
+     *
+     * @param dbVersion database version string
+     */
+    public static void minimumSupportedDbVersionCheck(String dbVersion) {
         String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
         if (dbVersionSplit.length != 3) {
             throw new ContainerLaunchException(

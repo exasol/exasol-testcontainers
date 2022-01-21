@@ -604,7 +604,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void checkClusterConfigurationForMinimumSupportedDBVersion() {
         String dbVersion = clusterConfiguration.getDBVersion();
-        DBVersionChecker.minSupportedDbVersionCheck(dbVersion);
+        DBVersionChecker.minimumSupportedDbVersionCheck(dbVersion);
     }
 
 
