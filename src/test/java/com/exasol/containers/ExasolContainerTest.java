@@ -43,9 +43,9 @@ class ExasolContainerTest {
         assertThrowsLaunchException("timed out", () -> this.containerSpy.waitUntilContainerStarted());
     }
 
-    private void assertThrowsLaunchException(final String expecetedMessageFragement, final Executable executable) {
+    private void assertThrowsLaunchException(final String expectedMessageFragment, final Executable executable) {
         final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, executable);
-        assertThat(exception.getMessage(), containsString(expecetedMessageFragement));
+        assertThat(exception.getMessage(), containsString(expectedMessageFragment));
     }
 
     @Test
