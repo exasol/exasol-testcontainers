@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -17,14 +16,14 @@ import org.testcontainers.containers.ContainerLaunchException;
 class DBVersionCheckerTest {
     @ParameterizedTest
     @CsvSource({ //
-            "aa.bb.cc", "E-ETC-15", //
-            "10.1.144.12", "E-ETC-14", //
-            "10.1", "E-ETC-14", //
-            "5.9.13", "E-ETC-13", //
-            "6.2.13", "E-ETC-13", //
-            "5.1.0", "E-ETC-13" //
+            "aa.bb.cc,E-ETC-15", //
+            "10.1.144.12,E-ETC-14", //
+            "10.1,E-ETC-14", //
+            "5.9.13,E-ETC-13", //
+            "6.2.13,E-ETC-13", //
+            "5.1.0,E-ETC-13" //
     })
-    void testAssertBadParse1(String dbVersionStr, String exceptionIdentifier) {
+    void testAssertBadParses(String dbVersionStr, String exceptionIdentifier) {
         final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class,
                 () -> DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr));
         assertThat(exception.getMessage(), containsString(exceptionIdentifier));
