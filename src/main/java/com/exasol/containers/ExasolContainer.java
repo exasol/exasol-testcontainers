@@ -17,7 +17,6 @@ import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -65,8 +64,6 @@ import com.github.dockerjava.api.model.ContainerNetwork;
 // [impl->dsn~exasol-container-controls-docker-container~1]
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
-    private static final int MAJOR_DEPRECATED_VERSION = 6;
-    private static final int MINOR_DEPRECATED_VERSION = 2;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
     private ClusterConfiguration clusterConfiguration = null;
@@ -607,26 +604,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private void checkClusterConfigurationForMinimumSupportedDBVersion() {
         String dbVersion = clusterConfiguration.getDBVersion();
-        String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
-        if (dbVersionSplit.length != 3) {
-            throw new ContainerLaunchException(
-                    ExaError.messageBuilder("E-ETC-14").message("Failed to parse database version.").ticketMitigation().toString());
-        }
-        int majorVersion = Integer.parseInt(dbVersionSplit[0]);
-        int minorVersion = Integer.parseInt(dbVersionSplit[1]);
-        if ((majorVersion == MAJOR_DEPRECATED_VERSION && minorVersion <= MINOR_DEPRECATED_VERSION)
-                || (majorVersion < MAJOR_DEPRECATED_VERSION)) {
-            throwDBVersionNotSupportedException();
-        }
+        DBVersionChecker.minSupportedDbVersionCheck(dbVersion);
     }
 
-    private void throwDBVersionNotSupportedException() {
-        throw new ContainerLaunchException(
-                ExaError.messageBuilder("E-ETC-13")
-                        .message("Exasol Database version " + MAJOR_DEPRECATED_VERSION + "." + MINOR_DEPRECATED_VERSION
-                                + " and lower are no longer supported in this version of Exasol Testcontainers.")
-                        .toString());
-    }
+
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
