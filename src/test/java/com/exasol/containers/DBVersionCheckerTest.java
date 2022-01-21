@@ -2,61 +2,37 @@ package com.exasol.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.containers.ContainerLaunchException;
 
 @Tag("fast")
 class DBVersionCheckerTest {
-
-    @Test
-    void testAssertBadParse1() {
-        String dbVersionStr = "aa.bb.cc";
-        final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, ()-> {DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);});
-        assertThat(exception.getMessage(), containsString("E-ETC-15"));
-    }
-    @Test
-    void testAssertBadParse2() {
-        String dbVersionStr = "10.1.144.12";
-        final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, ()-> {DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);});
-        assertThat(exception.getMessage(), containsString("E-ETC-14"));
-    }
-    @Test
-    void testAssertBadParse3() {
-        String dbVersionStr = "10.1";
-        final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, ()-> {DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);});
-        assertThat(exception.getMessage(), containsString("E-ETC-14"));
-    }
-    @Test
-    void testAssertThrowsInvalidVersion1() {
-        String dbVersionStr = "5.9.13";
-        final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, ()-> {DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);});
-        assertThat(exception.getMessage(), containsString("E-ETC-13"));
-    }
-    @Test
-    void testAssertThrowsInvalidVersion2() {
-        String dbVersionStr = "6.2.13";
-        final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, ()-> {DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);});
-        assertThat(exception.getMessage(), containsString("E-ETC-13"));
-    }
-    @Test
-    void testAssertThrowsInvalidVersion3() {
-        String dbVersionStr = "5.1.0";
-        final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, ()-> {DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);});
-        assertThat(exception.getMessage(), containsString("E-ETC-13"));
-    }
-    @Test
-    void testAssertDoesntThrowValidVersion1() {
-        String dbVersionStr = "6.3.0";
-        DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);
-    }
-    @Test
-    void testAssertDoesntThrowValidVersion2() {
-        String dbVersionStr = "7.2.4";
-        DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr);
+    @ParameterizedTest
+    @CsvSource({ //
+            "aa.bb.cc", "E-ETC-15", //
+            "10.1.144.12", "E-ETC-14", //
+            "10.1", "E-ETC-14", //
+            "5.9.13", "E-ETC-13", //
+            "6.2.13", "E-ETC-13", //
+            "5.1.0", "E-ETC-13" //
+    })
+    void testAssertBadParse1(String dbVersionStr, String exceptionIdentifier) {
+        final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class,
+                () -> DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr));
+        assertThat(exception.getMessage(), containsString(exceptionIdentifier));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "6.3.0", "7.2.4" })
+    void testAssertDoesntThrowValidVersion1(String dbVersionStr) {
+        assertDoesNotThrow(() -> DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr));
+    }
 }

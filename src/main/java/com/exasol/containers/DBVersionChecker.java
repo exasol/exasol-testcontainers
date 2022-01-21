@@ -14,7 +14,9 @@ public class DBVersionChecker {
     private static final int MAJOR_DEPRECATED_VERSION = 6;
     /** Minor deprecated version */
     private static final int MINOR_DEPRECATED_VERSION = 2;
-
+    private DBVersionChecker(){
+        //not called
+    }
     /**
      * Check if the DB version string is valid and the version is supported.
      *
