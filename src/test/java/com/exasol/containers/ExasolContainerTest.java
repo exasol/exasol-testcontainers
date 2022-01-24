@@ -43,9 +43,9 @@ class ExasolContainerTest {
         assertThrowsLaunchException("timed out", () -> this.containerSpy.waitUntilContainerStarted());
     }
 
-    private void assertThrowsLaunchException(final String expecetedMessageFragement, final Executable executable) {
+    private void assertThrowsLaunchException(final String expectedMessageFragment, final Executable executable) {
         final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, executable);
-        assertThat(exception.getMessage(), containsString(expecetedMessageFragement));
+        assertThat(exception.getMessage(), containsString(expectedMessageFragment));
     }
 
     @Test
@@ -105,7 +105,15 @@ class ExasolContainerTest {
                     "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts()."));
         }
     }
-
+    @Test
+    void testAccessConfigurationBeforeReadFromContainer() {
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                    container::getClusterConfiguration);
+            assertThat(exception.getMessage(), equalTo(
+                    "Tried to access Exasol cluster configuration before it was read from the container."));
+        }
+    }
     @Test
     void testWithJdbcConnectionTimeout() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {

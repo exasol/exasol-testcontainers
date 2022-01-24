@@ -38,7 +38,14 @@ public class ClusterConfiguration {
     public String getAuthenticationToken() {
         return this.parameters.get(GLOBAL_SECTION + "/AuthenticationToken");
     }
-
+    /**
+     * Get the database version.
+     *
+     * @return DBVersion
+     */
+    public String getDBVersion() {
+        return this.parameters.get(GLOBAL_SECTION + "/DBVersion");
+    }
     /**
      * Get the read password for the default Bucket ({@code bfsdefault/default}).
      *

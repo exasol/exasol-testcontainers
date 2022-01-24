@@ -478,6 +478,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         super.containerIsStarting(containerInfo, reused);
     }
 
+    @Override
+    public void start() {
+        super.start();
+        checkClusterConfigurationForMinimumSupportedDBVersion();
+    }
+
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
@@ -596,6 +602,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
+    private void checkClusterConfigurationForMinimumSupportedDBVersion() {
+        String dbVersion = clusterConfiguration.getDBVersion();
+        DBVersionChecker.minimumSupportedDbVersionCheck(dbVersion);
+    }
+
+
+
     private ClusterConfiguration readClusterConfiguration() {
         try {
             LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
@@ -633,7 +646,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 .parameter("exception",
                         (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
                         "exception thrown on last connection attempt")
-                .toString());
+                .toString(), this.lastConnectionException);
     }
 
     private void sleepBeforeNextConnectionAttempt() {
