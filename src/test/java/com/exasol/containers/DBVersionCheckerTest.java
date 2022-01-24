@@ -31,7 +31,7 @@ class DBVersionCheckerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "6.3.0", "7.2.4" })
-    void testAssertDoesntThrowValidVersion1(String dbVersionStr) {
+    void testAssertDoesntThrowValidVersion(String dbVersionStr) {
         assertDoesNotThrow(() -> DBVersionChecker.minimumSupportedDbVersionCheck(dbVersionStr));
     }
 }
