@@ -1,10 +1,8 @@
 package com.exasol.containers;
 
-import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Tag;
@@ -16,16 +14,16 @@ import org.testcontainers.containers.ContainerLaunchException;
  */
 @Tag("fast")
 class ExasolContainerVersionSpecificTest {
-
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V7 = new ExasolContainer<>("7.0.0",
             false);
 
     @Test
     void testContainer62x() {
-
-        ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1", false);
-        var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
-        assertThat(exception.getMessage(), containsString("E-ETC-13"));
+        try (final ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1",
+                false)) {
+            final var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
+            assertThat(exception.getMessage(), containsString("E-ETC-13"));
+        }
 
     }
 
