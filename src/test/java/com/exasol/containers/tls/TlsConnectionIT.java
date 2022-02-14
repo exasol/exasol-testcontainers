@@ -85,8 +85,6 @@ class TlsConnectionIT {
 
     @Test
     void testJdbcUrlContainsFingerprint() {
-        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
-
         final String jdbcUrl = CONTAINER.getJdbcUrl();
         final String expectedFingerprint = createCertificateProvider().getSha256Fingerprint().get();
         assertThat(jdbcUrl, containsString("/" + expectedFingerprint + ":"));
