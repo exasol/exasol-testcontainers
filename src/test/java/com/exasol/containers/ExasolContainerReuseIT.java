@@ -1,6 +1,5 @@
 package com.exasol.containers;
 
-import static com.exasol.containers.ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolSeven;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -23,7 +22,6 @@ class ExasolContainerReuseIT {
 
     @BeforeAll
     static void beforeAll() throws NoSuchFieldException, IllegalAccessException {
-        assumeDockerDbVersionNotOverriddenToBelowExasolSeven();
         propertyBackup = (String) getTestcontainerProperties().getOrDefault(TESTCONTAINERS_REUSE_ENABLE, "false");
     }
 
