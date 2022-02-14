@@ -892,10 +892,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * Get the SHA256 fingerprint of the self-signed TLS certificate used by the database in the container for database
+     * Get the SHA256 fingerprint of the TLS certificate used by the database in the container for database
      * connections and the RPC interface.
      *
-     * @return the SHA256 fingerprint of the TLS certificate or an empty {@link Optional} when the certificate file does
+     * @return SHA256 fingerprint of the TLS certificate or an empty {@link Optional} when the certificate file does
      *         not exist.
      */
     public Optional<String> getTlsCertificateFingerprint() {
