@@ -6,7 +6,7 @@ Code name: Getting TLS certificate fingerprints, cross-container import for 7.1+
 
 This release adds a method `ExasolContainer.getTlsCertificateFingerprint()` that returns the TLS certificate fingerprint of the Exasol database that is required to verify the certificate during tests.
 
-Cross-container `IMPORT` now also works with version 7.1 thanks when using the TLS fingerprint in the `EXA` connection.
+Cross-container `IMPORT` now also works with version 7.1 when using the TLS fingerprint in the `EXA` connection.
 
 ## Features
 
