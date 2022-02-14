@@ -35,8 +35,6 @@ class TlsConnectionIT {
     @Test
     void testJdbcConnectionWithCertificate()
             throws SQLException, CertificateEncodingException, NoSuchAlgorithmException {
-        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
-
         final String fingerprint = createCertificateProvider().getSha256Fingerprint().get();
         final String url = "jdbc:exa:" + CONTAINER.getContainerIpAddress() + "/" + fingerprint + ":"
                 + CONTAINER.getFirstMappedDatabasePort() + ";validateservercertificate=1";

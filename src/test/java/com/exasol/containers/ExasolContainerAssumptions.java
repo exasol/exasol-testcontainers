@@ -11,16 +11,6 @@ public final class ExasolContainerAssumptions {
         // prevent instantiation
     }
 
-    /**
-     * Assume that the Exasol dockerdb version a container runs with is not overridden to a version below 7.0.0
-     */
-    public static void assumeDockerDbVersionNotOverriddenToBelowExasolSeven() {
-        if (getDockerImageOverrideProperty() != null) {
-            final ExasolDockerImageReference dockerImageReference = getDockerImageReference();
-            assumeTrue(dockerImageReference.hasMajor() && (dockerImageReference.getMajor() >= 7));
-        }
-    }
-
     private static String getDockerImageOverrideProperty() {
         return System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
     }
@@ -39,15 +29,5 @@ public final class ExasolContainerAssumptions {
                     || (dockerImageReference.hasMajor() && (dockerImageReference.getMajor() == 7)
                             && dockerImageReference.hasMinor() && (dockerImageReference.getMinor() == 0)));
         }
-    }
-
-    /**
-     * Assume that the given container uses an image reference has version 7.0.0 or above.
-     *
-     * @param container container to check
-     */
-    public static void assumeVersionAboveSevenZero(final ExasolContainer<? extends ExasolContainer<?>> container) {
-        final ExasolDockerImageReference dockerImageReference = container.getDockerImageReference();
-        assumeTrue(dockerImageReference.hasMajor() && (dockerImageReference.getMajor() >= 7));
     }
 }
