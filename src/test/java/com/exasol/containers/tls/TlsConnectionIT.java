@@ -2,6 +2,7 @@ package com.exasol.containers.tls;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.security.*;
 import java.security.cert.*;
 import java.sql.*;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.net.ssl.*;
@@ -35,9 +37,7 @@ class TlsConnectionIT {
     @Test
     void testJdbcConnectionWithCertificate()
             throws SQLException, CertificateEncodingException, NoSuchAlgorithmException {
-        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
-
-        final String fingerprint = createCertificateProvider().getSha256Fingerprint().get();
+        final String fingerprint = getFingerprint();
         final String url = "jdbc:exa:" + CONTAINER.getContainerIpAddress() + "/" + fingerprint + ":"
                 + CONTAINER.getFirstMappedDatabasePort() + ";validateservercertificate=1";
 
@@ -52,19 +52,26 @@ class TlsConnectionIT {
         }
     }
 
-    private CertificateProvider createCertificateProvider() {
-        return new CertificateProvider(CONTAINER, new ContainerFileOperations(CONTAINER));
+    @Test
+    void testGetTlsCertificateFingerprint() {
+        final Optional<String> actualFingerprint = CONTAINER.getTlsCertificateFingerprint();
+        final String expectedFingerprint = getFingerprint();
+        assertAll(() -> assertTrue(actualFingerprint.isPresent()),
+                () -> assertThat(actualFingerprint.get(), not(emptyOrNullString())),
+                () -> assertThat(actualFingerprint.get(), hasLength(64)),
+                () -> assertThat(actualFingerprint.get(), equalTo(expectedFingerprint)));
+    }
+
+    private String getFingerprint() {
+        return new CertificateProvider(CONTAINER, new ContainerFileOperations(CONTAINER)).getSha256Fingerprint().get();
     }
 
     @Test
     @Disabled("Requires manual starting, must run as a single test")
     void testCertificateUsableWithHttpClientWhenHostnameVerificationDisabled() throws Throwable {
-
         final SSLContext sslContext = createSslContextWithCertificate();
-
         runWithSystemProperty("jdk.internal.httpclient.disableHostnameVerification", "true", () -> {
             final HttpResponse<String> response = sendRequestWithHttpClient(sslContext);
-
             assertThat(response.statusCode(), equalTo(401));
             assertThat(response.body(), equalTo(""));
         });
@@ -87,10 +94,8 @@ class TlsConnectionIT {
 
     @Test
     void testJdbcUrlContainsFingerprint() {
-        ExasolContainerAssumptions.assumeVersionAboveSevenZero(CONTAINER);
-
         final String jdbcUrl = CONTAINER.getJdbcUrl();
-        final String expectedFingerprint = createCertificateProvider().getSha256Fingerprint().get();
+        final String expectedFingerprint = getFingerprint();
         assertThat(jdbcUrl, containsString("/" + expectedFingerprint + ":"));
     }
 

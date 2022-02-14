@@ -243,7 +243,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public String getJdbcUrl() {
-        final Optional<String> fingerprint = this.certificateProvider.getSha256Fingerprint();
+        final Optional<String> fingerprint = this.getTlsCertificateFingerprint();
         if ((this.clusterConfiguration != null) && (getDockerImageReference().getMajor() >= 7)
                 && fingerprint.isPresent()) {
             return getJdbcUrlWithFingerprint(fingerprint.get());
@@ -603,11 +603,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void checkClusterConfigurationForMinimumSupportedDBVersion() {
-        String dbVersion = clusterConfiguration.getDBVersion();
+        final String dbVersion = this.clusterConfiguration.getDBVersion();
         DBVersionChecker.minimumSupportedDbVersionCheck(dbVersion);
     }
-
-
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
@@ -891,5 +889,16 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public Optional<X509Certificate> getTlsCertificate() {
         return this.certificateProvider.getCertificate();
+    }
+
+    /**
+     * Get the SHA256 fingerprint of the TLS certificate used by the database in the container for database
+     * connections and the RPC interface.
+     *
+     * @return SHA256 fingerprint of the TLS certificate or an empty {@link Optional} when the certificate file does
+     *         not exist.
+     */
+    public Optional<String> getTlsCertificateFingerprint() {
+        return this.certificateProvider.getSha256Fingerprint();
     }
 }

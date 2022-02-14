@@ -41,7 +41,7 @@ class ExaLoaderBetweenTwoContainersIT {
             final Connection targetConnection = targetContainer.createConnection("");
             executeStatements(targetConnection, //
                     "CREATE CONNECTION SRCCON TO '" + sourceContainer.getDockerNetworkInternalIpAddress() + "/"
-                            + sourceContainer.getTlsCertificate().get().getTlsCertificateFingerprint() + ":"
+                            + sourceContainer.getTlsCertificateFingerprint().get() + ":"
                             + sourceContainer.getDefaultInternalDatabasePort() + "' USER 'SYS' IDENTIFIED BY 'exasol'", //
                     "CREATE SCHEMA TARGET_SCHEMA", //
                     "CREATE TABLE TARGET_SCHEMA.FRUITS(NAME VARCHAR(40))", //

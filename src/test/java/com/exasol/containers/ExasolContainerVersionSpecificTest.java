@@ -5,8 +5,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.Test;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 
 /**
@@ -24,7 +24,6 @@ class ExasolContainerVersionSpecificTest {
             final var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
             assertThat(exception.getMessage(), containsString("E-ETC-13"));
         }
-
     }
 
     @Test
