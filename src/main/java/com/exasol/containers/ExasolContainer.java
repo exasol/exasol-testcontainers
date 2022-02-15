@@ -489,8 +489,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void waitUntilContainerStarted() {
         try {
             waitUntilClusterConfigurationAvailable();
-            ContainerSynchronizationVerifier.create(this).verifyClocksInSync();
             waitUntilStatementCanBeExecuted();
+            ContainerSynchronizationVerifier.create(this).verifyClocksInSync();
             waitForBucketFs();
             waitForUdfContainer();
             LOGGER.info("Exasol container started after waiting for the following services to become available: {}",
