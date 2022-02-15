@@ -482,6 +482,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public void start() {
         super.start();
         checkClusterConfigurationForMinimumSupportedDBVersion();
+        ContainerSynchronizationVerifier.create(this).verifyClocksInSync();
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]
@@ -490,7 +491,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         try {
             waitUntilClusterConfigurationAvailable();
             waitUntilStatementCanBeExecuted();
-            ContainerSynchronizationVerifier.create(this).verifyClocksInSync();
             waitForBucketFs();
             waitForUdfContainer();
             LOGGER.info("Exasol container started after waiting for the following services to become available: {}",

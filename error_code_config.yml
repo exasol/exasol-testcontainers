@@ -4,4 +4,4 @@ error-tags:
       - com.exasol.containers
       - com.exasol.support
       - com.exasol.clusterlogs
-    highest-index: 7
+    highest-index: 17
