@@ -1,6 +1,6 @@
 package com.exasol.exaloader;
 
-import static com.exasol.containers.ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToAboveExasolSevenZero;
+import static com.exasol.containers.ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolSevenOne;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
@@ -25,8 +25,8 @@ class ExaLoaderBetweenTwoContainersIT {
 
     @BeforeAll
     static void beforeAll() {
-        // See: https://github.com/exasol/exasol-testcontainers/issues/156
-        assumeDockerDbVersionNotOverriddenToAboveExasolSevenZero();
+        // The tests below expect an HTTPS connection to be available, so we need at least version 7.1.
+        assumeDockerDbVersionNotOverriddenToBelowExasolSevenOne();
     }
 
     // [itest->dsn~ip-address-in-common-docker-network~1]
@@ -45,9 +45,11 @@ class ExaLoaderBetweenTwoContainersIT {
                     "CREATE TABLE SOURCE_SCHEMA.FRUITS(NAME VARCHAR(40))", //
                     "INSERT INTO SOURCE_SCHEMA.FRUITS VALUES ('apple'), ('banana'), ('cherry')");
             final Connection targetConnection = targetContainer.createConnection("");
+            final String sourceConnectionUrl = sourceContainer.getDockerNetworkInternalIpAddress() + "/"
+                    + sourceContainer.getTlsCertificateFingerprint().get() + ":"
+                    + sourceContainer.getDefaultInternalDatabasePort();
             executeStatements(targetConnection, //
-                    "CREATE CONNECTION SRCCON TO '" + sourceContainer.getDockerNetworkInternalIpAddress() + ":"
-                            + sourceContainer.getDefaultInternalDatabasePort() + "' USER 'SYS' IDENTIFIED BY 'exasol'", //
+                    "CREATE CONNECTION SRCCON TO '" + sourceConnectionUrl + "' USER 'SYS' IDENTIFIED BY 'exasol'", //
                     "CREATE SCHEMA TARGET_SCHEMA", //
                     "CREATE TABLE TARGET_SCHEMA.FRUITS(NAME VARCHAR(40))", //
                     "IMPORT INTO TARGET_SCHEMA.FRUITS FROM EXA AT SRCCON TABLE SOURCE_SCHEMA.FRUITS");

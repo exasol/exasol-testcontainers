@@ -1,14 +1,20 @@
 # Test containers for Exasol on Docker 6.1.0, released 2022-02-??
 
-Code name: Getting TLS certificate fingerprints
+Code name: Getting TLS certificate fingerprints, cross-container import for 7.1+
 
 ## Summary
 
 This release adds a method `ExasolContainer.getTlsCertificateFingerprint()` that returns the TLS certificate fingerprint of the Exasol database that is required to verify the certificate during tests.
 
+Cross-container `IMPORT` now also works with version 7.1 when using the TLS fingerprint in the `EXA` connection.
+
 ## Features
 
 * #182: Added method for retrieving the TLS certificate fingerprint
+
+## Bugfixes
+
+* #156: Fixed test case for cross-container import with Exasol 7.1
 
 ## Dependency Updates
 
