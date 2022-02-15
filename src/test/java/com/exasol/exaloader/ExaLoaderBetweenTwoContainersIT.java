@@ -1,5 +1,6 @@
 package com.exasol.exaloader;
 
+import static com.exasol.containers.ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolSevenOne;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
@@ -8,8 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
@@ -22,6 +22,12 @@ import com.exasol.containers.ExasolContainer;
 @Testcontainers
 class ExaLoaderBetweenTwoContainersIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaLoaderBetweenTwoContainersIT.class);
+
+    @BeforeAll
+    static void beforeAll() {
+        // The tests below expect an HTTPS connection to be available, so we need at least version 7.1.
+        assumeDockerDbVersionNotOverriddenToBelowExasolSevenOne();
+    }
 
     // [itest->dsn~ip-address-in-common-docker-network~1]
     @Test
@@ -39,10 +45,11 @@ class ExaLoaderBetweenTwoContainersIT {
                     "CREATE TABLE SOURCE_SCHEMA.FRUITS(NAME VARCHAR(40))", //
                     "INSERT INTO SOURCE_SCHEMA.FRUITS VALUES ('apple'), ('banana'), ('cherry')");
             final Connection targetConnection = targetContainer.createConnection("");
+            final String sourceConnectionUrl = sourceContainer.getDockerNetworkInternalIpAddress() + "/"
+                    + sourceContainer.getTlsCertificateFingerprint().get() + ":"
+                    + sourceContainer.getDefaultInternalDatabasePort();
             executeStatements(targetConnection, //
-                    "CREATE CONNECTION SRCCON TO '" + sourceContainer.getDockerNetworkInternalIpAddress() + "/"
-                            + sourceContainer.getTlsCertificateFingerprint().get() + ":"
-                            + sourceContainer.getDefaultInternalDatabasePort() + "' USER 'SYS' IDENTIFIED BY 'exasol'", //
+                    "CREATE CONNECTION SRCCON TO '" + sourceConnectionUrl + "' USER 'SYS' IDENTIFIED BY 'exasol'", //
                     "CREATE SCHEMA TARGET_SCHEMA", //
                     "CREATE TABLE TARGET_SCHEMA.FRUITS(NAME VARCHAR(40))", //
                     "IMPORT INTO TARGET_SCHEMA.FRUITS FROM EXA AT SRCCON TABLE SOURCE_SCHEMA.FRUITS");
