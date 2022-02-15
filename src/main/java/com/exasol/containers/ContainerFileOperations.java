@@ -17,7 +17,7 @@ public class ContainerFileOperations {
 
     /**
      * Create a new instance of the {@link ContainerFileOperations}.
-     * 
+     *
      * @param container Container reference required for executing commands inside the container.
      */
     public ContainerFileOperations(final ExasolContainer<? extends ExasolContainer<?>> container) {
@@ -28,7 +28,7 @@ public class ContainerFileOperations {
      * Reads a file from a given path.
      *
      * @param pathInContainer path inside the container
-     * @param outputCharset   charset in which to read the file
+     * @param outputCharset   character set in which to read the file
      * @return the file content
      * @throws ExasolContainerException when the file is not found.
      */
