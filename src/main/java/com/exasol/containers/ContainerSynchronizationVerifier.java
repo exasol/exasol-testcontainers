@@ -45,11 +45,11 @@ public class ContainerSynchronizationVerifier {
         final double offset = getClockOffestInMilliseconds();
         if (Math.abs(offset) > MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS) {
             throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-17") //
-                    .message("The clock of the Exasol VM is offset by up to{{offset}} ms in relation to the clock of "
-                            + " the host running test containers. Note that there the measured offset has a limited "
+                    .message("The clock of the Exasol VM is offset by up to {{offset}} ms in relation to the clock of "
+                            + " the host running test containers. Note that the measured offset has a limited "
                             + " precision caused by the latency of querying the time in the container, so the actual"
                             + " offset might be a couple of milliseconds better than reported here."
-                            + " The maximum allowed offset in any direction is {{maximum-offset}}.") //
+                            + " The maximum allowed offset in any direction is {{maximum-offset}} ms.") //
                     .parameter("offset", offset) //
                     .parameter("maximum-offset", MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS) //
                     .mitigation("Use a time synchronization tool like NTP to ensure sychronized clocks.").toString());
@@ -57,7 +57,7 @@ public class ContainerSynchronizationVerifier {
     }
 
     /**
-     * Determine the offset between container clock an host clock.
+     * Determine the offset between container clock and host clock.
      *
      * @return offset between container clock and host clock in milliseconds
      * @throws ExasolContainerException if the time in the container can't be determined.
