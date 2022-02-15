@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
+import org.testcontainers.containers.ContainerLaunchException;
 
 import com.exasol.errorreporting.ExaError;
 
@@ -11,6 +12,7 @@ import com.exasol.errorreporting.ExaError;
  * Check the synchronization of a given container in relation to the host running the Test Container software.
  */
 public class ContainerSynchronizationVerifier {
+    private static final int MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS = 10;
     private final Container<? extends Container<?>> container;
 
     /**
@@ -37,29 +39,32 @@ public class ContainerSynchronizationVerifier {
      *
      * @throws ExasolContainerException if the clocks are not synchronized.
      */
+    // [impl->req~clock-synchronization~1]
     public void verifyClocksInSync() throws ExasolContainerException {
-        if (!isClockInSync()) {
-            throw new IllegalStateException(ExaError.messageBuilder("E-ETC-7")
-                    .message("The clock of the Exasol VM and the host running test containers are not in snyc.")
+        final double offset = getClockOffestInMilliseconds();
+        if (Math.abs(offset) > MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS) {
+            throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-7") //
+                    .message("The clock of the Exasol VM is offset by {{offset}} ms in releation to the clock of the"
+                            + " host running test containers. "
+                            + " The maximum allowed offset in any direction is {{maximum-offset}}.") //
+                    .parameter("offset", offset) //
+                    .parameter("maximum-offset", MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS) //
                     .mitigation("Use a time synchronization tool like NTP to ensure sychronized clocks.").toString());
         }
     }
 
     /**
-     * Check if the clocks of the machine running the test container and the Docker are synchronized.
-     * <p>
-     * Synchronized means that the times are have a maximum difference of 10 milliseconds.
-     * </p>
+     * Determine the offset between container clock an host clock.
      *
-     * @return {@code true} if the clocks are synchronized
+     * @return offset between container clock and host clock in milliseconds
      * @throws ExasolContainerException if the time in the container can't be determined.
      */
-    public boolean isClockInSync() throws ExasolContainerException {
+    private double getClockOffestInMilliseconds() throws ExasolContainerException {
         try {
             final ExecResult containerSecondsSinceEpoch = this.container.execInContainer("date", "+%s.%N");
             final double containerMillis = Double.parseDouble(containerSecondsSinceEpoch.getStdout()) * 1000;
             final double hostMillis = System.currentTimeMillis();
-            return Math.abs(containerMillis - hostMillis) <= 10;
+            return containerMillis - hostMillis;
         } catch (UnsupportedOperationException | IOException exception) {
             throw new ExasolContainerException(ExaError.messageBuilder("E-ETC-6")
                     .message("Unable to get current time from container trying to check synchronization with host.")
