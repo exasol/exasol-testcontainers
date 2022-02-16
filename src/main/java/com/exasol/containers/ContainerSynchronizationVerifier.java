@@ -36,7 +36,7 @@ public class ContainerSynchronizationVerifier {
      *
      * @throws ExasolContainerException if the clocks are not synchronized.
      */
-    // [impl->req~clock-synchronization~1]
+    // [impl->dsn~clock-synchronization~1]
     public void verifyClocksInSync() throws ExasolContainerException {
         final long offset = System.currentTimeMillis() - this.timeService.getMillisSinceEpochUtc();
         if (Math.abs(offset) > MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS) {

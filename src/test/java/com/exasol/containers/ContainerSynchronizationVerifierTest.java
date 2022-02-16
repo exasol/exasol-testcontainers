@@ -18,7 +18,7 @@ class ContainerSynchronizationVerifierTest {
     @Mock
     ContainerTimeService timeServiceMock;
 
-    // [itest->req~clock-synchronization~1]
+    // [itest->dsn~clock-synchronization~1]
     @Test
     void testDetectSynchronizedClocks() throws ExasolContainerException {
         Mockito.when(this.timeServiceMock.getMillisSinceEpochUtc()).thenReturn(System.currentTimeMillis());
@@ -26,7 +26,7 @@ class ContainerSynchronizationVerifierTest {
         assertDoesNotThrow(() -> verifier.verifyClocksInSync());
     }
 
-    // [itest->req~clock-synchronization~1]
+    // [itest->dsn~clock-synchronization~1]
     @Test
     void testDetectUnsynchronizedClocks() throws ExasolContainerException {
         final long timeTooLongBehind = System.currentTimeMillis() - MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS - 1;

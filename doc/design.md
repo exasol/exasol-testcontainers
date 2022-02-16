@@ -397,7 +397,7 @@ Covers:
 Needs: impl, itest
 
 ### Clock Synchronization for Log Timestamp Correlation
-`req~clock-synchronization~1`
+`dsn~clock-synchronization~1`
 
 ETC verifies that the clocks of the VM and the host running the Test Containers software are synchronized.
 
