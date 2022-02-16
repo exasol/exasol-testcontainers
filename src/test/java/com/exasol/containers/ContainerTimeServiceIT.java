@@ -17,18 +17,18 @@ class ContainerTimeServiceIT {
     @Container
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true);
-    private ContainerTimeService service;
+    private static ContainerTimeService service;
 
     @BeforeAll
-    void beforeAll() {
-        this.service = ContainerTimeService.create(CONTAINER);
+    static void beforeAll() {
+        service = ContainerTimeService.create(CONTAINER);
     }
 
     // Since the Java abstraction for instants and durations are expensive, we accept a bigger offset in this case (one
     // second).
     @Test
     void testGetTime() {
-        final Instant containerTime = this.service.getTime();
+        final Instant containerTime = service.getTime();
         final Duration offset = Duration.between(Instant.now(), containerTime);
         final Duration maxOffset = Duration.ofSeconds(1);
         assertThat(offset, lessThanOrEqualTo(maxOffset));
@@ -36,8 +36,8 @@ class ContainerTimeServiceIT {
 
     @Test
     void testGetMillisSinceEpochUtc() {
-        final long containerTime = this.service.getMillisSinceEpochUtc();
+        final long containerTime = service.getMillisSinceEpochUtc();
         final long offset = System.currentTimeMillis() - containerTime;
-        assertTrue(Math.abs(offset) >= ExasolContainerConstants.MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS);
+        assertTrue(Math.abs(offset) <= ExasolContainerConstants.MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS);
     }
 }
