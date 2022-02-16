@@ -27,7 +27,7 @@ public class ContainerSynchronizationVerifier {
      *
      * @param timeService service that provides the container time
      */
-    public ContainerSynchronizationVerifier(final ContainerTimeService timeService) {
+    private ContainerSynchronizationVerifier(final ContainerTimeService timeService) {
         this.timeService = timeService;
     }
 
