@@ -24,4 +24,13 @@ public class ExasolContainerException extends RuntimeException {
     public ExasolContainerException(final String message, final Exception cause) {
         super(message, cause);
     }
+
+    /**
+     * Create a new instance of an {@link ExasolContainerException}.
+     *
+     * @param message error message
+     */
+    public ExasolContainerException(final String message) {
+        super(message);
+    }
 }
