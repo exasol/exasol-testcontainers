@@ -253,8 +253,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private String getJdbcUrlWithFingerprint(final String fingerprint) {
-        return "jdbc:exa:" + getContainerIpAddress() + "/" + fingerprint + ":" + getFirstMappedDatabasePort()
-                + ";validateservercertificate=1";
+        return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
+                + ";validateservercertificate=1;fingerprint=" + fingerprint + ";";
     }
 
     private String getJdbcUrlWithoutFingerprint() {
@@ -892,11 +892,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * Get the SHA256 fingerprint of the TLS certificate used by the database in the container for database
-     * connections and the RPC interface.
+     * Get the SHA256 fingerprint of the TLS certificate used by the database in the container for database connections
+     * and the RPC interface.
      *
-     * @return SHA256 fingerprint of the TLS certificate or an empty {@link Optional} when the certificate file does
-     *         not exist.
+     * @return SHA256 fingerprint of the TLS certificate or an empty {@link Optional} when the certificate file does not
+     *         exist.
      */
     public Optional<String> getTlsCertificateFingerprint() {
         return this.certificateProvider.getSha256Fingerprint();
