@@ -1,9 +1,8 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +19,7 @@ class ContainerSynchronizationVerifierTest {
     // [itest->req~clock-synchronization~1]
     @Test
     void testDetectSynchronizedClocks() throws ExasolContainerException {
-        Mockito.when(this.timeServiceMock.getTime()).thenReturn(Instant.now());
+        Mockito.when(this.timeServiceMock.getMillisSinceEpochUtc()).thenReturn(System.currentTimeMillis());
         final ContainerSynchronizationVerifier verifier = ContainerSynchronizationVerifier.create(this.timeServiceMock);
         assertDoesNotThrow(() -> verifier.verifyClocksInSync());
     }
@@ -28,7 +27,8 @@ class ContainerSynchronizationVerifierTest {
     // [itest->req~clock-synchronization~1]
     @Test
     void testDetectUnsynchronizedClocks() throws ExasolContainerException {
-        Mockito.when(this.timeServiceMock.getTime()).thenReturn(Instant.EPOCH);
+        final long timeTooLongBehind = System.currentTimeMillis() - MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS - 1;
+        Mockito.when(this.timeServiceMock.getMillisSinceEpochUtc()).thenReturn(timeTooLongBehind);
         final ContainerSynchronizationVerifier verifier = ContainerSynchronizationVerifier.create(this.timeServiceMock);
         assertThrows(ContainerLaunchException.class, () -> verifier.verifyClocksInSync());
     }
