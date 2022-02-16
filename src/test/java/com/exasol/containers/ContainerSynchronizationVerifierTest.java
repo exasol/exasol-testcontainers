@@ -1,6 +1,8 @@
 package com.exasol.containers;
 
 import static com.exasol.containers.ExasolContainerConstants.MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,6 +32,7 @@ class ContainerSynchronizationVerifierTest {
         final long timeTooLongBehind = System.currentTimeMillis() - MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS - 1;
         Mockito.when(this.timeServiceMock.getMillisSinceEpochUtc()).thenReturn(timeTooLongBehind);
         final ContainerSynchronizationVerifier verifier = ContainerSynchronizationVerifier.create(this.timeServiceMock);
-        assertThrows(ContainerLaunchException.class, () -> verifier.verifyClocksInSync());
+        final Throwable exception = assertThrows(ContainerLaunchException.class, () -> verifier.verifyClocksInSync());
+        assertThat(exception.getMessage(), containsString("The clock of the Exasol VM is offset"));
     }
 }
