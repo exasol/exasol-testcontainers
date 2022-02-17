@@ -42,13 +42,13 @@ class ExasolContainerIT {
         final String zeroTo255 = "([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])";
         final String ipRegexp = zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255;
         final String hostNamePattern = "(localhost|" + ipRegexp + ")";
-        assertThat(CONTAINER.getJdbcUrl(),
-                matchesPattern("jdbc:exa:" + hostNamePattern + "/\\w{64}:\\d{1,5};validateservercertificate=1"));
+        assertThat(CONTAINER.getJdbcUrl(), matchesPattern(
+                "jdbc:exa:" + hostNamePattern + ":\\d{1,5};validateservercertificate=1;fingerprint=\\w{64};"));
     }
 
     @Test
     void testJdbcUrlValidatesServerCertificate() throws SQLException {
-        assertThat(CONTAINER.getJdbcUrl(), endsWith(";validateservercertificate=1"));
+        assertThat(CONTAINER.getJdbcUrl(), containsString(";validateservercertificate=1"));
     }
 
     @Test

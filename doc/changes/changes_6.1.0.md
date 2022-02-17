@@ -15,6 +15,7 @@ Cross-container `IMPORT` now also works with version 7.1 when using the TLS fing
 ## Bugfixes
 
 * #156: Fixed test case for cross-container import with Exasol 7.1
+* #180: Moved fingerprint to JDBC parameter for driver backward compatibility
 
 ## Dependency Updates
 

@@ -96,7 +96,7 @@ class TlsConnectionIT {
     void testJdbcUrlContainsFingerprint() {
         final String jdbcUrl = CONTAINER.getJdbcUrl();
         final String expectedFingerprint = getFingerprint();
-        assertThat(jdbcUrl, containsString("/" + expectedFingerprint + ":"));
+        assertThat(jdbcUrl, containsString(";fingerprint=" + expectedFingerprint + ";"));
     }
 
     @Test
