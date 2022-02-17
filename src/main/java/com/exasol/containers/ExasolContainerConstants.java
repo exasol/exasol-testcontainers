@@ -66,6 +66,9 @@ public final class ExasolContainerConstants {
     /** Default RPC port for Exasol versions in Docker */
     static final int DEFAULT_CONTAINER_INTERNAL_RPC_PORT = 443;
 
+    /** Maximum allowed offset between container time and host time in milliseconds */
+    static final int MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS = 2000;
+
     private ExasolContainerConstants() {
         // prevent instantiation
     }

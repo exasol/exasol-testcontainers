@@ -482,6 +482,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public void start() {
         super.start();
         checkClusterConfigurationForMinimumSupportedDBVersion();
+        ContainerSynchronizationVerifier.create(ContainerTimeService.create(this)).verifyClocksInSync();
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]

@@ -396,6 +396,21 @@ Covers:
 
 Needs: impl, itest
 
+### Clock Synchronization for Log Timestamp Correlation
+`dsn~clock-synchronization~1`
+
+ETC verifies that the clocks of the VM and the host running the Test Containers software are synchronized.
+
+Rationale:
+
+This allows correlating events in the ETC code to events inside the container by correlating timestamps.
+
+Covers:
+
+* `req~reading-log-files~1`
+
+Needs: impl, itest
+
 ## Driver Management
 
 ### Installing a JDBC Driver
