@@ -1,9 +1,11 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -35,9 +37,10 @@ class ContainerTimeServiceIT {
     }
 
     @Test
-    void testGetMillisSinceEpochUtc() {
-        final long containerTime = service.getMillisSinceEpochUtc();
-        final long offset = System.currentTimeMillis() - containerTime;
-        assertTrue(Math.abs(offset) <= ExasolContainerConstants.MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS);
+    void testGetMillisSinceEpochUtcCloseEnoughToHostClock() {
+        final BigDecimal containerTime = BigDecimal.valueOf(service.getMillisSinceEpochUtc());
+        final BigDecimal hostTime = BigDecimal.valueOf(System.currentTimeMillis());
+        final BigDecimal acceptableError = BigDecimal.valueOf(MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS);
+        assertThat(containerTime, closeTo(hostTime, acceptableError));
     }
 }
