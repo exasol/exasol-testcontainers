@@ -48,7 +48,7 @@ class ExasolContainerIT {
 
     @Test
     void testJdbcUrlValidatesServerCertificate() throws SQLException {
-        assertThat(CONTAINER.getJdbcUrl(), endsWith(";validateservercertificate=1"));
+        assertThat(CONTAINER.getJdbcUrl(), containsString(";validateservercertificate=1"));
     }
 
     @Test
