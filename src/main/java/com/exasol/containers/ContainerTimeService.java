@@ -56,7 +56,7 @@ public class ContainerTimeService {
             } else {
                 throw new ExasolContainerException(ExaError.messageBuilder("E-ETC-18") //
                         .message("Unable to get ISO time from container via 'date' command: {{error}}") //
-                        .parameter("error", "Error output of command", result.getStderr()) //
+                        .parameter("error", result.getStderr(), "Error output of command") //
                         .toString());
             }
         } catch (UnsupportedOperationException | IOException exception) {
