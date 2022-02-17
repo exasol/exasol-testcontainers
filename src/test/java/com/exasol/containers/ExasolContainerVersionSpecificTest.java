@@ -5,8 +5,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.Test;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 
 /**
@@ -14,13 +14,13 @@ import org.testcontainers.containers.ContainerLaunchException;
  */
 @Tag("fast")
 class ExasolContainerVersionSpecificTest {
-
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER_V7 = new ExasolContainer<>("7.0.0",
             false);
 
     @Test
     void testContainer62x() {
-        try (ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.17-d1", false)) {
+        try (final ExasolContainer<? extends ExasolContainer<?>> containerV62 = new ExasolContainer<>("6.2.7-d1",
+                false)) {
             final var exception = assertThrows(ContainerLaunchException.class, containerV62::start);
             assertThat(exception.getMessage(), containsString("E-ETC-13"));
         }

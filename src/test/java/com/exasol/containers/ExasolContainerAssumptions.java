@@ -30,4 +30,16 @@ public final class ExasolContainerAssumptions {
                             && dockerImageReference.hasMinor() && (dockerImageReference.getMinor() == 0)));
         }
     }
+
+    /**
+     * Assume that the Exasol dockerdb version a container runs with is not overridden to a version below 7.1.x
+     */
+    public static void assumeDockerDbVersionNotOverriddenToBelowExasolSevenOne() {
+        if (getDockerImageOverrideProperty() != null) {
+            final ExasolDockerImageReference dockerImageReference = getDockerImageReference();
+            assumeTrue((dockerImageReference.hasMajor() && (dockerImageReference.getMajor() > 7))
+                    || (dockerImageReference.hasMajor() && (dockerImageReference.getMajor() == 7)
+                            && dockerImageReference.hasMinor() && (dockerImageReference.getMinor() > 0)));
+        }
+    }
 }

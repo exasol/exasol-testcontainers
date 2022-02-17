@@ -253,8 +253,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private String getJdbcUrlWithFingerprint(final String fingerprint) {
-        return "jdbc:exa:" + getContainerIpAddress() + "/" + fingerprint + ":" + getFirstMappedDatabasePort()
-                + ";validateservercertificate=1";
+        return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
+                + ";validateservercertificate=1;fingerprint=" + fingerprint + ";";
     }
 
     private String getJdbcUrlWithoutFingerprint() {
