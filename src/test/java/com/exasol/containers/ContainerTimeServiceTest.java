@@ -50,8 +50,7 @@ class ContainerTimeServiceTest {
             final Constructor<?> constructor = resultClass.getDeclaredConstructor(int.class, String.class,
                     String.class);
             constructor.setAccessible(true);
-            final ExecResult resultStub = (ExecResult) constructor.newInstance(exitCode, stdout, stderr);
-            return resultStub;
+            return (ExecResult) constructor.newInstance(exitCode, stdout, stderr);
         } catch (final Throwable exception) {
             throw new AssertionError("Unable to stub ExecResult.", exception);
         }
