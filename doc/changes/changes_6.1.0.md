@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 6.1.0, released 2022-02-??
+# Test containers for Exasol on Docker 6.1.0, released 2022-02-18
 
 Code name: Getting TLS certificate fingerprints, cross-container import for 7.1+
 
