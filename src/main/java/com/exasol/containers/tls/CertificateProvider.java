@@ -11,9 +11,6 @@ import java.security.cert.*;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.*;
 
@@ -21,8 +18,6 @@ import com.exasol.containers.*;
  * This class allows reading the TLS certificate used by the Exasol container.
  */
 public class CertificateProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CertificateProvider.class);
-
     private final Supplier<Optional<ClusterConfiguration>> configProvider;
     private final ContainerFileOperations fileOperations;
 
@@ -65,8 +60,6 @@ public class CertificateProvider {
             final String certContent = this.fileOperations.readFile(certPath, StandardCharsets.UTF_8);
             return Optional.of(certContent);
         } catch (final ExasolContainerException exception) {
-            LOGGER.info("Certificate does not exist yet, returning empty Optional. {} {}",
-                    exception.getClass().getName(), exception.getMessage());
             return Optional.empty();
         }
     }

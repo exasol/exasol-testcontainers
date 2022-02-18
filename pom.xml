@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>6.1.0</version>
+    <version>6.1.1</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.
@@ -399,7 +399,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.10</version>
+                <version>1.6.8</version>
                 <configuration>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                     <serverId>ossrh</serverId>
