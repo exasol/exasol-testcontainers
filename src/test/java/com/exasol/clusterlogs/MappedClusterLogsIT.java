@@ -34,6 +34,7 @@ class MappedClusterLogsIT {
     @Test
     // [itest->dsn~mapping-the-log-directory-to-the-host~1]
     void testMapClusterLogs() throws InterruptedException, IOException {
-        assertThat(TEMP_DIR.resolve("syslog").toFile().exists(), equalTo(true));
+        final File syslogFile = TEMP_DIR.resolve("syslog").toFile();
+        assertThat("File " + syslogFile + " exists", syslogFile.exists(), equalTo(true));
     }
 }
