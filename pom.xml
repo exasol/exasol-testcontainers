@@ -39,7 +39,7 @@
     <scm>
         <connection>scm:git:https://github.com/exasol/exasol-testcontainers.git</connection>
         <developerConnection>scm:git:https://github.com/exasol/exasol-testcontainers.git</developerConnection>
-        <url>https://github.com/exasol/exasol-testcontainers/tree/master</url>
+        <url>https://github.com/exasol/exasol-testcontainers/tree/main</url>
     </scm>
     <distributionManagement>
         <snapshotRepository>
