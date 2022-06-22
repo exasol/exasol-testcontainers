@@ -2,6 +2,10 @@
 
 Code name: Uniform Fingerprint URL
 
+JDBC URLs now uniformly end in a semicolon, no matter if with or without fingerprint.
+
+We replaced all uses of TestContainers now deprecated `getContainerID` method with `getHost`.
+
 ## Bugfixes
 
 * #193: Unified `getJdbcUrlWithFingerprint()` and `getJdbcUrlWithoutFingerprint()`
