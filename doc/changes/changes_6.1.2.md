@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 6.1.2, released 2022-06-21
+# Test containers for Exasol on Docker 6.1.2, released 2022-06-22
 
 Code name: Uniform Fingerprint URL
 
