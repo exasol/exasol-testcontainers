@@ -3,7 +3,7 @@
 <img alt="exasol-testcontainer logo" src="doc/images/exasol-testcontainer_128x128.png" style="float:left; padding:0px 10px 10px 10px;"/>
 
 [![Build Status](https://github.com/exasol/exasol-testcontainers/actions/workflows/ci-build.yml/badge.svg)](https://github.com/exasol/exasol-testcontainers/actions/workflows/ci-build.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/com.exasol/exasol-testcontainers)](https://search.maven.org/artifact/com.exasol/exasol-testcontainers)
+[![Maven Central – Test containers for Exasol on Docker](https://img.shields.io/maven-central/v/com.exasol/exasol-testcontainers)](https://search.maven.org/artifact/com.exasol/exasol-testcontainers)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Aexasol-testcontainers&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Aexasol-testcontainers)
 
