@@ -11,8 +11,6 @@
     <properties>
         <testcontainers.version>1.17.2</testcontainers.version>
         <junit.version>5.8.2</junit.version>
-        <gpg.skip>true</gpg.skip>
-        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <distributionManagement>
         <snapshotRepository>
