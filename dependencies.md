@@ -56,11 +56,11 @@
 | [Maven Site Plugin 3][66]                               | [The Apache Software License, Version 2.0][29] |
 
 [8]: https://github.com/exasol/bucketfs-java
-[21]: LICENSE-exasol-jdbc.txt
 [29]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [34]: https://maven.apache.org/surefire/maven-surefire-plugin/
 [46]: http://www.sonatype.com/public-parent/nexus-maven-plugins/nexus-staging/nexus-staging-maven-plugin/
 [58]: http://maven.apache.org/plugins/maven-clean-plugin/
+[21]: https://docs.exasol.com/connect_exasol/drivers/jdbc.htm
 [7]: https://opensource.org/licenses/MIT
 [18]: https://github.com/mockito/mockito
 [52]: https://maven.apache.org/surefire/maven-failsafe-plugin/
