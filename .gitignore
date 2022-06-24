@@ -32,3 +32,5 @@ pom.xml.versionsBackup
 *.md.html
 /.apt_generated/
 /.apt_generated_tests/
+
+*.flattened-pom.xml
