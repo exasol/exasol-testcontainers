@@ -4,24 +4,39 @@ import static com.exasol.exaoperation.plugin.PluginStub.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.Container.ExecResult;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolDockerImageReference;
 
 @Tag("slow")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Testcontainers
 class ExaOperationEmulatorIT {
-    @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>()
-            .withRequiredServices();
+
+    private static ExasolContainer<? extends ExasolContainer<?>> EXASOL;
+
+    @SuppressWarnings("resource") // see tearDown()
+    @BeforeAll
+    static void beforeAll() {
+        EXASOL = new ExasolContainer<>().withRequiredServices();
+        assumeExaOperations();
+    }
+
+    @AfterAll
+    static void tearDown() {
+        EXASOL.close();
+    }
+
+    private static void assumeExaOperations() {
+        final ExasolDockerImageReference dockerImageReference = EXASOL.getDockerImageReference();
+        assumeTrue(!dockerImageReference.hasMajor() || (dockerImageReference.getMajor() < 8));
+    }
 
     @Order(1)
     @Test

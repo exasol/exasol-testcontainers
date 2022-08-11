@@ -530,7 +530,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             this.status.setServiceStatus(UDF, NOT_CHECKED);
             return;
         }
-        if (udfProvided(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_VERSION)) {
+        if (languageContainersExtracted()) {
             this.status.setServiceStatus(UDF, READY);
             return;
         }
@@ -541,13 +541,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * In Exasol database with major version 8 or above the script language container is already extracted.
-     *
-     * @param version
-     * @return
+     * @return if language containers are extracted by default. In Exasol database version 8 and above this is the case
+     *         and the container does not need to wait for UDF service to get ready.
      */
-    private boolean udfProvided(final String version) {
-        return Integer.parseInt(version.split("\\.")[0]) >= 8;
+    private boolean languageContainersExtracted() {
+        return this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 8);
     }
 
     @Override

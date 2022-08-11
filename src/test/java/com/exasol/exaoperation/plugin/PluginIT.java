@@ -4,6 +4,7 @@ import static com.exasol.exaoperation.plugin.PluginStub.PLUGIN_PACKAGE_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -17,26 +18,37 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.Container.ExecResult;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolDockerImageReference;
 import com.exasol.exaoperation.ExaOperationEmulatorException;
 
 @Tag("slow")
 @ExtendWith(MockitoExtension.class)
-@Testcontainers
 class PluginIT {
-    @Container
-    private final static ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
-            .withRequiredServices();
+
+    private static ExasolContainer<? extends ExasolContainer<?>> container;
     private static Plugin plugin;
+
     @Mock
     private org.testcontainers.containers.Container<? extends org.testcontainers.containers.Container<?>> containerMock;
 
+    @SuppressWarnings("resource") // see tearDown()
     @BeforeAll
     static void beforeAll() {
-        plugin = CONTAINER.getExaOperation().installPluginPackage(PLUGIN_PACKAGE_PATH);
+        container = new ExasolContainer<>().withRequiredServices();
+        assumeExaOperations();
+        plugin = container.getExaOperation().installPluginPackage(PLUGIN_PACKAGE_PATH);
+    }
+
+    private static void assumeExaOperations() {
+        final ExasolDockerImageReference dockerImageReference = container.getDockerImageReference();
+        assumeTrue(!dockerImageReference.hasMajor() || (dockerImageReference.getMajor() < 8));
+    }
+
+    @AfterAll
+    static void tearDown() {
+        container.close();
     }
 
     // [itest->dsn~installing-plug-ins~1]
@@ -104,7 +116,7 @@ class PluginIT {
     // [itest->dsn~listing-plug-ins~1]
     @Test
     void testListPlugins() {
-        final List<String> plugins = CONTAINER.getExaOperation().getPluginNames();
+        final List<String> plugins = container.getExaOperation().getPluginNames();
         // There should only be one plugin
         assertThat(plugins, equalTo(Collections.singletonList(plugin.getName())));
     }
