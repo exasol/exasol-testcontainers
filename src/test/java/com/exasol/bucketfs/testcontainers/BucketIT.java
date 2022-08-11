@@ -43,17 +43,6 @@ class BucketIT {
                 () -> assertThat(defaultBucket.getBucketName(), equalTo(BucketConstants.DEFAULT_BUCKET)));
     }
 
-    @Test
-    void testListBucketContentsWithRootPath() throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents(), hasItem("EXAClusterOS"));
-    }
-
-    @ValueSource(strings = { "EXAClusterOS/", "/EXAClusterOS/" })
-    @ParameterizedTest
-    void testListBucketContents(final String pathInBucket) throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents(pathInBucket), hasItem(startsWith("ScriptLanguages")));
-    }
-
     void testListBucketContentsOfIllegalPathThrowsException() {
         assertThrows(BucketAccessException.class, () -> container.getDefaultBucket().listContents("illegal\\path"));
     }

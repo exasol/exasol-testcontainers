@@ -523,17 +523,31 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     protected void waitForUdfContainer() {
         if (isServiceReady(UDF)) {
-            LOGGER.debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
-        } else {
-            if (this.requiredServices.contains(UDF)) {
-                this.status.setServiceStatus(UDF, NOT_READY);
-                new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
-                this.status.setServiceStatus(UDF, READY);
-            } else {
-
-                this.status.setServiceStatus(UDF, NOT_CHECKED);
-            }
+            LOGGER.debug("UDF Container marked running in container status cache. Skipping startup monitoring.");
+            return;
         }
+        if (!this.requiredServices.contains(UDF)) {
+            this.status.setServiceStatus(UDF, NOT_CHECKED);
+            return;
+        }
+        if (udfProvided(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_VERSION)) {
+            this.status.setServiceStatus(UDF, READY);
+            return;
+        }
+
+        this.status.setServiceStatus(UDF, NOT_READY);
+        new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
+        this.status.setServiceStatus(UDF, READY);
+    }
+
+    /**
+     * In Exasol database with major version 8 or above the script language container is already extracted.
+     *
+     * @param version
+     * @return
+     */
+    private boolean udfProvided(final String version) {
+        return Integer.parseInt(version.split("\\.")[0]) >= 8;
     }
 
     @Override

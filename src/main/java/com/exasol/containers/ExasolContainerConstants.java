@@ -7,7 +7,7 @@ import java.util.Set;
  */
 public final class ExasolContainerConstants {
     /** Version of the Exasol Docker image */
-    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.2.0";
+    public static final String EXASOL_DOCKER_IMAGE_VERSION = "8.0.4";
 
     /** Reference name of the Exasol Docker image */
     public static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
