@@ -32,8 +32,13 @@ class LogPatternDetectorTest {
 
     @BeforeEach
     void setup() {
-        this.detector = new LogPatternDetector(this.containerMock, LOG_PATH, LOG_NAME_PATTERN, PATTERN,
-                this.logEntryVerifier);
+        this.detector = LogPatternDetector.builder() //
+                .container(this.containerMock) //
+                .logPath(LOG_PATH) //
+                .logNamePattern(LOG_NAME_PATTERN) //
+                .pattern(PATTERN) //
+                .logEntryVerifier(this.logEntryVerifier) //
+                .build();
     }
 
     @Test

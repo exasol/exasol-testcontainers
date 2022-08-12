@@ -34,7 +34,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
 
     @Override
     public boolean isLogMessageFound(final String stdout) {
-        final LocalDateTime afterLocal = convertUtcToLowResulionLocal(this.afterUtc);
+        final LocalDateTime afterLocal = convertUtcToLowResolutionLocal(this.afterUtc);
         try (final BufferedReader reader = new BufferedReader(new StringReader(stdout))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -46,6 +46,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
                     final String isoTimestamp = "20" + matcher.group(1) + "-" + matcher.group(2) + "-"
                             + matcher.group(3) + "T" + matcher.group(4);
                     final LocalDateTime timestamp = LocalDateTime.parse(isoTimestamp);
+                    // timestamp.atZone(timeZone.toZoneId()).toInstant();
                     if (timestamp.isAfter(afterLocal) || timestamp.isEqual(afterLocal)) {
                         LOGGER.debug("Found matching log entry {} (after {}): {}", timestamp, afterLocal, line);
                         return true;
@@ -58,7 +59,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
         }
     }
 
-    private LocalDateTime convertUtcToLowResulionLocal(final Instant afterUTC) {
+    private LocalDateTime convertUtcToLowResolutionLocal(final Instant afterUTC) {
         final LocalDateTime localDateTime = LocalDateTime.ofInstant(afterUTC, this.timeZone.toZoneId());
         return localDateTime.withNano(0);
     }

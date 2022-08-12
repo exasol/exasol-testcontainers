@@ -15,30 +15,21 @@ import com.exasol.containers.exec.ExitCode;
  * Detector for pattern match in a log file.
  */
 public class LogPatternDetector {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogPatternDetector.class);
-    private final Container<? extends Container<?>> container;
-    private final String logPath;
-    private final String pattern;
-    private final String logNamePattern;
-    private final LogEntryPatternVerifier logEntryVerifier;
 
-    /**
-     * Create a new instance of the {@link LogPatternDetector}.
-     *
-     * @param container      container in which the log messages reside
-     * @param logPath        path of the log file to search
-     * @param logNamePattern pattern used to find the file name
-     * @param pattern        regular expression pattern for which to look out
-     */
-    LogPatternDetector(final Container<? extends Container<?>> container, final String logPath,
-            final String logNamePattern, final String pattern, final LogEntryPatternVerifier logEntryVerifier) {
-        this.container = container;
-        this.logPath = logPath;
-        this.logNamePattern = logNamePattern;
-        this.pattern = pattern;
-        this.logEntryVerifier = logEntryVerifier;
-        LOGGER.debug("Created log detector that scans for \"{}\" in \"{}/{}\" with verifier {}", pattern, logPath,
-                logNamePattern, logEntryVerifier);
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogPatternDetector.class);
+    private Container<? extends Container<?>> container;
+    private String logPath;
+    private String pattern;
+    private String logNamePattern;
+    private LogEntryPatternVerifier logEntryVerifier = LogEntryPatternVerifier.ALWAYS_TRUE;
+    private long afterLine = 0;
+
+    private LogPatternDetector() {
+        // use builder !
     }
 
     /**
@@ -77,13 +68,18 @@ public class LogPatternDetector {
      */
     public boolean isPatternPresent() throws IOException, InterruptedException {
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
-                "-name", this.logNamePattern, //
-                "-exec", "awk", "/" + this.pattern.replace("/", "\\/") + "/{a=$0}END{print a}", "{}", "+");
+                "-name", this.logNamePattern, "-exec", "awk", //
+                awkCommand(this.afterLine, this.pattern.replace("/", "\\/")), //
+                "{}", "+");
         if (result.getExitCode() == ExitCode.OK) {
             return this.logEntryVerifier.isLogMessageFound(result.getStdout());
         } else {
             return false;
         }
+    }
+
+    private String awkCommand(final long afterLine, final String regex) {
+        return "(NR>" + afterLine + ")&&" + "/" + regex + "/{a=$0}END{print a}";
     }
 
     /**
@@ -118,6 +114,51 @@ public class LogPatternDetector {
                     .message("Exception reading content of file(s) {{logPath}}/{{logNamePattern}}", this.logPath,
                             this.logNamePattern)
                     .toString(), exception);
+        }
+    }
+
+    static class Builder {
+        private final LogPatternDetector detector = new LogPatternDetector();
+
+        public Builder container(final Container<? extends Container<?>> value) {
+            this.detector.container = value;
+            return this;
+        }
+
+        public Builder logPath(final String value) {
+            this.detector.logPath = value;
+            return this;
+        }
+
+        public Builder pattern(final String value) {
+            this.detector.pattern = value;
+            return this;
+        }
+
+        public Builder logNamePattern(final String value) {
+            this.detector.logNamePattern = value;
+            return this;
+        }
+
+        public Builder logEntryVerifier(final LogEntryPatternVerifier value) {
+            this.detector.logEntryVerifier = value;
+            return this;
+        }
+
+        public Builder afterLine(final long value) {
+            this.detector.afterLine = value;
+            return this;
+        }
+
+        public LogPatternDetector build() {
+            LOGGER.debug("Created log detector that scans for \"{}\" in \"{}/{}\"" //
+                    + " after line {} with verifier {}", //
+                    this.detector.pattern, //
+                    this.detector.logPath, //
+                    this.detector.logNamePattern, //
+                    this.detector.afterLine, //
+                    this.detector.logEntryVerifier);
+            return this.detector;
         }
     }
 }

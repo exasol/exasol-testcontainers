@@ -39,6 +39,7 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
     public boolean isObjectSynchronized(final ReadOnlyBucket bucket, final String pathInBucket, final Instant afterUTC)
             throws BucketAccessException {
         try {
+//            return createBucketLogPatternDetector(pathInBucket).isPatternPresent();
             return createBucketLogPatternDetector(pathInBucket, afterUTC).isPatternPresent();
         } catch (final IOException exception) {
             throw new BucketAccessException(
@@ -54,9 +55,23 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
         }
     }
 
+    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final long afterLineNumber) {
+        return this.detectorFactory.lineCountingDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterLineNumber);
+    }
+
+    // sample log messages:
+    // [I 220812 10:57:23 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir5/sub5/file.txt'))
+    // [I 220812 11:10:21 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir4/file.txt'))
+    private String pattern(final String pathInBucket) {
+        return "removed sync future for id .*'" //
+                + (pathInBucket.startsWith("/") ? pathInBucket.substring(1) : pathInBucket) //
+                + ".*'";
+    }
+
     private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final Instant afterUTC) {
-        final String pattern = pathInBucket + ".*" + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
+//        final String pattern = pathInBucket + ".*" + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
         return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern, afterUTC);
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterUTC);
     }
 }

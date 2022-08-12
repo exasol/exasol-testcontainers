@@ -33,9 +33,28 @@ public class LogPatternDetectorFactory {
      */
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
             final String pattern, final Instant afterUtc) {
-        final TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
-        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern,
-                new TimestampLogEntryPatternVerifier(afterUtc, timeZone));
+        TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
+        timeZone = TimeZone.getTimeZone("UTC"); // TODO: Fix me!
+        final TimestampLogEntryPatternVerifier logEntryVerifier = //
+                new TimestampLogEntryPatternVerifier(afterUtc, timeZone);
+        return LogPatternDetector.builder() //
+                .container(this.container) //
+                .logPath(logPath) //
+                .logNamePattern(logNamePattern) //
+                .pattern(pattern) //
+                .logEntryVerifier(logEntryVerifier) //
+                .build();
+    }
+
+    public LogPatternDetector lineCountingDetector(final String logPath, final String logNamePattern,
+            final String pattern, final long afterLineNumber) {
+        return LogPatternDetector.builder() //
+                .container(this.container) //
+                .logPath(logPath) //
+                .logNamePattern(logNamePattern) //
+                .pattern(pattern) //
+                .afterLine(afterLineNumber) //
+                .build();
     }
 
     /**
@@ -48,7 +67,12 @@ public class LogPatternDetectorFactory {
      */
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
             final String pattern) {
-        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern,
-                new LogEntryPresentPatternVerifier());
+        return LogPatternDetector.builder() //
+                .container(this.container) //
+                .logPath(logPath) //
+                .logNamePattern(logNamePattern) //
+                .pattern(pattern) //
+                .logEntryVerifier(new LogEntryPresentPatternVerifier()) //
+                .build();
     }
 }

@@ -28,33 +28,23 @@ class LogPatternDetectorIT {
     @Test
     void testGetActualLog() {
         final LogPatternDetector detector = createPatternDetector("dummypattern");
-
         assertThat(detector.getActualLog(), containsString("UNPACK THREAD started"));
     }
 
     @Test
     void testIsPatternPresentFindsPattern() throws IOException, InterruptedException {
         final LogPatternDetector detector = createPatternDetector("UNPACK THREAD started");
-
         assertThat(detector.isPatternPresent(), is(true));
     }
 
     @Test
     void testIsPatternPresentDoesNotPattern() throws IOException, InterruptedException {
         final LogPatternDetector detector = createPatternDetector("dummypattern");
-
         assertThat(detector.isPatternPresent(), is(false));
     }
 
     private LogPatternDetector createPatternDetector(final String pattern) {
-        return new LogPatternDetector(container, EXASOL_CORE_DAEMON_LOGS_PATH, BUCKETFS_DAEMON_LOG_FILENAME_PATTERN,
-                pattern, new NonBlankVerifier());
-    }
-
-    private final class NonBlankVerifier implements LogEntryPatternVerifier {
-        @Override
-        public boolean isLogMessageFound(final String text) {
-            return !text.isBlank();
-        }
+        return new LogPatternDetectorFactory(container).createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern);
     }
 }
