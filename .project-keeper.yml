@@ -1,0 +1,8 @@
+sources:
+  - type: maven
+    path: pom.xml
+    modules:
+      - maven_central
+      - integration_tests
+linkReplacements:
+  - "LICENSE-exasol-jdbc.txt|https://docs.exasol.com/connect_exasol/drivers/jdbc.htm"

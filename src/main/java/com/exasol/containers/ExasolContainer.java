@@ -253,13 +253,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private String getJdbcUrlWithFingerprint(final String fingerprint) {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
+        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort()
                 + ";validateservercertificate=1;fingerprint=" + fingerprint + ";";
     }
 
     private String getJdbcUrlWithoutFingerprint() {
-        return "jdbc:exa:" + getContainerIpAddress() + ":" + getFirstMappedDatabasePort()
-                + ";validateservercertificate=0";
+        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort()
+                + ";validateservercertificate=0" + ";";
     }
 
     /**
@@ -268,7 +268,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return mapped URL of the RPC interface
      */
     public String getRpcUrl() {
-        return "https://" + getContainerIpAddress() + ":" + getMappedPort(getDefaultInternalRpcPort()) + "/jrpc";
+        return "https://" + getHost() + ":" + getMappedPort(getDefaultInternalRpcPort()) + "/jrpc";
     }
 
     /**
@@ -296,7 +296,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return host (list) and port
      */
     public String getExaConnectionAddress() {
-        return this.getContainerIpAddress() + ":" + getFirstMappedDatabasePort();
+        return this.getHost() + ":" + getFirstMappedDatabasePort();
     }
 
     /**
@@ -420,7 +420,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final BucketFactory factory = new TestcontainerBucketFactory(this.detectorFactory, getContainerIpAddress(),
+        final BucketFactory factory = new TestcontainerBucketFactory(this.detectorFactory, getHost(),
                 getClusterConfiguration(), getPortMappings());
         return factory.getBucket(bucketFsName, bucketName);
     }
