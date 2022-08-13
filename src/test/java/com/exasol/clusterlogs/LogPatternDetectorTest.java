@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ExecResultFactory;
 
+import com.exasol.containers.ExasolContainer;
 import com.exasol.testutil.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +25,7 @@ class LogPatternDetectorTest {
     private static final String PATTERN = "pattern";
     private static final String STD_OUT_RESULT = "actual log content";
     @Mock
-    private Container<? extends Container<?>> containerMock;
+    private ExasolContainer<? extends ExasolContainer<?>> containerMock;
     @Mock
     private LogEntryPatternVerifier logEntryVerifier;
     private LogPatternDetector detector;

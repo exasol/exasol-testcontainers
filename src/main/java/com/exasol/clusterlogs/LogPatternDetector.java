@@ -4,11 +4,16 @@ import static com.exasol.errorreporting.ExaError.messageBuilder;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
+import com.exasol.bucketfs.monitor.LineNumberBasedState;
+import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.TimeBasedState;
+import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
 /**
@@ -21,7 +26,7 @@ public class LogPatternDetector {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogPatternDetector.class);
-    private Container<? extends Container<?>> container;
+    private ExasolContainer<? extends ExasolContainer<?>> container;
     private String logPath;
     private String pattern;
     private String logNamePattern;
@@ -88,8 +93,8 @@ public class LogPatternDetector {
      * @return human-readable explanation of what this detector looks for.
      */
     public String describe() {
-        return "Scanning for log message pattern \"" + this.pattern + " in \"" + this.logPath + "/"
-                + this.logNamePattern + "\". using " + this.logEntryVerifier;
+        return "Scanning for log message pattern \"" + this.pattern + "\" in \"" + this.logPath + "/"
+                + this.logNamePattern + "\", using " + this.logEntryVerifier + ".";
     }
 
     /**
@@ -120,7 +125,7 @@ public class LogPatternDetector {
     static class Builder {
         private final LogPatternDetector detector = new LogPatternDetector();
 
-        public Builder container(final Container<? extends Container<?>> value) {
+        public Builder container(final ExasolContainer<? extends ExasolContainer<?>> value) {
             this.detector.container = value;
             return this;
         }
@@ -138,6 +143,18 @@ public class LogPatternDetector {
         public Builder logNamePattern(final String value) {
             this.detector.logNamePattern = value;
             return this;
+        }
+
+        public Builder forState(final State state) {
+            if (state instanceof LineNumberBasedState) {
+                return afterLine(((LineNumberBasedState) state).getLineNumber());
+            }
+            if (state instanceof TimeBasedState) {
+                TimeZone timeZone = this.detector.container.getClusterConfiguration().getTimeZone();
+                timeZone = TimeZone.getTimeZone("UTC"); // TODO: Fix me!
+                return logEntryVerifier(new TimestampLogEntryPatternVerifier2(state, timeZone));
+            }
+            throw new IllegalArgumentException("Unsupported class " + state.getClass() + " of state");
         }
 
         public Builder logEntryVerifier(final LogEntryPatternVerifier value) {

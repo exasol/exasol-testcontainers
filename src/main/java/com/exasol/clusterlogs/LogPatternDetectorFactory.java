@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import org.testcontainers.containers.Container;
 
+import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 import com.exasol.containers.ExasolContainer;
 
 /**
@@ -46,14 +47,14 @@ public class LogPatternDetectorFactory {
                 .build();
     }
 
-    public LogPatternDetector lineCountingDetector(final String logPath, final String logNamePattern,
-            final String pattern, final long afterLineNumber) {
+    public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
+            final String pattern, final State state) {
         return LogPatternDetector.builder() //
                 .container(this.container) //
                 .logPath(logPath) //
                 .logNamePattern(logNamePattern) //
                 .pattern(pattern) //
-                .afterLine(afterLineNumber) //
+                .forState(state) //
                 .build();
     }
 

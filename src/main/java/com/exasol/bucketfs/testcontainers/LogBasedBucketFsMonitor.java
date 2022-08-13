@@ -55,10 +55,10 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
         }
     }
 
-    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final long afterLineNumber) {
-        return this.detectorFactory.lineCountingDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterLineNumber);
-    }
+//    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final long afterLineNumber) {
+//        return this.detectorFactory.lineCountingDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
+//                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterLineNumber);
+//    }
 
     // sample log messages:
     // [I 220812 10:57:23 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir5/sub5/file.txt'))
