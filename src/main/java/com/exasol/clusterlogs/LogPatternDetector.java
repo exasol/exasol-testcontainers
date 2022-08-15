@@ -152,7 +152,7 @@ public class LogPatternDetector {
             if (state instanceof TimeBasedState) {
                 TimeZone timeZone = this.detector.container.getClusterConfiguration().getTimeZone();
                 timeZone = TimeZone.getTimeZone("UTC"); // TODO: Fix me!
-                return logEntryVerifier(new TimestampLogEntryPatternVerifier2(state, timeZone));
+                return logEntryVerifier(new TimestampLogEntryPatternVerifier(state, timeZone));
             }
             throw new IllegalArgumentException("Unsupported class " + state.getClass() + " of state");
         }

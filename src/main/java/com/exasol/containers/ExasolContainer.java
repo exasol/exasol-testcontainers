@@ -28,7 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
 import com.exasol.bucketfs.Bucket;
-import com.exasol.bucketfs.BucketFactory;
+import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
@@ -258,8 +258,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private String getJdbcUrlWithoutFingerprint() {
-        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort()
-                + ";validateservercertificate=0" + ";";
+        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort() + ";validateservercertificate=0" + ";";
     }
 
     /**
@@ -420,9 +419,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final BucketFactory factory = new TestcontainerBucketFactory(this.detectorFactory, getHost(),
-                getClusterConfiguration(), getPortMappings());
-        return factory.getBucket(bucketFsName, bucketName);
+        return TestcontainerBucketFactory.builder() //
+                .host(getHost()) //
+                .clusterConfiguration(getClusterConfiguration()) //
+                .portMappings(getPortMappings()) //
+                .detectorFactory(this.detectorFactory) //
+                .filterStrategy(FilterStrategy.LINE_NUMBER) //
+                .build() //
+                .getBucket(bucketFsName, bucketName);
     }
 
     private Map<Integer, Integer> getPortMappings() {

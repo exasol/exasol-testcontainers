@@ -1,12 +1,13 @@
 package com.exasol.containers.wait.strategy;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
+import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.TimeBasedState;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 
@@ -26,11 +27,12 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
      * @param logPath         path of the log file to search
      * @param logNamePattern  pattern used to find the file name
      * @param pattern         regular expression pattern for which to look out
-     * @param afterUtc        earliest time in the log after which the log message must appear
+     * @param state           accept only events with a different state. For a {@link TimeBasedState} the current state
+     *                        represents the current time and rejects events at earlier points in time
      */
     public LogFileEntryWaitStrategy(final LogPatternDetectorFactory detectorFactory, final String logPath,
-            final String logNamePattern, final String pattern, final Instant afterUtc) {
-        this(detectorFactory.createLogPatternDetector(logPath, logNamePattern, pattern, afterUtc));
+            final String logNamePattern, final String pattern, final State state) {
+        this(detectorFactory.createLogPatternDetector(logPath, logNamePattern, pattern, state));
     }
 
     /**

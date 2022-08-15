@@ -87,7 +87,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>bucketfs-java</artifactId>
-            <version>2.3.0</version>
+            <version>2.4.0</version><!-- was 2.3.0 -->
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>

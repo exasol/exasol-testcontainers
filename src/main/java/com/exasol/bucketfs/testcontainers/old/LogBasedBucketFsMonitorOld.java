@@ -1,13 +1,12 @@
-package com.exasol.bucketfs.testcontainers;
+package com.exasol.bucketfs.testcontainers.old;
 
 import static com.exasol.containers.ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import com.exasol.bucketfs.*;
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor;
-import com.exasol.bucketfs.monitor.TimeRetriever;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.containers.ExasolDockerImageReference;
@@ -15,21 +14,17 @@ import com.exasol.containers.ExasolDockerImageReference;
 /**
  * This {@link BucketFsMonitor} detects if a file was successfully uploaded from the Exasol log files.
  */
-public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
-
+@Deprecated
+public class LogBasedBucketFsMonitorOld implements BucketFsMonitor {
     private final LogPatternDetectorFactory detectorFactory;
-    private final FilterStrategy filterStrategy;
 
     /**
-     * Create a new instance of {@link LogBasedBucketFsMonitor}.
+     * Create a new instance of {@link LogBasedBucketFsMonitorOld}.
      *
      * @param detectorFactory factory for a log pattern detector
-     * @param filterStrategy  {@link FilterStrategy} for finding relevant log entries
      */
-    public LogBasedBucketFsMonitor(final LogPatternDetectorFactory detectorFactory,
-            final FilterStrategy filterStrategy) {
+    public LogBasedBucketFsMonitorOld(final LogPatternDetectorFactory detectorFactory) {
         this.detectorFactory = detectorFactory;
-        this.filterStrategy = filterStrategy;
     }
 
     private static boolean isSupportedArchiveFormat(final String pathInBucket) {
@@ -43,10 +38,10 @@ public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
 
     @Override
     @SuppressWarnings("java:S112")
-    public boolean isObjectSynchronized(final ReadOnlyBucket bucket, final String pathInBucket, final State state)
+    public boolean isObjectSynchronized(final ReadOnlyBucket bucket, final String pathInBucket, final Instant afterUTC)
             throws BucketAccessException {
         try {
-            return createBucketLogPatternDetector(pathInBucket, state).isPatternPresent();
+            return createBucketLogPatternDetector(pathInBucket, afterUTC).isPatternPresent();
         } catch (final IOException exception) {
             throw new BucketAccessException(
                     "Unable to check if object \"" + pathInBucket + "\" is synchronized in bucket \""
@@ -67,21 +62,9 @@ public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
     // BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterLineNumber);
     // }
 
-    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final State state) {
+    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final Instant afterUTC) {
         return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), state);
-    }
-
-    public StateRetriever createStateRetriever() {
-        switch (this.filterStrategy) {
-        case LINE_NUMBER:
-            return this.detectorFactory.createFileSizeRetriever( //
-                    EXASOL_CORE_DAEMON_LOGS_PATH, //
-                    BUCKETFS_DAEMON_LOG_FILENAME_PATTERN);
-        case TIME_STAMP:
-        default:
-            return new TimeRetriever();
-        }
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterUTC);
     }
 
     // sample log messages:
@@ -101,18 +84,5 @@ public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
     private boolean isOldVersion() {
         final ExasolDockerImageReference dockerImageReference = this.detectorFactory.getDockerImageReference();
         return (dockerImageReference.hasMajor() && (dockerImageReference.getMajor() < 8));
-    }
-
-    /**
-     * To identify relevant log entries the log monitor can
-     * <ul>
-     * <li>either use the current time and accept only newer log entries</li>
-     * <li>of use the current size of the log file in terms of the number of lines and accept only log entries with
-     * higher line number. For this strategy it is mandatory to disable log rotation.</li>
-     * </ul>
-     */
-    public enum FilterStrategy {
-        TIME_STAMP, //
-        LINE_NUMBER;
     }
 }

@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import org.testcontainers.containers.Container;
 
+import com.exasol.bucketfs.monitor.FileSizeRetriever;
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
@@ -33,12 +34,13 @@ public class LogPatternDetectorFactory {
      * @param afterUtc       earliest time in the log after which the log message must appear
      * @return detector instance
      */
+    @Deprecated
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
             final String pattern, final Instant afterUtc) {
         TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
         timeZone = TimeZone.getTimeZone("UTC"); // TODO: Fix me!
-        final TimestampLogEntryPatternVerifier logEntryVerifier = //
-                new TimestampLogEntryPatternVerifier(afterUtc, timeZone);
+        final TimestampLogEntryPatternVerifierOld logEntryVerifier = //
+                new TimestampLogEntryPatternVerifierOld(afterUtc, timeZone);
         return LogPatternDetector.builder() //
                 .container(this.container) //
                 .logPath(logPath) //
@@ -57,6 +59,10 @@ public class LogPatternDetectorFactory {
                 .pattern(pattern) //
                 .forState(state) //
                 .build();
+    }
+
+    public FileSizeRetriever createFileSizeRetriever(final String logPath, final String logNamePattern) {
+        return new FileSizeRetriever(this.container, logPath, logNamePattern);
     }
 
     /**
