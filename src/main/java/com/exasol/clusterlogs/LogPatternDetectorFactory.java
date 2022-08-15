@@ -6,6 +6,7 @@ import java.util.TimeZone;
 import org.testcontainers.containers.Container;
 
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolDockerImageReference;
 
 /**
  * Factory for log entry scanners.
@@ -74,5 +75,9 @@ public class LogPatternDetectorFactory {
                 .pattern(pattern) //
                 .logEntryVerifier(new LogEntryPresentPatternVerifier()) //
                 .build();
+    }
+
+    public ExasolDockerImageReference getDockerImageReference() {
+        return this.container.getDockerImageReference();
     }
 }

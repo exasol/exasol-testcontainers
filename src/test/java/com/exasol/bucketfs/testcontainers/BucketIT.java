@@ -57,6 +57,12 @@ class BucketIT {
         assertThat(bucket.listContents(), hasItem(fileName));
     }
 
+    @Test
+    void testUploadZipArchive(@TempDir final Path tempDir)
+            throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+        // TODO
+    }
+
     private Path createTestFile(final Path tempDir, final String fileName, final int sizeInKiB) throws IOException {
         final RandomFileGenerator generator = new RandomFileGenerator();
         final Path path = tempDir.resolve(Path.of(fileName));
@@ -65,9 +71,9 @@ class BucketIT {
     }
 
     // sample log messages:
-    // [I 220812 11:26:06 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir1/file.txt'))
-    // [I 220812 11:10:21 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir4/file.txt'))
-    // [I 220812 10:57:23 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir5/sub5/file.txt'))
+    // [I 220812 11:26:06 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir1/file.txt')) is done
+    // [I 220812 11:10:21 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir4/file.txt')) is done
+    // [I 220812 10:57:23 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir5/sub5/file.txt')) is done
     @ValueSource(strings = { "dir1/", "dir2/sub2/", "dir3/sub3/subsub3/", "/dir4/", "/dir5/sub5/" })
     @ParameterizedTest
     void testUploadToDirectoryInBucket(final String pathInBucket, @TempDir final Path tempDir)

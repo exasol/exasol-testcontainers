@@ -9,6 +9,7 @@ import java.time.Instant;
 import com.exasol.bucketfs.*;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
+import com.exasol.containers.ExasolDockerImageReference;
 
 /**
  * This {@link BucketFsMonitor} detects if a file was successfully uploaded from the Exasol log files.
@@ -39,7 +40,6 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
     public boolean isObjectSynchronized(final ReadOnlyBucket bucket, final String pathInBucket, final Instant afterUTC)
             throws BucketAccessException {
         try {
-//            return createBucketLogPatternDetector(pathInBucket).isPatternPresent();
             return createBucketLogPatternDetector(pathInBucket, afterUTC).isPatternPresent();
         } catch (final IOException exception) {
             throw new BucketAccessException(
@@ -55,23 +55,27 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
         }
     }
 
-    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final long afterLineNumber) {
-        return this.detectorFactory.lineCountingDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterLineNumber);
+    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final Instant afterUTC) {
+        return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterUTC);
     }
 
     // sample log messages:
-    // [I 220812 10:57:23 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir5/sub5/file.txt'))
-    // [I 220812 11:10:21 bucketfsd:228] removed sync future for id (('bfsdefault', 'default', 'dir4/file.txt'))
+    // [I 220812 11:26:06 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir1/file.txt')) is done
+    // [I 220812 11:10:21 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir4/file.txt')) is done
+    // [I 220812 10:57:23 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir5/sub5/file.txt')) is done
     private String pattern(final String pathInBucket) {
-        return "removed sync future for id .*'" //
-                + (pathInBucket.startsWith("/") ? pathInBucket.substring(1) : pathInBucket) //
-                + ".*'";
+        if (isOldVersion()) {
+            return pathInBucket + ".*" + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
+        } else {
+            return "rsync for .*'" //
+                    + (pathInBucket.startsWith("/") ? pathInBucket.substring(1) : pathInBucket) //
+                    + ".*'.* is done";
+        }
     }
 
-    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final Instant afterUTC) {
-//        final String pattern = pathInBucket + ".*" + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
-        return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterUTC);
+    private boolean isOldVersion() {
+        final ExasolDockerImageReference dockerImageReference = this.detectorFactory.getDockerImageReference();
+        return (dockerImageReference.hasMajor() && (dockerImageReference.getMajor() < 8));
     }
 }
