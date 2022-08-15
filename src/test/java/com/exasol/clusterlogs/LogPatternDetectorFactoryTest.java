@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.bucketfs.monitor.LineNumberBasedState;
+import com.exasol.bucketfs.monitor.FilesizeState;
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 import com.exasol.containers.ExasolContainer;
 
@@ -30,7 +30,7 @@ public class LogPatternDetectorFactoryTest {
 
     @Test
     void lineNumberBasedState() {
-        final LineNumberBasedState state = Mockito.mock(LineNumberBasedState.class);
+        final FilesizeState state = Mockito.mock(FilesizeState.class);
         final LogPatternDetector detector = this.factory.createLogPatternDetector("logpath", "logname", "pattern",
                 state);
         assertThat(detector, notNullValue());

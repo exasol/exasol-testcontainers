@@ -5,9 +5,9 @@ import java.time.Instant;
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.StateRetriever;
 
-public class TimeRetriever implements StateRetriever {
+public class TimestampRetriever implements StateRetriever {
     @Override
     public State getState() {
-        return TimeBasedState.lowResolution(Instant.now());
+        return TimestampState.lowResolution(Instant.now());
     }
 }

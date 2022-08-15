@@ -14,14 +14,14 @@ import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 /**
  * Reject other states with earlier time.
  */
-public class TimeBasedState implements StateBasedBucketFsMonitor.State { // <Instant> {
+public class TimestampState implements StateBasedBucketFsMonitor.State { // <Instant> {
 
-    public static TimeBasedState lowResolution(final Instant time) {
-        return new TimeBasedState(time.truncatedTo(ChronoUnit.MICROS));
+    public static TimestampState lowResolution(final Instant time) {
+        return new TimestampState(time.truncatedTo(ChronoUnit.MICROS));
     }
 
-    public static TimeBasedState of(final LocalDateTime time, final TimeZone timeZone) {
-        return new TimeBasedState(time.atZone(timeZone.toZoneId()).toInstant());
+    public static TimestampState of(final LocalDateTime time, final TimeZone timeZone) {
+        return new TimestampState(time.atZone(timeZone.toZoneId()).toInstant());
     }
 
     private final Instant time;
@@ -29,16 +29,16 @@ public class TimeBasedState implements StateBasedBucketFsMonitor.State { // <Ins
     /**
      * @param earliest earliest point in time to accept other states
      */
-    public TimeBasedState(final Instant time) {
+    public TimestampState(final Instant time) {
         this.time = time;
     }
 
     @Override
     public boolean accepts(final State other) {
-        if (!(other instanceof TimeBasedState)) {
+        if (!(other instanceof TimestampState)) {
             return false;
         }
-        return !((TimeBasedState) other).time.isBefore(this.time);
+        return !((TimestampState) other).time.isBefore(this.time);
     }
 
     @Override

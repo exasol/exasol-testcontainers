@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
-import com.exasol.bucketfs.monitor.LineNumberBasedState;
+import com.exasol.bucketfs.monitor.FilesizeState;
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
-import com.exasol.bucketfs.monitor.TimeBasedState;
+import com.exasol.bucketfs.monitor.TimestampState;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
@@ -146,10 +146,10 @@ public class LogPatternDetector {
         }
 
         public Builder forState(final State state) {
-            if (state instanceof LineNumberBasedState) {
-                return afterLine(((LineNumberBasedState) state).getLineNumber());
+            if (state instanceof FilesizeState) {
+                return afterLine(((FilesizeState) state).getLineNumber());
             }
-            if (state instanceof TimeBasedState) {
+            if (state instanceof TimestampState) {
                 TimeZone timeZone = this.detector.container.getClusterConfiguration().getTimeZone();
                 timeZone = TimeZone.getTimeZone("UTC"); // TODO: Fix me!
                 return logEntryVerifier(new TimestampLogEntryPatternVerifier(state, timeZone));

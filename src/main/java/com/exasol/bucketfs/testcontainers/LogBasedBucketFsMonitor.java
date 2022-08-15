@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import com.exasol.bucketfs.*;
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor;
-import com.exasol.bucketfs.monitor.TimeRetriever;
+import com.exasol.bucketfs.monitor.TimestampRetriever;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.containers.ExasolDockerImageReference;
@@ -80,7 +80,7 @@ public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
                     BUCKETFS_DAEMON_LOG_FILENAME_PATTERN);
         case TIME_STAMP:
         default:
-            return new TimeRetriever();
+            return new TimestampRetriever();
         }
     }
 

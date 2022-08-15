@@ -1,11 +1,8 @@
 package com.exasol.clusterlogs;
 
-import java.time.Instant;
-import java.util.TimeZone;
-
 import org.testcontainers.containers.Container;
 
-import com.exasol.bucketfs.monitor.FileSizeRetriever;
+import com.exasol.bucketfs.monitor.FilesizeRetriever;
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
@@ -31,25 +28,9 @@ public class LogPatternDetectorFactory {
      * @param logPath        path in which to look for logs
      * @param logNamePattern pattern for log names
      * @param pattern        pattern for which to search inside logs
-     * @param afterUtc       earliest time in the log after which the log message must appear
+     * @param state          state to allow filtering of log file entries
      * @return detector instance
      */
-    @Deprecated
-    public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
-            final String pattern, final Instant afterUtc) {
-        TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
-        timeZone = TimeZone.getTimeZone("UTC"); // TODO: Fix me!
-        final TimestampLogEntryPatternVerifierOld logEntryVerifier = //
-                new TimestampLogEntryPatternVerifierOld(afterUtc, timeZone);
-        return LogPatternDetector.builder() //
-                .container(this.container) //
-                .logPath(logPath) //
-                .logNamePattern(logNamePattern) //
-                .pattern(pattern) //
-                .logEntryVerifier(logEntryVerifier) //
-                .build();
-    }
-
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
             final String pattern, final State state) {
         return LogPatternDetector.builder() //
@@ -61,8 +42,8 @@ public class LogPatternDetectorFactory {
                 .build();
     }
 
-    public FileSizeRetriever createFileSizeRetriever(final String logPath, final String logNamePattern) {
-        return new FileSizeRetriever(this.container, logPath, logNamePattern);
+    public FilesizeRetriever createFileSizeRetriever(final String logPath, final String logNamePattern) {
+        return new FilesizeRetriever(this.container, logPath, logNamePattern);
     }
 
     /**

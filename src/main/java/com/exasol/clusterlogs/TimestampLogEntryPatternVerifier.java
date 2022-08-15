@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor;
-import com.exasol.bucketfs.monitor.TimeBasedState;
+import com.exasol.bucketfs.monitor.TimestampState;
 
 /**
  * This {@class TimestampLogEntryPatternVerifier} verifies that log entries appear after the given timestamp.
@@ -47,7 +47,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
                 if (matcher.matches()) {
                     final String isoTimestamp = "20" + matcher.group(1) + "-" + matcher.group(2) + "-"
                             + matcher.group(3) + "T" + matcher.group(4);
-                    final TimeBasedState logEntryState = TimeBasedState.of(LocalDateTime.parse(isoTimestamp),
+                    final TimestampState logEntryState = TimestampState.of(LocalDateTime.parse(isoTimestamp),
                             this.timeZone);
                     if (this.state.accepts(logEntryState)) {
                         LOGGER.debug("Found matching log entry {} (after {}): {}", logEntryState.getRepresentation(),

@@ -7,7 +7,7 @@ import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
 import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
-import com.exasol.bucketfs.monitor.TimeBasedState;
+import com.exasol.bucketfs.monitor.TimestampState;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 
@@ -27,7 +27,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
      * @param logPath         path of the log file to search
      * @param logNamePattern  pattern used to find the file name
      * @param pattern         regular expression pattern for which to look out
-     * @param state           accept only events with a different state. For a {@link TimeBasedState} the current state
+     * @param state           accept only events with a different state. For a {@link TimestampState} the current state
      *                        represents the current time and rejects events at earlier points in time
      */
     public LogFileEntryWaitStrategy(final LogPatternDetectorFactory detectorFactory, final String logPath,
