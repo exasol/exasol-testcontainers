@@ -5,16 +5,12 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.TimeZone;
 
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
-
-// COPY
-// SHOULD be replaced by dependency to bucketfs-java
-// but in the long term might be moved to exasol-testcontainers
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 
 /**
  * Reject other states with earlier time.
  */
-public class TimestampState implements StateBasedBucketFsMonitor.State { // <Instant> {
+public class TimestampState implements BucketFsMonitor.State {
 
     public static TimestampState lowResolution(final Instant time) {
         return new TimestampState(time.truncatedTo(ChronoUnit.MICROS));
@@ -42,7 +38,7 @@ public class TimestampState implements StateBasedBucketFsMonitor.State { // <Ins
     }
 
     @Override
-    public String getRepresentation() {
+    public String toString() {
         return "time " + this.time.toString();
     }
 

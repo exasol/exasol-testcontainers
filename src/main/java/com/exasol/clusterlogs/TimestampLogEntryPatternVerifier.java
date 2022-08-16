@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor;
+import com.exasol.bucketfs.monitor.BucketFsMonitor;
 import com.exasol.bucketfs.monitor.TimestampState;
 
 /**
@@ -21,7 +21,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
     private static final Pattern LOG_ENTRY_PATTERN = Pattern
             .compile("\\[. (\\d\\d)(\\d\\d)(\\d\\d) (\\d\\d:\\d\\d:\\d\\d).*");
 
-    private final StateBasedBucketFsMonitor.State state;
+    private final BucketFsMonitor.State state;
     private final TimeZone timeZone;
 
     /**
@@ -30,7 +30,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
      * @param timeZone time zone that serves as context for the short timestamps in the logs
      * @param afterUtc earliest time in the log after which the log message must appear
      */
-    TimestampLogEntryPatternVerifier(final StateBasedBucketFsMonitor.State state, final TimeZone timeZone) {
+    TimestampLogEntryPatternVerifier(final BucketFsMonitor.State state, final TimeZone timeZone) {
         this.state = state;
         this.timeZone = timeZone;
     }
@@ -50,8 +50,8 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
                     final TimestampState logEntryState = TimestampState.of(LocalDateTime.parse(isoTimestamp),
                             this.timeZone);
                     if (this.state.accepts(logEntryState)) {
-                        LOGGER.debug("Found matching log entry {} (after {}): {}", logEntryState.getRepresentation(),
-                                this.state.getRepresentation(), line);
+                        LOGGER.debug("Found matching log entry {} (after {}): {}", //
+                                logEntryState, this.state, line);
                         return true;
                     }
                 }
@@ -64,7 +64,7 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
 
     @Override
     public String toString() {
-        return "TimestampLogEntryPatternVerifier [afterUtc=" + this.state.getRepresentation() + ", timeZone="
+        return "TimestampLogEntryPatternVerifier [afterUtc=" + this.state.toString() + ", timeZone="
                 + this.timeZone.getID() + "]";
     }
 }

@@ -10,10 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.FilesizeState;
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.TimestampState;
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolDockerImageReference;
 import com.exasol.containers.exec.ExitCode;
 
 /**
@@ -150,11 +151,28 @@ public class LogPatternDetector {
                 return afterLine(((FilesizeState) state).getLineNumber());
             }
             if (state instanceof TimestampState) {
-                TimeZone timeZone = this.detector.container.getClusterConfiguration().getTimeZone();
-                timeZone = TimeZone.getTimeZone("UTC"); // TODO: Fix me!
-                return logEntryVerifier(new TimestampLogEntryPatternVerifier(state, timeZone));
+                return logEntryVerifier(new TimestampLogEntryPatternVerifier(state, getTimezone()));
             }
             throw new IllegalArgumentException("Unsupported class " + state.getClass() + " of state");
+        }
+
+        /**
+         * According to bucketfs developers:
+         * <ul>
+         * <li>bucketfsd does not use timezone setting from {@code /exa/etc/EXAConf} but hard-coded python
+         * {@code time.gmtime}</li>
+         * <li>there are discussions to unify all logs to UTC</li>
+         * </ul>
+         *
+         * @return timezone setting for bucketfs logs
+         */
+        private TimeZone getTimezone() {
+            final ExasolDockerImageReference image = this.detector.container.getDockerImageReference();
+            if (image.hasMajor() && (image.getMajor() < 8)) {
+                return this.detector.container.getClusterConfiguration().getTimeZone();
+            } else {
+                return TimeZone.getTimeZone("UTC");
+            }
         }
 
         public Builder logEntryVerifier(final LogEntryPatternVerifier value) {

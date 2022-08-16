@@ -2,8 +2,8 @@ package com.exasol.bucketfs.monitor;
 
 import java.time.Instant;
 
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.StateRetriever;
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.BucketFsMonitor.StateRetriever;
 
 public class TimestampRetriever implements StateRetriever {
     @Override

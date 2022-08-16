@@ -45,7 +45,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
         this.buckets.computeIfAbsent(bucketPath, key -> {
             final LogBasedBucketFsMonitor monitor = new LogBasedBucketFsMonitor( //
                     this.detectorFactory, this.filterStrategy);
-            return SyncAwareBucket2 //
+            return SyncAwareBucket //
                     .builder() //
                     .monitor(monitor)//
                     .stateRetriever(monitor.createStateRetriever()) //

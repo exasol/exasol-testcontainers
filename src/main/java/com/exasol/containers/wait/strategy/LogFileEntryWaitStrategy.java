@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.TimestampState;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;

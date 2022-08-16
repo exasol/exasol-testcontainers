@@ -2,8 +2,8 @@ package com.exasol.clusterlogs;
 
 import org.testcontainers.containers.Container;
 
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.FilesizeRetriever;
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
 

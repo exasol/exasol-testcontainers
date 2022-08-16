@@ -1,11 +1,11 @@
 package com.exasol.bucketfs.monitor;
 
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 
 /**
  * Only accept other states with higher line number.
  */
-public class FilesizeState implements StateBasedBucketFsMonitor.State {
+public class FilesizeState implements BucketFsMonitor.State {
 
     private final Long lineNumber;
 
@@ -25,7 +25,7 @@ public class FilesizeState implements StateBasedBucketFsMonitor.State {
     }
 
     @Override
-    public String getRepresentation() {
+    public String toString() {
         return "line number " + this.lineNumber;
     }
 

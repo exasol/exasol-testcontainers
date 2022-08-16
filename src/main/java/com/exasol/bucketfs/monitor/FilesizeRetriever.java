@@ -9,14 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.clusterlogs.LineNumberLogEntryPatternVerifier;
 import com.exasol.containers.ExasolContainer;
 
 /**
  * Retrieves the {@link State} represented by the size of the log file in terms of number of lines.
  */
-public class FilesizeRetriever implements StateBasedBucketFsMonitor.StateRetriever {
+public class FilesizeRetriever implements BucketFsMonitor.StateRetriever {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LineNumberLogEntryPatternVerifier.class);
     private static final Pattern LINE_COUNT = Pattern.compile(" *(\\d+) .*");

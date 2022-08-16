@@ -2,11 +2,12 @@ package com.exasol.bucketfs.testcontainers;
 
 import static com.exasol.containers.ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
+import static com.exasol.errorreporting.ExaError.messageBuilder;
 
 import java.io.IOException;
 
 import com.exasol.bucketfs.*;
-import com.exasol.bucketfs.monitor.StateBasedBucketFsMonitor;
+import com.exasol.bucketfs.monitor.BucketFsMonitor;
 import com.exasol.bucketfs.monitor.TimestampRetriever;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
@@ -15,7 +16,7 @@ import com.exasol.containers.ExasolDockerImageReference;
 /**
  * This {@link BucketFsMonitor} detects if a file was successfully uploaded from the Exasol log files.
  */
-public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
+public class LogBasedBucketFsMonitor implements BucketFsMonitor {
 
     private final LogPatternDetectorFactory detectorFactory;
     private final FilterStrategy filterStrategy;
@@ -32,15 +33,6 @@ public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
         this.filterStrategy = filterStrategy;
     }
 
-    private static boolean isSupportedArchiveFormat(final String pathInBucket) {
-        for (final String extension : UnsynchronizedBucket.SUPPORTED_ARCHIVE_EXTENSIONS) {
-            if (pathInBucket.endsWith(extension)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     @SuppressWarnings("java:S112")
     public boolean isObjectSynchronized(final ReadOnlyBucket bucket, final String pathInBucket, final State state)
@@ -48,26 +40,23 @@ public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
         try {
             return createBucketLogPatternDetector(pathInBucket, state).isPatternPresent();
         } catch (final IOException exception) {
-            throw new BucketAccessException(
-                    "Unable to check if object \"" + pathInBucket + "\" is synchronized in bucket \""
-                            + bucket.getBucketFsName() + "/" + bucket.getBucketName() + "\".",
+            throw new BucketAccessException(messageBuilder("E-ETC-19").message( //
+                    "Unable to check if object {{path}} is synchronized in bucket {{bucket filesystem}}/{{bucket name}}.", //
+                    pathInBucket, bucket.getBucketFsName(), bucket.getBucketName()) //
+                    .toString(), //
                     exception);
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(
-                    "Caught interrupt trying to check if object \"" + pathInBucket + "\" is synchronized in bucket \""
-                            + bucket.getBucketFsName() + "/" + bucket.getBucketName() + "\".",
+            throw new IllegalStateException(messageBuilder("E-ETC-20").message( //
+                    "Caught interrupt trying to check if object {{path}} is synchronized in bucket {{bucket filesystem}}/{{bucket name}}.", //
+                    pathInBucket, bucket.getBucketFsName(), bucket.getBucketName()) //
+                    .toString(), //
                     exception);
         }
     }
 
-    // private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final long afterLineNumber)
-    // {
-    // return this.detectorFactory.lineCountingDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
-    // BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), afterLineNumber);
-    // }
-
-    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket, final State state) {
+    private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket,
+            final BucketFsMonitor.State state) {
         return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
                 BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), state);
     }
@@ -101,6 +90,15 @@ public class LogBasedBucketFsMonitor implements StateBasedBucketFsMonitor {
     private boolean isOldVersion() {
         final ExasolDockerImageReference dockerImageReference = this.detectorFactory.getDockerImageReference();
         return (dockerImageReference.hasMajor() && (dockerImageReference.getMajor() < 8));
+    }
+
+    private static boolean isSupportedArchiveFormat(final String pathInBucket) {
+        for (final String extension : UnsynchronizedBucket.SUPPORTED_ARCHIVE_EXTENSIONS) {
+            if (pathInBucket.endsWith(extension)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
