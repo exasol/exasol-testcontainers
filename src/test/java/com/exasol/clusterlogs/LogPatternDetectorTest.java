@@ -69,7 +69,7 @@ class LogPatternDetectorTest {
 
     @Test
     void describe() {
-        assertThat(this.detector.describe(),
-                equalTo("Scanning for log message pattern \"pattern in \"path/logfilename\". using logEntryVerifier"));
+        assertThat(this.detector.describe(), equalTo(
+                "Scanning for log message pattern \"pattern\" in \"path/logfilename\", using logEntryVerifier."));
     }
 }
