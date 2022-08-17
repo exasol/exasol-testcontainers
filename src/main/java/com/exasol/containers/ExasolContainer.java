@@ -418,19 +418,31 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * Get a bucket control object.
+     * Get a bucket control object with default filter strategy {@link FilterStrategy.TIME_STAMP}.
      *
-     * @param bucketFsName name of the BucketFS filesystem the bucket belongs to
+     * @param bucketFsName name of the BucketFS file system the bucket belongs to
      * @param bucketName   name of the bucket
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
+        return getBucket(bucketFsName, bucketName, FilterStrategy.TIME_STAMP);
+    }
+
+    /**
+     * Get a bucket control object.
+     *
+     * @param bucketFsName   name of the BucketFS file system the bucket belongs to
+     * @param bucketName     name of the bucket
+     * @param filterStrategy filter strategy to use for rejecting irrelevant entries in log file
+     * @return bucket control object
+     */
+    public Bucket getBucket(final String bucketFsName, final String bucketName, final FilterStrategy filterStrategy) {
         return TestcontainerBucketFactory.builder() //
                 .host(getHost()) //
                 .clusterConfiguration(getClusterConfiguration()) //
                 .portMappings(getPortMappings()) //
                 .detectorFactory(this.detectorFactory) //
-                .filterStrategy(FilterStrategy.LINE_NUMBER) //
+                .filterStrategy(filterStrategy) //
                 .build() //
                 .getBucket(bucketFsName, bucketName);
     }

@@ -4,5 +4,7 @@ sources:
     modules:
       - maven_central
       - integration_tests
+excludes:
+  - "E-PK-CORE-18: Outdated content: '.github/workflows/ci-build.yml'"
 linkReplacements:
   - "LICENSE-exasol-jdbc.txt|https://docs.exasol.com/connect_exasol/drivers/jdbc.htm"

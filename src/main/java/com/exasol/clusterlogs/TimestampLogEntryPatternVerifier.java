@@ -50,9 +50,12 @@ class TimestampLogEntryPatternVerifier implements LogEntryPatternVerifier {
                     final TimestampState logEntryState = TimestampState.of(LocalDateTime.parse(isoTimestamp),
                             this.timeZone);
                     if (this.state.accepts(logEntryState)) {
-                        LOGGER.debug("Found matching log entry {} (after {}): {}", //
+                        LOGGER.debug("Found matching log entry with {} (after {}): {}", //
                                 logEntryState, this.state, line);
                         return true;
+                    } else {
+                        LOGGER.debug("Ignoring log entry with {} (after {}): {}", //
+                                logEntryState, this.state, line);
                     }
                 }
             }

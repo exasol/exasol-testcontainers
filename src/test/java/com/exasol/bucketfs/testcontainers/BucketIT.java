@@ -23,6 +23,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.bucketfs.*;
+import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
@@ -53,6 +54,19 @@ class BucketIT {
         final String fileName = "test-uploaded.txt";
         final Path testFile = createTestFile(tempDir, fileName, 10000);
         final Bucket bucket = container.getDefaultBucket();
+        bucket.uploadFile(testFile, fileName);
+        assertThat(bucket.listContents(), hasItem(fileName));
+    }
+
+    @Test
+    void uploadFileWithFilterStrategyLineNumber(@TempDir final Path tempDir)
+            throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+        final String fileName = "test-uploaded.txt";
+        final Path testFile = createTestFile(tempDir, fileName, 10000);
+        final Bucket bucket = container.getBucket( //
+                BucketConstants.DEFAULT_BUCKETFS, //
+                BucketConstants.DEFAULT_BUCKET, //
+                FilterStrategy.LINE_NUMBER);
         bucket.uploadFile(testFile, fileName);
         assertThat(bucket.listContents(), hasItem(fileName));
     }

@@ -16,10 +16,10 @@ public class TimestampState implements BucketFsMonitor.State {
      * Create a new instance of {@link TimestampState}
      *
      * @param time current instant in time before the operation waiting for synchronization.
-     * @return state representing time truncated to low resolution by discarding the micro seconds.
+     * @return state representing time truncated to low resolution by discarding fractions of seconds.
      */
     public static TimestampState lowResolution(final Instant time) {
-        return new TimestampState(time.truncatedTo(ChronoUnit.MICROS));
+        return new TimestampState(time.truncatedTo(ChronoUnit.SECONDS));
     }
 
     /**
