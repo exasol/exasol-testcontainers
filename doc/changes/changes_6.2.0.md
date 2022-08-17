@@ -21,6 +21,15 @@ Additionally updated bucketfs-java to version 2.4.0 with generic state-based mon
 
 * Updated `com.exasol:bucketfs-java:2.3.0` to `2.4.0`
 * Removed `org.apache.commons:commons-compress:1.21`
+* Updated `org.testcontainers:jdbc:1.17.2` to `1.17.3`
+* Updated `org.testcontainers:testcontainers:1.17.2` to `1.17.3`
+
+### Test Dependency Updates
+
+* Updated `org.junit.jupiter:junit-jupiter-engine:5.8.2` to `5.9.0`
+* Updated `org.junit.jupiter:junit-jupiter-params:5.8.2` to `5.9.0`
+* Updated `org.mockito:mockito-junit-jupiter:4.6.1` to `4.7.0`
+* Updated `org.testcontainers:junit-jupiter:1.17.2` to `1.17.3`
 
 ### Plugin Dependency Updates
 

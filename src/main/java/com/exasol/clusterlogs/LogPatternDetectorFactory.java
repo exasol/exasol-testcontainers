@@ -4,6 +4,7 @@ import org.testcontainers.containers.Container;
 
 import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.FilesizeRetriever;
+import com.exasol.bucketfs.testcontainers.LogPatternProvider;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
 
@@ -42,6 +43,12 @@ public class LogPatternDetectorFactory {
                 .build();
     }
 
+    /**
+     * @param logPath        path in which to look for logs
+     * @param logNamePattern pattern for log names
+     * @return {@link FilesizeRetriever} able to count the number of lines of the log file with given {@code logPath}
+     *         and {@code logNamePattern}
+     */
     public FilesizeRetriever createFileSizeRetriever(final String logPath, final String logNamePattern) {
         return new FilesizeRetriever(this.container, logPath, logNamePattern);
     }
@@ -65,7 +72,13 @@ public class LogPatternDetectorFactory {
                 .build();
     }
 
-    public ExasolDockerImageReference getDockerImageReference() {
-        return this.container.getDockerImageReference();
+    /**
+     * @return {@link LogPatternProvider} depending on major version of current docker image
+     */
+    public LogPatternProvider getLogPatternProvider() {
+        final ExasolDockerImageReference image = this.container.getDockerImageReference();
+        return (image.hasMajor() && (image.getMajor() < 8)) //
+                ? LogPatternProvider.DEFAULT
+                : LogPatternProvider.VERSION_8;
     }
 }

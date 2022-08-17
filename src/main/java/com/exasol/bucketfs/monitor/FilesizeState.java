@@ -29,6 +29,9 @@ public class FilesizeState implements BucketFsMonitor.State {
         return "line number " + this.lineNumber;
     }
 
+    /**
+     * @return line number representing the current state
+     */
     public long getLineNumber() {
         return this.lineNumber;
     }

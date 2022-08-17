@@ -6,12 +6,12 @@ import static com.exasol.errorreporting.ExaError.messageBuilder;
 
 import java.io.IOException;
 
-import com.exasol.bucketfs.*;
+import com.exasol.bucketfs.BucketAccessException;
+import com.exasol.bucketfs.ReadOnlyBucket;
 import com.exasol.bucketfs.monitor.BucketFsMonitor;
 import com.exasol.bucketfs.monitor.TimestampRetriever;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
-import com.exasol.containers.ExasolDockerImageReference;
 
 /**
  * This {@link BucketFsMonitor} detects if a file was successfully uploaded from the Exasol log files.
@@ -57,10 +57,16 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
 
     private LogPatternDetector createBucketLogPatternDetector(final String pathInBucket,
             final BucketFsMonitor.State state) {
-        return this.detectorFactory.createLogPatternDetector(EXASOL_CORE_DAEMON_LOGS_PATH,
-                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, pattern(pathInBucket), state);
+        return this.detectorFactory.createLogPatternDetector( //
+                EXASOL_CORE_DAEMON_LOGS_PATH, //
+                BUCKETFS_DAEMON_LOG_FILENAME_PATTERN, //
+                this.detectorFactory.getLogPatternProvider().pattern(pathInBucket), //
+                state);
     }
 
+    /**
+     * @return {@link StateRetriever} using the filter strategy of this {@link LogBasedBucketFsMonitor}.
+     */
     public StateRetriever createStateRetriever() {
         switch (this.filterStrategy) {
         case LINE_NUMBER:
@@ -73,34 +79,6 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
         }
     }
 
-    // sample log messages:
-    // [I 220812 11:26:06 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir1/file.txt')) is done
-    // [I 220812 11:10:21 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir4/file.txt')) is done
-    // [I 220812 10:57:23 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir5/sub5/file.txt')) is done
-    private String pattern(final String pathInBucket) {
-        if (isOldVersion()) {
-            return pathInBucket + ".*" + (isSupportedArchiveFormat(pathInBucket) ? "extracted" : "linked");
-        } else {
-            return "rsync for .*'" //
-                    + (pathInBucket.startsWith("/") ? pathInBucket.substring(1) : pathInBucket) //
-                    + ".*'.* is done";
-        }
-    }
-
-    private boolean isOldVersion() {
-        final ExasolDockerImageReference dockerImageReference = this.detectorFactory.getDockerImageReference();
-        return (dockerImageReference.hasMajor() && (dockerImageReference.getMajor() < 8));
-    }
-
-    private static boolean isSupportedArchiveFormat(final String pathInBucket) {
-        for (final String extension : UnsynchronizedBucket.SUPPORTED_ARCHIVE_EXTENSIONS) {
-            if (pathInBucket.endsWith(extension)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * To identify relevant log entries the log monitor can
      * <ul>
@@ -110,7 +88,9 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
      * </ul>
      */
     public enum FilterStrategy {
+        /** time stamp {@link FilterStrategy} */
         TIME_STAMP, //
+        /** line number {@link FilterStrategy} */
         LINE_NUMBER;
     }
 }

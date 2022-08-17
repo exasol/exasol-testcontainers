@@ -22,6 +22,9 @@ import com.exasol.containers.exec.ExitCode;
  */
 public class LogPatternDetector {
 
+    /**
+     * @return builder to build a new instance of {@link LogPatternDetector}.
+     */
     public static Builder builder() {
         return new Builder();
     }

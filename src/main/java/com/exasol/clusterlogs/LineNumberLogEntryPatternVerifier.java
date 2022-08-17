@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Verifies log entries by line number being equal or higher than a given threshold.
+ */
 public class LineNumberLogEntryPatternVerifier implements LogEntryPatternVerifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LineNumberLogEntryPatternVerifier.class);
