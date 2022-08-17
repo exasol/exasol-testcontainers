@@ -11,26 +11,24 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.Container.ExecResult;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
 
 @Tag("slow")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Testcontainers
 class ExaOperationEmulatorIT {
 
-    private static ExasolContainer<? extends ExasolContainer<?>> EXASOL;
+    @Container
+    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>()
+            .withRequiredServices();
 
-    @SuppressWarnings("resource") // see tearDown()
     @BeforeAll
     static void beforeAll() {
-        EXASOL = new ExasolContainer<>().withRequiredServices();
         assumeExaOperations();
-    }
-
-    @AfterAll
-    static void tearDown() {
-        EXASOL.close();
     }
 
     private static void assumeExaOperations() {

@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 6.2.0, released 2022-??-??
+# Test containers for Exasol on Docker 6.2.0, released 2022-08-18
 
 Code name: Upgrade to Exasol 8.0.
 
