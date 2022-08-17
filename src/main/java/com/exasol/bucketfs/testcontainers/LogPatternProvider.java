@@ -2,10 +2,20 @@ package com.exasol.bucketfs.testcontainers;
 
 import com.exasol.bucketfs.UnsynchronizedBucket;
 
+/**
+ * Provide pattern to identify log entries in BucketFS related to a specific pathInBucket
+ */
 public interface LogPatternProvider {
 
+    /**
+     * @param pathInBucket path to an object in BucketFS
+     * @return pattern to identify log entries in BucketFS related to this pathInBucket
+     */
     String pattern(String pathInBucket);
 
+    /**
+     * generate a pattern suited for Exasol databases with major version &lt; 8
+     */
     public static LogPatternProvider DEFAULT = new LogPatternProvider() {
         @Override
         public String pattern(final String pathInBucket) {
@@ -26,6 +36,9 @@ public interface LogPatternProvider {
     // [I 220812 11:26:06 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir1/file.txt')) is done
     // [I 220812 11:10:21 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir4/file.txt')) is done
     // [I 220812 10:57:23 bucketfsd:228] rsync for id (('bfsdefault', 'default', 'dir5/sub5/file.txt')) is done
+    /**
+     * generate a pattern suited for Exasol databases with major version 8
+     */
     public static LogPatternProvider VERSION_8 = pathInBucket -> "rsync for .*'" //
             + (pathInBucket.startsWith("/") ? pathInBucket.substring(1) : pathInBucket) //
             + ".*'.* is done";

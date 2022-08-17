@@ -13,6 +13,9 @@ import com.exasol.config.*;
  */
 public final class TestcontainerBucketFactory implements BucketFactory {
 
+    /**
+     * @return Builder to create new instances of {@link TestcontainerBucketFactory}
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -64,6 +67,9 @@ public final class TestcontainerBucketFactory implements BucketFactory {
         return this.portMappings.get(internalPort);
     }
 
+    /**
+     * Builder to create new instances of {@link TestcontainerBucketFactory}
+     */
     public static class Builder {
         private final TestcontainerBucketFactory factory = new TestcontainerBucketFactory();
 
@@ -112,6 +118,9 @@ public final class TestcontainerBucketFactory implements BucketFactory {
             return this;
         }
 
+        /**
+         * @return new instance of {@link TestcontainerBucketFactory}
+         */
         public TestcontainerBucketFactory build() {
             return this.factory;
         }
