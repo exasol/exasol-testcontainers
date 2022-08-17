@@ -418,7 +418,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * Get a bucket control object with default filter strategy {@link FilterStrategy.TIME_STAMP}.
+     * Get a bucket control object with default filter strategy {@link FilterStrategy} {@code TIME_STAMP}.
      *
      * @param bucketFsName name of the BucketFS file system the bucket belongs to
      * @param bucketName   name of the bucket
