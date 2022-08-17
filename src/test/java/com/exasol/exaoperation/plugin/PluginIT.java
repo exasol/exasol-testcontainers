@@ -18,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.Container.ExecResult;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
@@ -25,18 +27,19 @@ import com.exasol.exaoperation.ExaOperationEmulatorException;
 
 @Tag("slow")
 @ExtendWith(MockitoExtension.class)
+@Testcontainers
 class PluginIT {
 
-    private static ExasolContainer<? extends ExasolContainer<?>> container;
+    @Container
+    private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()
+            .withRequiredServices();
     private static Plugin plugin;
 
     @Mock
     private org.testcontainers.containers.Container<? extends org.testcontainers.containers.Container<?>> containerMock;
 
-    @SuppressWarnings("resource") // see tearDown()
     @BeforeAll
     static void beforeAll() {
-        container = new ExasolContainer<>().withRequiredServices();
         assumeExaOperations();
         plugin = container.getExaOperation().installPluginPackage(PLUGIN_PACKAGE_PATH);
     }
