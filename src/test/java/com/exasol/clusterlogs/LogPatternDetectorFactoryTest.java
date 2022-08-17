@@ -10,12 +10,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.exasol.bucketfs.monitor.FilesizeState;
 import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.FilesizeState;
 import com.exasol.containers.ExasolContainer;
 
 @ExtendWith(MockitoExtension.class)
-public class LogPatternDetectorFactoryTest {
+class LogPatternDetectorFactoryTest {
 
     @Mock
     private ExasolContainer<? extends ExasolContainer<?>> containerMock;

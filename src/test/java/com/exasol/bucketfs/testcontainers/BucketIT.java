@@ -72,8 +72,7 @@ class BucketIT {
     }
 
     @Test
-    void testUploadZipArchive(@TempDir final Path tempDir)
-            throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+    void testUploadZipArchive() throws IOException, BucketAccessException, InterruptedException, TimeoutException {
         final String filename = "sample-archive.zip";
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadInputStream(() -> BucketIT.class.getResourceAsStream("/" + filename), filename);

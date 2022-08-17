@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
 import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
-import com.exasol.clusterlogs.LineNumberLogEntryPatternVerifier;
 import com.exasol.containers.ExasolContainer;
 
 /**
@@ -18,7 +17,7 @@ import com.exasol.containers.ExasolContainer;
  */
 public class FilesizeRetriever implements BucketFsMonitor.StateRetriever {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LineNumberLogEntryPatternVerifier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilesizeRetriever.class);
     private static final Pattern LINE_COUNT = Pattern.compile(" *(\\d+) .*");
 
     private final ExasolContainer<? extends Container<?>> container;
@@ -52,6 +51,9 @@ public class FilesizeRetriever implements BucketFsMonitor.StateRetriever {
                 | NumberFormatException exception) {
             LOGGER.warn("Could not retrieve length of log file {} in folder {}: {}", //
                     this.logNamePattern, this.logPath, exception.getMessage());
+            if (exception instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             return 0;
         }
     }
