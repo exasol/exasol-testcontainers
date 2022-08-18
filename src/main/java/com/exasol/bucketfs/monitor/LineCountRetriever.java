@@ -15,9 +15,9 @@ import com.exasol.containers.ExasolContainer;
 /**
  * Retrieves the {@link State} represented by the size of the log file in terms of number of lines.
  */
-public class FilesizeRetriever implements BucketFsMonitor.StateRetriever {
+public class LineCountRetriever implements BucketFsMonitor.StateRetriever {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FilesizeRetriever.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LineCountRetriever.class);
     private static final Pattern LINE_COUNT = Pattern.compile(" *(\\d+) .*");
 
     private final ExasolContainer<? extends Container<?>> container;
@@ -29,7 +29,7 @@ public class FilesizeRetriever implements BucketFsMonitor.StateRetriever {
      * @param logPath        path in which to look for logs
      * @param logNamePattern pattern for log names
      */
-    public FilesizeRetriever(final ExasolContainer<? extends Container<?>> container, final String logPath,
+    public LineCountRetriever(final ExasolContainer<? extends Container<?>> container, final String logPath,
             final String logNamePattern) {
         this.container = container;
         this.logPath = logPath;
@@ -38,7 +38,7 @@ public class FilesizeRetriever implements BucketFsMonitor.StateRetriever {
 
     @Override
     public State getState() {
-        return new FilesizeState(countLines());
+        return new LineCountState(countLines());
     }
 
     private long countLines() {

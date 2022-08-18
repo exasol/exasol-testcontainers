@@ -5,23 +5,23 @@ import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 /**
  * Only accept other states with higher line number.
  */
-public class FilesizeState implements BucketFsMonitor.State {
+public class LineCountState implements BucketFsMonitor.State {
 
-    private final Long lineNumber;
+    private final long lineNumber;
 
     /**
      * @param line current line number in log file.
      */
-    public FilesizeState(final Long line) {
+    public LineCountState(final long line) {
         this.lineNumber = line;
     }
 
     @Override
     public boolean accepts(final State other) {
-        if (!(other instanceof FilesizeState)) {
+        if (!(other instanceof LineCountState)) {
             return false;
         }
-        return ((FilesizeState) other).lineNumber > this.lineNumber;
+        return ((LineCountState) other).lineNumber > this.lineNumber;
     }
 
     @Override

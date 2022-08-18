@@ -6,10 +6,10 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Test;
 
-class FilesizeStateTest {
+class LineCountStateTest {
 
     private static final long LINE = 101;
-    private static final FilesizeState TESTEE = new FilesizeState(LINE);
+    private static final LineCountState TESTEE = new LineCountState(LINE);
 
     @Test
     void lowResolution() {
@@ -19,7 +19,7 @@ class FilesizeStateTest {
 
     @Test
     void accepts() {
-        assertThat(TESTEE.accepts(new FilesizeState(LINE)), is(false));
-        assertThat(TESTEE.accepts(new FilesizeState(LINE + 1)), is(true));
+        assertThat(TESTEE.accepts(new LineCountState(LINE)), is(false));
+        assertThat(TESTEE.accepts(new LineCountState(LINE + 1)), is(true));
     }
 }

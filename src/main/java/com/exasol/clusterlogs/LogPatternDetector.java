@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
 import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
-import com.exasol.bucketfs.monitor.FilesizeState;
+import com.exasol.bucketfs.monitor.LineCountState;
 import com.exasol.bucketfs.monitor.TimestampState;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
@@ -150,8 +150,8 @@ public class LogPatternDetector {
         }
 
         public Builder forState(final State state) {
-            if (state instanceof FilesizeState) {
-                return afterLine(((FilesizeState) state).getLineNumber());
+            if (state instanceof LineCountState) {
+                return afterLine(((LineCountState) state).getLineNumber());
             }
             if (state instanceof TimestampState) {
                 return logEntryVerifier(new TimestampLogEntryPatternVerifier(state, getTimezone()));

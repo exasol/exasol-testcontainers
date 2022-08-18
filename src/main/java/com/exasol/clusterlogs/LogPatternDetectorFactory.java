@@ -3,7 +3,7 @@ package com.exasol.clusterlogs;
 import org.testcontainers.containers.Container;
 
 import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
-import com.exasol.bucketfs.monitor.FilesizeRetriever;
+import com.exasol.bucketfs.monitor.LineCountRetriever;
 import com.exasol.bucketfs.testcontainers.LogPatternProvider;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
@@ -46,11 +46,11 @@ public class LogPatternDetectorFactory {
     /**
      * @param logPath        path in which to look for logs
      * @param logNamePattern pattern for log names
-     * @return {@link FilesizeRetriever} able to count the number of lines of the log file with given {@code logPath}
+     * @return {@link LineCountRetriever} able to count the number of lines of the log file with given {@code logPath}
      *         and {@code logNamePattern}
      */
-    public FilesizeRetriever createFileSizeRetriever(final String logPath, final String logNamePattern) {
-        return new FilesizeRetriever(this.container, logPath, logNamePattern);
+    public LineCountRetriever createLineCountRetriever(final String logPath, final String logNamePattern) {
+        return new LineCountRetriever(this.container, logPath, logNamePattern);
     }
 
     /**

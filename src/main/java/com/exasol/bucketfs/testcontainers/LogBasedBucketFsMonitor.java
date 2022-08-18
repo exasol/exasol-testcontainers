@@ -70,7 +70,7 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
     public StateRetriever createStateRetriever() {
         switch (this.filterStrategy) {
         case LINE_NUMBER:
-            return this.detectorFactory.createFileSizeRetriever( //
+            return this.detectorFactory.createLineCountRetriever( //
                     EXASOL_CORE_DAEMON_LOGS_PATH, //
                     BUCKETFS_DAEMON_LOG_FILENAME_PATTERN);
         case TIME_STAMP:
