@@ -8,9 +8,15 @@ on:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        docker_db_version: ["7.0.19", "7.1.12"]
+    env:
+      DEFAULT_DB_VERSION: "7.1.12"    
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.docker_db_version }}
       cancel-in-progress: true
     steps:
       - name: Checkout the repository
@@ -33,16 +39,36 @@ jobs:
         run: echo 'testcontainers.reuse.enable=true' > "$HOME/.testcontainers.properties"
       - name: Run tests and build with Maven
         run: |
+          echo
+          echo "--------------------------------------------------------------"
+          echo " Running matrix test with docker_db_version ${{ matrix.docker_db_version }} "
+          echo "--------------------------------------------------------------"
+          echo
+          echo "Support information archives are written to $SUPPORT_DIR"
+          echo
+          mkdir -p "$SUPPORT_DIR"
           mvn --batch-mode clean verify \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-              -DtrimStackTrace=false
+          -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+          -DtrimStackTrace=false \
+          -Dcom.exasol.dockerdb.image=${{ matrix.docker_db_version }} \
+          -Dcom.exasol.containers.support_information_target_dir="$SUPPORT_DIR" \
+          -Dcom.exasol.containers.monitored_exit=EXIT_ANY \
+          -Pslow
+        env:
+          SUPPORT_DIR: ${{ github.workspace }}/target/support
+      - name: Publish support package for ${{ matrix.docker_db_version }}
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: support-db-${{ matrix.docker_db_version }}-run-${{ github.run_id }}
+          path: target/support
       - name: Publish Test Report
         uses: scacap/action-surefire-report@v1
         if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Sonar analysis
-        if: ${{ env.SONAR_TOKEN != null }}
+        if: ${{ env.SONAR_TOKEN != null && env.DEFAULT_DB_VERSION == matrix.docker_db_version }}
         run: |
           mvn --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \

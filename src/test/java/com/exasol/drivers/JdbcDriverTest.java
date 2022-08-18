@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -94,7 +95,8 @@ class JdbcDriverTest {
                 .mainClass("com.example.Driver") //
                 .build() //
                 .toString(), //
-                equalTo("JDBC driver \"the_name\" (com.example.Driver), source: \"/the/path\""));
+                equalTo("JDBC driver \"the_name\" (com.example.Driver), source: \"" //
+                        + Paths.get("/the/path").toString() + "\""));
     }
 
     @Test

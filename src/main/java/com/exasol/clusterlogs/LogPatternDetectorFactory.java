@@ -1,11 +1,12 @@
 package com.exasol.clusterlogs;
 
-import java.time.Instant;
-import java.util.TimeZone;
-
 import org.testcontainers.containers.Container;
 
+import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
+import com.exasol.bucketfs.monitor.LineCountRetriever;
+import com.exasol.bucketfs.testcontainers.LogPatternProvider;
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ExasolDockerImageReference;
 
 /**
  * Factory for log entry scanners.
@@ -28,14 +29,28 @@ public class LogPatternDetectorFactory {
      * @param logPath        path in which to look for logs
      * @param logNamePattern pattern for log names
      * @param pattern        pattern for which to search inside logs
-     * @param afterUtc       earliest time in the log after which the log message must appear
+     * @param state          state to allow filtering of log file entries
      * @return detector instance
      */
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
-            final String pattern, final Instant afterUtc) {
-        final TimeZone timeZone = this.container.getClusterConfiguration().getTimeZone();
-        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern,
-                new TimestampLogEntryPatternVerifier(afterUtc, timeZone));
+            final String pattern, final State state) {
+        return LogPatternDetector.builder() //
+                .container(this.container) //
+                .logPath(logPath) //
+                .logNamePattern(logNamePattern) //
+                .pattern(pattern) //
+                .forState(state) //
+                .build();
+    }
+
+    /**
+     * @param logPath        path in which to look for logs
+     * @param logNamePattern pattern for log names
+     * @return {@link LineCountRetriever} able to count the number of lines of the log file with given {@code logPath}
+     *         and {@code logNamePattern}
+     */
+    public LineCountRetriever createLineCountRetriever(final String logPath, final String logNamePattern) {
+        return new LineCountRetriever(this.container, logPath, logNamePattern);
     }
 
     /**
@@ -48,7 +63,22 @@ public class LogPatternDetectorFactory {
      */
     public LogPatternDetector createLogPatternDetector(final String logPath, final String logNamePattern,
             final String pattern) {
-        return new LogPatternDetector(this.container, logPath, logNamePattern, pattern,
-                new LogEntryPresentPatternVerifier());
+        return LogPatternDetector.builder() //
+                .container(this.container) //
+                .logPath(logPath) //
+                .logNamePattern(logNamePattern) //
+                .pattern(pattern) //
+                .logEntryVerifier(new LogEntryPresentPatternVerifier()) //
+                .build();
+    }
+
+    /**
+     * @return {@link LogPatternProvider} depending on major version of current docker image
+     */
+    public LogPatternProvider getLogPatternProvider() {
+        final ExasolDockerImageReference image = this.container.getDockerImageReference();
+        return (image.hasMajor() && (image.getMajor() < 8)) //
+                ? LogPatternProvider.DEFAULT
+                : LogPatternProvider.VERSION_8;
     }
 }

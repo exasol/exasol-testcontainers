@@ -23,6 +23,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.bucketfs.*;
+import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 
@@ -43,17 +44,6 @@ class BucketIT {
                 () -> assertThat(defaultBucket.getBucketName(), equalTo(BucketConstants.DEFAULT_BUCKET)));
     }
 
-    @Test
-    void testListBucketContentsWithRootPath() throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents(), hasItem("EXAClusterOS"));
-    }
-
-    @ValueSource(strings = { "EXAClusterOS/", "/EXAClusterOS/" })
-    @ParameterizedTest
-    void testListBucketContents(final String pathInBucket) throws BucketAccessException, InterruptedException {
-        assertThat(container.getDefaultBucket().listContents(pathInBucket), hasItem(startsWith("ScriptLanguages")));
-    }
-
     void testListBucketContentsOfIllegalPathThrowsException() {
         assertThrows(BucketAccessException.class, () -> container.getDefaultBucket().listContents("illegal\\path"));
     }
@@ -66,6 +56,27 @@ class BucketIT {
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadFile(testFile, fileName);
         assertThat(bucket.listContents(), hasItem(fileName));
+    }
+
+    @Test
+    void uploadFileWithFilterStrategyLineNumber(@TempDir final Path tempDir)
+            throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+        final String fileName = "test-uploaded.txt";
+        final Path testFile = createTestFile(tempDir, fileName, 10000);
+        final Bucket bucket = container.getBucket( //
+                BucketConstants.DEFAULT_BUCKETFS, //
+                BucketConstants.DEFAULT_BUCKET, //
+                FilterStrategy.LINE_NUMBER);
+        bucket.uploadFile(testFile, fileName);
+        assertThat(bucket.listContents(), hasItem(fileName));
+    }
+
+    @Test
+    void testUploadZipArchive() throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+        final String filename = "sample-archive.zip";
+        final Bucket bucket = container.getDefaultBucket();
+        bucket.uploadInputStream(() -> BucketIT.class.getResourceAsStream("/" + filename), filename);
+        assertThat(bucket.listContents(), hasItem(filename));
     }
 
     private Path createTestFile(final Path tempDir, final String fileName, final int sizeInKiB) throws IOException {

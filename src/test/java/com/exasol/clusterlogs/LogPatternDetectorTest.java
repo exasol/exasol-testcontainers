@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ExecResultFactory;
 
+import com.exasol.containers.ExasolContainer;
 import com.exasol.testutil.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,15 +25,20 @@ class LogPatternDetectorTest {
     private static final String PATTERN = "pattern";
     private static final String STD_OUT_RESULT = "actual log content";
     @Mock
-    private Container<? extends Container<?>> containerMock;
+    private ExasolContainer<? extends ExasolContainer<?>> containerMock;
     @Mock
     private LogEntryPatternVerifier logEntryVerifier;
     private LogPatternDetector detector;
 
     @BeforeEach
     void setup() {
-        this.detector = new LogPatternDetector(this.containerMock, LOG_PATH, LOG_NAME_PATTERN, PATTERN,
-                this.logEntryVerifier);
+        this.detector = LogPatternDetector.builder() //
+                .container(this.containerMock) //
+                .logPath(LOG_PATH) //
+                .logNamePattern(LOG_NAME_PATTERN) //
+                .pattern(PATTERN) //
+                .logEntryVerifier(this.logEntryVerifier) //
+                .build();
     }
 
     @Test
@@ -64,7 +69,7 @@ class LogPatternDetectorTest {
 
     @Test
     void describe() {
-        assertThat(this.detector.describe(),
-                equalTo("Scanning for log message pattern \"pattern in \"path/logfilename\". using logEntryVerifier"));
+        assertThat(this.detector.describe(), equalTo(
+                "Scanning for log message pattern \"pattern\" in \"path/logfilename\", using logEntryVerifier."));
     }
 }

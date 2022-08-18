@@ -28,7 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
 import com.exasol.bucketfs.Bucket;
-import com.exasol.bucketfs.BucketFactory;
+import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
@@ -258,8 +258,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private String getJdbcUrlWithoutFingerprint() {
-        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort()
-                + ";validateservercertificate=0" + ";";
+        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort() + ";validateservercertificate=0" + ";";
     }
 
     /**
@@ -364,12 +363,18 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public T withReuse(final boolean reuse) {
-        if (getDockerImageReference().getMajor() >= 7) {
-            return super.withReuse(reuse);
-        } else {
+        final ExasolDockerImageReference image = getDockerImageReference();
+        if (!image.hasMajor()) {
+            LOGGER.info("Docker instance reuse requested, but could not detect Exasol major version of docker image {}."
+                    + " Using normal mode instead.", image);
+            return super.withReuse(false);
+        }
+        if (image.getMajor() < 7) {
             LOGGER.info("Docker instance reuse requested, but this is not supported by Exasol version below 7."
                     + " Using normal mode instead.");
             return super.withReuse(false);
+        } else {
+            return super.withReuse(reuse);
         }
     }
 
@@ -413,16 +418,33 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * Get a bucket control object.
+     * Get a bucket control object with default filter strategy {@link FilterStrategy} {@code TIME_STAMP}.
      *
-     * @param bucketFsName name of the BucketFS filesystem the bucket belongs to
+     * @param bucketFsName name of the BucketFS file system the bucket belongs to
      * @param bucketName   name of the bucket
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName) {
-        final BucketFactory factory = new TestcontainerBucketFactory(this.detectorFactory, getHost(),
-                getClusterConfiguration(), getPortMappings());
-        return factory.getBucket(bucketFsName, bucketName);
+        return getBucket(bucketFsName, bucketName, FilterStrategy.TIME_STAMP);
+    }
+
+    /**
+     * Get a bucket control object.
+     *
+     * @param bucketFsName   name of the BucketFS file system the bucket belongs to
+     * @param bucketName     name of the bucket
+     * @param filterStrategy filter strategy to use for rejecting irrelevant entries in log file
+     * @return bucket control object
+     */
+    public Bucket getBucket(final String bucketFsName, final String bucketName, final FilterStrategy filterStrategy) {
+        return TestcontainerBucketFactory.builder() //
+                .host(getHost()) //
+                .clusterConfiguration(getClusterConfiguration()) //
+                .portMappings(getPortMappings()) //
+                .detectorFactory(this.detectorFactory) //
+                .filterStrategy(filterStrategy) //
+                .build() //
+                .getBucket(bucketFsName, bucketName);
     }
 
     private Map<Integer, Integer> getPortMappings() {
@@ -523,17 +545,29 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     protected void waitForUdfContainer() {
         if (isServiceReady(UDF)) {
-            LOGGER.debug("UDF Containter marked running in container status cache. Skipping startup monitoring.");
-        } else {
-            if (this.requiredServices.contains(UDF)) {
-                this.status.setServiceStatus(UDF, NOT_READY);
-                new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
-                this.status.setServiceStatus(UDF, READY);
-            } else {
-
-                this.status.setServiceStatus(UDF, NOT_CHECKED);
-            }
+            LOGGER.debug("UDF Container marked running in container status cache. Skipping startup monitoring.");
+            return;
         }
+        if (!this.requiredServices.contains(UDF)) {
+            this.status.setServiceStatus(UDF, NOT_CHECKED);
+            return;
+        }
+        if (languageContainersExtracted()) {
+            this.status.setServiceStatus(UDF, READY);
+            return;
+        }
+
+        this.status.setServiceStatus(UDF, NOT_READY);
+        new UdfContainerWaitStrategy(this.detectorFactory).waitUntilReady(this);
+        this.status.setServiceStatus(UDF, READY);
+    }
+
+    /**
+     * @return {@code true} if language containers are extracted by default. In Exasol database version 8 and above this is the case
+     *         and the container does not need to wait for UDF service to get ready.
+     */
+    private boolean languageContainersExtracted() {
+        return this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 8);
     }
 
     @Override

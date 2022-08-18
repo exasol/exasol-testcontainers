@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.exasol.bucketfs.*;
+import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.*;
 
@@ -11,30 +12,23 @@ import com.exasol.config.*;
  * Factory for objects abstracting buckets in Exasol's BucketFS.
  */
 public final class TestcontainerBucketFactory implements BucketFactory {
-    private final Map<String, Bucket> buckets = new HashMap<>();
-    private final String ipAddress;
-    private final ClusterConfiguration clusterConfiguration;
-    private final Map<Integer, Integer> portMappings;
-    private final LogPatternDetectorFactory detectorFactory;
 
     /**
-     * Create a new instance of a TestcontainerBucketFactory.
-     *
-     * @param detectorFactory      log entry pattern detector factory
-     * @param ipAddress            IP address of the the BucketFS service
-     * @param clusterConfiguration configuration of the Exasol Cluster
-     * @param portMappings         mapping of container internal to exposed port numbers
+     * @return Builder to create new instances of {@link TestcontainerBucketFactory}
      */
-    public TestcontainerBucketFactory(final LogPatternDetectorFactory detectorFactory, final String ipAddress,
-            final ClusterConfiguration clusterConfiguration, final Map<Integer, Integer> portMappings) {
-        this.ipAddress = ipAddress;
-        this.clusterConfiguration = clusterConfiguration;
-        this.portMappings = portMappings;
-        this.detectorFactory = detectorFactory;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    private int mapPort(final int internalPort) {
-        return this.portMappings.get(internalPort);
+    private final Map<String, Bucket> buckets = new HashMap<>();
+    private String host;
+    private ClusterConfiguration clusterConfiguration;
+    private Map<Integer, Integer> portMappings;
+    private LogPatternDetectorFactory detectorFactory;
+    private FilterStrategy filterStrategy = FilterStrategy.TIME_STAMP;
+
+    private TestcontainerBucketFactory() {
+        // use builder!
     }
 
     /**
@@ -51,16 +45,84 @@ public final class TestcontainerBucketFactory implements BucketFactory {
                 .getBucketFsServiceConfiguration(serviceName);
         final BucketConfiguration bucketConfiguration = serviceConfiguration.getBucketConfiguration(bucketName);
         final String bucketPath = serviceName + BucketConstants.PATH_SEPARATOR + bucketName;
-        this.buckets.computeIfAbsent(bucketPath, key -> SyncAwareBucket //
-                .builder() //
-                .monitor(new LogBasedBucketFsMonitor(this.detectorFactory))//
-                .serviceName(serviceName) //
-                .name(bucketName) //
-                .ipAddress(this.ipAddress) //
-                .port(mapPort(serviceConfiguration.getHttpPort())) //
-                .readPassword(bucketConfiguration.getReadPassword()) //
-                .writePassword(bucketConfiguration.getWritePassword()) //
-                .build());
+        this.buckets.computeIfAbsent(bucketPath, key -> {
+            final LogBasedBucketFsMonitor monitor = new LogBasedBucketFsMonitor( //
+                    this.detectorFactory, this.filterStrategy);
+            return SyncAwareBucket //
+                    .builder() //
+                    .monitor(monitor)//
+                    .stateRetriever(monitor.createStateRetriever()) //
+                    .serviceName(serviceName) //
+                    .name(bucketName) //
+                    .ipAddress(this.host) //
+                    .port(mapPort(serviceConfiguration.getHttpPort())) //
+                    .readPassword(bucketConfiguration.getReadPassword()) //
+                    .writePassword(bucketConfiguration.getWritePassword()) //
+                    .build();
+        });
         return this.buckets.get(bucketPath);
+    }
+
+    private int mapPort(final int internalPort) {
+        return this.portMappings.get(internalPort);
+    }
+
+    /**
+     * Builder to create new instances of {@link TestcontainerBucketFactory}.
+     */
+    public static class Builder {
+        private final TestcontainerBucketFactory factory = new TestcontainerBucketFactory();
+
+        /**
+         * @param value host name or IP address of the the BucketFS service
+         * @return this for fluent programming
+         */
+        public Builder host(final String value) {
+            this.factory.host = value;
+            return this;
+        }
+
+        /**
+         * @param value configuration of the Exasol Cluster
+         * @return this for fluent programming
+         */
+        public Builder clusterConfiguration(final ClusterConfiguration value) {
+            this.factory.clusterConfiguration = value;
+            return this;
+        }
+
+        /**
+         * @param value mapping of container internal to exposed port numbers
+         * @return this for fluent programming
+         */
+        public Builder portMappings(final Map<Integer, Integer> value) {
+            this.factory.portMappings = value;
+            return this;
+        }
+
+        /**
+         * @param value log entry pattern detector factory
+         * @return this for fluent programming
+         */
+        public Builder detectorFactory(final LogPatternDetectorFactory value) {
+            this.factory.detectorFactory = value;
+            return this;
+        }
+
+        /**
+         * @param value filter strategy to be used to reject irrelevant log entries
+         * @return this for fluent programming
+         */
+        public Builder filterStrategy(final FilterStrategy value) {
+            this.factory.filterStrategy = value;
+            return this;
+        }
+
+        /**
+         * @return new instance of {@link TestcontainerBucketFactory}
+         */
+        public TestcontainerBucketFactory build() {
+            return this.factory;
+        }
     }
 }

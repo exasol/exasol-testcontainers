@@ -38,7 +38,7 @@ class TlsConnectionIT {
     void testJdbcConnectionWithCertificate()
             throws SQLException, CertificateEncodingException, NoSuchAlgorithmException {
         final String fingerprint = getFingerprint();
-        final String url = "jdbc:exa:" + CONTAINER.getContainerIpAddress() + "/" + fingerprint + ":"
+        final String url = "jdbc:exa:" + CONTAINER.getHost() + "/" + fingerprint + ":"
                 + CONTAINER.getFirstMappedDatabasePort() + ";validateservercertificate=1";
 
         final Driver driver = CONTAINER.getJdbcDriverInstance();

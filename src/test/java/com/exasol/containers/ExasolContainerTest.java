@@ -105,15 +105,17 @@ class ExasolContainerTest {
                     "Could not detect internal ports for custom image. Please specify the port explicitly using withExposedPorts()."));
         }
     }
+
     @Test
     void testAccessConfigurationBeforeReadFromContainer() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
             final IllegalStateException exception = assertThrows(IllegalStateException.class,
                     container::getClusterConfiguration);
-            assertThat(exception.getMessage(), equalTo(
-                    "Tried to access Exasol cluster configuration before it was read from the container."));
+            assertThat(exception.getMessage(),
+                    equalTo("Tried to access Exasol cluster configuration before it was read from the container."));
         }
     }
+
     @Test
     void testWithJdbcConnectionTimeout() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
@@ -125,7 +127,7 @@ class ExasolContainerTest {
     void testGetRpcUrl() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
             container.withReuse(true).start();
-            final String expectedUrl = "https://" + container.getContainerIpAddress() + ":"
+            final String expectedUrl = "https://" + container.getHost() + ":"
                     + container.getMappedPort(container.getDefaultInternalRpcPort()) + "/jrpc";
             assertThat(container.getRpcUrl(), equalTo(expectedUrl));
         }
