@@ -1,13 +1,13 @@
 # Test containers for Exasol on Docker 6.2.0, released 2022-08-18
 
-Code name: Upgrade to Exasol 8.0.
+Code name: Exasol 8.0 support
 
 ## Summary
 
-Upgraded to Exasol 8.0:
+This release adds support for Exasol 8.0:
 * small changes in format of entries in BucketFS log
 * assuming time zone UTC for entries in BucketFS log
-* disabled features discontinued in version 8, e.g. ExaOperation
+* disabled tests for Exasol 8 for discontinued features, e.g. ExaOperation
 
 Additionally updated bucketfs-java to version 2.4.0 with generic state-based monitoring for SyncAwareBuckets.  State-based monitors support different strategies for filtering events from the BucketFS logfile. Besides evaluating the timestamps of the log entries as in the past another strategy is to evaluate their line number and to accept only log entries with higher line number than before triggering the monitored operation.
 
