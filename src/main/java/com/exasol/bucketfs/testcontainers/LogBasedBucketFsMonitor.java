@@ -83,8 +83,8 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
      * To identify relevant log entries the log monitor can
      * <ul>
      * <li>either use the current time and accept only newer log entries</li>
-     * <li>or use the current size of the log file in terms of the number of lines and accept only log entries with
-     * higher line number. For this strategy it is mandatory to disable log rotation.</li>
+     * <li>or use the current line count of the log file and accept only log entries with higher line count. For this
+     * strategy it is mandatory to disable log rotation.</li>
      * </ul>
      */
     public enum FilterStrategy {

@@ -13,7 +13,7 @@ import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.containers.ExasolContainer;
 
 /**
- * Retrieves the {@link State} represented by the size of the log file in terms of number of lines.
+ * Retrieves the {@link State} represented by current line count of the log file.
  */
 public class LineCountRetriever implements BucketFsMonitor.StateRetriever {
 
