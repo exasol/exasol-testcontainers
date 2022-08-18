@@ -25,7 +25,7 @@ public class FilesizeRetriever implements BucketFsMonitor.StateRetriever {
     private final String logNamePattern;
 
     /**
-     * @param container      container used to count line of files
+     * @param container      container used to count the lines of files
      * @param logPath        path in which to look for logs
      * @param logNamePattern pattern for log names
      */

@@ -68,7 +68,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
     }
 
     /**
-     * Builder to create new instances of {@link TestcontainerBucketFactory}
+     * Builder to create new instances of {@link TestcontainerBucketFactory}.
      */
     public static class Builder {
         private final TestcontainerBucketFactory factory = new TestcontainerBucketFactory();

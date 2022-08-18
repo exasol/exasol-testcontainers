@@ -38,7 +38,7 @@ public class TimestampState implements BucketFsMonitor.State {
     /**
      * @param time earliest point in time to accept other states
      */
-    public TimestampState(final Instant time) {
+    TimestampState(final Instant time) {
         this.time = time;
     }
 

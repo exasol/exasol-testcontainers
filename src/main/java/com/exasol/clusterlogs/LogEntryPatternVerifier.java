@@ -7,7 +7,7 @@ package com.exasol.clusterlogs;
 interface LogEntryPatternVerifier {
 
     /**
-     * A {@link LogEntryPatternVerifier} which simulates to find any log message.
+     * A {@link LogEntryPatternVerifier} which accepts any log message.
      */
     public static final LogEntryPatternVerifier ALWAYS_TRUE = new LogEntryPatternVerifier() {
         @Override

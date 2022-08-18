@@ -160,12 +160,8 @@ public class LogPatternDetector {
         }
 
         /**
-         * According to bucketfs developers:
-         * <ul>
-         * <li>bucketfsd does not use timezone setting from {@code /exa/etc/EXAConf} but hard-coded python
-         * {@code time.gmtime}</li>
-         * <li>there are discussions to unify all logs to UTC</li>
-         * </ul>
+         * Bucketfsd in Exasol 8 does not use the timezone setting from {@code /exa/etc/EXAConf} but hard-coded python
+         * {@code time.gmtime}.
          *
          * @return timezone setting for bucketfs logs
          */

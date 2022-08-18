@@ -563,7 +563,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * @return if language containers are extracted by default. In Exasol database version 8 and above this is the case
+     * @return {@code true} if language containers are extracted by default. In Exasol database version 8 and above this is the case
      *         and the container does not need to wait for UDF service to get ready.
      */
     private boolean languageContainersExtracted() {
