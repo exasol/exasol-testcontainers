@@ -3,16 +3,23 @@ package com.exasol.containers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.ssh.RemoteExecutor.Result;
+import com.exasol.containers.ssh.Ssh;
+import com.exasol.exaconf.ConfigurationParser;
+import com.jcraft.jsch.JSchException;
 
 // [itest->dsn~exasol-container-controls-docker-container~1]
 // [itest->dsn~exasol-container-ready-criteria~3]
@@ -22,6 +29,8 @@ import com.exasol.config.ClusterConfiguration;
 @Tag("slow")
 @Testcontainers
 class ExasolContainerIT {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
+
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true).withRequiredServices(ExasolService.JDBC);
@@ -30,6 +39,20 @@ class ExasolContainerIT {
     @Test
     void testContainerRunsInPrivilegedMode() {
         assertThat(CONTAINER.isPrivilegedMode(), equalTo(true));
+    }
+
+    @Test
+    void testSsh() throws JSchException, IOException {
+        final Ssh ssh = CONTAINER.getSsh();
+
+        final Result result = ssh.execute("date +%s%3N");
+        LOGGER.info("container date: {}", result.getStdout().trim());
+
+        final String content = ssh.readRemoteFile("/exa/etc/EXAConf");
+        // LOGGER.info(content);
+
+        final ClusterConfiguration config = new ConfigurationParser(content).parse();
+        LOGGER.info("db version {}, time zone {}", config.getDBVersion(), config.getTimeZone().getID());
     }
 
     @Test

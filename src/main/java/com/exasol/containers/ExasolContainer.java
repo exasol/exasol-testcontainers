@@ -32,6 +32,8 @@ import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.ssh.Ssh;
+import com.exasol.containers.ssh.SshKeys;
 import com.exasol.containers.status.ContainerStatus;
 import com.exasol.containers.status.ContainerStatusCache;
 import com.exasol.containers.tls.CertificateProvider;
@@ -50,6 +52,8 @@ import com.exasol.support.SupportInformationRetriever;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.model.ContainerNetwork;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 /**
  * Exasol-specific extension of the {@link JdbcDatabaseContainer} concept.
@@ -87,6 +91,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private SupportInformationRetriever supportInformationRetriever = null;
     private boolean errorWhileWaitingForServices = false;
     private SQLException lastConnectionException = null;
+    private SshKeys sshKeys = null;
+    private Ssh ssh = null;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -132,6 +138,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
             addExposedPorts(getDefaultInternalRpcPort());
+            addExposedPorts(20002); // ssh
         } catch (final PortDetectionException exception) {
             this.portAutodetectFailed = true;
         }
@@ -181,6 +188,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void configure() {
         configureExposedPorts();
         configurePrivilegedMode();
+        copyAuthorizedKeys();
         super.configure();
     }
 
@@ -503,13 +511,17 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public void start() {
         super.start();
-        checkClusterConfigurationForMinimumSupportedDBVersion();
-        ContainerSynchronizationVerifier.create(ContainerTimeService.create(this)).verifyClocksInSync();
+//        checkClusterConfigurationForMinimumSupportedDBVersion();
+//        ContainerSynchronizationVerifier.create(ContainerTimeService.create(this)).verifyClocksInSync();
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
+
+    }
+
+    protected void waitUntilContainerStarted2() {
         try {
             waitUntilClusterConfigurationAvailable();
             waitUntilStatementCanBeExecuted();
@@ -563,8 +575,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
-     * @return {@code true} if language containers are extracted by default. In Exasol database version 8 and above this is the case
-     *         and the container does not need to wait for UDF service to get ready.
+     * @return {@code true} if language containers are extracted by default. In Exasol database version 8 and above this
+     *         is the case and the container does not need to wait for UDF service to get ready.
      */
     private boolean languageContainersExtracted() {
         return this.dockerImageReference.hasMajor() && (this.dockerImageReference.getMajor() >= 8);
@@ -935,5 +947,36 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public Optional<String> getTlsCertificateFingerprint() {
         return this.certificateProvider.getSha256Fingerprint();
+    }
+
+    private void copyAuthorizedKeys() {
+        this.sshKeys = createSshKeys();
+        withCopyToContainer(this.sshKeys.getPublicKeyTransferable(), "/root/.ssh/authorized_keys");
+//            final MountableFile source = MountableFile.forHostPath("c:/HOME/Doc/220922-docker-ssh/authorized_keys");
+//            withCopyFileToContainer(source, "/root/.ssh/authorized_keys");
+    }
+
+    private SshKeys createSshKeys() {
+        try {
+            return new SshKeys();
+        } catch (final JSchException exception) {
+            throw new ExasolContainerInitializationException("Could not create SSH key pair", exception);
+        }
+    }
+
+    private Session getSession() throws JSchException {
+        return this.sshKeys.getSessionBuilder() //
+                .user(SSH_USER) //
+                .host(getHost()) //
+                .port(getMappedPort(SSH_PORT)) //
+                .config("StrictHostKeyChecking", "no") //
+                .build();
+    }
+
+    public Ssh getSsh() throws JSchException {
+        if (this.ssh == null) {
+            this.ssh = new Ssh(getSession());
+        }
+        return this.ssh;
     }
 }
