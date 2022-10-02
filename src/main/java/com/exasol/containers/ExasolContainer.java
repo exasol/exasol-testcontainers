@@ -32,8 +32,7 @@ import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.ssh.Ssh;
-import com.exasol.containers.ssh.SshKeys;
+import com.exasol.containers.ssh.*;
 import com.exasol.containers.status.ContainerStatus;
 import com.exasol.containers.status.ContainerStatusCache;
 import com.exasol.containers.tls.CertificateProvider;
@@ -69,6 +68,7 @@ import com.jcraft.jsch.Session;
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
+    private static final boolean USE_SSH = true;
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -511,19 +511,24 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public void start() {
         super.start();
-//        checkClusterConfigurationForMinimumSupportedDBVersion();
-//        ContainerSynchronizationVerifier.create(ContainerTimeService.create(this)).verifyClocksInSync();
+        // TODO: re-enable this this functionality after enabling checks to be done with SSH connection, too
+        if (USE_SSH) {
+            return;
+        }
+        checkClusterConfigurationForMinimumSupportedDBVersion();
+        ContainerSynchronizationVerifier.create(ContainerTimeService.create(this)).verifyClocksInSync();
     }
 
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
-
-    }
-
-    protected void waitUntilContainerStarted2() {
+        // TODO: re-enable this this functionality after enabling checks to be done with SSH connection, too
         try {
             waitUntilClusterConfigurationAvailable();
+            LOGGER.info("waited, read cluster configuration");
+            if (USE_SSH) {
+                return;
+            }
             waitUntilStatementCanBeExecuted();
             waitForBucketFs();
             waitForUdfContainer();
@@ -655,6 +660,23 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private ClusterConfiguration readClusterConfiguration() {
+        return USE_SSH //
+                ? readClusterConfigurationViaSsh()
+                : readClusterConfigurationViaDockerExec();
+    }
+
+    private ClusterConfiguration readClusterConfigurationViaSsh() {
+        try {
+            LOGGER.debug("Reading cluster configuration via SSH from {}.", CLUSTER_CONFIGURATION_PATH);
+            final String content = getSsh().readRemoteFile(CLUSTER_CONFIGURATION_PATH);
+            return new ConfigurationParser(content).parse();
+        } catch (final JSchException | IOException exception) {
+            throw new ExasolContainerInitializationException(
+                    "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
+        }
+    }
+
+    private ClusterConfiguration readClusterConfigurationViaDockerExec() {
         try {
             LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
@@ -958,14 +980,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private SshKeys createSshKeys() {
         try {
-            return new SshKeys();
+            return SshKeys.create();
         } catch (final JSchException exception) {
             throw new ExasolContainerInitializationException("Could not create SSH key pair", exception);
         }
     }
 
     private Session getSession() throws JSchException {
-        return this.sshKeys.getSessionBuilder() //
+        return new SessionBuilder() //
+                .identity(this.sshKeys.getIdentityProvider()) //
                 .user(SSH_USER) //
                 .host(getHost()) //
                 .port(getMappedPort(SSH_PORT)) //

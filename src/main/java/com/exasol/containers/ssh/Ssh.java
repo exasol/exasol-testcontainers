@@ -53,7 +53,7 @@ public class Ssh {
      * @throws IOException
      */
     public Result execute(final String command) throws JSchException, IOException {
-        return new RemoteExecutor(this).execute(command);
+        return createRemoteExecutor().execute(command);
     }
 
     /**
@@ -65,7 +65,7 @@ public class Ssh {
      * @throws JSchException
      */
     public String readRemoteFile(final String path) throws IOException, JSchException {
-        return new RemoteFileReader(this).read(path);
+        return createRemoteFileReader().read(path);
     }
 
     /**
@@ -78,7 +78,7 @@ public class Ssh {
      * @throws JSchException
      */
     public String parseRemoteFile(final String path, final LineMatcher lineMatcher) throws IOException, JSchException {
-        return new RemoteFileParser(this).findMatch(path, lineMatcher);
+        return createRemoteFileParser().findMatch(path, lineMatcher);
     }
 
     /**
@@ -86,6 +86,18 @@ public class Ssh {
      */
     public Charset getCharset() {
         return this.charset;
+    }
+
+    RemoteExecutor createRemoteExecutor() {
+        return new RemoteExecutor(this);
+    }
+
+    RemoteFileReader createRemoteFileReader() {
+        return new RemoteFileReader(this);
+    }
+
+    RemoteFileParser createRemoteFileParser() {
+        return new RemoteFileParser(this);
     }
 
     Channel openChannel(final String type) throws JSchException {

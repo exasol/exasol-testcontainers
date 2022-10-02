@@ -10,6 +10,7 @@ import com.jcraft.jsch.JSchException;
  */
 class RemoteFileReader {
 
+    private static final int BUFFER_SIZE = 1024;
     private final FileVisitor visitor;
 
     RemoteFileReader(final Ssh ssh) {
@@ -23,7 +24,7 @@ class RemoteFileReader {
     String process(final InputStream stream, final Charset charset, long filesize) throws IOException {
         try (ByteArrayOutputStream fos = new ByteArrayOutputStream((int) filesize)) {
             int n;
-            final byte[] buf = new byte[1024];
+            final byte[] buf = new byte[BUFFER_SIZE];
             while (true) {
                 if (buf.length < filesize) {
                     n = buf.length;

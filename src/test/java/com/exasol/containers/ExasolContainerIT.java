@@ -16,7 +16,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.ssh.RemoteExecutor.Result;
+import com.exasol.containers.ssh.RemoteExecutor;
 import com.exasol.containers.ssh.Ssh;
 import com.exasol.exaconf.ConfigurationParser;
 import com.jcraft.jsch.JSchException;
@@ -45,7 +45,7 @@ class ExasolContainerIT {
     void testSsh() throws JSchException, IOException {
         final Ssh ssh = CONTAINER.getSsh();
 
-        final Result result = ssh.execute("date +%s%3N");
+        final RemoteExecutor.Result result = ssh.execute("date +%s%3N");
         LOGGER.info("container date: {}", result.getStdout().trim());
 
         final String content = ssh.readRemoteFile("/exa/etc/EXAConf");

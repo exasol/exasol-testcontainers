@@ -4,12 +4,23 @@ import java.io.*;
 
 import com.jcraft.jsch.*;
 
-class RemoteExecutor {
+/**
+ * Execute commands remotely via SSH
+ */
+public class RemoteExecutor {
+
+    private static final int BUFFER_SIZE = 1024;
 
     private final Ssh ssh;
+    private final Sleeper sleeper;
 
     RemoteExecutor(final Ssh ssh) {
+        this(ssh, new Sleeper());
+    }
+
+    RemoteExecutor(final Ssh ssh, final Sleeper sleeper) {
         this.ssh = ssh;
+        this.sleeper = sleeper;
     }
 
     Result execute(final String command) throws IOException, JSchException {
@@ -20,11 +31,11 @@ class RemoteExecutor {
         final InputStream in = channel.getInputStream();
         channel.connect();
 
-        final byte[] buf = new byte[1024];
+        final byte[] buf = new byte[BUFFER_SIZE];
         Result result;
         while (true) {
             while (in.available() > 0) {
-                final int i = in.read(buf, 0, 1024);
+                final int i = in.read(buf, 0, BUFFER_SIZE);
                 if (i < 0) {
                     break;
                 }
@@ -37,10 +48,7 @@ class RemoteExecutor {
                 result = new Result(channel.getExitStatus(), out.toString(this.ssh.getCharset()));
                 break;
             }
-            try {
-                Thread.sleep(1000);
-            } catch (final InterruptedException exception) {
-            }
+            this.sleeper.sleep(1000);
         }
         channel.disconnect();
         return result;
@@ -74,6 +82,16 @@ class RemoteExecutor {
          */
         public String getStdout() {
             return this.stdOut;
+        }
+    }
+
+    static class Sleeper {
+        void sleep(final int millis) {
+            try {
+                Thread.sleep(millis);
+            } catch (final InterruptedException exception) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

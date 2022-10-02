@@ -11,16 +11,25 @@ import com.jcraft.jsch.*;
  * {@link com.jcraft.jsch.Session}.
  */
 public class SshKeys {
+
+    /**
+     * @return a new instance of {@link @SshKeys}
+     * @throws JSchException if generation of key pair failed
+     */
+    public static SshKeys create() throws JSchException {
+        return new SshKeys(KeyPair.genKeyPair(new JSch(), KeyPair.RSA));
+    }
+
     private final KeyPair keyPair;
     private final byte[] passphrase;
 
     /**
      * Create a new instance of {@link @SshKeys}
      *
-     * @throws JSchException
+     * @param keyPair pair of public and private key to use
      */
-    public SshKeys() throws JSchException {
-        this.keyPair = KeyPair.genKeyPair(new JSch(), KeyPair.RSA);
+    public SshKeys(final KeyPair keyPair) {
+        this.keyPair = keyPair;
         this.passphrase = null;
     }
 
@@ -51,11 +60,12 @@ public class SshKeys {
      * @return new instance of {@link SessionBuilder} set up with public and private key of the current {@link SshKeys}.
      * @throws JSchException
      */
-    public SessionBuilder getSessionBuilder() throws JSchException {
-        return new SessionBuilder() //
-                .identity("comment") //
+    public IdentityProvider getIdentityProvider() throws JSchException {
+        return IdentityProvider.builder() //
+                .identityName("comment") //
                 .publicKey(this.keyPair.getPublicKeyBlob()) //
                 .privateKey(getPrivateKey()) //
-                .passphrase(this.passphrase);
+                .passphrase(this.passphrase) //
+                .build();
     }
 }

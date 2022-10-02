@@ -1,0 +1,81 @@
+package com.exasol.containers.ssh;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.io.*;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.exasol.containers.ssh.FileVisitor.ContentProcessor;
+import com.jcraft.jsch.*;
+
+@ExtendWith(MockitoExtension.class)
+public class FileVisitorTest {
+
+    @Mock
+    Ssh ssh;
+    @Mock
+    ContentProcessor processor;
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, -1, 3, 1, 2 })
+    void channelEmptyOrReturnsErrorCode(final int ack1) throws IOException, JSchException {
+        final Channel channel = mockChannel(ack1, "(simulated error)\n");
+        final FileVisitor testee = new FileVisitor(this.ssh);
+        testee.visit("/remote/file", this.processor);
+        verify(channel).connect();
+        verify(channel).disconnect();
+    }
+
+    @Test
+    void success() throws IOException, JSchException {
+        final Channel channel = mockValidChannel(0);
+        final FileVisitor testee = new FileVisitor(this.ssh);
+
+        when(this.processor.process(any(), any(), anyLong())).thenReturn("result");
+
+        final String result = testee.visit("/remote/file", this.processor);
+        assertThat(result, equalTo("result"));
+        verify(channel).connect();
+        verify(channel).disconnect();
+    }
+
+    @Test
+    void exception() throws IOException, JSchException {
+        mockValidChannel(3);
+        final FileVisitor testee = new FileVisitor(this.ssh);
+        when(this.processor.process(any(), any(), anyLong())).thenReturn("result");
+        assertThrows(SshException.class, () -> testee.visit("/remote/file", this.processor));
+    }
+
+    private Channel mockValidChannel(final int ack2) throws IOException, JSchException {
+        final String mode = "0644";
+        final String filesize = "1023";
+        final String remotePath = "/remote/file";
+        return mockChannel('C', String.format("%s %s %s%c%c", mode, filesize, remotePath, 0x0a, ack2));
+    }
+
+    private Channel mockChannel(final int ack1, final String rest) throws IOException, JSchException {
+        final ChannelExec channel = mock(ChannelExec.class);
+        when(this.ssh.openChannel(anyString())).thenReturn(channel);
+        final OutputStream out = mock(OutputStream.class);
+
+        when(channel.getInputStream()).thenReturn(inputStream(ack1, rest));
+        when(channel.getOutputStream()).thenReturn(out);
+        return channel;
+    }
+
+    private InputStream inputStream(final int ack1, final String rest) {
+        final String string = "" + (char) ack1 + rest;
+        return new ByteArrayInputStream(string.getBytes());
+    }
+}

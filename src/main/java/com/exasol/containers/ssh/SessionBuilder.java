@@ -1,6 +1,6 @@
 package com.exasol.containers.ssh;
 
-import java.util.Hashtable;
+import java.util.*;
 
 import com.jcraft.jsch.*;
 
@@ -8,57 +8,25 @@ import com.jcraft.jsch.*;
  * Builder for {@link com.jcraft.jsch.Session}
  */
 public class SessionBuilder {
-    // session parameters
-    private String user = "root";
-    private String host = "192.168.1.2";
-    private int port = 49182;
-
-    // identity parameters
-    private String identity;
-    private byte[] privateKey;
-    private byte[] publicKey;
-    private byte[] passPhrase = null;
-    private final Hashtable<String, String> config = new Hashtable<>();
+    private String user;
+    private String host;
+    private int port;
+    private IdentityProvider identityProvider;
+    private final Map<String, String> config = new HashMap<>();
 
     /**
      * Create new instance of {@link SessionBuilder}
      */
     public SessionBuilder() {
+        // Empty by intention
     }
 
     /**
-     * @param value identity to be used by the session
+     * @param value identity provider to use for the session
      * @return instance of this for fluent programming
      */
-    public SessionBuilder identity(final String value) {
-        this.identity = value;
-        return this;
-    }
-
-    /**
-     * @param value public key to be used by the session
-     * @return instance of this for fluent programming
-     */
-    public SessionBuilder publicKey(final byte[] value) {
-        this.publicKey = value;
-        return this;
-    }
-
-    /**
-     * @param value private key to be used by the session
-     * @return instance of this for fluent programming
-     */
-    public SessionBuilder privateKey(final byte[] value) {
-        this.privateKey = value;
-        return this;
-    }
-
-    /**
-     * @param value passphrase to be used by the session
-     * @return instance of this for fluent programming
-     */
-    public SessionBuilder passphrase(final byte[] value) {
-        this.passPhrase = value;
+    public SessionBuilder identity(final IdentityProvider value) {
+        this.identityProvider = value;
         return this;
     }
 
@@ -103,12 +71,34 @@ public class SessionBuilder {
 
     /**
      * @return new instance of SSH {@link Session}
+     * @throws JSchException if session creation fails
      */
     public Session build() throws JSchException {
         final JSch jsch = new JSch();
-        jsch.addIdentity(this.identity, this.privateKey, this.publicKey, this.passPhrase);
+        this.identityProvider.addIdentityTo(jsch);
         final Session session = jsch.getSession(this.user, this.host, this.port);
-        session.setConfig(this.config);
+        session.setConfig(new Hashtable<>(this.config));
         return session;
+    }
+
+    /**
+     * @return user added to this {@link SessionBuilder}
+     */
+    public String getUser() {
+        return this.user;
+    }
+
+    /**
+     * @return host added to this {@link SessionBuilder}
+     */
+    public String getHost() {
+        return this.host;
+    }
+
+    /**
+     * @return port added to this {@link SessionBuilder}
+     */
+    public int getPort() {
+        return this.port;
     }
 }
