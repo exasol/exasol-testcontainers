@@ -12,6 +12,7 @@ import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.utility.MountableFile;
 
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 import com.exasol.exaoperation.plugin.Plugin;
 
 /**
@@ -52,7 +53,7 @@ public class ExaOperationEmulator implements ExaOperation {
         } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
             throw new ExaOperationEmulatorException(description + " in container got interrupted.");
-        } catch (UnsupportedOperationException | IOException exception) {
+        } catch (UnsupportedOperationException | SshException | IOException exception) {
             throw new ExaOperationEmulatorException(description + " in container failed.", exception);
         }
     }

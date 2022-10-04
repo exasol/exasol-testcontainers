@@ -38,7 +38,7 @@ class ContainerFileOperationsTest {
     void testReadFileSucceeds()
             throws ExasolContainerException, UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(CHARSET, "cat", PATH))
-                .thenReturn(ExecResultFactory.mockResult(0, FILE_CONTENT, ""));
+                .thenReturn(ExecResultFactory.result(0, FILE_CONTENT, ""));
 
         assertThat(this.fileOperations.readFile(PATH, CHARSET), equalTo(FILE_CONTENT));
     }
@@ -47,7 +47,7 @@ class ContainerFileOperationsTest {
     void testReadFileFailsWithStdErrorContent()
             throws ExasolContainerException, UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(CHARSET, "cat", PATH))
-                .thenReturn(ExecResultFactory.mockResult(0, FILE_CONTENT, "stderr message"));
+                .thenReturn(ExecResultFactory.result(0, FILE_CONTENT, "stderr message"));
 
         ExceptionAssertions.assertThrowsWithMessage(ExasolContainerException.class,
                 () -> this.fileOperations.readFile(PATH, CHARSET),

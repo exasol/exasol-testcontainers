@@ -11,6 +11,7 @@ import org.testcontainers.containers.Container;
 
 import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.ssh.SshException;
 
 /**
  * Retrieves the {@link State} represented by current line count of the log file.
@@ -48,7 +49,7 @@ public class LineCountRetriever implements BucketFsMonitor.StateRetriever {
                     "-exec", "wc", "-l", "{}", "+");
             return parseWcOutput(result.getStdout());
         } catch (UnsupportedOperationException | IOException | InterruptedException | IllegalStateException
-                | NumberFormatException exception) {
+                | NumberFormatException | SshException exception) {
             LOGGER.warn("Could not retrieve length of log file {} in folder {}: {}", //
                     this.logNamePattern, this.logPath, exception.getMessage());
             if (exception instanceof InterruptedException) {

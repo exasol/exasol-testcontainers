@@ -1,6 +1,11 @@
 package com.exasol.containers.ssh;
 
+import static org.testcontainers.containers.ExecResultFactory.result;
+
 import java.io.*;
+import java.nio.charset.Charset;
+
+import org.testcontainers.containers.Container.ExecResult;
 
 import com.jcraft.jsch.*;
 
@@ -23,16 +28,24 @@ public class RemoteExecutor {
         this.sleeper = sleeper;
     }
 
-    Result execute(final String command) throws IOException, JSchException {
+    ExecResult execute(final Charset charset, final String... command) throws IOException {
+        try {
+            return executeInternal(charset, command);
+        } catch (final JSchException exception) {
+            throw new IOException("SSH execution failed", exception);
+        }
+    }
+
+    ExecResult executeInternal(final Charset charset, final String... command) throws IOException, JSchException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final Channel channel = this.ssh.openChannel("exec");
-        ((ChannelExec) channel).setCommand(command);
+        ((ChannelExec) channel).setCommand(String.join(" ", command));
 
         final InputStream in = channel.getInputStream();
         channel.connect();
 
         final byte[] buf = new byte[BUFFER_SIZE];
-        Result result;
+        ExecResult result;
         while (true) {
             while (in.available() > 0) {
                 final int i = in.read(buf, 0, BUFFER_SIZE);
@@ -45,44 +58,13 @@ public class RemoteExecutor {
                 if (in.available() > 0) {
                     continue;
                 }
-                result = new Result(channel.getExitStatus(), out.toString(this.ssh.getCharset()));
+                result = result(channel.getExitStatus(), out.toString(charset), "");
                 break;
             }
             this.sleeper.sleep(1000);
         }
         channel.disconnect();
         return result;
-    }
-
-    /**
-     * Result of executing a remote command remotely via SSH
-     */
-    public static class Result {
-        private final int exitCode;
-        private final String stdOut;
-
-        /**
-         * @param exitCode exit code returned by the command
-         * @param stdOut   output written by the command to stdout
-         */
-        public Result(final int exitCode, final String stdOut) {
-            this.stdOut = stdOut;
-            this.exitCode = exitCode;
-        }
-
-        /**
-         * @return exit code returned by the command
-         */
-        public int getExitCode() {
-            return this.exitCode;
-        }
-
-        /**
-         * @return output written by the command to stdout
-         */
-        public String getStdout() {
-            return this.stdOut;
-        }
     }
 
     static class Sleeper {

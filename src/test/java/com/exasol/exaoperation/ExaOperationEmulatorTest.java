@@ -31,7 +31,7 @@ class ExaOperationEmulatorTest {
     void testInstallPluginPackageCatchesUnsupportedOperationException() throws Exception {
         doThrow(new UnsupportedOperationException()).when(this.containerMock).execInContainer(eq("tar"), eq("xf"),
                 any(), eq("-C"), any());
-        doReturn(ExecResultFactory.mockResult(0, "/tmp/tmp.asdf", "")).when(this.containerMock)
+        doReturn(ExecResultFactory.result(0, "/tmp/tmp.asdf", "")).when(this.containerMock)
                 .execInContainer("/bin/mktemp", "--directory", "--tmpdir=/tmp", "tmp.XXXXXXXX-plugin");
         assertWrappedException(this.containerMock, "Unable to install plug-in");
     }
@@ -48,7 +48,7 @@ class ExaOperationEmulatorTest {
     void testInstallOuterPackageCatchesIOException() throws Exception {
         doThrow(new IOException()).when(this.containerMock).execInContainer(eq("tar"), eq("xf"), any(), eq("-C"),
                 any());
-        doReturn(ExecResultFactory.mockResult(ExitCode.OK, "/tmp/tmp.asdf", "")).when(this.containerMock)
+        doReturn(ExecResultFactory.result(ExitCode.OK, "/tmp/tmp.asdf", "")).when(this.containerMock)
                 .execInContainer("/bin/mktemp", "--directory", "--tmpdir=/tmp", "tmp.XXXXXXXX-plugin");
         assertWrappedException(this.containerMock, "Unable to install plug-in");
     }

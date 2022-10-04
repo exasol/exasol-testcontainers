@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testcontainers.containers.Container.ExecResult;
 
-import com.exasol.containers.ssh.RemoteExecutor.Result;
 import com.exasol.containers.ssh.RemoteExecutor.Sleeper;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
@@ -56,7 +56,7 @@ public class RemoteExecutorTest {
         when(this.ssh.openChannel(anyString())).thenReturn(this.channel);
 
         final RemoteExecutor testee = new RemoteExecutor(this.ssh, this.sleeper);
-        final Result result = testee.execute("command");
+        final ExecResult result = testee.execute(CHARSET, "command");
         assertThat(result.getExitCode(), equalTo(123));
         assertThat(result.getStdout(), equalTo("first,second"));
     }

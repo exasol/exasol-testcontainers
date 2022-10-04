@@ -11,6 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 
 @Testcontainers
 @Tag("expensive")
@@ -48,7 +49,7 @@ class LogRotationWorkaroundIT {
                         "Found \"bucketfs\" in log rotation configuration that should not be there in round " + round
                                 + ":\n" + result.getStdout());
             }
-        } catch (final UnsupportedOperationException | IOException exception) {
+        } catch (final UnsupportedOperationException | SshException | IOException exception) {
             throw new AssertionError("Unable to check whether log rotation configuration is correct.", exception);
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();

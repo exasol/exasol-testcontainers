@@ -5,7 +5,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
-import com.exasol.containers.ssh.RemoteExecutor.Result;
+import org.testcontainers.containers.Container.ExecResult;
+
 import com.exasol.containers.ssh.RemoteFileParser.LineMatcher;
 import com.jcraft.jsch.*;
 
@@ -24,7 +25,7 @@ public class Ssh {
      * @param session to use
      * @throws JSchException
      */
-    public Ssh(final Session session) throws JSchException {
+    public Ssh(final Session session) {
         this.session = session;
     }
 
@@ -52,8 +53,12 @@ public class Ssh {
      * @throws JSchException
      * @throws IOException
      */
-    public Result execute(final String command) throws JSchException, IOException {
-        return createRemoteExecutor().execute(command);
+    public ExecResult execute(final String... command) throws JSchException, IOException {
+        return execute(this.charset, command);
+    }
+
+    public ExecResult execute(final Charset charset, final String... command) throws IOException {
+        return createRemoteExecutor().execute(charset, command);
     }
 
     /**

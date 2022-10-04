@@ -16,9 +16,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.ssh.RemoteExecutor;
-import com.exasol.containers.ssh.Ssh;
-import com.exasol.exaconf.ConfigurationParser;
 import com.jcraft.jsch.JSchException;
 
 // [itest->dsn~exasol-container-controls-docker-container~1]
@@ -43,15 +40,15 @@ class ExasolContainerIT {
 
     @Test
     void testSsh() throws JSchException, IOException {
-        final Ssh ssh = CONTAINER.getSsh();
+//        final Ssh ssh = CONTAINER.getSsh();
+//        final RemoteExecutor.Result result = ssh.execute("date +%s%3N");
+        LOGGER.info("container date: {}", ContainerTimeService.create(CONTAINER).getTime());
 
-        final RemoteExecutor.Result result = ssh.execute("date +%s%3N");
-        LOGGER.info("container date: {}", result.getStdout().trim());
-
-        final String content = ssh.readRemoteFile("/exa/etc/EXAConf");
+//        final String content = ssh.readRemoteFile("/exa/etc/EXAConf");
         // LOGGER.info(content);
 
-        final ClusterConfiguration config = new ConfigurationParser(content).parse();
+//        final ClusterConfiguration config = new ConfigurationParser(content).parse();
+        final ClusterConfiguration config = CONTAINER.getClusterConfiguration();
         LOGGER.info("db version {}, time zone {}", config.getDBVersion(), config.getTimeZone().getID());
     }
 

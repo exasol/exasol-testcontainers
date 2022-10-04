@@ -11,6 +11,7 @@ import static com.exasol.containers.exec.ExitCode.OK;
 import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 import java.sql.*;
@@ -511,10 +512,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public void start() {
         super.start();
-        // TODO: re-enable this this functionality after enabling checks to be done with SSH connection, too
-        if (USE_SSH) {
-            return;
-        }
         checkClusterConfigurationForMinimumSupportedDBVersion();
         ContainerSynchronizationVerifier.create(ContainerTimeService.create(this)).verifyClocksInSync();
     }
@@ -522,13 +519,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected void waitUntilContainerStarted() {
-        // TODO: re-enable this this functionality after enabling checks to be done with SSH connection, too
         try {
             waitUntilClusterConfigurationAvailable();
-            LOGGER.info("waited, read cluster configuration");
-            if (USE_SSH) {
-                return;
-            }
             waitUntilStatementCanBeExecuted();
             waitForBucketFs();
             waitForUdfContainer();
@@ -659,30 +651,31 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         DBVersionChecker.minimumSupportedDbVersionCheck(dbVersion);
     }
 
+//    private ClusterConfiguration readClusterConfiguration() {
+//        return USE_SSH //
+//                ? readClusterConfigurationViaSsh()
+//                : readClusterConfigurationViaDockerExec();
+//    }
+//
+//    private ClusterConfiguration readClusterConfigurationViaSsh() {
+//        try {
+//            LOGGER.debug("Reading cluster configuration via SSH from {}.", CLUSTER_CONFIGURATION_PATH);
+//            final String content = getSsh().readRemoteFile(CLUSTER_CONFIGURATION_PATH);
+//            return new ConfigurationParser(content).parse();
+//        } catch (final JSchException | IOException exception) {
+//            throw new ExasolContainerInitializationException(
+//                    "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
+//        }
+//    }
+
+//    private ClusterConfiguration readClusterConfigurationViaDockerExec() {
     private ClusterConfiguration readClusterConfiguration() {
-        return USE_SSH //
-                ? readClusterConfigurationViaSsh()
-                : readClusterConfigurationViaDockerExec();
-    }
-
-    private ClusterConfiguration readClusterConfigurationViaSsh() {
-        try {
-            LOGGER.debug("Reading cluster configuration via SSH from {}.", CLUSTER_CONFIGURATION_PATH);
-            final String content = getSsh().readRemoteFile(CLUSTER_CONFIGURATION_PATH);
-            return new ConfigurationParser(content).parse();
-        } catch (final JSchException | IOException exception) {
-            throw new ExasolContainerInitializationException(
-                    "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
-        }
-    }
-
-    private ClusterConfiguration readClusterConfigurationViaDockerExec() {
         try {
             LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
             return new ConfigurationParser(exaconf).parse();
-        } catch (final UnsupportedOperationException | IOException exception) {
+        } catch (final UnsupportedOperationException | IOException | SshException exception) {
             throw new ExasolContainerInitializationException(
                     "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
         } catch (final InterruptedException exception) {
@@ -801,6 +794,16 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public TimeZone getTimeZone() {
         return this.timeZone;
+    }
+
+    @Override
+    public Container.ExecResult execInContainer(final Charset charset, final String... command)
+            throws UnsupportedOperationException, IOException, InterruptedException {
+        if (USE_SSH) {
+            return getSsh().execute(charset, command);
+        } else {
+            return super.execInContainer(charset, command);
+        }
     }
 
     @Override
@@ -986,7 +989,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    private Session getSession() throws JSchException {
+    private Session getSession() throws SshException {
         return new SessionBuilder() //
                 .identity(this.sshKeys.getIdentityProvider()) //
                 .user(SSH_USER) //
@@ -996,7 +999,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 .build();
     }
 
-    public Ssh getSsh() throws JSchException {
+    public Ssh getSsh() {
         if (this.ssh == null) {
             this.ssh = new Ssh(getSession());
         }

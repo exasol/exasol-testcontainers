@@ -16,6 +16,7 @@ import com.exasol.bucketfs.monitor.TimestampState;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 
 /**
  * Detector for pattern match in a log file.
@@ -74,8 +75,9 @@ public class LogPatternDetector {
      * @return {@code true} if the pattern is found in the log file
      * @throws IOException          if the underlying check mechanism caused an I/O problem
      * @throws InterruptedException if the check for a pattern was interrupted
+     * @throws SshException         if using SSH access to docker container and remote execution of command failed
      */
-    public boolean isPatternPresent() throws IOException, InterruptedException {
+    public boolean isPatternPresent() throws IOException, InterruptedException, SshException {
         final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
                 "-name", this.logNamePattern, "-exec", "awk", //
                 awkCommand(this.afterLine, this.pattern.replace("/", "\\/")), //

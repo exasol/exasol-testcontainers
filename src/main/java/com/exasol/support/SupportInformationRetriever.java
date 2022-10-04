@@ -12,6 +12,7 @@ import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.ExitType;
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 import com.exasol.errorreporting.ExaError;
 
 /**
@@ -102,7 +103,7 @@ public class SupportInformationRetriever {
             } else {
                 logFailedSupportArchiveCreationAttempt(exitType, result.getStderr());
             }
-        } catch (final UnsupportedOperationException | IOException exception) {
+        } catch (final UnsupportedOperationException | SshException | IOException exception) {
             logFailedSupportArchiveCreationAttempt(exitType, exception.getMessage());
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();

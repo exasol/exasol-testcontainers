@@ -59,7 +59,7 @@ class LogRotationWorkaroundTest {
     @Test
     void testApply(@Mock final ExasolContainer<? extends ExasolContainer<?>> exasolMock)
             throws WorkaroundException, UnsupportedOperationException, IOException, InterruptedException {
-        final ExecResult mockResult = ExecResultFactory.mockResult(ExitCode.OK, "", "");
+        final ExecResult mockResult = ExecResultFactory.result(ExitCode.OK, "", "");
         when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         workaround.apply();
@@ -99,7 +99,7 @@ class LogRotationWorkaroundTest {
     @Test
     void testApplyHandlesNegativeExitCode(@Mock final ExasolContainer<? extends ExasolContainer<?>> exasolMock)
             throws UnsupportedOperationException, IOException, InterruptedException {
-        final ExecResult mockResult = ExecResultFactory.mockResult(-1, "", "reason");
+        final ExecResult mockResult = ExecResultFactory.result(-1, "", "reason");
         when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         final WorkaroundException exception = assertThrows(WorkaroundException.class, () -> workaround.apply());

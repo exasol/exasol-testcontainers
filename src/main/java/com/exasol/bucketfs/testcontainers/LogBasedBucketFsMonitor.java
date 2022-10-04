@@ -12,6 +12,7 @@ import com.exasol.bucketfs.monitor.BucketFsMonitor;
 import com.exasol.bucketfs.monitor.TimestampRetriever;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
+import com.exasol.containers.ssh.SshException;
 
 /**
  * This {@link BucketFsMonitor} detects if a file was successfully uploaded from the Exasol log files.
@@ -39,7 +40,7 @@ public class LogBasedBucketFsMonitor implements BucketFsMonitor {
             throws BucketAccessException {
         try {
             return createBucketLogPatternDetector(pathInBucket, state).isPatternPresent();
-        } catch (final IOException exception) {
+        } catch (final IOException | SshException exception) {
             throw new BucketAccessException(messageBuilder("E-ETC-19").message( //
                     "Unable to check if object {{path}} is synchronized in bucket {{bucket filesystem}}/{{bucket name}}.", //
                     pathInBucket, bucket.getBucketFsName(), bucket.getBucketName()) //

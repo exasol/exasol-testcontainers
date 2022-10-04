@@ -61,7 +61,7 @@ class SshTest {
         when(ssh.createRemoteExecutor()).thenReturn(mock);
         when(ssh.execute(anyString())).thenCallRealMethod();
         ssh.execute("command");
-        verify(mock).execute("command");
+        verify(mock).execute(StandardCharsets.ISO_8859_1, "command");
     }
 
     @Test

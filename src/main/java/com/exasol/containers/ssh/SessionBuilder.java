@@ -73,12 +73,16 @@ public class SessionBuilder {
      * @return new instance of SSH {@link Session}
      * @throws JSchException if session creation fails
      */
-    public Session build() throws JSchException {
-        final JSch jsch = new JSch();
-        this.identityProvider.addIdentityTo(jsch);
-        final Session session = jsch.getSession(this.user, this.host, this.port);
-        session.setConfig(new Hashtable<>(this.config));
-        return session;
+    public Session build() throws SshException {
+        try {
+            final JSch jsch = new JSch();
+            this.identityProvider.addIdentityTo(jsch);
+            final Session session = jsch.getSession(this.user, this.host, this.port);
+            session.setConfig(new Hashtable<>(this.config));
+            return session;
+        } catch (final JSchException exception) {
+            throw new SshException("Failed to create SSH session", exception);
+        }
     }
 
     /**
