@@ -2,6 +2,8 @@ package com.exasol.containers.ssh;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +46,12 @@ class FileVisitor {
         return result;
     }
 
-    private void sendZeroByte(final OutputStream stream) throws IOException {
+    static void sendZeroByte(final OutputStream stream) throws IOException {
         stream.write(ZERO_BUFFER, 0, 1);
         stream.flush();
     }
 
     private String readFilemode(final InputStream stream) throws IOException {
-        // read '0644 '
         final byte[] buf = new byte[5];
         stream.read(buf, 0, 5);
         return new String(buf, 0, 5);
@@ -81,7 +82,15 @@ class FileVisitor {
         }
     }
 
-    private static int checkAck(final InputStream stream) throws IOException {
+    static String fileHeader(final Path file) throws IOException {
+        return fileHeader('C', "0644", Files.size(file), file.getFileName().toString());
+    }
+
+    static String fileHeader(final char ack, final String mode, final long filesize, final String filename) {
+        return String.format("%c%s %d %s\n", ack, mode, filesize, filename);
+    }
+
+    static int checkAck(final InputStream stream) throws IOException {
         final int b = stream.read();
         // b may be 0 for success,
         // 1 for error,

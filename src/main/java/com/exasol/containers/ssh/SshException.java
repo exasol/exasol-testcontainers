@@ -1,7 +1,5 @@
 package com.exasol.containers.ssh;
 
-import com.jcraft.jsch.JSchException;
-
 /**
  * Special exception for SSH API.
  */
@@ -21,7 +19,7 @@ public class SshException extends RuntimeException {
      * @param message message
      * @param cause   exception causing the current instance of {@link SshException}
      */
-    public SshException(final String message, final JSchException cause) {
+    public SshException(final String message, final Exception cause) {
         super(message, cause);
     }
 

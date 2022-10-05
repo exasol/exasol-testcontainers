@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.*;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.TestcontainersConfiguration;
+import org.testcontainers.utility.*;
 
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
@@ -651,6 +650,29 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         DBVersionChecker.minimumSupportedDbVersionCheck(dbVersion);
     }
 
+    /**
+     * Copy local file to container.
+     *
+     * @param local  path to local file
+     * @param remote path to remote file
+     * @throws IOException   on errors during write operation
+     * @throws JSchException on errors during write operation
+     */
+    public void copyFileToContainer(final Path local, final String remote) throws SshException {
+        if (USE_SSH) {
+            try {
+                getSsh().writeRemoteFile(local, remote);
+            } catch (final JSchException | IOException exception) {
+                throw new SshException(ExaError.messageBuilder("E-ETC-21") //
+                        .message("Failed to copy local file {{local}} to target path {{remote}} in container.", //
+                                local, remote)
+                        .toString(), exception);
+            }
+        } else {
+            super.copyFileToContainer(MountableFile.forHostPath(local), remote);
+        }
+    }
+
 //    private ClusterConfiguration readClusterConfiguration() {
 //        return USE_SSH //
 //                ? readClusterConfigurationViaSsh()
@@ -977,8 +999,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void copyAuthorizedKeys() {
         this.sshKeys = createSshKeys();
         withCopyToContainer(this.sshKeys.getPublicKeyTransferable(), "/root/.ssh/authorized_keys");
-//            final MountableFile source = MountableFile.forHostPath("c:/HOME/Doc/220922-docker-ssh/authorized_keys");
-//            withCopyFileToContainer(source, "/root/.ssh/authorized_keys");
     }
 
     private SshKeys createSshKeys() {

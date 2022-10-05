@@ -2,6 +2,8 @@ package com.exasol.containers.ssh;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -33,6 +35,13 @@ public class RemoteExecutorTest {
     ChannelExec channel;
 
     @Test
+    void exception() throws JSchException {
+        when(this.ssh.openChannel(any())).thenThrow(new JSchException());
+        final RemoteExecutor testee = new RemoteExecutor(this.ssh, this.sleeper);
+        assertThrows(IOException.class, () -> testee.execute(CHARSET, "command"));
+    }
+
+    @Test
     void closed() throws IOException, JSchException {
         when(this.channel.isClosed()).thenReturn(true);
         verifyNoInteractions(this.sleeper);
@@ -52,7 +61,6 @@ public class RemoteExecutorTest {
         when(this.channel.getInputStream()).thenReturn(stream);
         when(this.channel.getExitStatus()).thenReturn(123);
 
-        when(this.ssh.getCharset()).thenReturn(CHARSET);
         when(this.ssh.openChannel(anyString())).thenReturn(this.channel);
 
         final RemoteExecutor testee = new RemoteExecutor(this.ssh, this.sleeper);

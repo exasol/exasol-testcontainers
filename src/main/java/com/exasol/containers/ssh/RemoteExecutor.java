@@ -12,7 +12,7 @@ import com.jcraft.jsch.*;
 /**
  * Execute commands remotely via SSH
  */
-public class RemoteExecutor {
+class RemoteExecutor {
 
     private static final int BUFFER_SIZE = 1024;
 
@@ -42,6 +42,10 @@ public class RemoteExecutor {
         ((ChannelExec) channel).setCommand(String.join(" ", command));
 
         final InputStream in = channel.getInputStream();
+
+        final ByteArrayOutputStream err = new ByteArrayOutputStream();
+        ((ChannelExec) channel).setErrStream(err);
+
         channel.connect();
 
         final byte[] buf = new byte[BUFFER_SIZE];
@@ -58,7 +62,7 @@ public class RemoteExecutor {
                 if (in.available() > 0) {
                     continue;
                 }
-                result = result(channel.getExitStatus(), out.toString(charset), "");
+                result = result(channel.getExitStatus(), out.toString(charset), err.toString(charset));
                 break;
             }
             this.sleeper.sleep(1000);

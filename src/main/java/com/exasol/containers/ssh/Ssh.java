@@ -3,6 +3,7 @@ package com.exasol.containers.ssh;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.time.Duration;
 
 import org.testcontainers.containers.Container.ExecResult;
@@ -11,8 +12,12 @@ import com.exasol.containers.ssh.RemoteFileParser.LineMatcher;
 import com.jcraft.jsch.*;
 
 /**
- * Create an SSH connection and execute commands remotely, read remote files and search remote files for lines matching
- * a given {@link LineMatcher}.
+ * Enable to create an SSH connection in order to
+ * <ul>
+ * <li>execute commands remotely</li>
+ * <li>read remote files</li>
+ * <li>search remote files for lines matching a given {@link LineMatcher}.</li>
+ * </ul>
  */
 public class Ssh {
 
@@ -48,15 +53,22 @@ public class Ssh {
     /**
      * Execute a command remotely via SSH.
      *
-     * @param command command to execute remotely
-     * @return {@link Result} for remote execution the specified command
-     * @throws JSchException
-     * @throws IOException
+     * @param command command and arguments to execute remotely
+     * @return {@link ExecResult} for remote execution the specified command
+     * @throws IOException if remote execution fails
      */
-    public ExecResult execute(final String... command) throws JSchException, IOException {
+    public ExecResult execute(final String... command) throws IOException {
         return execute(this.charset, command);
     }
 
+    /**
+     * Execute a command remotely via SSH.
+     *
+     * @param charset character set to use for reading command's streams standard out and standard error
+     * @param command command and arguments to execute remotely
+     * @return {@link ExecResult} for remote execution the specified command
+     * @throws IOException if remote execution fails
+     */
     public ExecResult execute(final Charset charset, final String... command) throws IOException {
         return createRemoteExecutor().execute(charset, command);
     }
@@ -71,6 +83,18 @@ public class Ssh {
      */
     public String readRemoteFile(final String path) throws IOException, JSchException {
         return createRemoteFileReader().read(path);
+    }
+
+    /**
+     * Copy a local file to the container via SSH.
+     *
+     * @param local  path to local file
+     * @param remote path to remote file
+     * @throws IOException   on errors during write operation
+     * @throws JSchException on errors during write operation
+     */
+    public void writeRemoteFile(final Path local, final String remote) throws IOException, JSchException {
+        createRemoteFileWriter().write(local, remote);
     }
 
     /**
@@ -103,6 +127,10 @@ public class Ssh {
 
     RemoteFileParser createRemoteFileParser() {
         return new RemoteFileParser(this);
+    }
+
+    RemoteFileWriter createRemoteFileWriter() {
+        return new RemoteFileWriter(this);
     }
 
     Channel openChannel(final String type) throws JSchException {

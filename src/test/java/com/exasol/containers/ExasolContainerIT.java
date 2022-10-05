@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -39,7 +41,7 @@ class ExasolContainerIT {
     }
 
     @Test
-    void testSsh() throws JSchException, IOException {
+    void testSsh() throws JSchException, IOException, UnsupportedOperationException, InterruptedException {
 //        final Ssh ssh = CONTAINER.getSsh();
 //        final RemoteExecutor.Result result = ssh.execute("date +%s%3N");
         LOGGER.info("container date: {}", ContainerTimeService.create(CONTAINER).getTime());
@@ -50,6 +52,14 @@ class ExasolContainerIT {
 //        final ClusterConfiguration config = new ConfigurationParser(content).parse();
         final ClusterConfiguration config = CONTAINER.getClusterConfiguration();
         LOGGER.info("db version {}, time zone {}", config.getDBVersion(), config.getTimeZone().getID());
+
+        final ExecResult result = CONTAINER.execInContainer("ls /non/existing/file");
+        System.out.println(result.getStderr());
+
+        final String remotePath = "/root/a-new-file.txt";
+        CONTAINER.copyFileToContainer(Paths.get("c:/HOME/Tmp/a.txt"), remotePath);
+        final String content = CONTAINER.getSsh().readRemoteFile(remotePath);
+        System.out.println(content);
     }
 
     @Test

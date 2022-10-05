@@ -6,9 +6,9 @@ import java.nio.charset.Charset;
 import com.jcraft.jsch.JSchException;
 
 /**
- * Parses specified remote file for a line accepted by a given {@link LineMatcher}.
+ * Parse specified remote file for a line accepted by a given {@link LineMatcher}.
  */
-class RemoteFileParser {
+public class RemoteFileParser {
 
     private final FileVisitor visitor;
     private LineMatcher lineMatcher;

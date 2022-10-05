@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ExecResultFactory;
 
+import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
 import com.exasol.exaoperation.plugin.PluginStub;
 
@@ -25,7 +25,7 @@ import com.exasol.exaoperation.plugin.PluginStub;
 @ExtendWith(MockitoExtension.class)
 class ExaOperationEmulatorTest {
     @Mock
-    private Container<? extends Container<?>> containerMock;
+    private ExasolContainer<? extends ExasolContainer<?>> containerMock;
 
     @Test
     void testInstallPluginPackageCatchesUnsupportedOperationException() throws Exception {
@@ -36,7 +36,7 @@ class ExaOperationEmulatorTest {
         assertWrappedException(this.containerMock, "Unable to install plug-in");
     }
 
-    private void assertWrappedException(final Container<? extends Container<?>> containerMock,
+    private void assertWrappedException(final ExasolContainer<? extends ExasolContainer<?>> containerMock,
             final String expectedMessagePrefix) {
         final ExaOperation exaOperation = new ExaOperationEmulator(containerMock);
         final ExaOperationEmulatorException exception = assertThrows(ExaOperationEmulatorException.class,

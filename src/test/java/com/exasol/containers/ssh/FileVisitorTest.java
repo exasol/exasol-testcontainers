@@ -59,23 +59,26 @@ public class FileVisitorTest {
 
     private Channel mockValidChannel(final int ack2) throws IOException, JSchException {
         final String mode = "0644";
-        final String filesize = "1023";
+        final long filesize = 1023L;
         final String remotePath = "/remote/file";
-        return mockChannel('C', String.format("%s %s %s%c%c", mode, filesize, remotePath, 0x0a, ack2));
+        return mockChannel(FileVisitor.fileHeader('C', mode, filesize, remotePath) + (char) ack2);
     }
 
     private Channel mockChannel(final int ack1, final String rest) throws IOException, JSchException {
+        return mockChannel("" + (char) ack1 + rest);
+    }
+
+    private Channel mockChannel(final String input) throws IOException, JSchException {
         final ChannelExec channel = mock(ChannelExec.class);
         when(this.ssh.openChannel(anyString())).thenReturn(channel);
         final OutputStream out = mock(OutputStream.class);
 
-        when(channel.getInputStream()).thenReturn(inputStream(ack1, rest));
+        when(channel.getInputStream()).thenReturn(inputStream(input));
         when(channel.getOutputStream()).thenReturn(out);
         return channel;
     }
 
-    private InputStream inputStream(final int ack1, final String rest) {
-        final String string = "" + (char) ack1 + rest;
-        return new ByteArrayInputStream(string.getBytes());
+    private InputStream inputStream(final String content) {
+        return new ByteArrayInputStream(content.getBytes());
     }
 }
