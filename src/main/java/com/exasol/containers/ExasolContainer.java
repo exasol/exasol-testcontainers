@@ -999,7 +999,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    private SessionBuilder getSessionBuilder() {
+    SessionBuilder getSessionBuilder() {
         return new SessionBuilder() //
                 .user(SSH_USER) //
                 .host(getHost()) //

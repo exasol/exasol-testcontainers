@@ -1,10 +1,10 @@
-package com.exasol.containers;
+package com.exasol.containers.ssh;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
 
-import com.exasol.containers.ssh.*;
+import com.exasol.containers.ExasolContainerConstants;
 import com.jcraft.jsch.Session;
 
 /**

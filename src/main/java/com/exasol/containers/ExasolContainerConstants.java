@@ -70,10 +70,10 @@ public final class ExasolContainerConstants {
     static final int MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS = 2000;
 
     /** SSH port allowing connections to docker container */
-    static final int SSH_PORT = 20002;
+    public static final int SSH_PORT = 20002;
 
     /** User name for SSH connections to docker container */
-    static final String SSH_USER = "root";
+    public static final String SSH_USER = "root";
 
     private ExasolContainerConstants() {
         // prevent instantiation

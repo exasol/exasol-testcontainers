@@ -1,5 +1,7 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.SSH_PORT;
+import static com.exasol.containers.ExasolContainerConstants.SSH_USER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,6 +22,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
 
+import com.exasol.containers.ssh.IdentityProvider;
+import com.jcraft.jsch.Session;
+
 @Tag("slow")
 @ExtendWith(MockitoExtension.class)
 class ExasolContainerTest {
@@ -34,6 +39,7 @@ class ExasolContainerTest {
         this.containerSpy = spy(container);
     }
 
+    @Tag("slow")
     @Test
     void testWaitUntilContainerStartedTimesOut() throws Exception {
         doReturn(1234).when(this.containerSpy).getFirstMappedDatabasePort();
@@ -82,7 +88,7 @@ class ExasolContainerTest {
     @Test
     void testWithDefaultExposedPorts() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
-            assertThat(container.getExposedPorts().size(), equalTo(3));
+            assertThat(container.getExposedPorts().size(), equalTo(4));
         }
     }
 
@@ -123,6 +129,7 @@ class ExasolContainerTest {
         }
     }
 
+    @Tag("slow")
     @Test
     void testGetRpcUrl() {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
@@ -141,5 +148,18 @@ class ExasolContainerTest {
     @Test
     void testRpcPortExposed() {
         assertThat(this.containerSpy.getExposedPorts(), hasItem(443));
+    }
+
+    @Test
+    void sessionBuilder() {
+        final ExasolContainer<?> testee = mock(ExasolContainer.class);
+        final IdentityProvider identityProvider = mock(IdentityProvider.class);
+        when(testee.getHost()).thenReturn("simulated host");
+        when(testee.getMappedPort(SSH_PORT)).thenReturn(321);
+        doCallRealMethod().when(testee).getSessionBuilder();
+        final Session session = testee.getSessionBuilder().identity(identityProvider).build();
+        assertThat(session.getHost(), equalTo("simulated host"));
+        assertThat(session.getPort(), equalTo(321));
+        assertThat(session.getUserName(), equalTo(SSH_USER));
     }
 }

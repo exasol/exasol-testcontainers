@@ -17,6 +17,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.ssh.DockerAccess;
 import com.jcraft.jsch.JSchException;
 
 // [itest->dsn~exasol-container-controls-docker-container~1]
