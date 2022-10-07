@@ -8,6 +8,7 @@ import com.jcraft.jsch.*;
 
 class RemoteFileWriter {
 
+    private static final int BUFFER_SIZE = 1024;
     private final Ssh ssh;
 
     RemoteFileWriter(final Ssh ssh) {
@@ -29,7 +30,7 @@ class RemoteFileWriter {
         assertAckOrThrowException(in, "second");
 
         try (InputStream fis = Files.newInputStream(local)) {
-            final byte[] buf = new byte[1024];
+            final byte[] buf = new byte[BUFFER_SIZE];
             while (true) {
                 final int len = fis.read(buf, 0, buf.length);
                 if (len <= 0) {

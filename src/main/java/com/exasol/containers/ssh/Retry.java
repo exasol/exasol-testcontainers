@@ -45,7 +45,7 @@ public class Retry<T extends Exception> {
                 if (!this.exceptionClass.isInstance(exception) || stop()) {
                     throw exception;
                 }
-                LOGGER.debug("{} - {}. retry after {} seconds", //
+                LOGGER.trace("{} - {}. retry after {} seconds", //
                         exception.getMessage(), i + 1, elapsed().plus(this.interval).toSeconds());
             }
             try {

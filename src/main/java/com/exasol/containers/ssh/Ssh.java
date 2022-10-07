@@ -6,6 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.ssh.RemoteFileParser.LineMatcher;
@@ -20,6 +22,7 @@ import com.jcraft.jsch.*;
  * </ul>
  */
 public class Ssh {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Ssh.class);
 
     private final Session session;
     private Charset charset = StandardCharsets.UTF_8;
@@ -135,8 +138,10 @@ public class Ssh {
 
     Channel openChannel(final String type) throws JSchException {
         if (!this.session.isConnected()) {
+            LOGGER.info("Trying to open SSH channel to docker container");
             final Retry<JSchException> retry = new Retry<>(JSchException.class, Duration.ofSeconds(60));
             retry.retry(() -> this.session.connect());
+            LOGGER.info("SSH channel successfully opened");
         }
         return this.session.openChannel(type);
     }

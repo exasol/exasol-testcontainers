@@ -12,6 +12,7 @@ import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 import java.sql.*;
@@ -52,7 +53,6 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.model.ContainerNetwork;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 /**
  * Exasol-specific extension of the {@link JdbcDatabaseContainer} concept.
@@ -68,7 +68,6 @@ import com.jcraft.jsch.Session;
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseContainer<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainer.class);
-    private static final boolean USE_SSH = true;
     private static final long CONNECTION_TEST_RETRY_INTERVAL_MILLISECONDS = 500L;
     private ClusterConfiguration clusterConfiguration = null;
     // [impl->dsn~default-jdbc-connection-with-sys-credentials~1]
@@ -91,8 +90,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private SupportInformationRetriever supportInformationRetriever = null;
     private boolean errorWhileWaitingForServices = false;
     private SQLException lastConnectionException = null;
-    private SshKeys sshKeys = null;
-    private Ssh ssh = null;
+
+    private DockerAccess dockerAccess = null;
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -188,7 +187,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void configure() {
         configureExposedPorts();
         configurePrivilegedMode();
-        copyAuthorizedKeys();
+        this.dockerAccess = createDockerAccess();
+        copyAuthorizedKeys(this.dockerAccess);
         super.configure();
     }
 
@@ -659,38 +659,21 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @throws JSchException on errors during write operation
      */
     public void copyFileToContainer(final Path local, final String remote) throws SshException {
-        if (USE_SSH) {
-            try {
-                getSsh().writeRemoteFile(local, remote);
-            } catch (final JSchException | IOException exception) {
-                throw new SshException(ExaError.messageBuilder("E-ETC-21") //
-                        .message("Failed to copy local file {{local}} to target path {{remote}} in container.", //
-                                local, remote)
-                        .toString(), exception);
-            }
-        } else {
+        if (this.dockerAccess.supportsDockerExec()) {
             super.copyFileToContainer(MountableFile.forHostPath(local), remote);
+            return;
+        }
+
+        try {
+            this.dockerAccess.getSsh().writeRemoteFile(local, remote);
+        } catch (final JSchException | IOException exception) {
+            throw new SshException(ExaError.messageBuilder("E-ETC-21") //
+                    .message("Failed to copy local file {{local}} to target path {{remote}} in container.", //
+                            local, remote)
+                    .toString(), exception);
         }
     }
 
-//    private ClusterConfiguration readClusterConfiguration() {
-//        return USE_SSH //
-//                ? readClusterConfigurationViaSsh()
-//                : readClusterConfigurationViaDockerExec();
-//    }
-//
-//    private ClusterConfiguration readClusterConfigurationViaSsh() {
-//        try {
-//            LOGGER.debug("Reading cluster configuration via SSH from {}.", CLUSTER_CONFIGURATION_PATH);
-//            final String content = getSsh().readRemoteFile(CLUSTER_CONFIGURATION_PATH);
-//            return new ConfigurationParser(content).parse();
-//        } catch (final JSchException | IOException exception) {
-//            throw new ExasolContainerInitializationException(
-//                    "Unable to read cluster configuration from \"" + CLUSTER_CONFIGURATION_PATH + "\".", exception);
-//        }
-//    }
-
-//    private ClusterConfiguration readClusterConfigurationViaDockerExec() {
     private ClusterConfiguration readClusterConfiguration() {
         try {
             LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
@@ -821,10 +804,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     @Override
     public Container.ExecResult execInContainer(final Charset charset, final String... command)
             throws UnsupportedOperationException, IOException, InterruptedException {
-        if (USE_SSH) {
-            return getSsh().execute(charset, command);
-        } else {
+        if (this.dockerAccess.supportsDockerExec()) {
             return super.execInContainer(charset, command);
+        } else {
+            return this.dockerAccess.getSsh().execute(charset, command);
         }
     }
 
@@ -996,9 +979,16 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return this.certificateProvider.getSha256Fingerprint();
     }
 
-    private void copyAuthorizedKeys() {
-        this.sshKeys = createSshKeys();
-        withCopyToContainer(this.sshKeys.getPublicKeyTransferable(), "/root/.ssh/authorized_keys");
+    private void copyAuthorizedKeys(final DockerAccess accessProvider) {
+        withCopyToContainer(accessProvider.getSshKeys().getPublicKeyTransferable(), "/root/.ssh/authorized_keys");
+    }
+
+    DockerAccess createDockerAccess() {
+        return DockerAccess.builder() //
+                .sshKeys(createSshKeys()) //
+                .dockerProber(this::probeFile) //
+                .sessionBuilderProvider(this::getSessionBuilder) //
+                .build();
     }
 
     private SshKeys createSshKeys() {
@@ -1009,20 +999,29 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         }
     }
 
-    private Session getSession() throws SshException {
+    private SessionBuilder getSessionBuilder() {
         return new SessionBuilder() //
-                .identity(this.sshKeys.getIdentityProvider()) //
                 .user(SSH_USER) //
                 .host(getHost()) //
                 .port(getMappedPort(SSH_PORT)) //
-                .config("StrictHostKeyChecking", "no") //
-                .build();
+                .config("StrictHostKeyChecking", "no");
     }
 
-    public Ssh getSsh() {
-        if (this.ssh == null) {
-            this.ssh = new Ssh(getSession());
+    DockerAccess getAccessProvider() {
+        return this.dockerAccess;
+    }
+
+    /**
+     * Check if a specific file inside the docker container does exist
+     *
+     * @param path path of the file to check for existence
+     * @return {@code true} if the file exists.
+     */
+    public ExecResult probeFile(final String path) {
+        try {
+            return super.execInContainer(StandardCharsets.UTF_8, "test -f " + path);
+        } catch (UnsupportedOperationException | IOException | InterruptedException exception) {
+            throw new SshException("Failed to probe existence of file '" + path + "'", exception);
         }
-        return this.ssh;
     }
 }
