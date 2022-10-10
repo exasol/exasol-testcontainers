@@ -58,8 +58,10 @@ public class DockerAccess {
      */
     Mode getMode() {
         if (this.mode == Mode.UNKNOWN) {
+            LOGGER.debug("Probing Docker container for supported connection mode");
             final ExecResult result = this.dockerProber.probeFile(ExasolContainerConstants.CLUSTER_CONFIGURATION_PATH);
             if (result.getExitCode() == 0) {
+                LOGGER.debug("Docker container supports docker exec");
                 this.mode = Mode.DOCKER_EXEC;
             } else {
                 LOGGER.info("Docker container requires SSH access");

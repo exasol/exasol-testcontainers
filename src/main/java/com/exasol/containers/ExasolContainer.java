@@ -1022,7 +1022,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
     public ExecResult probeFile(final String path) {
         try {
-            return super.execInContainer(StandardCharsets.UTF_8, "test -f " + path);
+            final ExecResult r = super.execInContainer(StandardCharsets.UTF_8, "test", "-f", path);
+            if (r.getExitCode() == 0) {
+                LOGGER.debug("File exists: {}", path);
+            } else {
+                LOGGER.debug("File not found: {}", path);
+            }
+            return r;
         } catch (UnsupportedOperationException | IOException | InterruptedException exception) {
             throw new SshException("Failed to probe existence of file '" + path + "'", exception);
         }
