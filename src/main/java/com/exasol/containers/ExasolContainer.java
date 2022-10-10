@@ -137,7 +137,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             addExposedPorts(getDefaultInternalDatabasePort());
             addExposedPorts(getDefaultInternalBucketfsPort());
             addExposedPorts(getDefaultInternalRpcPort());
-            addExposedPorts(20002); // ssh
+            addExposedPorts(SSH_PORT);
         } catch (final PortDetectionException exception) {
             this.portAutodetectFailed = true;
         }
@@ -979,10 +979,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return this.certificateProvider.getSha256Fingerprint();
     }
 
+    // [impl->dsn~access-via-ssh~1]
     private void copyAuthorizedKeys(final DockerAccess accessProvider) {
         withCopyToContainer(accessProvider.getSshKeys().getPublicKeyTransferable(), "/root/.ssh/authorized_keys");
     }
 
+    // [impl->dsn~detect-if-docker-exec-is-possible~1]
     DockerAccess createDockerAccess() {
         return DockerAccess.builder() //
                 .sshKeys(createSshKeys()) //
@@ -991,6 +993,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 .build();
     }
 
+    // [impl->dsn~access-via-ssh~1]
     private SshKeys createSshKeys() {
         try {
             return SshKeys.create();
@@ -1017,6 +1020,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @param path path of the file to check for existence
      * @return {@code true} if the file exists.
      */
+    // [impl->dsn~detect-if-docker-exec-is-possible~1]
     public ExecResult probeFile(final String path) {
         try {
             return super.execInContainer(StandardCharsets.UTF_8, "test -f " + path);

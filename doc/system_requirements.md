@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Exasol Test Container (short "ETC") is an extension of the `testcontainers` framework (see [testcontainers.org](https://testcontainers.org)). It add Exasol's specific features like reading from and writing to BucketFS.
+Exasol Test Container (short "ETC") is an extension of the `testcontainers` framework (see [`testcontainers.org`](https://testcontainers.org)). It add Exasol's specific features like reading from and writing to BucketFS.
 
 ## About This Document
 
@@ -98,17 +98,17 @@ Where and how to acquire the docker image necessary for a test is an infrastruct
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
 #### Docker Container Control
 `req~docker-container-control~1`
 
-ETC lets integrators control the docker container programmatically. 
+ETC lets integrators control the docker container programmatically.
 
 Covers:
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -123,7 +123,7 @@ This way the container instance is available in the test case cases automaticall
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -138,7 +138,7 @@ Reusing the container improves the productivity since integrators do not have to
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -153,7 +153,7 @@ This ensures a clean environment when running independent tests.
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -168,7 +168,7 @@ Integration tests rely on the tested services being completely initialized in or
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -186,7 +186,7 @@ In case of test that do not use UDFs or bucket objects, waiting for the containe
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -201,7 +201,7 @@ Matrix tests are required if integrators want to ensure backward compatibility o
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -219,7 +219,7 @@ Optional parts are indicated by square brackets.
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -234,7 +234,7 @@ This is useful for reverse socket connections, the kind of which debugging or pr
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -260,7 +260,7 @@ This is useful in cases where single test cases should produce the standard supp
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)t
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)t
 
 Needs: dsn
 
@@ -275,7 +275,7 @@ This is targeted at CI builds as it decouples test case definition and decision 
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)t
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)t
 
 Needs: dsn
 
@@ -295,7 +295,7 @@ During regular tests integrators usually don't need the archive. In CI builds th
 
 Covers:
 
-* [feat~docker-based-exasol-instance~1](#docker-based-exasol-instance)t
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)t
 
 Needs: dsn
 
@@ -308,11 +308,11 @@ ETC provides a JDBC connection for the administrator (`SYS`) to the Exasol datab
 
 Rationale:
 
-The database connection is the central interface almost all integration test need. The administrator connection is necessary in integration tests to prepare the database for the test.
+The database connection is the central interface needed by almost all integration tests. The administrator connection is necessary in integration tests to prepare the database for the test.
 
 Covers:
 
-* [feat~database-access~1](#database-access)
+* [`feat~database-access~1`](#database-access)
 
 Needs: dsn
 
@@ -327,7 +327,7 @@ Besides the administrator account integrators often need to test with other user
 
 Covers:
 
-* [feat~database-access~1](#database-access)
+* [`feat~database-access~1`](#database-access)
 
 Needs: dsn
 
@@ -342,7 +342,7 @@ This allows testing scenarios that use the ExaLoader (i.e. `IMPORT` statements).
 
 Covers:
 
-* [feat~database-access~1](#database-access)
+* [`feat~database-access~1`](#database-access)
 
 Needs: dsn
 
@@ -357,7 +357,7 @@ This allows testing the fault tolerance of software depending on an Exasol datab
 
 Covers:
 
-* [feat~database-access~1](#database-access)
+* [`feat~database-access~1`](#database-access)
 
 Needs: dsn
 
@@ -374,7 +374,7 @@ This is useful in integration test in order to determine whether required files 
 
 Covers:
 
-* [feat~bucketfs-access~1](#bucketfs-access)
+* [`feat~bucketfs-access~1`](#bucketfs-access)
 
 Needs: dsn
 
@@ -389,7 +389,7 @@ This allows uploading data or UDF scripts to buckets.
 
 Covers:
 
-* [feat~bucketfs-access~1](#bucketfs-access)
+* [`feat~bucketfs-access~1`](#bucketfs-access)
 
 Needs: dsn
 
@@ -404,7 +404,7 @@ Some tests require dynamically generated configuration data in files inside buck
 
 Covers:
 
-* [feat~bucketfs-access~1](#bucketfs-access)
+* [`feat~bucketfs-access~1`](#bucketfs-access)
 
 Needs: dsn
 
@@ -415,11 +415,11 @@ ETC uploads the contents of an InputStream to a file inside a bucket.
 
 Rationale:
 
-Some tests load the content from resources using `getResourceAsStream()`. 
+Some tests load the content from resources using `getResourceAsStream()`.
 
 Covers:
 
-* [feat~bucketfs-access~1](#bucketfs-access)
+* [`feat~bucketfs-access~1`](#bucketfs-access)
 
 Needs: dsn
 
@@ -434,7 +434,7 @@ This allows downloading files like e.g. logs from buckets.
 
 Covers:
 
-* [feat~bucketfs-access~1](#bucketfs-access)
+* [`feat~bucketfs-access~1`](#bucketfs-access)
 
 Needs: dsn
 
@@ -449,7 +449,7 @@ Unless a test is about an 3rd-party software that accesses BucketFS from the out
 
 Covers:
 
-* [feat~bucketfs-access~1](#bucketfs-access)
+* [`feat~bucketfs-access~1`](#bucketfs-access)
 
 
 Needs: dsn
@@ -465,7 +465,7 @@ Files uploaded to Bucket FS are not immediately usable due to internal synchroni
 
 Covers:
 
-* [feat~bucketfs-access~1](#bucketfs-access)
+* [`feat~bucketfs-access~1`](#bucketfs-access)
 
 Needs: dsn
 
@@ -480,7 +480,7 @@ ETC lets Integrators read the Exasol log files.
 
 Covers:
 
-* [feat~log-access~1](#log-access)
+* [`feat~log-access~1`](#log-access)
 
 Needs: dsn
 
@@ -501,7 +501,7 @@ Uploading a driver to BucketFS and registering it requires a lot of repetitive b
 
 Covers:
 
-* [feat~driver-management~1](#driver-management)
+* [`feat~driver-management~1`](#driver-management)
 
 Needs: dsn
 
@@ -520,7 +520,7 @@ If the software under test is an EXAoperation plug-in, ETC takes over the instal
 
 Covers:
 
-* [feat~exaoperation-simulation~1](#exaoperation-simulation)
+* [`feat~exaoperation-simulation~1`](#exaoperation-simulation)
 
 Needs: dsn
 
@@ -535,7 +535,7 @@ To be resilient against minor naming changes (like version numbers), a test shou
 
 Covers:
 
-* [feat~exaoperation-simulation~1](#exaoperation-simulation)
+* [`feat~exaoperation-simulation~1`](#exaoperation-simulation)
 
 Needs: dsn
 
@@ -550,7 +550,7 @@ After all, that's why we installed the plug-in in the first place: To be able to
 
 Covers:
 
-* [feat~exaoperation-simulation~1](#exaoperation-simulation)
+* [`feat~exaoperation-simulation~1`](#exaoperation-simulation)
 
 Needs: dsn
 

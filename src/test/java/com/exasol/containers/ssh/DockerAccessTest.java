@@ -14,6 +14,8 @@ import org.testcontainers.containers.ExecResultFactory;
 import com.exasol.containers.ssh.DockerAccess.DockerProber;
 import com.exasol.containers.ssh.DockerAccess.SessionBuilderProvider;
 
+// [utest->dsn~detect-if-docker-exec-is-possible~1]
+// [utest->dsn~access-via-ssh~1]
 public class DockerAccessTest {
 
     @ParameterizedTest

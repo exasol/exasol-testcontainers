@@ -15,10 +15,16 @@ This document's section structure is derived from the "[arc42](https://arc42.org
 This section introduces technical system constraints.
 
 ## Exasol Docker Container Requires Privileged Mode
-
 `const~exasol-docker-container-requires-privileged-mode~1`
 
 The [Exasol Docker container needs to run in privileged mode](https://github.com/exasol/docker-db#privileged-mode) in order to work properly.
+
+Needs: dsn
+
+## Alternative to Docker Exec
+`const~alternative-to-docker-exec~1`
+
+Usually `docker exec` can be used to connect to a docker container in order to execute shell commands or to copy files. Depending on the detailed process the Exasol Docker container was built with it might not be possible to use `docker exec`. This requires to first detect if `docker exec` is possible and second to provide an alternative method for the same purpose.
 
 Needs: dsn
 
@@ -93,8 +99,7 @@ This section describes the runtime behavior of the software.
 The `testcontainers` framework uses Docker's own facilities to download the Exasol docker image in case it is not in the local Docker cache.
 
 Covers:
-
-* `req~exasol-docker-image-download~1`
+* [`req~exasol-docker-image-download~1`](system_requirements.md#exasol-docker-image-download)
 
 Needs: external
 
@@ -105,8 +110,7 @@ Needs: external
 The `ExasolContainer` controls the underlying Exasol Docker container through the `testcontainers` framework.
 
 Covers:
-
-* `req~docker-container-control~1`
+* [`req~docker-container-control~1`](system_requirements.md#docker-container-control)
 
 Needs: impl, itest
 
@@ -117,8 +121,7 @@ Needs: impl, itest
 JUnit starts the Exasol Container before the test cases in a test class.
 
 Covers:
-
-* `req~container-starts-with-test~1`
+* [`req~container-starts-with-test~1`](system_requirements.md#container-starts-with-test)
 
 Needs: itest
 
@@ -129,8 +132,7 @@ Needs: itest
 The `ExasolContainer` offers control to reuse containers using a switch in code and a second switch on their local machine (in `~/.testcontainers.properties`)
 
 Covers:
-
-* `req~reuse-container~1`
+* [`req~reuse-container~1`](system_requirements.md#optional-container-reuse)
 
 ### Keep Container Running if Reuse is Enabled
 
@@ -139,8 +141,7 @@ Covers:
 If reuse is enabled, ETC does not stop the container after the tests are finished.
 
 Covers:
-
-* `req~reuse-container~1`
+* [`req~reuse-container~1`](system_requirements.md#optional-container-reuse)
 
 Needs: impl, itest
 
@@ -155,8 +156,7 @@ Comment:
 This means the `ExasolContainer` deletes all database objects such as users, roles and connections.
 
 Covers:
-
-* `req~automatic-database-cleanup-with-reused-containers~1`
+* [`req~automatic-database-cleanup-with-reused-containers~1`](system_requirements.md#automatic-database-cleanup-with-reused-containers)
 
 Needs: impl, itest
 
@@ -171,8 +171,7 @@ The `ExasolContainer` declares itself ready to be used after the following crite
 * UDF language container is extracted completely
 
 Covers:
-
-* `req~container-ready-check~1`
+* [`req~container-ready-check~1`](system_requirements.md#container-ready-check)
 
 Needs: impl, itest
 
@@ -183,22 +182,41 @@ Needs: impl, itest
 The `ExasolContainer` offers an option that controls which services the user requires. The ETC waits for those services to be ready.
 
 Covers:
-
-* `req~defining-required-optional-services~1`
+* [`req~defining-required-optional-services~1`](system_requirements.md#defining-required-optional-services)
 
 Needs: impl, itest
 
 ### `ExasolContainer` Uses Privileged Mode
-
 `dsn~exasol-container-uses-privileged-mode~1`
 
 The `ExasolContainer` tells the `testcontainers` framework to start the Docker container in privileged mode.
 
 Covers:
-
-* `const~exasol-docker-container-requires-privileged-mode~1`
+* [`const~exasol-docker-container-requires-privileged-mode~1`](#exasol-docker-container-requires-privileged-mode)
 
 Needs: impl, itest
+
+### Alternative to Docker Exec
+
+#### Detect If Docker Exec is Possible
+`dsn~detect-if-docker-exec-is-possible~1`
+
+ETC detects whether `docker exec` can be used by probing for cluster configuration file `/exa/etc/EXAConf`. If ETC cannot find this file then ETC assumes that `docker exec` cannot be used and chooses [Access via SSH](#access-via-ssh) as alternative.
+
+Covers:
+* [`const~alternative-to-docker-exec~1`](#alternative-to-docker-exec)
+
+Needs: impl, utest
+
+#### Access via SSH
+`dsn~access-via-ssh~1`
+
+If `docker exec` cannot be used then ETC uses SSH to access the docker container.
+
+Covers:
+* [`const~alternative-to-docker-exec~1`](#alternative-to-docker-exec)
+
+Needs: impl, utest
 
 ### Override Docker Image via Java Property
 
@@ -211,8 +229,7 @@ Rationale:
 This allows running the same build with unaltered code multiple times while mutating the docker image used in the test.
 
 Covers:
-
-* `req~matrix-testing-with-different-docker-images~1`
+* [`req~matrix-testing-with-different-docker-images~1`](system_requirements.md#matrix-testing-with-different-docker-images)
 
 Needs: impl, itest
 
@@ -231,8 +248,7 @@ Where `major`, `minor`, `fix` and `docker-image-revision` can only contain numbe
 Optional parts are indicated by square brackets.
 
 Covers:
-
-* `req~shortened-docker-image-references~2`
+* [`req~shortened-docker-image-references~2`](system_requirements.md#shortened-docker-image-references)
 
 Needs: impl, utest
 
@@ -243,8 +259,7 @@ Needs: impl, utest
 The `HostIpDetector` scans the Docker network for the Gateway address and uses this as host address.
 
 Covers:
-
-* `req~reading-the-host-ip-address~1`
+* [`req~reading-the-host-ip-address~1`](system_requirements.md#reading-the-host-ip-address)
 
 Needs: impl, itest
 
@@ -259,8 +274,7 @@ To make sure that the support packages have the same content, we us the `exasupp
 The `SupportInformationRetriever` provides an API to retrieve the support archive as produced by the `exasupport` utility.
 
 Covers:
-
-* `req~retrieving-the-support-archive-via-api~1`
+* [`req~retrieving-the-support-archive-via-api~1`](system_requirements.md#retrieving-the-support-archive-via-api)
 
 Needs: impl, itest
 
@@ -270,8 +284,7 @@ Needs: impl, itest
 The `SupportInformationRetriever` provides an API to retrieve the support archive as produced by the `exasupport` utility.
 
 Covers:
-
-* `req~retrieving-the-support-archive-via-system-properties~1`
+* [`req~retrieving-the-support-archive-via-system-properties~1`](system_requirements.md#retrieving-the-support-archive-via-system-properties)
 
 Needs: impl, itest
 
@@ -286,8 +299,7 @@ The `SupportInformationRetriever` offers a configuration option that decides whe
 * None (default)
 
 Covers:
-
-* `req~exit-dependent-support-archive-generation~1`
+* [`req~exit-dependent-support-archive-generation~1`](system_requirements.md#exit-dependent-support-archive-generation)
 
 Needs: impl, itest
 
@@ -300,8 +312,7 @@ Needs: impl, itest
 The `ExasolContainer` can create a JDBC connection for a given combination of username and password.
 
 Covers:
-
-* `req~jdbc-connection-for-username-and-password~1`
+* [`req~jdbc-connection-for-username-and-password~1`](system_requirements.md#jdbc-connection-for-username-and-password)
 
 Needs: impl, itest
 
@@ -316,8 +327,7 @@ Comment:
 Note that we are talking about a disposable integration test environment with non-confidential test data here. This convenience function would not be acceptable in a production environment.
 
 Covers:
-
-* `req~jdbc-connection-with-administrator-privileges~1`
+* [`req~jdbc-connection-with-administrator-privileges~1`](system_requirements.md#jdbc-connection-with-administrator-privileges)
 
 Needs: impl, itest
 
@@ -332,8 +342,7 @@ Rationale:
 This is the main requirement for any Exasol service to be able to reach another service in the same Docker network. Hostname resolution via Docker network alias is not supported by [`exasol/docker-db`](https://github.com/exasol/docker-db) yet.
 
 Covers:
-
-* `req~exaloader-between-two-containers~1`
+* [`req~exaloader-between-two-containers~1`](system_requirements.md#exaloader-between-two-containers)
 
 Needs: impl, itest
 
@@ -344,8 +353,7 @@ Needs: impl, itest
 The `DatabaseService` allows users to stop the database provided by that service.
 
 Covers:
-
-* `req~starting-and-stopping-the-database~1`
+* [`req~starting-and-stopping-the-database~1`](system_requirements.md#starting-and-stopping-the-database)
 
 Needs: impl, itest
 
@@ -356,8 +364,7 @@ Needs: impl, itest
 The `DatabaseService` allows users to start the database provided by that service.
 
 Covers:
-
-* `req~starting-and-stopping-the-database~1`
+* [`req~starting-and-stopping-the-database~1`](system_requirements.md#starting-and-stopping-the-database)
 
 Needs: impl, itest
 
@@ -370,15 +377,14 @@ Needs: impl, itest
 ETC implements a factory for Buckets of the [bucketfs-java](https://github.com/exasol/bucketfs-java/) library.
 
 Covers:
-
-* `req~bucket-content-listing~1`
-* `req~uploading-a-file-to-bucketfs~1`
-* `req~uploading-text-to-a-file-in-bucketfs~1`
-* `req~uploading-input-stream-to-a-file-in-bucketfs~1`
-* `req~bucket-authentication~1`
+* [`req~bucket-content-listing~1`](system_requirements.md#bucket-content-listing)
+* [`req~uploading-a-file-to-bucketfs~1`](system_requirements.md#uploading-a-file-to-bucketfs)
+* [`req~uploading-text-to-a-file-in-bucketfs~1`](system_requirements.md#uploading-text-to-a-file-in-bucketfs)
+* [`req~uploading-input-stream-to-a-file-in-bucketfs~1`](system_requirements.md#uploading-inputstream-to-a-file-in-bucketfs)
+* [`req~bucket-authentication~1`](system_requirements.md#bucket-authentication)
   req~bucket-authentication~1
-* `req~waiting-for-bucket-content-synchronization~1`
-* `req~downloading-a-file-from-bucketfs~1`
+* [`req~waiting-for-bucket-content-synchronization~1`](system_requirements.md#waiting-for-bucket-content-synchronization)
+* [`req~downloading-a-file-from-bucketfs~1`](system_requirements.md#downloading-a-file-from-bucketfs)
 
 Needs: impl, utest, itest
 
@@ -391,8 +397,7 @@ Needs: impl, utest, itest
 The `ExasolContainer` lets integrators map the cluster log directory to a configurable directory on the host.
 
 Covers:
-
-* `req~reading-log-files~1`
+* [`req~reading-log-files~1`](system_requirements.md#reading-log-files)
 
 Needs: impl, itest
 
@@ -406,8 +411,7 @@ Rationale:
 This allows correlating events in the ETC code to events inside the container by correlating timestamps.
 
 Covers:
-
-* `req~reading-log-files~1`
+* [`req~reading-log-files~1`](system_requirements.md#reading-log-files)
 
 Needs: impl, itest
 
@@ -420,8 +424,7 @@ Needs: impl, itest
 The `ExasolDriverManager` lets integrators install a JDBC driver from the host's filesystem.
 
 Covers:
-
-* `req~installing-a-jdbc-driver~1`
+* [`req~installing-a-jdbc-driver~1`](system_requirements.md#installing-a-jdbc-driver)
 
 Needs: impl, utest, itest
 
@@ -440,8 +443,7 @@ EXAoperation's own interfaces are _not_ available. Especially there is no emulat
 The `ExaOperationEmulator` unpacks plug-in packages from TAR archives with the suffix `.pgk` inside the Exasol instance.
 
 Covers:
-
-* `req~installing-an-exaoperation-plug-in~1`
+* [`req~installing-an-exaoperation-plug-in~1`](system_requirements.md#installing-an-exaoperation-plug-in)
 
 Needs: impl, itest
 
@@ -452,8 +454,7 @@ Needs: impl, itest
 The `ExaOperationEmulator` provides a list of installed plug-in packages by name.
 
 Covers:
-
-* `req~listing-installed-exaoperation-plug-ins~1`
+* [`req~listing-installed-exaoperation-plug-ins~1`](system_requirements.md#listing-installed-exaoperation-plug-ins)
 
 Needs: impl, itest
 
@@ -464,8 +465,7 @@ Needs: impl, itest
 The `Plugin` calls the script "`install`" from the extracted plug-in contents to complete the installation process.
 
 Covers:
-
-* `req~calling-exaoperation-plugin-functions~1`
+* [`req~calling-exaoperation-plugin-functions~1`](system_requirements.md#calling-plugin-functions)
 
 Needs: impl, itest
 
@@ -476,8 +476,7 @@ Needs: impl, itest
 The `Plugin` calls the script "`uninstall`" from the extracted plug-in contents to uninstall a previously installed plug-in.
 
 Covers:
-
-* `req~calling-exaoperation-plugin-functions~1`
+* [`req~calling-exaoperation-plugin-functions~1`](system_requirements.md#calling-plugin-functions)
 
 Needs: impl, itest
 
@@ -488,8 +487,7 @@ Needs: impl, itest
 The `Plugin` calls the script "`start`" from the extracted plug-in contents to start services provided by the plug-in.
 
 Covers:
-
-* `req~calling-exaoperation-plugin-functions~1`
+* [`req~calling-exaoperation-plugin-functions~1`](system_requirements.md#calling-plugin-functions)
 
 Needs: impl, itest
 
@@ -500,8 +498,7 @@ Needs: impl, itest
 The `Plugin` calls the script "`stop`" from the extracted plug-in contents to stop services provided by the plug-in.
 
 Covers:
-
-* `req~calling-exaoperation-plugin-functions~1`
+* [`req~calling-exaoperation-plugin-functions~1`](system_requirements.md#calling-plugin-functions)
 
 Needs: impl, itest
 
@@ -512,8 +509,7 @@ Needs: impl, itest
 The `Plugin` calls the script "`restart`" from the extracted plug-in contents to restart running services provided by the plug-in.
 
 Covers:
-
-* `req~calling-exaoperation-plugin-functions~1`
+* [`req~calling-exaoperation-plugin-functions~1`](system_requirements.md#calling-plugin-functions)
 
 Needs: impl, itest
 
@@ -524,8 +520,7 @@ Needs: impl, itest
 The `Plugin` calls the script "`status`" from the extracted plug-in contents to obtain the status of the services provided by the plug-in.
 
 Covers:
-
-* `req~calling-exaoperation-plugin-functions~1`
+* [`req~calling-exaoperation-plugin-functions~1`](system_requirements.md#calling-plugin-functions)
 
 Needs: impl, itest
 
@@ -538,8 +533,7 @@ Needs: impl, itest
 The `WorkaroundManager` applies workarounds in the order they are registered.
 
 Covers:
-
-* `req~log-rotation-workaround~1`
+* [`req~log-rotation-workaround~1`](system_requirements.md#log-rotation-workaround)
 
 Needs: impl, utest
 
@@ -550,8 +544,7 @@ Needs: impl, utest
 The `WorkaroundManager` applies a workaround if that workaround reports that its individual application criteria apply.
 
 Covers:
-
-* `req~log-rotation-workaround~1`
+* [`req~log-rotation-workaround~1`](system_requirements.md#log-rotation-workaround)
 
 Needs: impl, utest
 
@@ -562,8 +555,7 @@ Needs: impl, utest
 the `WorkaroundManager` applies the `LogRotationWorkaround` if the Exasol version is 7.0.x or lower.
 
 Covers:
-
-* `req~log-rotation-workaround~1`
+* [`req~log-rotation-workaround~1`](system_requirements.md#log-rotation-workaround)
 
 Needs: impl, utest
 
@@ -574,8 +566,7 @@ Needs: impl, utest
 The `LogRotationWorkaround` removes the BucketFS log file from the list of logs to be rotated in `/etc/cron.daily/exa-logrotate`.
 
 Covers:
-
-* `req~log-rotation-workaround~1`
+* [`req~log-rotation-workaround~1`](system_requirements.md#log-rotation-workaround)
 
 Needs: impl, utest, itest
 

@@ -48,6 +48,7 @@ public class DockerAccess {
     /**
      * @return true if docker container supports docker exec
      */
+    // [impl->dsn~detect-if-docker-exec-is-possible~1]
     public boolean supportsDockerExec() {
         return getMode() == Mode.DOCKER_EXEC;
     }
@@ -71,6 +72,7 @@ public class DockerAccess {
     /**
      * @return instance of {@link Ssh} providing SSH functionality
      */
+    // [impl->dsn~access-via-ssh~1]
     public Ssh getSsh() {
         if (this.ssh == null) {
             final Session session = this.sessionBuilderProvider.get() //
