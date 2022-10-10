@@ -90,6 +90,13 @@ public class DockerAccess {
      */
     @FunctionalInterface
     public interface SessionBuilderProvider {
+        /**
+         * Create a new instance of {@link SessionBuilder} to be used by {@link DockerAccess} to build a new session and
+         * connect to the Docker container.
+         *
+         * @return instance of {@link SessionBuilder}
+         * @throws SshException in case SessionBuilder creation fails
+         */
         SessionBuilder get() throws SshException;
     }
 
@@ -99,6 +106,10 @@ public class DockerAccess {
      */
     @FunctionalInterface
     public interface DockerProber {
+        /**
+         * @param path path to be checked for existence
+         * @return result of probing
+         */
         ExecResult probeFile(String path);
     }
 
