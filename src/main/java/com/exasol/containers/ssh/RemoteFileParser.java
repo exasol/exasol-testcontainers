@@ -39,6 +39,10 @@ public class RemoteFileParser {
      */
     @FunctionalInterface
     public interface LineMatcher {
+        /**
+         * @param line line to check for match
+         * @return {@code true} if line matches the Matcher's criteria
+         */
         boolean matches(String line);
     }
 }

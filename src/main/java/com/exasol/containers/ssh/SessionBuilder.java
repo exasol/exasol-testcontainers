@@ -71,7 +71,7 @@ public class SessionBuilder {
 
     /**
      * @return new instance of SSH {@link Session}
-     * @throws JSchException if session creation fails
+     * @throws SshException if session creation fails
      */
     public Session build() throws SshException {
         try {

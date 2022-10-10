@@ -31,7 +31,6 @@ public class Ssh {
      * Create a new instance of {@link Ssh}.
      *
      * @param session to use
-     * @throws JSchException
      */
     public Ssh(final Session session) {
         this.session = session;
@@ -81,8 +80,8 @@ public class Ssh {
      *
      * @param path path of the remote file
      * @return Contents of the remote file.
-     * @throws IOException
-     * @throws JSchException
+     * @throws IOException   in case read operation fails
+     * @throws JSchException in case opening SSH channel fails
      */
     public String readRemoteFile(final String path) throws IOException, JSchException {
         return createRemoteFileReader().read(path);
@@ -93,8 +92,8 @@ public class Ssh {
      *
      * @param local  path to local file
      * @param remote path to remote file
-     * @throws IOException   on errors during write operation
-     * @throws JSchException on errors during write operation
+     * @throws IOException   in case write operation fails
+     * @throws JSchException in case opening SSH channel fails
      */
     public void writeRemoteFile(final Path local, final String remote) throws IOException, JSchException {
         createRemoteFileWriter().write(local, remote);
@@ -106,8 +105,8 @@ public class Ssh {
      * @param path        path of the remote file.
      * @param lineMatcher instance of {@link LineMatcher} to identify matching lines.
      * @return matching line or null.
-     * @throws IOException
-     * @throws JSchException
+     * @throws IOException   in case parse operation fails
+     * @throws JSchException in case opening SSH channel fails
      */
     public String parseRemoteFile(final String path, final LineMatcher lineMatcher) throws IOException, JSchException {
         return createRemoteFileParser().findMatch(path, lineMatcher);

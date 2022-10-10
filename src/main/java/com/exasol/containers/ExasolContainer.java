@@ -655,8 +655,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      *
      * @param local  path to local file
      * @param remote path to remote file
-     * @throws IOException   on errors during write operation
-     * @throws JSchException on errors during write operation
+     * @throws SshException on errors during write operation
      */
     public void copyFileToContainer(final Path local, final String remote) throws SshException {
         if (this.dockerAccess.supportsDockerExec()) {

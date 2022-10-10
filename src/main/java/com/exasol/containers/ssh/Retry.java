@@ -69,6 +69,11 @@ public class Retry<T extends Exception> {
      */
     @FunctionalInterface
     public interface RunnableWthException<E extends Exception> {
+        /**
+         * Execute the runnable
+         *
+         * @throws E exception that might be thrown if run fails
+         */
         void run() throws E;
     }
 }

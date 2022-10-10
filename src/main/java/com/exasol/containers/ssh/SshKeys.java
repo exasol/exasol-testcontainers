@@ -13,7 +13,7 @@ import com.jcraft.jsch.*;
 public class SshKeys {
 
     /**
-     * @return a new instance of {@link @SshKeys}
+     * @return a new instance of {@link SshKeys}
      * @throws JSchException if generation of key pair failed
      */
     public static SshKeys create() throws JSchException {
@@ -24,7 +24,7 @@ public class SshKeys {
     private final byte[] passphrase;
 
     /**
-     * Create a new instance of {@link @SshKeys}
+     * Create a new instance of {@link SshKeys}
      *
      * @param keyPair pair of public and private key to use
      */
