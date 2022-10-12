@@ -1,5 +1,7 @@
 package com.exasol.containers.workarounds;
 
+import static com.exasol.containers.DockerImageReferenceFactory.versionFromSystemPropertyOrIndividual;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Tag;
@@ -24,7 +26,8 @@ class LogRotationWorkaroundIT {
     @SuppressWarnings("java:S2925") // sleep is necessary for polling here.
     @Test
     void testLogRotationWorkaround() {
-        try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>("7.0.4")) {
+        final String version = versionFromSystemPropertyOrIndividual("7.0.4");
+        try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>(version)) {
             exasol.start();
             for (int round = 0; round < 60; ++round) {
                 assertLogRotationConfigurationContent(exasol, round);

@@ -114,16 +114,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     @SuppressWarnings("java:S1874") // This constructor is different from JdbcDatabaseContainer(String) and not
     // deprecated
-    public ExasolContainer(final String dockerImageName, final boolean allowImageOverride) {
-        this(getOverridableDockerImage(dockerImageName, allowImageOverride));
-        this.supportInformationRetriever = new SupportInformationRetriever(this);
-    }
-
     // [impl->dsn~override-docker-image-via-java-property~1]
-    static ExasolDockerImageReference getOverridableDockerImage(final String imageName, final boolean allowOverride) {
-        return DockerImageReferenceFactory.parse(allowOverride //
-                ? System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, imageName)
-                : imageName);
+    public ExasolContainer(final String dockerImageName, final boolean allowImageOverride) {
+        this(DockerImageReferenceFactory.parseOverridable(dockerImageName, allowImageOverride));
+        this.supportInformationRetriever = new SupportInformationRetriever(this);
     }
 
     private ExasolContainer(final ExasolDockerImageReference dockerImageReference) {
@@ -152,7 +146,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * are guaranteed to be stable as long as you don't change the version of the Exasol test container dependency.
      */
     public ExasolContainer() {
-        this(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_REFERENCE);
+        this(DockerImageReferenceFactory.versionFromSystemPropertyOrIndividual( //
+                ExasolContainerConstants.EXASOL_DOCKER_IMAGE_VERSION));
     }
 
     /**

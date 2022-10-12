@@ -1,6 +1,7 @@
 package com.exasol.containers;
 
-import static com.exasol.containers.ExasolContainerConstants.*;
+import static com.exasol.containers.ExasolContainerConstants.SSH_PORT;
+import static com.exasol.containers.ExasolContainerConstants.SSH_USER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,9 +16,6 @@ import java.time.Duration;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junitpioneer.jupiter.ClearSystemProperty;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -163,22 +161,5 @@ class ExasolContainerTest {
         assertThat(session.getHost(), equalTo("simulated host"));
         assertThat(session.getPort(), equalTo(321));
         assertThat(session.getUserName(), equalTo(SSH_USER));
-    }
-
-    // [itest->dsn~override-docker-image-via-java-property~1]
-    /*
-     * Replaced DockerImageOverrideIT by unit test as the integration test had long duration and required too much disk
-     * space on GitHub for the additional docker image.
-     */
-    @ParameterizedTest
-    @CsvSource(value = { "1.2.3, 4.5.6-x, false, exasol/docker-db:1.2.3-d1", //
-            "1.2.3, 4.5.6-x, true, exasol/docker-db:4.5.6-x-d1" })
-    @ClearSystemProperty(key = DOCKER_IMAGE_OVERRIDE_PROPERTY)
-    void testImageOverride(final String defaultVersion, final String overrideVersion, final boolean allowOverride,
-            final String expected) {
-        System.setProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY, overrideVersion);
-        final ExasolDockerImageReference testee = ExasolContainer.getOverridableDockerImage(defaultVersion,
-                allowOverride);
-        assertThat(testee.toString(), equalTo(expected));
     }
 }
