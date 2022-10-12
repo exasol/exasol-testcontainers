@@ -4,13 +4,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
@@ -41,20 +43,24 @@ class ExasolContainerIT {
     }
 
     @Test
-    void testSsh() throws JSchException, IOException, UnsupportedOperationException, InterruptedException {
+    void testSsh(@TempDir final Path tempDir)
+            throws JSchException, IOException, UnsupportedOperationException, InterruptedException {
         final DockerAccess accessProvider = CONTAINER.getAccessProvider();
-        System.out.println("Container " //
-                + (accessProvider.supportsDockerExec() ? "supports" : "does not support") //
-                + " docker exec.");
-        LOGGER.info("container date: {}", ContainerTimeService.create(CONTAINER).getTime());
+        LOGGER.debug("Container {} docker exec",
+                (accessProvider.supportsDockerExec() ? "supports" : "does not support"));
+        LOGGER.debug("container date: {}", ContainerTimeService.create(CONTAINER).getTime());
 
         final ClusterConfiguration config = CONTAINER.getClusterConfiguration();
-        LOGGER.info("db version {}, time zone {}", config.getDBVersion(), config.getTimeZone().getID());
+        LOGGER.debug("db version {}, time zone {}", config.getDBVersion(), config.getTimeZone().getID());
+
+        final Path file = tempDir.resolve("sampe-file.txt");
+        final String sampleContent = "first line\nsecond line";
+        Files.writeString(file, sampleContent);
 
         final String remotePath = "/root/a-new-file.txt";
-        CONTAINER.copyFileToContainer(Paths.get("c:/HOME/Tmp/a.txt"), remotePath);
+        CONTAINER.copyFileToContainer(file, remotePath);
         final String content = accessProvider.getSsh().readRemoteFile(remotePath);
-        System.out.println(content);
+        assertThat(content, equalTo(sampleContent));
     }
 
     @Test

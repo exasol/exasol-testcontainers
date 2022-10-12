@@ -24,6 +24,10 @@ The current release therefore adds support for SSH connections to the docker con
 
 * Added `com.jcraft:jsch:0.1.55`
 
+### Test Dependency Updates
+
+* Added `org.junit-pioneer:junit-pioneer:1.7.1`
+
 ### Plugin Dependency Updates
 
 * Updated `com.exasol:project-keeper-maven-plugin:2.6.2` to `2.8.0`
