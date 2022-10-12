@@ -11,9 +11,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker_db_version: ["7.0.20", "7.1.15"]
+        docker_db_version: ["7.0.20", "7.1.12"]
     env:
-      DEFAULT_DB_VERSION: "7.1.15"
+      DEFAULT_DB_VERSION: "7.1.12"
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.docker_db_version }}
