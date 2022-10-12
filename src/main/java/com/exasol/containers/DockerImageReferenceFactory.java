@@ -34,9 +34,10 @@ public final class DockerImageReferenceFactory {
     }
 
     /**
-     * Return docker image version defined by system property {@link DOCKER_IMAGE_OVERRIDE_PROPERTY} or the specified
-     * individual version. The purpose is to minimize the total number of different docker images in order to limit the
-     * required disk space.
+     * Return docker image version defined by system property
+     * {@link com.exasol.containers.ExasolContainerConstants#DOCKER_IMAGE_OVERRIDE_PROPERTY} or the specified individual
+     * version. The purpose is to minimize the total number of different docker images in order to limit the required
+     * disk space.
      *
      * @param individual individual version of docker image
      * @return version from system property
