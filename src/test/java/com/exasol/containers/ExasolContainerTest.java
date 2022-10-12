@@ -165,6 +165,7 @@ class ExasolContainerTest {
         assertThat(session.getUserName(), equalTo(SSH_USER));
     }
 
+    // [itest->dsn~override-docker-image-via-java-property~1]
     /*
      * Replaced DockerImageOverrideIT by unit test as the integration test had long duration and required too much disk
      * space on GitHub for the additional docker image.
