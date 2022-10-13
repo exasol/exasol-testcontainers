@@ -20,6 +20,8 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.docker_db_version }}
       cancel-in-progress: true
     steps:
+      - name: show free disk space (before)
+        run: df -h .
       - name: Checkout the repository
         uses: actions/checkout@v3
         with:
@@ -80,3 +82,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: show free disk space (after)
+        if: ${{ always() }}
+        run: df -h .
