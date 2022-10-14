@@ -50,7 +50,7 @@ jobs:
           echo "Support information archives are written to $SUPPORT_DIR"
           echo
           mkdir -p "$SUPPORT_DIR"
-          mvn --batch-mode clean test -Dtest=ContainerTimeServiceIT,ExasolContainerIT,ExasolContainerReuseIT \
+          mvn --batch-mode clean verify \
           -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
           -DtrimStackTrace=false \
           -Dcom.exasol.dockerdb.image=${{ matrix.docker_db_version }} \
