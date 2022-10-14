@@ -5,9 +5,8 @@ import org.testcontainers.containers.Container.ExecResult;
 import com.exasol.containers.ExasolContainer;
 
 /**
- * {@link ExecResultFactory} is required to enable {@link ExasolContainer} override methods of extended class
- * {@link TestContainer} as the return type {@link ExecResult} of some of the overridden methods is package-private to
- * {@link org.testcontainers.containers}. Also used by tests.
+ * As return type {@link ExecResult} of inherited methods in {@link ExasolContainer} is package-private we need this
+ * factory class in the same package to override these methods. Also used by tests.
  */
 public class ExecResultFactory {
     /**
