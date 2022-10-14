@@ -53,7 +53,6 @@ public final class DockerImageReferenceFactory {
                     DOCKER_IMAGE_OVERRIDE_PROPERTY);
             return fromProperty;
         }
-
     }
 
     /**
