@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.time.Duration;
@@ -991,8 +992,11 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~access-via-ssh~1]
     private SshKeys createSshKeys() {
         try {
-            return SshKeys.create();
-        } catch (final JSchException exception) {
+            return SshKeys.builder() //
+                    .privateKey(Paths.get("target/id_rsa")) //
+                    .publicKey(Paths.get("target/id_rsa.pub")) //
+                    .build();
+        } catch (final JSchException | IOException exception) {
             throw new ExasolContainerInitializationException("Could not create SSH key pair", exception);
         }
     }
