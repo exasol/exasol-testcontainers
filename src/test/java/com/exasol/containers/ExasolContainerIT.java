@@ -13,8 +13,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,7 +28,6 @@ import com.jcraft.jsch.JSchException;
 @Tag("slow")
 @Testcontainers
 class ExasolContainerIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerIT.class);
 
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
@@ -46,12 +43,6 @@ class ExasolContainerIT {
     void testSsh(@TempDir final Path tempDir)
             throws JSchException, IOException, UnsupportedOperationException, InterruptedException {
         final DockerAccess accessProvider = CONTAINER.getAccessProvider();
-        LOGGER.debug("Container {} docker exec",
-                (accessProvider.supportsDockerExec() ? "supports" : "does not support"));
-        LOGGER.debug("container date: {}", ContainerTimeService.create(CONTAINER).getTime());
-
-        final ClusterConfiguration config = CONTAINER.getClusterConfiguration();
-        LOGGER.debug("db version {}, time zone {}", config.getDBVersion(), config.getTimeZone().getID());
 
         final Path file = tempDir.resolve("sampe-file.txt");
         final String sampleContent = "first line\nsecond line";

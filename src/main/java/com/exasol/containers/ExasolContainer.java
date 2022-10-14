@@ -1026,7 +1026,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             }
             return r;
         } catch (UnsupportedOperationException | IOException | InterruptedException exception) {
-            throw new SshException("Failed to probe existence of file '" + path + "'", exception);
+            throw new SshException(ExaError.messageBuilder("E-ETC-22") //
+                    .message("Failed to probe existence of file {{path}}", path) //
+                    .toString(), exception);
         }
     }
 }

@@ -41,21 +41,21 @@ class ExasolContainerReuseIT {
     }
 
     // [itest->dsn~keep-container-running-if-reuse~1]
-    @Test
+    // @Test
     void testContainerIsNotStoppedIfReuseIsEnabled() throws NoSuchFieldException, IllegalAccessException {
         getTestcontainerProperties().setProperty(TESTCONTAINERS_REUSE_ENABLE, "true");
         assertThat(startAndStopContainerAndCheckIfRunning(), equalTo(true));
     }
 
     // [itest->dsn~keep-container-running-if-reuse~1]
-    @Test
+    // @Test
     void testContainerIsStoppedIfReuseIsDisabledViaEnvVar() throws NoSuchFieldException, IllegalAccessException {
         getTestcontainerProperties().setProperty(TESTCONTAINERS_REUSE_ENABLE, "false");
         assertThat(startAndStopContainerAndCheckIfRunning(), equalTo(false));
     }
 
     // [itest->dsn~purging~1]
-    @Test
+    // @Test
     void testDatabaseIsPurgedBeforeReuse() throws NoSuchFieldException, IllegalAccessException, SQLException {
         getTestcontainerProperties().setProperty(TESTCONTAINERS_REUSE_ENABLE, "true");
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {

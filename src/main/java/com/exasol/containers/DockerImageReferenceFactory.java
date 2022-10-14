@@ -44,16 +44,12 @@ public final class DockerImageReferenceFactory {
      */
     public static String versionFromSystemPropertyOrIndividual(final String individual) {
         final String fromProperty = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
-        if (fromProperty == null) {
-            LOGGER.info("System property {} is not set. Using docker image version '{}'.",
-                    DOCKER_IMAGE_OVERRIDE_PROPERTY, individual);
-            return individual;
-        } else {
-            LOGGER.info("Using docker image version '{}' from system property {}.", fromProperty,
-                    DOCKER_IMAGE_OVERRIDE_PROPERTY);
+        if (fromProperty != null) {
             return fromProperty;
         }
-
+        LOGGER.info("System property '{}' is not set. Using docker image version '{}'.", //
+                DOCKER_IMAGE_OVERRIDE_PROPERTY, individual);
+        return individual;
     }
 
     /**
