@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Exasol Test Container (short "ETC") is an extension of the `testcontainers` framework (see [`testcontainers.org`](https://testcontainers.org)). It add Exasol's specific features like reading from and writing to BucketFS.
+Exasol Test Container (short "ETC") is an extension of the `testcontainers` framework (see [testcontainers.org](https://testcontainers.org)). It add Exasol's specific features like reading from and writing to BucketFS.
 
 ## About This Document
 
