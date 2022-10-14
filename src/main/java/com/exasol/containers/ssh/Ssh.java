@@ -139,7 +139,7 @@ public class Ssh {
         if (!this.session.isConnected()) {
             LOGGER.info("Trying to open SSH channel to docker container");
             final Retry<JSchException> retry = new Retry<>(JSchException.class, Duration.ofSeconds(60));
-            retry.retry(() -> this.session.connect());
+            retry.retry(this.session::connect);
             LOGGER.info("SSH channel successfully opened");
         }
         return this.session.openChannel(type);

@@ -87,7 +87,7 @@ class FileVisitor {
     }
 
     static String fileHeader(final char ack, final String mode, final long filesize, final String filename) {
-        return String.format("%c%s %d %s\n", ack, mode, filesize, filename);
+        return String.format("%c%s %d %s%c", ack, mode, filesize, filename, 0xa);
     }
 
     static int checkAck(final InputStream stream) throws IOException {
@@ -104,17 +104,15 @@ class FileVisitor {
         }
 
         if ((b == 1) || (b == 2)) {
-            final StringBuffer sb = new StringBuffer();
+            final StringBuilder sb = new StringBuilder();
             int c;
             do {
                 c = stream.read();
                 sb.append((char) c);
             } while (c != '\n');
-            if (b == 1) { // error
-                LOGGER.error(sb.toString());
-            }
-            if (b == 2) { // fatal error
-                LOGGER.error(sb.toString());
+            if ((b == 1) || (b == 2)) { // error or fatal error
+                final String s = sb.toString();
+                LOGGER.error("error " + s);
             }
         }
         return b;

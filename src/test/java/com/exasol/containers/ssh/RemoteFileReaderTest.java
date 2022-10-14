@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class RemoteFileReaderTest {
+class RemoteFileReaderTest {
 
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 

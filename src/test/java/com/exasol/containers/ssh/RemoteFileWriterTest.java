@@ -26,7 +26,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
 @ExtendWith(MockitoExtension.class)
-public class RemoteFileWriterTest {
+class RemoteFileWriterTest {
 
     @Mock
     Ssh ssh;

@@ -8,7 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junitpioneer.jupiter.ClearSystemProperty;
 
-public class DockerImageReferenceFactoryTest {
+class DockerImageReferenceFactoryTest {
 
     // [itest->dsn~override-docker-image-via-java-property~1]
     /*

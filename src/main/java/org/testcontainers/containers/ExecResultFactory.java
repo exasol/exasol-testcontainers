@@ -20,4 +20,8 @@ public class ExecResultFactory {
     public static Container.ExecResult result(final int exitCode, final String stdout, final String stderr) {
         return new Container.ExecResult(exitCode, stdout, stderr);
     }
+
+    private ExecResultFactory() {
+        // only static usage
+    }
 }

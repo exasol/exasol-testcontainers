@@ -23,7 +23,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
 @ExtendWith(MockitoExtension.class)
-public class RemoteExecutorTest {
+class RemoteExecutorTest {
 
     static final Charset CHARSET = StandardCharsets.UTF_8;
 

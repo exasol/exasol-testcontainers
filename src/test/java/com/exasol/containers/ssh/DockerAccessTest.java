@@ -16,7 +16,7 @@ import com.exasol.containers.ssh.DockerAccess.SessionBuilderProvider;
 
 // [utest->dsn~detect-if-docker-exec-is-possible~1]
 // [utest->dsn~access-via-ssh~1]
-public class DockerAccessTest {
+class DockerAccessTest {
 
     @ParameterizedTest
     @CsvSource(value = { "true,DOCKER_EXEC", "false,SSH" })

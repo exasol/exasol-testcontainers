@@ -17,7 +17,7 @@ public class SshKeys {
     /**
      * @return {@link} Builder} for a new instance of {@link SshKeys}.
      */
-    static public Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -95,15 +95,15 @@ public class SshKeys {
             return this;
         }
 
+        /**
+         * @return new instance of {@link SshKeys}
+         * @throws JSchException if generation of key pair failed
+         * @throws IOException   if file access failed
+         */
         public SshKeys build() throws IOException, JSchException {
             return new SshKeys(createKeyPair());
         }
 
-        /**
-         * @return key pair
-         * @throws JSchException if generation of key pair failed
-         * @throws IOException   if file access failed
-         */
         KeyPair createKeyPair() throws IOException, JSchException {
             if (Files.exists(this.priv) && Files.exists(this.pub)) {
                 return KeyPair.load(new JSch(), read(this.priv), read(this.pub));

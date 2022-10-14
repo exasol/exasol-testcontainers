@@ -51,7 +51,7 @@ public class Retry<T extends Exception> {
             try {
                 Thread.sleep(this.interval.toMillis());
             } catch (final InterruptedException interruptedException) {
-                throw new IllegalStateException(interruptedException);
+                Thread.currentThread().interrupt();
             }
         }
     }

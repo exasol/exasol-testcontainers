@@ -19,7 +19,7 @@ import com.exasol.containers.ssh.FileVisitor.ContentProcessor;
 import com.jcraft.jsch.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FileVisitorTest {
+class FileVisitorTest {
 
     @Mock
     Ssh ssh;
