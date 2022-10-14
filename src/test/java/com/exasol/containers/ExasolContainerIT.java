@@ -3,22 +3,16 @@ package com.exasol.containers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.config.ClusterConfiguration;
-import com.exasol.containers.ssh.DockerAccess;
-import com.jcraft.jsch.JSchException;
 
 // [itest->dsn~exasol-container-controls-docker-container~1]
 // [itest->dsn~exasol-container-ready-criteria~3]
@@ -37,21 +31,6 @@ class ExasolContainerIT {
     @Test
     void testContainerRunsInPrivilegedMode() {
         assertThat(CONTAINER.isPrivilegedMode(), equalTo(true));
-    }
-
-    @Test
-    void testSsh(@TempDir final Path tempDir)
-            throws JSchException, IOException, UnsupportedOperationException, InterruptedException {
-        final DockerAccess accessProvider = CONTAINER.getAccessProvider();
-
-        final Path file = tempDir.resolve("sampe-file.txt");
-        final String sampleContent = "first line\nsecond line";
-        Files.writeString(file, sampleContent);
-
-        final String remotePath = "/root/a-new-file.txt";
-        CONTAINER.copyFileToContainer(file, remotePath);
-        final String content = accessProvider.getSsh().readRemoteFile(remotePath);
-        assertThat(content, equalTo(sampleContent));
     }
 
     @Test
