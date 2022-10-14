@@ -47,9 +47,6 @@ public final class DockerImageReferenceFactory {
         if (fromProperty != null) {
             return fromProperty;
         }
-        LOGGER.info("System property '{}' is not set. Using docker image version '{}'.", //
-                DOCKER_IMAGE_OVERRIDE_PROPERTY, individual);
-        return individual;
     }
 
     /**

@@ -260,7 +260,7 @@ This is useful in cases where single test cases should produce the standard supp
 
 Covers:
 
-* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)t
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -275,7 +275,7 @@ This is targeted at CI builds as it decouples test case definition and decision 
 
 Covers:
 
-* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)t
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
@@ -295,7 +295,7 @@ During regular tests integrators usually don't need the archive. In CI builds th
 
 Covers:
 
-* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)t
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
 
 Needs: dsn
 
