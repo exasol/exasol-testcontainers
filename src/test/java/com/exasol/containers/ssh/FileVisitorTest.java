@@ -41,7 +41,7 @@ class FileVisitorTest {
         final Channel channel = mockValidChannel(0);
         final FileVisitor testee = new FileVisitor(this.ssh);
 
-        when(this.processor.process(any(), any(), anyLong())).thenReturn("result");
+        when(this.processor.process(any(), any(), anyInt())).thenReturn("result");
 
         final String result = testee.visit("/remote/file", this.processor);
         assertThat(result, equalTo("result"));
@@ -53,7 +53,7 @@ class FileVisitorTest {
     void exception() throws IOException, JSchException {
         mockValidChannel(3);
         final FileVisitor testee = new FileVisitor(this.ssh);
-        when(this.processor.process(any(), any(), anyLong())).thenReturn("result");
+        when(this.processor.process(any(), any(), anyInt())).thenReturn("result");
         assertThrows(SshException.class, () -> testee.visit("/remote/file", this.processor));
     }
 

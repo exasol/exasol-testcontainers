@@ -1029,13 +1029,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 LOGGER.debug("File not found: {}", path);
             }
             return r;
-        } catch (UnsupportedOperationException | IOException | InterruptedException exception) {
-            if (exception instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (UnsupportedOperationException | IOException exception) {
             throw new SshException(ExaError.messageBuilder("E-ETC-22") //
                     .message("Failed to probe existence of file {{path}}", path) //
                     .toString(), exception);
+        } catch (final InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
+            throw new SshException("Probing file " + path + "was interrupted", interruptedException);
         }
     }
 }

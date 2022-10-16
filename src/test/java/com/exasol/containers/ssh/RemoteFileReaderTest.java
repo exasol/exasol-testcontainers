@@ -21,7 +21,7 @@ class RemoteFileReaderTest {
         assertThat(read(input, size), equalTo(input.substring(0, Math.min(size, input.length()))));
     }
 
-    private String read(final String input, final long filesize) throws IOException {
+    private String read(final String input, final int filesize) throws IOException {
         final RemoteFileReader testee = new RemoteFileReader(null);
         try (final InputStream is = new ByteArrayInputStream(input.getBytes(CHARSET))) {
             return testee.process(is, CHARSET, filesize);

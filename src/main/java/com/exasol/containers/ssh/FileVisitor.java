@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import com.jcraft.jsch.*;
 
 class FileVisitor {
+    enum State {
+        CONTINUE, COMPLETED, ERROR;
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FileVisitor.class);
     private static final byte[] ZERO_BUFFER = { 0 };
     private final Ssh ssh;
@@ -33,7 +37,7 @@ class FileVisitor {
                 break;
             }
             readFilemode(in);
-            final long filesize = readFilesize(in);
+            final int filesize = readFilesize(in);
             readFilename(in);
             sendZeroByte(out);
             result = consumer.process(in, this.ssh.getCharset(), filesize);
@@ -57,8 +61,8 @@ class FileVisitor {
         return new String(buf, 0, 5);
     }
 
-    private long readFilesize(final InputStream in) throws IOException {
-        long filesize = 0L;
+    private int readFilesize(final InputStream in) throws IOException {
+        int filesize = 0;
         final byte[] buf = new byte[1];
         while (true) {
             if (in.read(buf, 0, 1) < 0) {
@@ -68,7 +72,7 @@ class FileVisitor {
             if (buf[0] == ' ') {
                 return filesize;
             }
-            filesize = ((filesize * 10L) + buf[0]) - '0';
+            filesize = ((filesize * 10) + buf[0]) - '0';
         }
     }
 
@@ -112,7 +116,7 @@ class FileVisitor {
             } while (c != '\n');
             if ((b == 1) || (b == 2)) { // error or fatal error
                 final String s = sb.toString();
-                LOGGER.error("error " + s);
+                LOGGER.error("error {}", s);
             }
         }
         return b;
@@ -120,6 +124,6 @@ class FileVisitor {
 
     @FunctionalInterface
     interface ContentProcessor {
-        String process(final InputStream stream, Charset charset, final long filesize) throws IOException;
+        String process(final InputStream stream, Charset charset, final int filesize) throws IOException;
     }
 }
