@@ -5,9 +5,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jcraft.jsch.*;
 
 class FileVisitor {
@@ -15,7 +12,6 @@ class FileVisitor {
         CONTINUE, COMPLETED, ERROR;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileVisitor.class);
     private static final byte[] ZERO_BUFFER = { 0 };
     private final Ssh ssh;
 
@@ -29,25 +25,23 @@ class FileVisitor {
         ((ChannelExec) channel).setCommand(command);
         final OutputStream out = channel.getOutputStream();
         final InputStream in = channel.getInputStream();
-        channel.connect();
-        String result = null;
-        while (true) {
-            sendZeroByte(out);
-            if (checkAck(in) != 'C') {
-                break;
-            }
-            readFilemode(in);
-            final int filesize = readFilesize(in);
-            readFilename(in);
-            sendZeroByte(out);
-            result = consumer.process(in, this.ssh.getCharset(), filesize);
-            if (checkAck(in) != 0) {
-                throw new SshException("ack != 0");
+        try (SshConnection connection = new SshConnection(channel)) {
+            String result = null;
+            while (true) {
+                sendZeroByte(out);
+                if (checkAck(in) != 'C') {
+                    return result;
+                }
+                readFilemode(in);
+                final int filesize = readFilesize(in);
+                readFilename(in);
+                sendZeroByte(out);
+                result = consumer.process(in, this.ssh.getCharset(), filesize);
+                if (checkAck(in) != 0) {
+                    throw new SshException("ack != 0");
+                }
             }
         }
-
-        channel.disconnect();
-        return result;
     }
 
     static void sendZeroByte(final OutputStream stream) throws IOException {
@@ -66,8 +60,7 @@ class FileVisitor {
         final byte[] buf = new byte[1];
         while (true) {
             if (in.read(buf, 0, 1) < 0) {
-                // error
-                return filesize;
+                throw new SshException("Failed to read filesize");
             }
             if (buf[0] == ' ') {
                 return filesize;
@@ -94,32 +87,25 @@ class FileVisitor {
         return String.format("%c%s %d %s%c", ack, mode, filesize, filename, 0xa);
     }
 
+    private static final int ERROR = 1;
+    private static final int FATAL_ERROR = 2;
+
     static int checkAck(final InputStream stream) throws IOException {
         final int b = stream.read();
-        // b may be 0 for success,
-        // 1 for error,
-        // 2 for fatal error,
-        // -1
-        if (b == 0) {
-            return b;
-        }
-        if (b == -1) {
-            return b;
-        }
-
-        if ((b == 1) || (b == 2)) {
-            final StringBuilder sb = new StringBuilder();
-            int c;
-            do {
-                c = stream.read();
-                sb.append((char) c);
-            } while (c != '\n');
-            if ((b == 1) || (b == 2)) { // error or fatal error
-                final String s = sb.toString();
-                LOGGER.error("error {}", s);
-            }
+        if ((b == ERROR) || (b == FATAL_ERROR)) {
+            throw new SshException("Error " + getErrorMessage(stream));
         }
         return b;
+    }
+
+    static String getErrorMessage(final InputStream stream) throws IOException {
+        final StringBuilder builder = new StringBuilder();
+        int c = 0;
+        while (c != 0x0a) {
+            c = stream.read();
+            builder.append((char) c);
+        }
+        return builder.toString();
     }
 
     @FunctionalInterface

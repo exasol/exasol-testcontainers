@@ -36,29 +36,28 @@ class RemoteExecutor {
 
     ExecResult execute(final Charset charset, final String... command) throws IOException {
         try {
-            final ChannelExec channel = connect(this.ssh, command);
-            while (process(channel) == State.CONTINUE) {
-                // continue
+            try (SshConnection connection = connect(this.ssh, command)) {
+                while (process(connection) == State.CONTINUE) {
+                    // continue
+                }
+                return result(connection, charset);
             }
-            channel.disconnect();
-            return result(channel, charset);
         } catch (final JSchException exception) {
             throw new IOException("SSH execution failed", exception);
         }
     }
 
-    ChannelExec connect(final Ssh ssh, final String... command) throws IOException, JSchException {
+    SshConnection connect(final Ssh ssh, final String... command) throws IOException, JSchException {
         final ChannelExec channel = (ChannelExec) ssh.openChannel("exec");
         channel.setCommand(String.join(" ", command));
         this.in = channel.getInputStream();
         this.err = new ByteArrayOutputStream();
         channel.setErrStream(this.err);
         this.out = new ByteArrayOutputStream();
-        channel.connect();
-        return channel;
+        return new SshConnection(channel);
     }
 
-    State process(final ChannelExec channel) throws IOException {
+    State process(final SshConnection connection) throws IOException {
         while (this.in.available() > 0) {
             final int i = this.in.read(this.buf, 0, BUFFER_SIZE);
             if (i < 0) {
@@ -67,7 +66,7 @@ class RemoteExecutor {
             this.out.write(this.buf, 0, i);
         }
 
-        if (!channel.isClosed()) {
+        if (!connection.channel().isClosed()) {
             this.sleeper.sleep(1000);
             return State.CONTINUE;
         }
@@ -78,9 +77,9 @@ class RemoteExecutor {
         return State.COMPLETED;
     }
 
-    ExecResult result(final ChannelExec channel, final Charset charset) {
+    ExecResult result(final SshConnection connection, final Charset charset) {
         return ExecResultFactory.result( //
-                channel.getExitStatus(), //
+                connection.channel().getExitStatus(), //
                 this.out.toString(charset), //
                 this.err.toString(charset));
     }

@@ -27,8 +27,18 @@ class FileVisitorTest {
     ContentProcessor processor;
 
     @ParameterizedTest
-    @ValueSource(ints = { 0, -1, 3, 1, 2 })
-    void channelEmptyOrReturnsErrorCode(final int ack1) throws IOException, JSchException {
+    @ValueSource(ints = { 1, 2 })
+    void channelReturnsErrorCode(final int ack1) throws IOException, JSchException {
+        final Channel channel = mockChannel(ack1, "(simulated error)\n");
+        final FileVisitor testee = new FileVisitor(this.ssh);
+        assertThrows(SshException.class, () -> testee.visit("/remote/file", this.processor));
+        verify(channel).connect();
+        verify(channel).disconnect();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, -1, 3 })
+    void channelWithoutError(final int ack1) throws IOException, JSchException {
         final Channel channel = mockChannel(ack1, "(simulated error)\n");
         final FileVisitor testee = new FileVisitor(this.ssh);
         testee.visit("/remote/file", this.processor);
