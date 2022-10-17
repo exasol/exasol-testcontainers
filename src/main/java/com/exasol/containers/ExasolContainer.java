@@ -147,8 +147,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * are guaranteed to be stable as long as you don't change the version of the Exasol test container dependency.
      */
     public ExasolContainer() {
-        this(DockerImageReferenceFactory.versionFromSystemPropertyOrIndividual( //
-                ExasolContainerConstants.EXASOL_DOCKER_IMAGE_VERSION));
+        this(ExasolContainerConstants.EXASOL_DOCKER_IMAGE_VERSION);
     }
 
     /**
