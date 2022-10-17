@@ -982,14 +982,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
     DockerAccess createDockerAccess() {
         return DockerAccess.builder() //
-                .sshKeys(createSshKeys()) //
+                .sshKeys(getSshKeys()) //
                 .dockerProber(this::probeFile) //
                 .sessionBuilderProvider(this::getSessionBuilder) //
                 .build();
     }
 
     // [impl->dsn~access-via-ssh~1]
-    private SshKeys createSshKeys() {
+    private SshKeys getSshKeys() {
         try {
             return SshKeys.builder() //
                     .privateKey(Paths.get("target/id_rsa")) //
@@ -1006,10 +1006,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 .host(getHost()) //
                 .port(getMappedPort(SSH_PORT)) //
                 .config("StrictHostKeyChecking", "no");
-    }
-
-    DockerAccess getAccessProvider() {
-        return this.dockerAccess;
     }
 
     /**
