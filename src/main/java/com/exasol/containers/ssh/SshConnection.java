@@ -24,6 +24,9 @@ public class SshConnection implements AutoCloseable {
         this.channel.disconnect();
     }
 
+    /**
+     * @return channel used by current {@link SshConnection}
+     */
     public Channel channel() {
         return this.channel;
     }
