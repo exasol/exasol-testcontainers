@@ -7,11 +7,11 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
-import org.testcontainers.utility.MountableFile;
 
+import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 import com.exasol.exaoperation.plugin.Plugin;
 
 /**
@@ -19,7 +19,7 @@ import com.exasol.exaoperation.plugin.Plugin;
  */
 public class ExaOperationEmulator implements ExaOperation {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExaOperationEmulator.class);
-    private final Container<? extends Container<?>> container;
+    private final ExasolContainer<? extends ExasolContainer<?>> container;
     private final Map<String, Plugin> plugins = new HashMap<>();
 
     /**
@@ -27,7 +27,7 @@ public class ExaOperationEmulator implements ExaOperation {
      *
      * @param container parent container
      */
-    public ExaOperationEmulator(final Container<? extends Container<?>> container) {
+    public ExaOperationEmulator(final ExasolContainer<? extends ExasolContainer<?>> container) {
         this.container = container;
     }
 
@@ -52,7 +52,7 @@ public class ExaOperationEmulator implements ExaOperation {
         } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
             throw new ExaOperationEmulatorException(description + " in container got interrupted.");
-        } catch (UnsupportedOperationException | IOException exception) {
+        } catch (UnsupportedOperationException | SshException | IOException exception) {
             throw new ExaOperationEmulatorException(description + " in container failed.", exception);
         }
     }
@@ -98,9 +98,8 @@ public class ExaOperationEmulator implements ExaOperation {
         execInContainer("Remove plugin temp directory", "/bin/rm", "-rf", tempDirectory);
     }
 
-    private void copyPackageToContainer(final Plugin plugin, final String targetPath) {
-        final MountableFile file = MountableFile.forHostPath(plugin.getSourcePath());
-        this.container.copyFileToContainer(file, targetPath);
+    private void copyPackageToContainer(final Plugin plugin, final String targetPath) throws SshException {
+        this.container.copyFileToContainer(plugin.getSourcePath(), targetPath);
     }
 
     private void extractPluginPackage(final Plugin plugin, final String tempDirectory) {

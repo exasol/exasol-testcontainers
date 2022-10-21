@@ -12,6 +12,7 @@ import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.ExitType;
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 import com.exasol.errorreporting.ExaError;
 
 /**
@@ -102,7 +103,7 @@ public class SupportInformationRetriever {
             } else {
                 logFailedSupportArchiveCreationAttempt(exitType, result.getStderr());
             }
-        } catch (final UnsupportedOperationException | IOException exception) {
+        } catch (final UnsupportedOperationException | SshException | IOException exception) {
             logFailedSupportArchiveCreationAttempt(exitType, exception.getMessage());
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();
@@ -128,8 +129,11 @@ public class SupportInformationRetriever {
     @SuppressWarnings("java:S2629")
     private void logFailedSupportArchiveCreationAttempt(final ExitType exitType, final String cause) {
         LOGGER.error(ExaError.messageBuilder("E-ETC-2") //
-                .message("Container exiting with {}. Monitoring is set to {}. Unable to create support archive."
-                        + "\nCause: {{cause}}", exitType, this.monitoredExitType, this.targetDirectory, cause) //
+                .message("Container exiting with {{exit type}}." //
+                        + " Monitoring is set to {{monitored exit type}}." //
+                        + " Unable to create support archive {{archive}}." //
+                        + "\nCause: {{cause}}", //
+                        exitType, this.monitoredExitType, this.targetDirectory, cause) //
                 .toString());
     }
 }

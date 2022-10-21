@@ -13,6 +13,7 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 import com.exasol.exaoperation.ExaOperationEmulatorException;
 
 /**
@@ -147,7 +148,7 @@ public class Plugin {
             } else {
                 return this.container.execInContainer(script, method);
             }
-        } catch (UnsupportedOperationException | IOException exception) {
+        } catch (UnsupportedOperationException | SshException | IOException exception) {
             throw new ExaOperationEmulatorException(
                     "Unable to run \"" + method + ("\" script of plug-in \"") + this.name + "\".", exception);
         } catch (final InterruptedException exception) {

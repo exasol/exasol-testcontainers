@@ -9,6 +9,7 @@ import org.testcontainers.containers.Container.ExecResult;
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.ExasolDockerImageReference;
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 
 /**
  * This is a workaround for an issue with broken log rotation present in Exasol's `docker-db` version 7.0.x and below.
@@ -65,7 +66,7 @@ public class LogRotationWorkaround implements Workaround {
                 throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
                         + result.getStderr());
             }
-        } catch (final UnsupportedOperationException | IOException exception) {
+        } catch (final UnsupportedOperationException | IOException | SshException exception) {
             throw new WorkaroundException("Unable to apply log rotation workaround.", exception);
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();

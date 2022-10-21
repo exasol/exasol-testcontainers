@@ -44,7 +44,7 @@ class LogPatternDetectorTest {
     @Test
     void testGetActualLogSucceeds() throws UnsupportedOperationException, IOException, InterruptedException {
         when(this.containerMock.execInContainer(any()))
-                .thenReturn(ExecResultFactory.mockResult(0, STD_OUT_RESULT, "stderr"));
+                .thenReturn(ExecResultFactory.result(0, STD_OUT_RESULT, "stderr"));
 
         assertThat(this.detector.getActualLog(), equalTo(STD_OUT_RESULT));
     }

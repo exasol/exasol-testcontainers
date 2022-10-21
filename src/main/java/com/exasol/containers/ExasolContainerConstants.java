@@ -7,7 +7,7 @@ import java.util.Set;
  */
 public final class ExasolContainerConstants {
     /** Version of the Exasol Docker image */
-    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.1.11";
+    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.1.15";
 
     /** Reference name of the Exasol Docker image */
     public static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
@@ -68,6 +68,12 @@ public final class ExasolContainerConstants {
 
     /** Maximum allowed offset between container time and host time in milliseconds */
     static final int MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS = 2000;
+
+    /** SSH port allowing connections to docker container */
+    public static final int SSH_PORT = 20002;
+
+    /** User name for SSH connections to docker container */
+    public static final String SSH_USER = "root";
 
     private ExasolContainerConstants() {
         // prevent instantiation

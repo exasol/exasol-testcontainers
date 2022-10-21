@@ -1,5 +1,6 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
 import static com.exasol.containers.VersionBasedExasolDockerImageReference.SUFFIX_NOT_PRESENT;
 import static com.exasol.containers.VersionBasedExasolDockerImageReference.VERSION_NOT_PRESENT;
 import static java.lang.Integer.parseInt;
@@ -7,10 +8,15 @@ import static java.lang.Integer.parseInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Factory for Docker image references.
  */
 public final class DockerImageReferenceFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DockerImageReferenceFactory.class);
+
     private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = //
             Pattern.compile("(?:(?:exasol/)?(?:docker-db:))?" // prefix (optional)
                     + "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?" // Exasol version (partially optional)
@@ -19,6 +25,31 @@ public final class DockerImageReferenceFactory {
 
     private DockerImageReferenceFactory() {
         // prevent instantiation
+    }
+
+    static ExasolDockerImageReference parseOverridable(final String imageName, final boolean allowOverride) {
+        return parse(allowOverride //
+                ? versionFromSystemPropertyOrIndividual(imageName)
+                : imageName);
+    }
+
+    /**
+     * Return docker image version defined by system property
+     * {@link com.exasol.containers.ExasolContainerConstants#DOCKER_IMAGE_OVERRIDE_PROPERTY} or the specified individual
+     * version. The purpose is to minimize the total number of different docker images in order to limit the required
+     * disk space.
+     *
+     * @param individual individual version of docker image
+     * @return version from system property
+     */
+    public static String versionFromSystemPropertyOrIndividual(final String individual) {
+        final String fromProperty = System.getProperty(DOCKER_IMAGE_OVERRIDE_PROPERTY);
+        if (fromProperty != null) {
+            return fromProperty;
+        }
+        LOGGER.info("System property '{}' is not set. Using docker image version '{}'.", //
+                DOCKER_IMAGE_OVERRIDE_PROPERTY, individual);
+        return individual;
     }
 
     /**

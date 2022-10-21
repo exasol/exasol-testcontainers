@@ -1,5 +1,6 @@
 package com.exasol.containers;
 
+import static com.exasol.containers.DockerImageReferenceFactory.versionFromSystemPropertyOrIndividual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -25,6 +26,7 @@ class ExasolContainerProviderTest {
 
     @Test
     void testNewInstance() throws Exception {
-        assertThat(this.provider.newInstance("7.0.0"), instanceOf(ExasolContainer.class));
+        final String version = versionFromSystemPropertyOrIndividual("7.0.4");
+        assertThat(this.provider.newInstance(version), instanceOf(ExasolContainer.class));
     }
 }

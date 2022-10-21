@@ -35,6 +35,7 @@ This software is intended for use in automated integration tests of Java softwar
 * BucketFS access
 * EXAoperation emulation
 * Optional container reuse
+* Detection for access via `docker exec` and fallback to SSH
 
 ## Table of Contents
 

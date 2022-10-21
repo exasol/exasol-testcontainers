@@ -1,5 +1,7 @@
 package com.exasol.containers.workarounds;
 
+import static com.exasol.containers.DockerImageReferenceFactory.versionFromSystemPropertyOrIndividual;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Tag;
@@ -11,6 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 
 @Testcontainers
 @Tag("expensive")
@@ -23,7 +26,8 @@ class LogRotationWorkaroundIT {
     @SuppressWarnings("java:S2925") // sleep is necessary for polling here.
     @Test
     void testLogRotationWorkaround() {
-        try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>("7.0.4")) {
+        final String version = versionFromSystemPropertyOrIndividual("7.0.4");
+        try (final ExasolContainer<? extends ExasolContainer<?>> exasol = new ExasolContainer<>(version)) {
             exasol.start();
             for (int round = 0; round < 60; ++round) {
                 assertLogRotationConfigurationContent(exasol, round);
@@ -48,7 +52,7 @@ class LogRotationWorkaroundIT {
                         "Found \"bucketfs\" in log rotation configuration that should not be there in round " + round
                                 + ":\n" + result.getStdout());
             }
-        } catch (final UnsupportedOperationException | IOException exception) {
+        } catch (final UnsupportedOperationException | SshException | IOException exception) {
             throw new AssertionError("Unable to check whether log rotation configuration is correct.", exception);
         } catch (final InterruptedException exception) {
             Thread.currentThread().interrupt();

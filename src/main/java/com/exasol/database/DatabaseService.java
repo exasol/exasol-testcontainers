@@ -8,6 +8,7 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.exec.ExitCode;
+import com.exasol.containers.ssh.SshException;
 
 /**
  * Controller for a database service.
@@ -60,7 +61,7 @@ public class DatabaseService {
                 throw new DatabaseServiceException(this.databaseName,
                         "Attempt to " + action + " the database \"" + this.databaseName + "\" failed");
             }
-        } catch (UnsupportedOperationException | IOException exception) {
+        } catch (UnsupportedOperationException | SshException | IOException exception) {
             throw new DatabaseServiceException(this.databaseName, "Unable to " + action + " database service.",
                     exception);
         }

@@ -10,6 +10,7 @@ import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.TimestampState;
 import com.exasol.clusterlogs.LogPatternDetector;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
+import com.exasol.containers.ssh.SshException;
 
 /**
  * Strategy that waits for a container to be ready by checking when the language container is unpacked completely.
@@ -54,7 +55,7 @@ public class LogFileEntryWaitStrategy extends AbstractWaitStrategy {
                     return;
                 }
                 Thread.sleep(POLLING_DELAY_IN_MILLISECONDS);
-            } catch (final UnsupportedOperationException | IOException exception) {
+            } catch (final UnsupportedOperationException | IOException | SshException exception) {
                 throw new ContainerLaunchException("Caught exception while waiting for log entry.", exception);
             } catch (final InterruptedException exception) {
                 Thread.currentThread().interrupt();
