@@ -15,7 +15,7 @@ import com.jcraft.jsch.*;
 public class SshKeys {
 
     /**
-     * @return {@link} Builder} for a new instance of {@link SshKeys}.
+     * @return {@link Builder} for a new instance of {@link SshKeys}.
      */
     public static Builder builder() {
         return new Builder();
@@ -60,8 +60,8 @@ public class SshKeys {
     /**
      * @return new instance of {@link SessionBuilder} set up with public and private key of the current {@link SshKeys}.
      */
-    public IdentityProvider getIdentityProvider() {
-        return IdentityProvider.builder() //
+    public IdentityProviderMock getIdentityProvider() {
+        return IdentityProviderMock.builder() //
                 .identityName("comment") //
                 .publicKey(this.keyPair.getPublicKeyBlob()) //
                 .privateKey(getPrivateKey()) //

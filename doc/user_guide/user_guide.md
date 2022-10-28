@@ -182,6 +182,12 @@ You can use this in a continuous integration build for example to iterate throug
 
 If you explicitly want to prevent overriding, you can use the constructor `ExasolContainer(final String dockerImageName, final boolean allowImageOverride)` while setting `allowImageOverride` to `false`.
 
+## SSH Access and Temporary Credentials
+
+For Exasol version 8 and later `docker exec` to the internals of the container is disabled. Instead, we use SSH with auto-generated temporary credentials in the test container. By default, ECT creates the credentials in the `target` directory or your project, but you can override this using the `withTemporaryCredentialsDirectory` setter when creating the `ExasolContainer` instance.
+
+For Exasol versions below 8 you can ignore this feature.
+
 ## Automatic Cluster Configuration Parsing
 
 Many integration tests rely on knowing the setup of the cluster. The Exasol test container comes with a parser that reads the cluster configuration from the running docker container.

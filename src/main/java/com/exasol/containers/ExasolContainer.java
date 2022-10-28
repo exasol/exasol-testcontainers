@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.time.Duration;
@@ -91,7 +90,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private SupportInformationRetriever supportInformationRetriever = null;
     private boolean errorWhileWaitingForServices = false;
     private SQLException lastConnectionException = null;
-
+    private Path temporaryCredentialsDirectory = DEFAULT_TEMPORARY_CREDENTIALS_DIRECTORY;
     private DockerAccess dockerAccess = null;
 
     /**
@@ -397,6 +396,18 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         addMandatoryServices(services);
         services.addAll(Arrays.asList(optionalServices));
         this.requiredServices = services;
+        return self();
+    }
+
+    /**
+     * Define the path where the Exasol container should store temporary credentials.
+     *
+     * @param path path where the container stores temporary credentials
+     * @return self reference for fluent programming
+     */
+    // [impl->dsn~configuring-the-directory-for-temporary-credentials~1]
+    public T withTemporaryCredentialsDirectory(final Path path) {
+        this.temporaryCredentialsDirectory = path;
         return self();
     }
 
@@ -982,8 +993,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
     DockerAccess createDockerAccess() {
         return DockerAccess.builder() //
+                .temporaryCredentialsDirectory(this.temporaryCredentialsDirectory) //
                 .sshKeys(getSshKeys()) //
-                .dockerProber(this::probeFile) //
+                .dockerProbe(this::probeFile) //
                 .sessionBuilderProvider(this::getSessionBuilder) //
                 .build();
     }
@@ -992,12 +1004,21 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private SshKeys getSshKeys() {
         try {
             return SshKeys.builder() //
-                    .privateKey(Paths.get("target/id_rsa")) //
-                    .publicKey(Paths.get("target/id_rsa.pub")) //
+                    .privateKey(getTemporaryCredentialsDirectory().resolve("id_rsa")) //
+                    .publicKey(getTemporaryCredentialsDirectory().resolve("id_rsa.pub")) //
                     .build();
         } catch (final JSchException | IOException exception) {
             throw new ExasolContainerInitializationException("Could not create SSH key pair", exception);
         }
+    }
+
+    /**
+     * Get the path to the directory where the Exasol container stores temporary credentials.
+     *
+     * @return directory for temporary credentials
+     */
+    public Path getTemporaryCredentialsDirectory() {
+        return this.temporaryCredentialsDirectory;
     }
 
     SessionBuilder getSessionBuilder() {

@@ -218,6 +218,30 @@ Covers:
 
 Needs: impl, utest
 
+#### Configuring the Directory for Temporary Credentials
+`dsn~configuring-the-directory-for-temporary-credentials~1`
+
+ETC offers a configuration option to set the directory for temporary credentials.
+
+Covers:
+* `req~configuring-the-directory-for-temporary-credentials~1`
+
+Needs: impl, utest
+
+#### Auto-create Directory for Temporary Credentials
+`dsn~auto-create-directory-for-temporary-credentials~1`
+
+ETC automatically creates the directory for the temporary credentials (e.g. temporary SSH keys) if it is missing.
+
+Rationale:
+
+This avoids unnecessary startup failure that would otherwise happen if the keys cannot be stored.
+
+Covers:
+* [`const~alternative-to-docker-exec~1`](#alternative-to-docker-exec)
+
+Needs: impl, utest
+
 ### Override Docker Image via Java Property
 
 `dsn~override-docker-image-via-java-property~1`

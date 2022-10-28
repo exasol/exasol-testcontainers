@@ -1,5 +1,6 @@
 package com.exasol.containers;
 
+import java.nio.file.Path;
 import java.util.Set;
 
 /**
@@ -51,6 +52,7 @@ public final class ExasolContainerConstants {
     /** Name of the property with which the docker image name can be overridden */
     public static final String DOCKER_IMAGE_OVERRIDE_PROPERTY = "com.exasol.dockerdb.image";
 
+
     /** Default database port for Exasol versions in Docker before 7.0 */
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT = 8888;
 
@@ -68,6 +70,9 @@ public final class ExasolContainerConstants {
 
     /** Maximum allowed offset between container time and host time in milliseconds */
     static final int MAX_ALLOWED_CLOCK_OFFSET_IN_MILLIS = 2000;
+
+    /** Default directory for temporary credentials */
+    public static final Path DEFAULT_TEMPORARY_CREDENTIALS_DIRECTORY = Path.of("target");
 
     /** SSH port allowing connections to docker container */
     public static final int SSH_PORT = 20002;

@@ -58,7 +58,7 @@ class SshKeysTest {
     @Test
     void identityProvider() throws JSchException {
         when(this.keyPairMock.getPublicKeyBlob()).thenReturn(PUBLIC_KEY);
-        final IdentityProvider ip = testee(null, PRIVATE_KEY).getIdentityProvider();
+        final IdentityProviderMock ip = testee(null, PRIVATE_KEY).getIdentityProvider();
         final JSch jsch = mock(JSch.class);
         ip.addIdentityTo(jsch);
         verify(jsch).addIdentity("comment", PRIVATE_KEY, PUBLIC_KEY, null);
