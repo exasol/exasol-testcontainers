@@ -1,4 +1,4 @@
-# Test containers for Exasol on Docker 6.3.1, released 2022-10-28
+# Test containers for Exasol on Docker 6.3.1, released 2022-11-02
 
 Code name: Create directory for SSH keys if missing
 
