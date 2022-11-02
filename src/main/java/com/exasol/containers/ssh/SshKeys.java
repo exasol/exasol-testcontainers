@@ -15,7 +15,7 @@ import com.jcraft.jsch.*;
 public class SshKeys {
 
     /**
-     * @return {@link} Builder} for a new instance of {@link SshKeys}.
+     * @return {@link Builder} for a new instance of {@link SshKeys}.
      */
     public static Builder builder() {
         return new Builder();

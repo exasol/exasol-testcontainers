@@ -1,11 +1,15 @@
 package com.exasol.containers.ssh;
 
+import com.exasol.errorreporting.ExaError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.ExasolContainerConstants;
 import com.jcraft.jsch.Session;
+
+import java.io.File;
+import java.nio.file.Path;
 
 /**
  * <ul>
@@ -14,39 +18,43 @@ import com.jcraft.jsch.Session;
  * <li>enable to create and instance of {@link Ssh} in order to connect to docker container via SSH.
  * </ul>
  */
-public class DockerAccess {
+public final class DockerAccess {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockerAccess.class);
+    private final SessionBuilderProvider sessionBuilderProvider;
+    private final DockerProbe dockerProbe;
+    private final SshKeys sshKeys;
+    private final Path temporaryCredentialsDirectory;
+    // The access mode is determined lazily and cached for later use.
+    private Mode cachedAccessMode = Mode.UNKNOWN;
+    // The SSH connection is created lazily and cached for later use.
+    private Ssh cachedSshConnection = null;
 
     enum Mode {
-        UNKNOWN, SSH, DOCKER_EXEC;
+        UNKNOWN, SSH, DOCKER_EXEC
+    }
+
+
+
+    private DockerAccess(final Builder builder) {
+        this.sessionBuilderProvider = builder.sessionBuilderProvider;
+        this.dockerProbe = builder.dockerProbe;
+        this.sshKeys = builder.sshKeys;
+        this.temporaryCredentialsDirectory = builder.temporaryCredentialsDirectory;
     }
 
     /**
-     * @return a builder for a new instance of {@link DockerAccess}.
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    private Mode mode = Mode.UNKNOWN;
-    private SessionBuilderProvider sessionBuilderProvider;
-    private DockerProber dockerProber;
-    private SshKeys sshKeys;
-    private Ssh ssh = null;
-
-    private DockerAccess() {
-        // only instantiated by {@link Builder}
-    }
-
-    /**
-     * @return SSH public/private key pair
+     * Get the SSH key pair.
+     * 
+     * @return SSH public / private key pair
      */
     public SshKeys getSshKeys() {
         return this.sshKeys;
     }
 
     /**
-     * @return true if docker container supports docker exec
+     * Check whether we can use {@code docker exec} to access the docker container.
+     * 
+     * @return {@code true} if docker container supports docker exec
      */
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
     public boolean supportsDockerExec() {
@@ -54,35 +62,58 @@ public class DockerAccess {
     }
 
     /**
+     * Get the access variant.
+     * <p>
+     * Note that the mode is determined upon the first call of this function and then cached to improve the performance
+     * of later uses.
+     * </p>
+     * 
      * @return either {@link Mode#DOCKER_EXEC} or {@link Mode#SSH}.
      */
-    Mode getMode() {
-        if (this.mode == Mode.UNKNOWN) {
+    synchronized Mode getMode() {
+        if (this.cachedAccessMode == Mode.UNKNOWN) {
             LOGGER.debug("Probing Docker container for supported connection mode");
-            final ExecResult result = this.dockerProber.probeFile(ExasolContainerConstants.CLUSTER_CONFIGURATION_PATH);
+            final ExecResult result = this.dockerProbe.probeFile(ExasolContainerConstants.CLUSTER_CONFIGURATION_PATH);
             if (result.getExitCode() == 0) {
                 LOGGER.debug("Docker container supports docker exec");
-                this.mode = Mode.DOCKER_EXEC;
+                this.cachedAccessMode = Mode.DOCKER_EXEC;
             } else {
                 LOGGER.info("Docker container requires SSH access");
-                this.mode = Mode.SSH;
+                this.cachedAccessMode = Mode.SSH;
             }
         }
-        return this.mode;
+        return this.cachedAccessMode;
     }
 
     /**
+     * Get an SSH connection.
+     * <p>
+     * Note that the SSH connection is created upon the first call of this function and then cached to improve the
+     * performance of later uses.
+     * </p>
+     *
      * @return instance of {@link Ssh} providing SSH functionality
      */
     // [impl->dsn~access-via-ssh~1]
-    public Ssh getSsh() {
-        if (this.ssh == null) {
+    public synchronized Ssh getSsh() {
+        if (this.cachedSshConnection == null) {
+            createTemporaryCredentialDirectoryIfMissing();
             final Session session = this.sessionBuilderProvider.get() //
                     .identity(this.sshKeys.getIdentityProvider()) //
                     .build();
-            this.ssh = new Ssh(session);
+            this.cachedSshConnection = new Ssh(session);
         }
-        return this.ssh;
+        return this.cachedSshConnection;
+    }
+
+    // [impl->dsn~auto-create-directory-for-temporary-credentials~1]
+    private void createTemporaryCredentialDirectoryIfMissing() {
+        final File directory = this.temporaryCredentialsDirectory.toFile();
+        if(!directory.exists() && !directory.mkdirs()) {
+            ExaError.messageBuilder("F-ETC-23") //
+                    .message("Unable to create directory for temporary credentials: {{path}}") //
+                    .parameter("path", directory.toString());
+        }
     }
 
     /**
@@ -105,59 +136,91 @@ public class DockerAccess {
      * connect to docker container.
      */
     @FunctionalInterface
-    public interface DockerProber {
+    public interface DockerProbe {
         /**
          * @param path path to be checked for existence
          * @return result of probing
          */
         ExecResult probeFile(String path);
     }
+    
+    /**
+     * @return a builder for a new instance of {@link DockerAccess}.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Builder for a new instance of {@link DockerAccess}.
      */
     public static final class Builder {
-        private final DockerAccess access = new DockerAccess();
+        private SessionBuilderProvider sessionBuilderProvider;
+        private DockerProbe dockerProbe;
+        private SshKeys sshKeys;
+        private Path temporaryCredentialsDirectory;
 
         private Builder() {
             // use static method builder()
         }
 
         /**
+         * Set the {@link SessionBuilderProvider}.
+         * 
          * @param sessionBuilderProvider provide an instance of {@link SessionBuilder} to build a session to instantiate
          *                               {@link Ssh} in method {@link DockerAccess#getSsh()}.
          * @return this for fluent programming
          */
         public Builder sessionBuilderProvider(final SessionBuilderProvider sessionBuilderProvider) {
-            this.access.sessionBuilderProvider = sessionBuilderProvider;
+            this.sessionBuilderProvider = sessionBuilderProvider;
             return this;
         }
 
         /**
-         * @param dockerProber {@link DockerProber} used to check for existence of file
-         *                     {@link ExasolContainerConstants#CLUSTER_CONFIGURATION_PATH}. If this file exists then the
-         *                     container is rated to support Docker Exec.
+         * Set the docker probe.
+         * <p>
+         * Checks the existence of the cluster configuration file to determine if {@code docker exec} can be used to
+         * access the docker container.
+         * </p>
+         * 
+         * @param dockerProbe {@link DockerProbe} used to check for existence of file
+         *                    {@link ExasolContainerConstants#CLUSTER_CONFIGURATION_PATH}. 
          * @return this for fluent programming
          */
-        public Builder dockerProber(final DockerProber dockerProber) {
-            this.access.dockerProber = dockerProber;
+        public Builder dockerProbe(final DockerProbe dockerProbe) {
+            this.dockerProbe = dockerProbe;
             return this;
         }
 
         /**
+         * Set the temporary SSH keys.
+         * 
          * @param sshKeys pair of public and private SSH key to use for SSH connection
          * @return this for fluent programming
          */
         public Builder sshKeys(final SshKeys sshKeys) {
-            this.access.sshKeys = sshKeys;
+            this.sshKeys = sshKeys;
             return this;
         }
 
         /**
+         * Create a new instance of the docker access.
+         *
          * @return new instance of {@link DockerAccess}
          */
         public DockerAccess build() {
-            return this.access;
+            return new DockerAccess(this);
+        }
+
+        /**
+         * Set the directory in which temporary credentials are stored.
+         * 
+         * @param temporaryCredentialsDirectory directory in which to store temporary credentials
+         * @return this for fluent programming
+         */
+        public Builder temporaryCredentialsDirectory(final Path temporaryCredentialsDirectory) {
+            this.temporaryCredentialsDirectory = temporaryCredentialsDirectory;
+            return this;
         }
     }
 }

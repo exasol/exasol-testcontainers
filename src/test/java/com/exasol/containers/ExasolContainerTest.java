@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -16,6 +17,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,7 +35,7 @@ class ExasolContainerTest {
     private ExasolContainer<? extends ExasolContainer<?>> containerSpy;
 
     @BeforeEach
-    void beforeEach() throws NoDriverFoundException, SQLException {
+    void beforeEach() throws NoDriverFoundException {
         final ExasolContainer<?> container = new ExasolContainer<>();
         container.withRequiredServices();
         this.containerSpy = spy(container);
@@ -150,14 +152,30 @@ class ExasolContainerTest {
         assertThat(this.containerSpy.getExposedPorts(), hasItem(443));
     }
 
+    // [utest->dsn~configuring-the-directory-for-temporary-credentials~1]
+    @Test
+    void testSetTemporaryCredentialsDirectory(@TempDir Path tempDir) {
+        try (final ExasolContainer<?> container = new ExasolContainer<>().withTemporaryCredentialsDirectory(tempDir)) {
+            assertThat(container.getTemporaryCredentialsDirectory(), equalTo(tempDir));
+        }
+    }
+
+    // [utest->dsn~configuring-the-directory-for-temporary-credentials~1]
+    @Test
+    void testGetDefaultDirectoryForTemporaryCredentials() {
+        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+            assertThat(container.getTemporaryCredentialsDirectory(), equalTo(Path.of("target")));
+        }
+    }
+
     @Test
     void sessionBuilder() {
         final ExasolContainer<?> testee = mock(ExasolContainer.class);
-        final IdentityProvider identityProvider = mock(IdentityProvider.class);
+        final IdentityProvider identityProviderMock = mock(IdentityProvider.class);
         when(testee.getHost()).thenReturn("simulated host");
         when(testee.getMappedPort(SSH_PORT)).thenReturn(321);
         doCallRealMethod().when(testee).getSessionBuilder();
-        final Session session = testee.getSessionBuilder().identity(identityProvider).build();
+        final Session session = testee.getSessionBuilder().identity(identityProviderMock).build();
         assertThat(session.getHost(), equalTo("simulated host"));
         assertThat(session.getPort(), equalTo(321));
         assertThat(session.getUserName(), equalTo(SSH_USER));
