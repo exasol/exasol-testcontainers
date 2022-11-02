@@ -60,8 +60,8 @@ public class SshKeys {
     /**
      * @return new instance of {@link SessionBuilder} set up with public and private key of the current {@link SshKeys}.
      */
-    public IdentityProviderMock getIdentityProvider() {
-        return IdentityProviderMock.builder() //
+    public IdentityProvider getIdentityProvider() {
+        return IdentityProvider.builder() //
                 .identityName("comment") //
                 .publicKey(this.keyPair.getPublicKeyBlob()) //
                 .privateKey(getPrivateKey()) //

@@ -4,12 +4,10 @@ import static com.exasol.containers.ExasolContainerConstants.DEFAULT_TEMPORARY_C
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.exasol.containers.ExasolContainer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,7 +44,7 @@ class DockerAccessTest {
     }
 
     private static SshKeys mockSshKeys() {
-        final IdentityProviderMock identityProviderMock = mock(IdentityProviderMock.class);
+        final IdentityProvider identityProviderMock = mock(IdentityProvider.class);
         final SshKeys sshKeysMock = mock(SshKeys.class);
         when(sshKeysMock.getIdentityProvider()).thenReturn(identityProviderMock);
         return sshKeysMock;

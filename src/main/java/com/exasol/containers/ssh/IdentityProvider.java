@@ -6,7 +6,7 @@ import com.jcraft.jsch.JSchException;
 /**
  * Enables to add an identity to a java secure channel {@link JSch}.
  */
-public interface IdentityProviderMock {
+public interface IdentityProvider {
 
     /**
      * @return builder for {@link Builder}
@@ -19,7 +19,7 @@ public interface IdentityProviderMock {
      * @param path path to file containing private key
      * @return IdentityProvider using private key from the specified file
      */
-    public static IdentityProviderMock fromPathToPrivateKey(final String path) {
+    public static IdentityProvider fromPathToPrivateKey(final String path) {
         return jsch -> jsch.addIdentity(path);
     }
 
@@ -32,7 +32,7 @@ public interface IdentityProviderMock {
     void addIdentityTo(JSch jsch) throws JSchException;
 
     /**
-     * Builder for {@link IdentityProviderMock}
+     * Builder for {@link IdentityProvider}
      */
     public class Builder {
         private String identityName;
@@ -77,9 +77,9 @@ public interface IdentityProviderMock {
         }
 
         /**
-         * @return new instance of {@link IdentityProviderMock}
+         * @return new instance of {@link IdentityProvider}
          */
-        public IdentityProviderMock build() {
+        public IdentityProvider build() {
             return jsch -> jsch.addIdentity(this.identityName, this.privateKey, this.publicKey, this.passPhrase);
         }
     }

@@ -1017,7 +1017,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      *
      * @return directory for temporary credentials
      */
-    public Path getTemporaryCredentialsDirectory() {
+    Path getTemporaryCredentialsDirectory() {
         return this.temporaryCredentialsDirectory;
     }
 

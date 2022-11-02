@@ -11,7 +11,7 @@ public class SessionBuilder {
     private String user;
     private String host;
     private int port;
-    private IdentityProviderMock identityProvider;
+    private IdentityProvider identityProvider;
     private final Map<String, String> config = new HashMap<>();
 
     /**
@@ -25,7 +25,7 @@ public class SessionBuilder {
      * @param value identity provider to use for the session
      * @return instance of this for fluent programming
      */
-    public SessionBuilder identity(final IdentityProviderMock value) {
+    public SessionBuilder identity(final IdentityProvider value) {
         this.identityProvider = value;
         return this;
     }

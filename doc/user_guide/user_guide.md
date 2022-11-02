@@ -184,7 +184,7 @@ If you explicitly want to prevent overriding, you can use the constructor `Exaso
 
 ## SSH Access and Temporary Credentials
 
-For Exasol version 8 and later `docker exec` to the internals of the container is disabled. Instead, we use SSH with auto-generated temporary credentials in the test container. By default, ECT creates the credentials in the `target` directory or your project, but you can override this using the `withTemporaryCredentialsDirectory` setter when creating the `ExasolContainer` instance.
+For Exasol version 8 and later `docker exec` to the internals of the container is disabled. Instead, we use SSH with auto-generated temporary credentials in the test container. By default, ECT creates the credentials in the `target` directory of your project, but you can override this using the `withTemporaryCredentialsDirectory` setter when creating the `ExasolContainer` instance.
 
 For Exasol versions below 8 you can ignore this feature.
 

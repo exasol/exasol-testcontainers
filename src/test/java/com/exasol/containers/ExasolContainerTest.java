@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
 
-import com.exasol.containers.ssh.IdentityProviderMock;
+import com.exasol.containers.ssh.IdentityProvider;
 import com.jcraft.jsch.Session;
 
 @Tag("slow")
@@ -35,7 +35,7 @@ class ExasolContainerTest {
     private ExasolContainer<? extends ExasolContainer<?>> containerSpy;
 
     @BeforeEach
-    void beforeEach() throws NoDriverFoundException, SQLException {
+    void beforeEach() throws NoDriverFoundException {
         final ExasolContainer<?> container = new ExasolContainer<>();
         container.withRequiredServices();
         this.containerSpy = spy(container);
@@ -171,7 +171,7 @@ class ExasolContainerTest {
     @Test
     void sessionBuilder() {
         final ExasolContainer<?> testee = mock(ExasolContainer.class);
-        final IdentityProviderMock identityProviderMock = mock(IdentityProviderMock.class);
+        final IdentityProvider identityProviderMock = mock(IdentityProvider.class);
         when(testee.getHost()).thenReturn("simulated host");
         when(testee.getMappedPort(SSH_PORT)).thenReturn(321);
         doCallRealMethod().when(testee).getSessionBuilder();
