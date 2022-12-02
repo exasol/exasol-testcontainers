@@ -9,7 +9,7 @@
 | [Testcontainers :: JDBC][0] | [MIT][1]         |
 | [JSch][2]                   | [Revised BSD][3] |
 | [SLF4J JDK14 Binding][4]    | [MIT License][5] |
-| [database-cleaner][6]       | [MIT][7]         |
+| [database-cleaner][6]       | [MIT License][7] |
 | [BucketFS Java][8]          | [MIT License][9] |
 
 ## Test Dependencies
@@ -36,8 +36,8 @@
 | [SonarQube Scanner for Maven][19]                       | [GNU LGPL 3][20]                               |
 | [Apache Maven Compiler Plugin][21]                      | [Apache License, Version 2.0][22]              |
 | [Apache Maven Enforcer Plugin][23]                      | [Apache License, Version 2.0][22]              |
-| [Maven Flatten Plugin][24]                              | [Apache Software Licenese][25]                 |
-| [org.sonatype.ossindex.maven:ossindex-maven-plugin][26] | [ASL2][25]                                     |
+| [Maven Flatten Plugin][24]                              | [Apache Software Licenese][22]                 |
+| [org.sonatype.ossindex.maven:ossindex-maven-plugin][25] | [ASL2][26]                                     |
 | [Maven Surefire Plugin][27]                             | [Apache License, Version 2.0][22]              |
 | [Versions Maven Plugin][28]                             | [Apache License, Version 2.0][22]              |
 | [Apache Maven Deploy Plugin][29]                        | [Apache License, Version 2.0][22]              |
@@ -50,12 +50,12 @@
 | [Maven Failsafe Plugin][39]                             | [Apache License, Version 2.0][22]              |
 | [JaCoCo :: Maven Plugin][40]                            | [Eclipse Public License 2.0][41]               |
 | [error-code-crawler-maven-plugin][42]                   | [MIT License][43]                              |
-| [Reproducible Build Maven Plugin][44]                   | [Apache 2.0][25]                               |
-| [Maven Clean Plugin][45]                                | [The Apache Software License, Version 2.0][25] |
-| [Maven Resources Plugin][46]                            | [The Apache Software License, Version 2.0][25] |
-| [Maven JAR Plugin][47]                                  | [The Apache Software License, Version 2.0][25] |
-| [Maven Install Plugin][48]                              | [The Apache Software License, Version 2.0][25] |
-| [Maven Site Plugin 3][49]                               | [The Apache Software License, Version 2.0][25] |
+| [Reproducible Build Maven Plugin][44]                   | [Apache 2.0][26]                               |
+| [Maven Clean Plugin][45]                                | [The Apache Software License, Version 2.0][26] |
+| [Maven Resources Plugin][46]                            | [The Apache Software License, Version 2.0][26] |
+| [Maven JAR Plugin][47]                                  | [The Apache Software License, Version 2.0][26] |
+| [Maven Install Plugin][48]                              | [The Apache Software License, Version 2.0][26] |
+| [Maven Site Plugin 3][49]                               | [The Apache Software License, Version 2.0][26] |
 
 [0]: https://testcontainers.org
 [1]: http://opensource.org/licenses/MIT
@@ -63,8 +63,8 @@
 [3]: http://www.jcraft.com/jsch/LICENSE.txt
 [4]: http://www.slf4j.org
 [5]: http://www.opensource.org/licenses/mit-license.php
-[6]: https://github.com/exasol/database-cleaner
-[7]: https://opensource.org/licenses/MIT
+[6]: https://github.com/exasol/database-cleaner/
+[7]: https://github.com/exasol/database-cleaner/blob/main/LICENSE
 [8]: https://github.com/exasol/bucketfs-java/
 [9]: https://github.com/exasol/bucketfs-java/blob/main/LICENSE
 [10]: https://junit.org/junit5/
@@ -82,10 +82,10 @@
 [22]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [23]: https://maven.apache.org/enforcer/maven-enforcer-plugin/
 [24]: https://www.mojohaus.org/flatten-maven-plugin/
-[25]: http://www.apache.org/licenses/LICENSE-2.0.txt
-[26]: https://sonatype.github.io/ossindex-maven/maven-plugin/
+[25]: https://sonatype.github.io/ossindex-maven/maven-plugin/
+[26]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [27]: https://maven.apache.org/surefire/maven-surefire-plugin/
-[28]: http://www.mojohaus.org/versions-maven-plugin/
+[28]: https://www.mojohaus.org/versions-maven-plugin/
 [29]: https://maven.apache.org/plugins/maven-deploy-plugin/
 [30]: https://maven.apache.org/plugins/maven-gpg-plugin/
 [31]: https://maven.apache.org/plugins/maven-source-plugin/
