@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 6.4.1, released 2022-??-??
+# Test Containers for Exasol on Docker 6.4.1, released 2022-12-20
 
 Code name: Dependency Upgrade
 
