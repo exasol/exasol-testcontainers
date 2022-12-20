@@ -1,10 +1,10 @@
 # Test Containers for Exasol on Docker 6.4.1, released 2022-12-20
 
-Code name: Dependency Upgrade
+Code name: Dependency Upgrade on top of 6.4.0
 
 ## Summary
 
-Updated dependencies in particular to enable use in exasol-test-setup-abstraction-java which dependes on bucketfs-java directly as well as transitively via exasol-testcontainers.
+Updated dependencies in particular to enable use in `exasol-test-setup-abstraction-java` which depends on `bucketfs-java` directly as well as transitively via `exasol-testcontainers`.
 
 ## Changes
 
