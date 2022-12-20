@@ -54,7 +54,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
                     .stateRetriever(monitor.createStateRetriever()) //
                     .serviceName(serviceName) //
                     .name(bucketName) //
-                    .ipAddress(this.host) //
+                    .host(this.host) //
                     .port(mapPort(serviceConfiguration.getHttpPort())) //
                     .readPassword(bucketConfiguration.getReadPassword()) //
                     .writePassword(bucketConfiguration.getWritePassword()) //
