@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,8 +19,6 @@ import org.testcontainers.containers.ExecResultFactory;
 
 import com.exasol.containers.ssh.DockerAccess.DockerProbe;
 import com.exasol.containers.ssh.DockerAccess.SessionBuilderProvider;
-
-import java.nio.file.Path;
 
 // [utest->dsn~detect-if-docker-exec-is-possible~1]
 // [utest->dsn~access-via-ssh~1]
@@ -67,7 +67,7 @@ class DockerAccessTest {
 
     // [utest->dsn~auto-create-directory-for-temporary-credentials~1]
     @Test
-    void testCreateDirectoryForTemporaryCredentials(@TempDir Path tempDir) {
+    void testCreateDirectoryForTemporaryCredentials(@TempDir final Path tempDir) {
         final Path credentialsDirectory = tempDir.resolve("credentials");
         assertThat("Temporary directory for credentials must not exist before container is started in test",
                 credentialsDirectory.toFile().exists(), equalTo(false));
