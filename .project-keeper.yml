@@ -6,6 +6,5 @@ sources:
       - integration_tests
 excludes:
   - "E-PK-CORE-18: Outdated content: '.github/workflows/ci-build.yml'"
-  - "W-PK-CORE-155: Could not detect latest available version of project-keeper. Connection refused: connect. Please check network connection and response from 'https://search.maven.org/solrsearch/select?q=g:com.exasol+AND+a:project-keeper-maven-plugin&wt=json'"
 linkReplacements:
   - "LICENSE-exasol-jdbc.txt|https://docs.exasol.com/connect_exasol/drivers/jdbc.htm"

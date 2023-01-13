@@ -17,7 +17,7 @@ public class DirectorySelector {
     private boolean knownAsExisting = false;
 
     public DirectorySelector() {
-        this(Path.of(""));
+        this(Path.of("."));
     }
 
     public DirectorySelector(final Path parent) {
@@ -55,7 +55,7 @@ public class DirectorySelector {
             return this.path;
         }
         try {
-            return Files.createDirectory(this.path);
+            return Files.createDirectories(this.path);
         } catch (final IOException exception) {
             throw new UncheckedIOException(exception);
         }

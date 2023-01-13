@@ -9,6 +9,7 @@ Improved support for SSH credentials. See [User Guide](../user_guide/user_guide.
 ## Features
 
 * #215: Improved auto-detection of folder for temporary SSH credentials
+
 ## Dependency Updates
 
 ### Test Dependency Updates
