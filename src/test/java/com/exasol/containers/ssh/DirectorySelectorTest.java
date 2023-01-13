@@ -23,12 +23,8 @@ class DirectorySelectorTest {
     Path tempDir;
 
     @BeforeEach
-    void beforeEach() {
-        try {
-            Files.createDirectory(this.tempDir.resolve(EXISTING_FOLDER));
-        } catch (final IOException exception) {
-            throw new UncheckedIOException(exception);
-        }
+    void beforeEach() throws IOException {
+        Files.createDirectory(this.tempDir.resolve(EXISTING_FOLDER));
     }
 
     @Test
@@ -45,6 +41,12 @@ class DirectorySelectorTest {
     @Test
     void testExistingFirst() {
         verifyResult(testee().ifNotNull(Path.of(EXISTING_FOLDER)), EXISTING_FOLDER);
+    }
+
+    @Test
+    void testNestedDirectory() {
+        verifyResult(testee().or("sub/directory"), "directory");
+        assertThat(Files.isDirectory(this.tempDir.resolve("sub/directory")), is(true));
     }
 
     @Test
