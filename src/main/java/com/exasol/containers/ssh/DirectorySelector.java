@@ -16,8 +16,10 @@ public class DirectorySelector {
     private Path path;
     private boolean knownAsExisting = false;
 
+    private static final Path CURRENT_WORKING_DIRECTORY = Path.of("");
+
     public DirectorySelector() {
-        this(Path.of("."));
+        this(CURRENT_WORKING_DIRECTORY);
     }
 
     public DirectorySelector(final Path parent) {
