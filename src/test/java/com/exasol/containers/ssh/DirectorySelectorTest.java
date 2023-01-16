@@ -35,7 +35,8 @@ class DirectorySelectorTest {
 
     @Test
     void testNoCandidate() {
-        assertThrows(NullPointerException.class, () -> testee().ensureExists());
+        final DirectorySelector testee = testee();
+        assertThrows(NullPointerException.class, () -> testee.ensureExists());
     }
 
     @Test

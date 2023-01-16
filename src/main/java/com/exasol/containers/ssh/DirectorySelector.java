@@ -45,8 +45,8 @@ public class DirectorySelector {
      * @return this for fluent programming
      */
     public DirectorySelector orIfExists(final String name) {
-        final Path path = this.parent.resolve(name);
-        return consider(Files.isDirectory(path), path, true);
+        final Path apath = this.parent.resolve(name);
+        return consider(Files.isDirectory(apath), apath, true);
     }
 
     /**
