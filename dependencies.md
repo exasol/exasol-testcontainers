@@ -75,7 +75,7 @@
 [15]: https://github.com/mockito/mockito/blob/main/LICENSE
 [16]: https://junit-pioneer.org/
 [17]: http://www.exasol.com
-[18]: https://docs.exasol.com/connect_exasol/drivers/jdbc.htm
+[18]: https://docs.exasol.com/db/latest/connect_exasol/drivers/jdbc.htm
 [19]: http://sonarsource.github.io/sonar-scanner-maven/
 [20]: http://www.gnu.org/licenses/lgpl.txt
 [21]: https://maven.apache.org/plugins/maven-compiler-plugin/
