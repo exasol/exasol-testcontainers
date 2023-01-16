@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.Container.ExecResult;
@@ -60,7 +60,8 @@ class LogRotationWorkaroundTest {
     void testApply(@Mock final ExasolContainer<? extends ExasolContainer<?>> exasolMock)
             throws WorkaroundException, UnsupportedOperationException, IOException, InterruptedException {
         final ExecResult mockResult = ExecResultFactory.result(ExitCode.OK, "", "");
-        when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
+        // Mockito 5 reports stubbing problem when trying to stub var args method with any()
+        when(exasolMock.execInContainer(anyString(), anyString(), anyString(), anyString())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         workaround.apply();
         verify(exasolMock).execInContainer("sed", "-i", "-es/'bucketfsd[^']*log' //", "/etc/cron.daily/exa-logrotate");
@@ -75,7 +76,7 @@ class LogRotationWorkaroundTest {
 
     private void assertExceptionWrapped(final ExasolContainer<? extends ExasolContainer<?>> exasolMock,
             final Throwable cause) throws IOException, InterruptedException {
-        when(exasolMock.execInContainer(ArgumentMatchers.any())).thenThrow(cause);
+        when(exasolMock.execInContainer(anyString(), anyString(), anyString(), anyString())).thenThrow(cause);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         final WorkaroundException exception = assertThrows(WorkaroundException.class, () -> workaround.apply());
         assertThat(exception.getCause(), equalTo(cause));
@@ -90,7 +91,8 @@ class LogRotationWorkaroundTest {
     @Test
     void testApplyHandlesInterruption(@Mock final ExasolContainer<? extends ExasolContainer<?>> exasolMock)
             throws UnsupportedOperationException, IOException, InterruptedException {
-        when(exasolMock.execInContainer(ArgumentMatchers.any())).thenThrow(new InterruptedException("stop"));
+        when(exasolMock.execInContainer(anyString(), anyString(), anyString(), anyString()))
+                .thenThrow(new InterruptedException("stop"));
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         final WorkaroundException exception = assertThrows(WorkaroundException.class, () -> workaround.apply());
         assertThat(exception.getMessage(), containsString("Interrupted"));
@@ -100,7 +102,7 @@ class LogRotationWorkaroundTest {
     void testApplyHandlesNegativeExitCode(@Mock final ExasolContainer<? extends ExasolContainer<?>> exasolMock)
             throws UnsupportedOperationException, IOException, InterruptedException {
         final ExecResult mockResult = ExecResultFactory.result(-1, "", "reason");
-        when(exasolMock.execInContainer(ArgumentMatchers.any())).thenReturn(mockResult);
+        when(exasolMock.execInContainer(anyString(), anyString(), anyString(), anyString())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         final WorkaroundException exception = assertThrows(WorkaroundException.class, () -> workaround.apply());
         assertThat(exception.getMessage(), containsString("Error during comand execution: reason"));

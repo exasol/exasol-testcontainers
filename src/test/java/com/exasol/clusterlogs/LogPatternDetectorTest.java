@@ -3,6 +3,7 @@ package com.exasol.clusterlogs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ class LogPatternDetectorTest {
 
     @Test
     void testGetActualLogSucceeds() throws UnsupportedOperationException, IOException, InterruptedException {
-        when(this.containerMock.execInContainer(any()))
+        when(this.containerMock.execInContainer(anyString(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(ExecResultFactory.result(0, STD_OUT_RESULT, "stderr"));
 
         assertThat(this.detector.getActualLog(), equalTo(STD_OUT_RESULT));
@@ -52,8 +53,9 @@ class LogPatternDetectorTest {
     @Test
     void testGetActualLogFailsWithInterruptedException()
             throws UnsupportedOperationException, IOException, InterruptedException {
-        when(this.containerMock.execInContainer(any())).thenThrow(new InterruptedException("expected"));
-
+        // Mockito 5 reports stubbing problem when trying to stub var args method with any()
+        when(this.containerMock.execInContainer(anyString(), any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new InterruptedException("expected"));
         ExceptionAssertions.assertThrowsWithMessage(IllegalStateException.class, () -> this.detector.getActualLog(),
                 "InterruptedException when reading log file content");
     }
@@ -61,7 +63,8 @@ class LogPatternDetectorTest {
     @Test
     void testGetActualLogFailsWithIOException()
             throws UnsupportedOperationException, IOException, InterruptedException {
-        when(this.containerMock.execInContainer(any())).thenThrow(new IOException("expected"));
+        when(this.containerMock.execInContainer(anyString(), any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new IOException("expected"));
 
         ExceptionAssertions.assertThrowsWithMessage(UncheckedIOException.class, () -> this.detector.getActualLog(),
                 "F-ETC-6: Exception reading content of file(s) '" + LOG_PATH + "'/'" + LOG_NAME_PATTERN + "'");
