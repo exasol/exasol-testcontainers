@@ -29,7 +29,7 @@ public class DirectorySelector {
     }
 
     /**
-     * Add a candidate path if path is not null.
+     * Add a candidate path if path is not {@code null}.
      *
      * @param path path to add
      * @return this for fluent programming
@@ -74,7 +74,7 @@ public class DirectorySelector {
     }
 
     /**
-     * Ensure that the current candidate for directory selection exists. If it not known to have been existing before
+     * Ensure that the current candidate for directory selection exists. If it is not known to have been existing before
      * and does not exist yet then create the directory including all parent directories and return the path.
      *
      * @return instance of {@link Path} pointing to the existing directory
