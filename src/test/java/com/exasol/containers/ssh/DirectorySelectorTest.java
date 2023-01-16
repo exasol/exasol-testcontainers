@@ -59,7 +59,8 @@ class DirectorySelectorTest {
     void testExceptionOnCreate() throws IOException {
         final Path p = this.tempDir.resolve("file");
         Files.writeString(p, "content");
-        assertThrows(UncheckedIOException.class, () -> testee().or("file").ensureExists());
+        final DirectorySelector testee = testee().or("file");
+        assertThrows(UncheckedIOException.class, () -> testee.ensureExists());
     }
 
     @Test
