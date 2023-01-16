@@ -184,7 +184,12 @@ If you explicitly want to prevent overriding, you can use the constructor `Exaso
 
 ## SSH Access and Temporary Credentials
 
-For Exasol version 8 and later `docker exec` to the internals of the container is disabled. Instead, we use SSH with auto-generated temporary credentials in the test container. By default, ECT creates the credentials in the `target` directory of your project, but you can override this using the `withTemporaryCredentialsDirectory` setter when creating the `ExasolContainer` instance.
+For Exasol version 8 and later `docker exec` to the internals of the container is disabled. Instead, ETC uses SSH with auto-generated temporary credentials.
+
+1. If a directory was explicitly specified with `withTemporaryCredentialsDirectory()` then ETC uses this directory.
+2. If directory `target` exists then ETC uses this directory.
+3. If directory `build` exists then ETC uses this directory.
+4. Else ETC uses directory `target`, checks if the directory exists and creates it if necessary.
 
 For Exasol versions below 8 you can ignore this feature.
 
@@ -231,7 +236,7 @@ If you want to create a connection for a different user &mdash; e.g. when testin
 final Connection connection = container.createConnectionForUser("johndoe", "z6K+Px38a@Lm71");
 ```
 
-In case you prefer a more manual approach, you can also use `getJdbcUrl()` and create the connection yourself. 
+In case you prefer a more manual approach, you can also use `getJdbcUrl()` and create the connection yourself.
 
 ### Getting the Address Part of an EXA Connection
 
@@ -243,7 +248,7 @@ The method `getExaConnectionAddress()` gives you the address part that you need 
 
 ## Working with Buckets
 
-The Exasol test container provides access to buckets in BucketFS. This is useful if your tests need to work with files in buckets. If you for example want to test a UDF script, you can upload it prior to the test using a `Bucket` control object. 
+The Exasol test container provides access to buckets in BucketFS. This is useful if your tests need to work with files in buckets. If you for example want to test a UDF script, you can upload it prior to the test using a `Bucket` control object.
 
 ### Understanding Bucket Contents
 
@@ -319,7 +324,7 @@ It's a common use-case test scenarios to create small files of well-defined cont
 Use the following convenience method to write a string directly to a file in a bucket.
 
 ```java
-bucket.uploadStringContent(content, destination); 
+bucket.uploadStringContent(content, destination);
 ```
 
 Here `content` is the `String` that you want to write an destination is again the path inside the bucket.
@@ -330,7 +335,7 @@ In integration tests you usually want reproducible test cases. This is why the s
 
 In rare cases you might want more control over that process, for example if you plan bulk-upload of a large number of small files and want to shift the check to the end of that operation.
 
-For those special occasions there is an overloaded method `uploadFile(source, destination, blocking-flag)` where you can choose to upload in non-blocking fashion. 
+For those special occasions there is an overloaded method `uploadFile(source, destination, blocking-flag)` where you can choose to upload in non-blocking fashion.
 
 The same style of overloaded function exists for text content upload too in the method `upload(content, destination, blocking-flag)`.
 
@@ -417,7 +422,7 @@ On log level `INFO` you will see a message like the one below, taken from a JUni
 
 ```
 2021-07-23 09:26:22.514 [INFO   ] Container exiting with EXIT_SUCCESS. Monitoring is set to EXIT_ANY.
-Wrote support archive to: /tmp/junit16072898015769568356/exacluster_debuginfo_2021_07_23-09_26_16.tar.gz 
+Wrote support archive to: /tmp/junit16072898015769568356/exacluster_debuginfo_2021_07_23-09_26_16.tar.gz
 ```
 
 As you can see, `exasupport` created an archive `exacluster_debuginfo_<date>-<time>.tar.gz` that then appears in the mapped host directory. Since the monitored exit type included the actual exit type, ETC triggered `exasupport`.
@@ -446,7 +451,7 @@ Add the following to your container definition.
 
 ```java
 try (final Network network = Network.newNetwork();
-     final ExasolContainer<? extends ExasolContainer<?>> sourceContainer = 
+     final ExasolContainer<? extends ExasolContainer<?>> sourceContainer =
              new ExasolContainer<>()
              // ...
             .withNetwork(network);
@@ -511,7 +516,7 @@ final DatabaseDriver driver = JdbcDriver.builder("EXAMPLE_DRIVER")
         .prefix("jdbc:examle:")
         .sourceFile(driverFile)
         .mainClass("org.example.Driver").build();
-driverManager.install(driver); 
+driverManager.install(driver);
 ```
 
 The builder parameter gets the name under which the driver is registered in Exasol. It needs to start with a letter, optionally followed by only letters, numbers or underscores.
@@ -557,11 +562,11 @@ For example: `3.2.0`
 The date must be in the following format:
 
     date = year "-" month "-" day
-    
+
     year = 4DIGIT
-    
+
     month = 2DIGIT
-    
+
     day = 2DIGIT
 
 Example: `2020-01-31`
@@ -679,7 +684,7 @@ new ExasolContainer<>()
 In addition you have to add `testcontainers.reuse.enable=true` to `~/.testcontainers.properties` on your machine. This only enables the reuse for the local development but not for continuous integration (CI).
 
 Then Exasol testcontainers will keep your container running after the tests and reuse across the tests.
-Since testcontainers will not terminate the container any more you have to manually terminate it. 
+Since testcontainers will not terminate the container any more you have to manually terminate it.
 You can find the container id using `docker ps` command and terminate it by running `docker rm -f <CONTAINER-ID>`.
 
 Please note that the reuse capability works reliably with Exasol version 7 and above. We disabled that option for older versions.

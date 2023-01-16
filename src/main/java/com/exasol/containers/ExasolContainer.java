@@ -11,6 +11,7 @@ import static com.exasol.containers.exec.ExitCode.OK;
 import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -991,9 +992,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
-    DockerAccess createDockerAccess() {
+    DockerAccess createDockerAccess() throws UncheckedIOException {
+        final Path dir = new DirectorySelector() //
+                .ifNotNull(this.temporaryCredentialsDirectory) //
+                .orIfExists("target") //
+                .orIfExists("build") //
+                .or("target") //
+                .ensureExists();
         return DockerAccess.builder() //
-                .temporaryCredentialsDirectory(this.temporaryCredentialsDirectory) //
+                .temporaryCredentialsDirectory(dir) //
                 .sshKeys(getSshKeys()) //
                 .dockerProbe(this::probeFile) //
                 .sessionBuilderProvider(this::getSessionBuilder) //
