@@ -134,7 +134,7 @@ class ExasolContainerTest {
     @Tag("slow")
     @Test
     void testGetRpcUrl() {
-        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+        try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             container.withReuse(true).start();
             final String expectedUrl = "https://" + container.getHost() + ":"
                     + container.getMappedPort(container.getDefaultInternalRpcPort()) + "/jrpc";
@@ -154,8 +154,9 @@ class ExasolContainerTest {
 
     // [utest->dsn~configuring-the-directory-for-temporary-credentials~1]
     @Test
-    void testSetTemporaryCredentialsDirectory(@TempDir Path tempDir) {
-        try (final ExasolContainer<?> container = new ExasolContainer<>().withTemporaryCredentialsDirectory(tempDir)) {
+    void testSetTemporaryCredentialsDirectory(@TempDir final Path tempDir) {
+        try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
+            container.withTemporaryCredentialsDirectory(tempDir);
             assertThat(container.getTemporaryCredentialsDirectory(), equalTo(tempDir));
         }
     }
@@ -163,7 +164,7 @@ class ExasolContainerTest {
     // [utest->dsn~configuring-the-directory-for-temporary-credentials~1]
     @Test
     void testGetDefaultDirectoryForTemporaryCredentials() {
-        try (final ExasolContainer<?> container = new ExasolContainer<>()) {
+        try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             assertThat(container.getTemporaryCredentialsDirectory(), equalTo(Path.of("target")));
         }
     }
