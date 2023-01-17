@@ -1,11 +1,11 @@
 package com.exasol.exaoperation.plugin;
 
 import static com.exasol.exaoperation.plugin.PluginStub.PLUGIN_PACKAGE_PATH;
+import static com.exasol.testutil.VarArgsMatcher.anyStrings;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -105,7 +105,7 @@ class PluginIT {
 
     private void assertRunPlugInScriptCatchesException(final Exception exception)
             throws IOException, InterruptedException {
-        when(this.containerMock.execInContainer(any())).thenThrow(exception);
+        when(this.containerMock.execInContainer(anyStrings())).thenThrow(exception);
         final Plugin plugin = new Plugin(Path.of("Plugin.Irrelevant.Name-1.2.3"), this.containerMock);
         assertThrows(ExaOperationEmulatorException.class, plugin::install);
     }
