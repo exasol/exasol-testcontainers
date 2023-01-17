@@ -48,10 +48,4 @@ class PluginTest {
     void testGetFileName() {
         assertThat(this.pluginPackage.getFileName(), equalTo(PLUGIN_FILENAME));
     }
-
-    static class C {
-        int method(final String... strings) {
-            return 0;
-        }
-    }
 }

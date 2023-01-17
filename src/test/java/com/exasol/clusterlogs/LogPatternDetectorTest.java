@@ -52,7 +52,6 @@ class LogPatternDetectorTest {
     @Test
     void testGetActualLogFailsWithInterruptedException()
             throws UnsupportedOperationException, IOException, InterruptedException {
-        // Mockito 5 reports stubbing problem when trying to stub var args method with any()
         when(this.containerMock.execInContainer(anyStrings())).thenThrow(new InterruptedException("expected"));
         ExceptionAssertions.assertThrowsWithMessage(IllegalStateException.class, () -> this.detector.getActualLog(),
                 "InterruptedException when reading log file content");
