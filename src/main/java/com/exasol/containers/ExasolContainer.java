@@ -639,7 +639,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     protected void waitUntilClusterConfigurationAvailable() {
         if (!this.reused) {
-            LOGGER.debug("Waiting for cluster configuration to become available.");
+            LOGGER.trace("Waiting for cluster configuration to become available.");
             final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
             strategy.waitUntilReady(this);
         }
@@ -685,7 +685,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
-            LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
             return new ConfigurationParser(exaconf).parse();
@@ -1055,10 +1054,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public ExecResult probeFile(final String path) {
         try {
             final ExecResult r = super.execInContainer(StandardCharsets.UTF_8, "test", "-f", path);
-            if (r.getExitCode() == 0) {
-                LOGGER.debug("File exists: {}", path);
-            } else {
-                LOGGER.debug("File not found: {}", path);
+            if (r.getExitCode() != 0) {
+                LOGGER.debug("File not found: {}, exit code: {}", path, r.getExitCode());
             }
             return r;
         } catch (UnsupportedOperationException | IOException exception) {

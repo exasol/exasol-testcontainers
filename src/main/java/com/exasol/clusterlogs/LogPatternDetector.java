@@ -187,7 +187,7 @@ public class LogPatternDetector {
         }
 
         public LogPatternDetector build() {
-            LOGGER.debug("Created log detector that scans for \"{}\" in \"{}/{}\"" //
+            LOGGER.trace("Created log detector that scans for \"{}\" in \"{}/{}\"" //
                     + " after line {} with verifier {}", //
                     this.detector.pattern, //
                     this.detector.logPath, //
