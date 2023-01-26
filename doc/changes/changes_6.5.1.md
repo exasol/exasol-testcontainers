@@ -4,7 +4,7 @@ Code name: Improve SSH credential handling
 
 ## Summary
 
-In this release we use a global temporary directory for the SSH credentials instead of local directories as before. The advantage is that `mvn clean` does not delete the credentials and the running container is reused instead of starting a new one with newly created credentials. This speeds up tests especially when working with multiple projects.
+Starting with this release ETC uses a global temporary directory for the SSH credentials instead of a local directory as before. The advantage is that `mvn clean` does not delete the credentials and the running container can be reused instead of starting a new one with newly created credentials. This speeds up tests especially when working with multiple projects.
 
 ## Features
 
