@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 import java.sql.*;
@@ -85,8 +86,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean portAutodetectFailed = false;
     private int connectionWaitTimeoutSeconds = 250;
     private ExasolDriverManager driverManager = null;
-    private final ContainerStatusCache statusCache = new ContainerStatusCache(
-            Path.of(System.getProperty("java.io.tmpdir")));
+    private final ContainerStatusCache statusCache = new ContainerStatusCache(SYSTEM_TEMP_DIR);
     private ContainerStatus status = null;
     private SupportInformationRetriever supportInformationRetriever = null;
     private boolean errorWhileWaitingForServices = false;
@@ -402,7 +402,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * Define the path where the Exasol container should store temporary credentials.
-     *
+     * <p>
+     * This defaults to {@code System.getProperty("java.io.tmpdir") + "/exasol-testcontainers/"}.
+     * 
      * @param path path where the container stores temporary credentials
      * @return self reference for fluent programming
      */
@@ -992,19 +994,26 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
-    DockerAccess createDockerAccess() throws UncheckedIOException {
-        final Path dir = new DirectorySelector() //
-                .ifNotNull(this.temporaryCredentialsDirectory) //
-                .orIfExists("target") //
-                .orIfExists("build") //
-                .or("target") //
-                .ensureExists();
+    DockerAccess createDockerAccess() {
+        final Path dir = getTemporaryCredentialsDirectory();
+        ensureExists(dir);
         return DockerAccess.builder() //
                 .temporaryCredentialsDirectory(dir) //
                 .sshKeys(getSshKeys()) //
                 .dockerProbe(this::probeFile) //
                 .sessionBuilderProvider(this::getSessionBuilder) //
                 .build();
+    }
+
+    private static void ensureExists(final Path directory) {
+        if (Files.isDirectory(directory)) {
+            return;
+        }
+        try {
+            Files.createDirectories(directory);
+        } catch (final IOException exception) {
+            throw new UncheckedIOException(exception);
+        }
     }
 
     // [impl->dsn~access-via-ssh~1]
