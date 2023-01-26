@@ -74,7 +74,7 @@ public final class ExasolContainerConstants {
     public static final Path SYSTEM_TEMP_DIR = Path.of(System.getProperty("java.io.tmpdir"));
 
     /** Default directory for temporary credentials */
-    public static final Path DEFAULT_TEMPORARY_CREDENTIALS_DIRECTORY = SYSTEM_TEMP_DIR.resolve("exasol-testcontainers");
+    public static final Path CACHE_DIRECTORY = SYSTEM_TEMP_DIR.resolve("exasol_testcontainers");
 
     /** SSH port allowing connections to docker container */
     public static final int SSH_PORT = 20002;

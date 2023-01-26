@@ -1,6 +1,6 @@
 package com.exasol.containers.ssh;
 
-import static com.exasol.containers.ExasolContainerConstants.DEFAULT_TEMPORARY_CREDENTIALS_DIRECTORY;
+import static com.exasol.containers.ExasolContainerConstants.CACHE_DIRECTORY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -30,7 +30,7 @@ class DockerAccessTest {
         final SessionBuilderProvider sessionBuilderProviderMock = mockSessionBuilderProvider();
         final DockerProbe dockerProbeMock = mockDockerProbe(fileExists);
         final DockerAccess dockerAccess = DockerAccess.builder() //
-                .temporaryCredentialsDirectory(DEFAULT_TEMPORARY_CREDENTIALS_DIRECTORY) //
+                .temporaryCredentialsDirectory(CACHE_DIRECTORY) //
                 .sshKeys(sshKeysMock) //
                 .sessionBuilderProvider(sessionBuilderProviderMock) //
                 .dockerProbe(dockerProbeMock) //

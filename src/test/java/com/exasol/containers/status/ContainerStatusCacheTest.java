@@ -22,7 +22,7 @@ class ContainerStatusCacheTest {
 
     @BeforeEach
     void beforeEach() {
-        this.cacheDirectory = this.tempDirectory.resolve(ContainerStatusCache.CACHE_SUB_DIRECTORY);
+        this.cacheDirectory = this.tempDirectory.resolve("sub-dir");
     }
 
     @Test
@@ -32,14 +32,15 @@ class ContainerStatusCacheTest {
     }
 
     private ContainerStatusCache createContainerStateCache() {
-        return new ContainerStatusCache(this.tempDirectory);
+        return new ContainerStatusCache(this.cacheDirectory);
     }
 
     @Test
     void testContainerStateCacheExists() throws IOException {
         final String containerId = "112233445566";
         createCacheFile(containerId, "");
-        assertThat(createContainerStateCache().isCacheAvailable(containerId), equalTo(true));
+        assertThat("Container " + containerId + " is available",
+                createContainerStateCache().isCacheAvailable(containerId), equalTo(true));
     }
 
     private void createCacheFile(final String containerId, final String content) throws IOException {

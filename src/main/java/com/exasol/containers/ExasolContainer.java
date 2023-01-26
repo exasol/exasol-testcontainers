@@ -86,12 +86,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean portAutodetectFailed = false;
     private int connectionWaitTimeoutSeconds = 250;
     private ExasolDriverManager driverManager = null;
-    private final ContainerStatusCache statusCache = new ContainerStatusCache(SYSTEM_TEMP_DIR);
+    private final ContainerStatusCache statusCache = new ContainerStatusCache(CACHE_DIRECTORY);
     private ContainerStatus status = null;
     private SupportInformationRetriever supportInformationRetriever = null;
     private boolean errorWhileWaitingForServices = false;
     private SQLException lastConnectionException = null;
-    private Path temporaryCredentialsDirectory = DEFAULT_TEMPORARY_CREDENTIALS_DIRECTORY;
+    private Path temporaryCredentialsDirectory = CACHE_DIRECTORY;
     private DockerAccess dockerAccess = null;
 
     /**
@@ -403,7 +403,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     /**
      * Define the path where the Exasol container should store temporary credentials.
      * <p>
-     * This defaults to {@code System.getProperty("java.io.tmpdir") + "/exasol-testcontainers/"}.
+     * This defaults to {@code System.getProperty("java.io.tmpdir") + "/exasol_testcontainers/"}.
      * 
      * @param path path where the container stores temporary credentials
      * @return self reference for fluent programming
