@@ -83,12 +83,16 @@ public class JdbcDriver implements DatabaseDriver {
     @Override
     public String getManifest() {
         return "DRIVERNAME=" + this.name + "\n" //
-                + "JAR=driver.jar\n" //
+                + "JAR=" + this.getDriverFilename() + "\n" //
                 + "DRIVERMAIN=" + this.mainClass + "\n" //
                 + "PREFIX=" + this.prefix + "\n" //
                 + "NOSECURITY=" + (this.securityManagerEnabled ? "NO" : "YES") + "\n" //
                 + "FETCHSIZE=100000\n" //
                 + "INSERTSIZE=-1";
+    }
+
+    private String getDriverFilename() {
+        return Path.of(this.sourcePath).getFileName().toString();
     }
 
     /**

@@ -104,10 +104,10 @@ class JdbcDriverTest {
         assertThat(JdbcDriver //
                 .builder("another_name") //
                 .prefix("jdbc:another_prefix") //
-                .sourceFile(Path.of("/another/path")) //
+                .sourceFile(Path.of("/another/path/driver-file.jar")) //
                 .mainClass("org.example.Driver").build().getManifest(),
                 equalTo("DRIVERNAME=another_name\n" //
-                        + "JAR=driver.jar\n" //
+                        + "JAR=driver-file.jar\n" //
                         + "DRIVERMAIN=org.example.Driver\n" //
                         + "PREFIX=jdbc:another_prefix\n" //
                         + "NOSECURITY=NO\n" //
