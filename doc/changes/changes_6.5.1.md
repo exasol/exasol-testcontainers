@@ -1,0 +1,22 @@
+# Test Containers for Exasol on Docker 6.5.1, released 2023-01-26
+
+Code name: Improve SSH credential handling
+
+## Summary
+
+In this release we use a global temporary directory for the SSH credentials instead of local directories as before. The advantage is that `mvn clean` does not delete the credentials and the running container is reused instead of starting a new one with newly created credentials. This speeds up tests especially when working with multiple projects.
+
+## Features
+
+* #220: Used global temporary directory for SSH credentials
+
+## Dependency Updates
+
+### Compile Dependency Updates
+
+* Updated `com.exasol:bucketfs-java:2.6.0` to `3.0.0`
+* Removed `org.slf4j:slf4j-jdk14:2.0.6`
+
+### Test Dependency Updates
+
+* Added `org.slf4j:slf4j-jdk14:1.7.36`

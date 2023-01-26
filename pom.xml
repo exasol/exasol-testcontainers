@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>6.5.0</version>
+    <version>6.5.1</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
@@ -11,16 +11,6 @@
         <testcontainers.version>1.17.6</testcontainers.version>
         <junit.version>5.9.2</junit.version>
     </properties>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
     <profiles>
         <profile>
             <id>fast</id>
@@ -63,11 +53,6 @@
             <version>0.1.55</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>2.0.6</version>
-        </dependency>
-        <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>database-cleaner</artifactId>
             <version>1.1.0</version>
@@ -75,7 +60,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>bucketfs-java</artifactId>
-            <version>2.6.0</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -117,6 +102,12 @@
             <groupId>org.junit-pioneer</groupId>
             <artifactId>junit-pioneer</artifactId>
             <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.36</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -161,7 +152,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>6.5.0</version>
+        <version>6.5.1</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
