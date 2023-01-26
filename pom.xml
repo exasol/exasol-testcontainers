@@ -105,6 +105,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!-- org.testcontainers:testcontainers uses org.slf4j:slf4j-api:1.7.36 for logging.
+            To get the complete log during tests we redirect slf4j to JUL with this dependency. -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.36</version>
@@ -128,7 +130,7 @@
             <plugin>
                 <groupId>org.itsallcode</groupId>
                 <artifactId>openfasttrace-maven-plugin</artifactId>
-                <version>1.5.0</version>
+                <version>1.6.1</version>
                 <executions>
                     <execution>
                         <id>trace-requirements</id>

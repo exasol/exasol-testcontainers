@@ -20,3 +20,7 @@ In this release we use a global temporary directory for the SSH credentials inst
 ### Test Dependency Updates
 
 * Added `org.slf4j:slf4j-jdk14:1.7.36`
+
+### Plugin Dependency Updates
+
+* Updated `org.itsallcode:openfasttrace-maven-plugin:1.5.0` to `1.6.1`
