@@ -166,7 +166,7 @@ class ExasolContainerTest {
     void testGetDefaultDirectoryForTemporaryCredentials() {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             assertThat(container.getTemporaryCredentialsDirectory(),
-                    equalTo(Path.of(System.getProperty("java.io.tmpdir")).resolve("exasol-testcontainers")));
+                    equalTo(Path.of(System.getProperty("java.io.tmpdir")).resolve("exasol_testcontainers")));
         }
     }
 
