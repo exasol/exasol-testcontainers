@@ -6,6 +6,8 @@ Code name: Improve SSH credential handling
 
 Starting with this release ETC uses a global temporary directory for the SSH credentials instead of a local directory as before. The advantage is that `mvn clean` does not delete the credentials and the running container can be reused instead of starting a new one with newly created credentials. This speeds up tests especially when working with multiple projects.
 
+This release also reduces log verbosity when starting or reusing an Exasol container.
+
 ## Features
 
 * #220: Used global temporary directory for SSH credentials
