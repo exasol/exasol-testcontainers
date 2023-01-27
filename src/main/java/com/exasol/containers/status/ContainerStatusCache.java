@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ContainerStatusCache {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerStatusCache.class);
-    static final String CACHE_SUB_DIRECTORY = "exasol_testcontainers";
     static final String CACHE_FILE_EXTENSION = ".cache";
     private final Path cacheDirectory;
 
@@ -22,7 +21,7 @@ public class ContainerStatusCache {
      * @param tempDirectory temporary directory where cache files are stored
      */
     public ContainerStatusCache(final Path tempDirectory) {
-        this.cacheDirectory = tempDirectory.resolve(CACHE_SUB_DIRECTORY);
+        this.cacheDirectory = tempDirectory;
     }
 
     /**

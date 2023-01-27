@@ -1,15 +1,15 @@
 package com.exasol.containers.ssh;
 
-import com.exasol.errorreporting.ExaError;
+import java.io.File;
+import java.nio.file.Path;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.ExasolContainerConstants;
+import com.exasol.errorreporting.ExaError;
 import com.jcraft.jsch.Session;
-
-import java.io.File;
-import java.nio.file.Path;
 
 /**
  * <ul>
@@ -32,8 +32,6 @@ public final class DockerAccess {
     enum Mode {
         UNKNOWN, SSH, DOCKER_EXEC
     }
-
-
 
     private DockerAccess(final Builder builder) {
         this.sessionBuilderProvider = builder.sessionBuilderProvider;
@@ -72,13 +70,12 @@ public final class DockerAccess {
      */
     synchronized Mode getMode() {
         if (this.cachedAccessMode == Mode.UNKNOWN) {
-            LOGGER.debug("Probing Docker container for supported connection mode");
             final ExecResult result = this.dockerProbe.probeFile(ExasolContainerConstants.CLUSTER_CONFIGURATION_PATH);
             if (result.getExitCode() == 0) {
-                LOGGER.debug("Docker container supports docker exec");
+                LOGGER.trace("Docker container supports docker exec");
                 this.cachedAccessMode = Mode.DOCKER_EXEC;
             } else {
-                LOGGER.info("Docker container requires SSH access");
+                LOGGER.trace("Docker container requires SSH access");
                 this.cachedAccessMode = Mode.SSH;
             }
         }
@@ -109,7 +106,7 @@ public final class DockerAccess {
     // [impl->dsn~auto-create-directory-for-temporary-credentials~1]
     private void createTemporaryCredentialDirectoryIfMissing() {
         final File directory = this.temporaryCredentialsDirectory.toFile();
-        if(!directory.exists() && !directory.mkdirs()) {
+        if (!directory.exists() && !directory.mkdirs()) {
             ExaError.messageBuilder("F-ETC-23") //
                     .message("Unable to create directory for temporary credentials: {{path}}") //
                     .parameter("path", directory.toString());
@@ -143,7 +140,7 @@ public final class DockerAccess {
          */
         ExecResult probeFile(String path);
     }
-    
+
     /**
      * @return a builder for a new instance of {@link DockerAccess}.
      */
@@ -184,7 +181,7 @@ public final class DockerAccess {
          * </p>
          * 
          * @param dockerProbe {@link DockerProbe} used to check for existence of file
-         *                    {@link ExasolContainerConstants#CLUSTER_CONFIGURATION_PATH}. 
+         *                    {@link ExasolContainerConstants#CLUSTER_CONFIGURATION_PATH}.
          * @return this for fluent programming
          */
         public Builder dockerProbe(final DockerProbe dockerProbe) {

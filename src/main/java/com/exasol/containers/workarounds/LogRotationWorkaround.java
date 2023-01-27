@@ -38,7 +38,6 @@ public class LogRotationWorkaround implements Workaround {
     @Override
     public boolean isNecessary() {
         if (this.exasol.isReused()) {
-            LOGGER.trace("Log rotation workaround unnecessary, since container is being reused.");
             return false;
         } else {
             final ExasolDockerImageReference reference = this.exasol.getDockerImageReference();
@@ -50,7 +49,6 @@ public class LogRotationWorkaround implements Workaround {
                 LOGGER.trace("Log rotation workaround required, since Exasol version is below 7.1.");
                 return true;
             } else {
-                LOGGER.trace("Log rotation workaround unnecessary, since Exasol version is 7.1 or higher.");
                 return false;
             }
         }

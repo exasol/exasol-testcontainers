@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 import java.sql.*;
@@ -85,13 +86,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean portAutodetectFailed = false;
     private int connectionWaitTimeoutSeconds = 250;
     private ExasolDriverManager driverManager = null;
-    private final ContainerStatusCache statusCache = new ContainerStatusCache(
-            Path.of(System.getProperty("java.io.tmpdir")));
+    private final ContainerStatusCache statusCache = new ContainerStatusCache(CACHE_DIRECTORY);
     private ContainerStatus status = null;
     private SupportInformationRetriever supportInformationRetriever = null;
     private boolean errorWhileWaitingForServices = false;
     private SQLException lastConnectionException = null;
-    private Path temporaryCredentialsDirectory = DEFAULT_TEMPORARY_CREDENTIALS_DIRECTORY;
+    private Path temporaryCredentialsDirectory = CACHE_DIRECTORY;
     private DockerAccess dockerAccess = null;
 
     /**
@@ -402,7 +402,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     /**
      * Define the path where the Exasol container should store temporary credentials.
-     *
+     * <p>
+     * This defaults to {@code System.getProperty("java.io.tmpdir") + "/exasol_testcontainers/"}.
+     * 
      * @param path path where the container stores temporary credentials
      * @return self reference for fluent programming
      */
@@ -637,7 +639,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     protected void waitUntilClusterConfigurationAvailable() {
         if (!this.reused) {
-            LOGGER.debug("Waiting for cluster configuration to become available.");
+            LOGGER.trace("Waiting for cluster configuration to become available.");
             final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
             strategy.waitUntilReady(this);
         }
@@ -683,7 +685,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private ClusterConfiguration readClusterConfiguration() {
         try {
-            LOGGER.debug("Reading cluster configuration from \"{}\"", CLUSTER_CONFIGURATION_PATH);
             final Container.ExecResult result = execInContainer("cat", CLUSTER_CONFIGURATION_PATH);
             final String exaconf = result.getStdout();
             return new ConfigurationParser(exaconf).parse();
@@ -992,19 +993,26 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
-    DockerAccess createDockerAccess() throws UncheckedIOException {
-        final Path dir = new DirectorySelector() //
-                .ifNotNull(this.temporaryCredentialsDirectory) //
-                .orIfExists("target") //
-                .orIfExists("build") //
-                .or("target") //
-                .ensureExists();
+    DockerAccess createDockerAccess() {
+        final Path dir = getTemporaryCredentialsDirectory();
+        ensureExists(dir);
         return DockerAccess.builder() //
                 .temporaryCredentialsDirectory(dir) //
                 .sshKeys(getSshKeys()) //
                 .dockerProbe(this::probeFile) //
                 .sessionBuilderProvider(this::getSessionBuilder) //
                 .build();
+    }
+
+    private static void ensureExists(final Path directory) {
+        if (Files.isDirectory(directory)) {
+            return;
+        }
+        try {
+            Files.createDirectories(directory);
+        } catch (final IOException exception) {
+            throw new UncheckedIOException(exception);
+        }
     }
 
     // [impl->dsn~access-via-ssh~1]
@@ -1046,10 +1054,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     public ExecResult probeFile(final String path) {
         try {
             final ExecResult r = super.execInContainer(StandardCharsets.UTF_8, "test", "-f", path);
-            if (r.getExitCode() == 0) {
-                LOGGER.debug("File exists: {}", path);
-            } else {
-                LOGGER.debug("File not found: {}", path);
+            if (r.getExitCode() != 0) {
+                LOGGER.debug("File not found: {}, exit code: {}", path, r.getExitCode());
             }
             return r;
         } catch (UnsupportedOperationException | IOException exception) {

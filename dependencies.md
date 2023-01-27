@@ -8,20 +8,20 @@
 | [Testcontainers Core][0]    | [MIT][1]         |
 | [Testcontainers :: JDBC][0] | [MIT][1]         |
 | [JSch][2]                   | [Revised BSD][3] |
-| [SLF4J JDK14 Binding][4]    | [MIT License][5] |
-| [database-cleaner][6]       | [MIT License][7] |
-| [BucketFS Java][8]          | [MIT License][9] |
+| [database-cleaner][4]       | [MIT License][5] |
+| [BucketFS Java][6]          | [MIT License][7] |
 
 ## Test Dependencies
 
-| Dependency                                     | License                           |
-| ---------------------------------------------- | --------------------------------- |
-| [JUnit Jupiter Engine][10]                     | [Eclipse Public License v2.0][11] |
-| [JUnit Jupiter Params][10]                     | [Eclipse Public License v2.0][11] |
-| [Testcontainers :: JUnit Jupiter Extension][0] | [MIT][1]                          |
-| [Hamcrest][12]                                 | [BSD License 3][13]               |
-| [mockito-junit-jupiter][14]                    | [The MIT License][15]             |
-| [junit-pioneer][16]                            | [Eclipse Public License v2.0][11] |
+| Dependency                                     | License                          |
+| ---------------------------------------------- | -------------------------------- |
+| [JUnit Jupiter Engine][8]                      | [Eclipse Public License v2.0][9] |
+| [JUnit Jupiter Params][8]                      | [Eclipse Public License v2.0][9] |
+| [Testcontainers :: JUnit Jupiter Extension][0] | [MIT][1]                         |
+| [Hamcrest][10]                                 | [BSD License 3][11]              |
+| [mockito-junit-jupiter][12]                    | [The MIT License][13]            |
+| [junit-pioneer][14]                            | [Eclipse Public License v2.0][9] |
+| [SLF4J JDK14 Binding][15]                      | [MIT License][16]                |
 
 ## Runtime Dependencies
 
@@ -61,19 +61,19 @@
 [1]: http://opensource.org/licenses/MIT
 [2]: http://www.jcraft.com/jsch/
 [3]: http://www.jcraft.com/jsch/LICENSE.txt
-[4]: http://www.slf4j.org
-[5]: http://www.opensource.org/licenses/mit-license.php
-[6]: https://github.com/exasol/database-cleaner/
-[7]: https://github.com/exasol/database-cleaner/blob/main/LICENSE
-[8]: https://github.com/exasol/bucketfs-java/
-[9]: https://github.com/exasol/bucketfs-java/blob/main/LICENSE
-[10]: https://junit.org/junit5/
-[11]: https://www.eclipse.org/legal/epl-v20.html
-[12]: http://hamcrest.org/JavaHamcrest/
-[13]: http://opensource.org/licenses/BSD-3-Clause
-[14]: https://github.com/mockito/mockito
-[15]: https://github.com/mockito/mockito/blob/main/LICENSE
-[16]: https://junit-pioneer.org/
+[4]: https://github.com/exasol/database-cleaner/
+[5]: https://github.com/exasol/database-cleaner/blob/main/LICENSE
+[6]: https://github.com/exasol/bucketfs-java/
+[7]: https://github.com/exasol/bucketfs-java/blob/main/LICENSE
+[8]: https://junit.org/junit5/
+[9]: https://www.eclipse.org/legal/epl-v20.html
+[10]: http://hamcrest.org/JavaHamcrest/
+[11]: http://opensource.org/licenses/BSD-3-Clause
+[12]: https://github.com/mockito/mockito
+[13]: https://github.com/mockito/mockito/blob/main/LICENSE
+[14]: https://junit-pioneer.org/
+[15]: http://www.slf4j.org
+[16]: http://www.opensource.org/licenses/mit-license.php
 [17]: http://www.exasol.com
 [18]: https://docs.exasol.com/db/latest/connect_exasol/drivers/jdbc.htm
 [19]: http://sonarsource.github.io/sonar-scanner-maven/
