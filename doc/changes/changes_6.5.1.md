@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 6.5.1, released 2023-01-27
+# Test Containers for Exasol on Docker 6.5.1, released 2023-01-30
 
 Code name: Improve SSH credential handling
 
