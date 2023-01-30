@@ -29,9 +29,9 @@ class ExasolDriverManagerTest {
     void testInstallDriver(@Mock final Bucket bucketMock) {
         final ExasolDriverManager driverManager = new ExasolDriverManager(bucketMock);
         final DatabaseDriver driverA = JdbcDriver.builder("Foo_Driver").prefix("jdbc:foo:")
-                .mainClass("org.example.FooDriver").build();
+                .mainClass("org.example.FooDriver").sourceFile(Path.of("foo-driver.jar")).build();
         final DatabaseDriver driverB = JdbcDriver.builder("Bar_Driver").prefix("jdbc:bar:")
-                .mainClass("org.example.BarDriver").build();
+                .mainClass("org.example.BarDriver").sourceFile(Path.of("bar-driver.jar")).build();
         driverManager.install(driverA, driverB);
         assertThat(driverManager.getDrivers(), containsInAnyOrder(driverA, driverB));
     }

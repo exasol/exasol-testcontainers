@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 6.5.1, released 2023-01-26
+# Test Containers for Exasol on Docker 6.5.1, released 2023-01-30
 
 Code name: Improve SSH credential handling
 
@@ -11,6 +11,10 @@ This release also reduces log verbosity when starting or reusing an Exasol conta
 ## Features
 
 * #220: Used global temporary directory for SSH credentials
+
+## Bugfixes
+
+* #219: Fixed driver manager to use correct JAR name in manifest
 
 ## Dependency Updates
 
