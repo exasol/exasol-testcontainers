@@ -33,4 +33,5 @@ Code name:
 * Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.1.0` to `3.2.1`
 * Updated `org.apache.maven.plugins:maven-failsafe-plugin:3.0.0-M7` to `3.0.0-M8`
 * Updated `org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M7` to `3.0.0-M8`
+* Added `org.basepom.maven:duplicate-finder-maven-plugin:1.5.1`
 * Updated `org.codehaus.mojo:versions-maven-plugin:2.13.0` to `2.14.2`
