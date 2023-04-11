@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>6.5.1</version>
+    <version>6.5.2</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
     <url>https://github.com/exasol/exasol-testcontainers/</url>
     <properties>
-        <testcontainers.version>1.17.6</testcontainers.version>
+        <testcontainers.version>1.18.0</testcontainers.version>
         <junit.version>5.9.2</junit.version>
     </properties>
     <profiles>
@@ -60,12 +60,12 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>bucketfs-java</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
-            <version>7.1.17</version>
+            <version>7.1.19</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -95,13 +95,13 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.0.0</version>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit-pioneer</groupId>
             <artifactId>junit-pioneer</artifactId>
-            <version>1.9.1</version>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -118,7 +118,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>2.9.6</version>
                 <executions>
                     <execution>
                         <goals>
@@ -149,12 +149,38 @@
                     <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.basepom.maven</groupId>
+                <artifactId>duplicate-finder-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <printEqualFiles>true</printEqualFiles>
+                    <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
+                    <failBuildInCaseOfEqualContentConflict>true</failBuildInCaseOfEqualContentConflict>
+                    <failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
+                    <checkCompileClasspath>true</checkCompileClasspath>
+                    <checkRuntimeClasspath>true</checkRuntimeClasspath>
+                    <checkTestClasspath>false</checkTestClasspath>
+                    <quiet>true</quiet>
+                    <preferLocal>true</preferLocal>
+                    <useResultFile>false</useResultFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>6.5.1</version>
+        <version>6.5.2</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
