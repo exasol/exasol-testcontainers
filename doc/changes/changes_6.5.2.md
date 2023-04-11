@@ -12,6 +12,7 @@ Code name:
 
 ### Compile Dependency Updates
 
+* Updated `com.exasol:bucketfs-java:3.0.0` to `3.1.0`
 * Updated `org.testcontainers:jdbc:1.17.6` to `1.18.0`
 * Updated `org.testcontainers:testcontainers:1.17.6` to `1.18.0`
 
