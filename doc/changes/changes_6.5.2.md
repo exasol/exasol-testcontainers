@@ -1,10 +1,12 @@
-# Test Containers for Exasol on Docker 6.5.2, released 2023-??-??
+# Test Containers for Exasol on Docker 6.5.2, released 2023-04-11
 
-Code name:
+Code name: Remove duplicate classes from dependencies
 
 ## Summary
 
-## Features
+This release removes duplicate classes from dependencies.
+
+## Bugfixes
 
 * #224: Removed duplicate classes from dependencies
 
