@@ -1,17 +1,21 @@
 package com.exasol.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.*;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
+import com.exasol.bucketfs.BucketAccessException;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
 
@@ -68,6 +72,25 @@ class ExasolContainerReuseIT {
             try (final ExasolContainer<? extends ExasolContainer<?>> container2 = new ExasolContainer<>()) {
                 container2.withReuse(true).start();
                 assertDoesNotThrow(() -> statement.executeUpdate("CREATE SCHEMA TEST;"));
+                container2.stop();
+            }
+        }
+    }
+
+    // [itest->dsn~bucketfs-purging~1]
+    @Test
+    void testDefaultBucketIsPurgedBeforeReuse() throws NoSuchFieldException, IllegalAccessException, SQLException,
+            InterruptedException, BucketAccessException, TimeoutException {
+        getTestcontainerProperties().setProperty(TESTCONTAINERS_REUSE_ENABLE, "true");
+        try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
+            container.withReuse(true).start();
+            container.getDefaultBucket().uploadStringContent("dummy-content", "nested/dir/file.txt");
+            container.stop();
+            try (final ExasolContainer<? extends ExasolContainer<?>> container2 = new ExasolContainer<>()) {
+                container2.withReuse(true).start();
+                final List<String> content = container2.getDefaultBucket().listContentsRecursively();
+                assertAll(() -> assertThat(content, contains(startsWith("EXAClusterOS/ScriptLanguages-"))),
+                        () -> assertThat(content, not(contains("nested/dir/file.txt"))));
                 container2.stop();
             }
         }

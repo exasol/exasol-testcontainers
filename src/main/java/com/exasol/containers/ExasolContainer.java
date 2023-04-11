@@ -9,6 +9,7 @@ import static com.exasol.containers.ExitType.EXIT_ERROR;
 import static com.exasol.containers.ExitType.EXIT_SUCCESS;
 import static com.exasol.containers.exec.ExitCode.OK;
 import static com.exasol.containers.status.ServiceStatus.*;
+import static java.util.function.Predicate.not;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,6 +32,7 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.*;
 
 import com.exasol.bucketfs.Bucket;
+import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
@@ -613,11 +615,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void cleanUpDatabaseIfNecessary() {
         if (this.reused) {
             purgeDatabase();
+            purgeDefaultBucket();
         }
     }
 
     /**
-     * Clean up the database.
+     * Clean up the database by deleting all database objects such as schemas, users, roles and connections.
      */
     // [impl->dsn~purging~1]
     public void purgeDatabase() {
@@ -626,7 +629,45 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 final Statement statement = connection.createStatement()) {
             new ExasolDatabaseCleaner(statement).cleanDatabase();
         } catch (final SQLException exception) {
-            throw new ExasolContainerInitializationException("Failed to purge database", exception);
+            throw new ExasolContainerInitializationException(
+                    ExaError.messageBuilder("E-ETC-24").message("Failed to purge database").toString(), exception);
+        }
+    }
+
+    /**
+     * Clean up BucketFS by deleting all objects from the default bucket.
+     */
+    // [impl->dsn~bucketfs-purging~1]
+    public void purgeDefaultBucket() {
+        final Bucket bucket = getDefaultBucket();
+        try {
+            bucket.listContentsRecursively().stream() //
+                    .filter(not(this::keep)) //
+                    .forEach(path -> deleteBucketFsPath(bucket, path));
+        } catch (final BucketAccessException exception) {
+            throw new ExasolContainerInitializationException(
+                    ExaError.messageBuilder("E-ETC-25").message("Failed to purge the default bucket").toString(),
+                    exception);
+        }
+    }
+
+    /**
+     * Ensure not to delete objects like
+     * {@code EXAClusterOS/ScriptLanguages-standard-EXASOL-7.1.0-slc-v4.0.0-CM4RWW6R.tar.gz}.
+     */
+    private boolean keep(final String bucketFsPath) {
+        return bucketFsPath.isEmpty() || bucketFsPath.startsWith("EXAClusterOS/");
+    }
+
+    private void deleteBucketFsPath(final Bucket bucket, final String bucketFsPath) {
+        try {
+            LOGGER.trace("Purging file from bucket {}: {}", bucket.getFullyQualifiedBucketName(), bucketFsPath);
+            bucket.deleteFileNonBlocking(bucketFsPath);
+        } catch (final BucketAccessException exception) {
+            throw new ExasolContainerInitializationException(
+                    ExaError.messageBuilder("E-ETC-26").message("Failed to delete file {path} from bucket {bucket}",
+                            bucketFsPath, bucket.getFullyQualifiedBucketName()).toString(),
+                    exception);
         }
     }
 

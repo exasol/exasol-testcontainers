@@ -145,7 +145,7 @@ Covers:
 
 Needs: impl, itest
 
-### Purging
+### Database Object Purging
 
 `dsn~purging~1`
 
@@ -153,7 +153,22 @@ The `ExasolContainer` purges the database when reuse is enabled.
 
 Comment:
 
-This means the `ExasolContainer` deletes all database objects such as users, roles and connections.
+This means the `ExasolContainer` deletes all database objects such as schemas, users, roles and connections.
+
+Covers:
+* [`req~automatic-database-cleanup-with-reused-containers~1`](system_requirements.md#automatic-database-cleanup-with-reused-containers)
+
+Needs: impl, itest
+
+### BucketFS Purging
+
+`dsn~bucketfs-purging~1`
+
+The `ExasolContainer` purges the default bucket when reuse is enabled.
+
+Comment:
+
+This means the `ExasolContainer` deletes all objects from the default bucket `bfsdefault/default`.
 
 Covers:
 * [`req~automatic-database-cleanup-with-reused-containers~1`](system_requirements.md#automatic-database-cleanup-with-reused-containers)
