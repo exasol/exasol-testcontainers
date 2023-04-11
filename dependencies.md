@@ -35,12 +35,12 @@
 | ------------------------------------------------------- | ---------------------------------------------- |
 | [SonarQube Scanner for Maven][19]                       | [GNU LGPL 3][20]                               |
 | [Apache Maven Compiler Plugin][21]                      | [Apache License, Version 2.0][22]              |
-| [Apache Maven Enforcer Plugin][23]                      | [Apache License, Version 2.0][22]              |
+| [Apache Maven Enforcer Plugin][23]                      | [Apache-2.0][22]                               |
 | [Maven Flatten Plugin][24]                              | [Apache Software Licenese][22]                 |
 | [org.sonatype.ossindex.maven:ossindex-maven-plugin][25] | [ASL2][26]                                     |
 | [Maven Surefire Plugin][27]                             | [Apache License, Version 2.0][22]              |
 | [Versions Maven Plugin][28]                             | [Apache License, Version 2.0][22]              |
-| [Apache Maven Deploy Plugin][29]                        | [Apache License, Version 2.0][22]              |
+| [Apache Maven Deploy Plugin][29]                        | [Apache-2.0][22]                               |
 | [Apache Maven GPG Plugin][30]                           | [Apache License, Version 2.0][22]              |
 | [Apache Maven Source Plugin][31]                        | [Apache License, Version 2.0][22]              |
 | [Apache Maven Javadoc Plugin][32]                       | [Apache License, Version 2.0][22]              |
@@ -75,7 +75,7 @@
 [15]: http://www.slf4j.org
 [16]: http://www.opensource.org/licenses/mit-license.php
 [17]: http://www.exasol.com
-[18]: https://docs.exasol.com/db/latest/connect_exasol/drivers/jdbc.htm
+[18]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/7.1.19/exasol-jdbc-7.1.19-license.txt
 [19]: http://sonarsource.github.io/sonar-scanner-maven/
 [20]: http://www.gnu.org/licenses/lgpl.txt
 [21]: https://maven.apache.org/plugins/maven-compiler-plugin/
@@ -85,7 +85,7 @@
 [25]: https://sonatype.github.io/ossindex-maven/maven-plugin/
 [26]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [27]: https://maven.apache.org/surefire/maven-surefire-plugin/
-[28]: https://www.mojohaus.org/versions-maven-plugin/
+[28]: https://www.mojohaus.org/versions/versions-maven-plugin/
 [29]: https://maven.apache.org/plugins/maven-deploy-plugin/
 [30]: https://maven.apache.org/plugins/maven-gpg-plugin/
 [31]: https://maven.apache.org/plugins/maven-source-plugin/
