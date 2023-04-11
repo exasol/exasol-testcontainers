@@ -173,6 +173,7 @@
                     <quiet>true</quiet>
                     <preferLocal>true</preferLocal>
                     <useResultFile>false</useResultFile>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
