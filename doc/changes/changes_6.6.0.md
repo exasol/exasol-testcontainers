@@ -1,10 +1,14 @@
-# Test Containers for Exasol on Docker 6.5.2, released 2023-04-11
+# Test Containers for Exasol on Docker 6.6.0, released 2023-04-11
 
 Code name: Remove duplicate classes from dependencies
 
 ## Summary
 
-This release removes duplicate classes from dependencies.
+This release purges BucketFS when reusing containers to guarantee isolation between tests. It also removes duplicate classes from dependencies.
+
+## Features
+
+* #74: Added feature to purge BucketFS when reusing containers
 
 ## Bugfixes
 
