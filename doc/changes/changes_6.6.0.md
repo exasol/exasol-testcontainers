@@ -4,13 +4,13 @@ Code name: Support for Exasol 8 Pre-Releases
 
 ## Summary
 
-To be prepared for the upcoming version 8 of Exasol, this version of the Exasol Test Containers got support for the pre-releases.
+To be prepared for the upcoming version 8 of Exasol, this version of the Exasol Test Containers adds support for pre-releases using a prefix in the name of Docker Containers.
 
 Added `prerelease-8.17.0` to the CI test matrix. Default version is now 7.1.20.
 
 ## Features
 
-* 200: Test with 8 pre-release
+* 200: Test with Exasol database version 8 pre-release
 
 ## Dependency Updates
 

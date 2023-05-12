@@ -16,12 +16,13 @@ import org.slf4j.LoggerFactory;
 public final class DockerImageReferenceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockerImageReferenceFactory.class);
 
-    private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = //
-            Pattern.compile("(?:(?:exasol/)?docker-db:)?" // repository (optional)
-                    + "(?:(\\w+)-)?" // version prefix
-                    + "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?" // Exasol version (partially optional)
-                    + "(?:([-.])([a-zA-Z]\\w*))??" // suffix (optional)
-                    + "(?:-d(\\d+))?"); // docker image revision (optional)
+    private static final String REPOSITORY_PATTERN = "(?:(?:exasol/)?docker-db:)?";
+    private static final String VERSION_PREFIX_PATTERN = "(?:(\\w+)-)?";
+    private static final String EXASOL_VERSION_PATTERN = "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?"; // (partially optional)
+    private static final String SUFFIX_PATTERN = "(?:([-.])([a-zA-Z]\\w*))??";
+    private static final String DOCKER_IMAGE_REVISION_PATTERN = "(?:-d(\\d+))?";
+    private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = Pattern.compile(REPOSITORY_PATTERN
+            + VERSION_PREFIX_PATTERN + EXASOL_VERSION_PATTERN + SUFFIX_PATTERN + DOCKER_IMAGE_REVISION_PATTERN);
 
     private DockerImageReferenceFactory() {
         // prevent instantiation
