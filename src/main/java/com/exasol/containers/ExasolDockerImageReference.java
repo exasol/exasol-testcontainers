@@ -61,6 +61,22 @@ public interface ExasolDockerImageReference {
     public boolean hasDockerImageRevision();
 
     /**
+     * Get the version prefix of the {@code exasol/docker-db} image if possible.
+     * <p>
+     * Version prefixes are typically found in development versions like "prerelease".
+     * </p>
+     *
+     * @return version suffix
+     */
+    public String getPrefix();
+
+    /**
+     * Check if a version prefix is available.
+     *
+     * @return {@code true} if a version prefix.
+     */
+    public boolean hasPrefix();
+    /**
      * Get the version suffix of the {@code exasol/docker-db} image if possible.
      * <p>
      * Version suffixes are typically found in development versions like "alpha", "beta" or "RC1".

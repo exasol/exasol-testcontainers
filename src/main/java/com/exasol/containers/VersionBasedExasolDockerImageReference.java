@@ -16,11 +16,13 @@ import static com.exasol.containers.ExasolContainerConstants.EXASOL_DOCKER_IMAGE
 class VersionBasedExasolDockerImageReference implements ExasolDockerImageReference {
     private static final int DEFAULT_DOCKER_IMAGE_REVISION = 1;
     public static final int VERSION_NOT_PRESENT = -1;
+    public static final String PREFIX_NOT_PRESENT = null;
     public static final String SUFFIX_NOT_PRESENT = null;
     private final int major;
     private final int minor;
     private final int fix;
     private final int dockerImageRevision;
+    private final String prefix;
     private final String suffix;
     private final String suffixSeparator;
 
@@ -30,15 +32,17 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
      * @param major               major database version
      * @param minor               minor database version
      * @param fix                 fix version (aka. "patch level")
+     * @param prefix              prefix (like "prerelease")
      * @param suffixSeparator     separator between version and suffix
      * @param suffix              suffix like "RC1" or "beta"
      * @param dockerImageRevision revision number of the docker image
      */
-    public VersionBasedExasolDockerImageReference(final int major, final int minor, final int fix,
+    public VersionBasedExasolDockerImageReference(final int major, final int minor, final int fix, final String prefix,
             final String suffixSeparator, final String suffix, final int dockerImageRevision) {
         this.major = major;
         this.minor = minor;
         this.fix = fix;
+        this.prefix = prefix;
         this.suffixSeparator = suffixSeparator;
         this.suffix = suffix;
         this.dockerImageRevision = ((dockerImageRevision == VERSION_NOT_PRESENT) && !isExasolSevenOrLater())
@@ -87,6 +91,16 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
     }
 
     @Override
+    public String getPrefix() {
+        return this.prefix;
+    }
+
+    @Override
+    public boolean hasPrefix() {
+        return this.prefix != null;
+    }
+
+    @Override
     public String getSuffix() {
         return this.suffix;
     }
@@ -99,9 +113,14 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
     @Override
     public String toString() {
         return EXASOL_DOCKER_IMAGE_ID + ":" //
+                + constructPrefixPart() //
                 + constructVersionPart() //
                 + constructOptionalSuffixPart() //
                 + constructOptionalDockerImageRevisionPart();
+    }
+
+    private String constructPrefixPart() {
+        return this.hasPrefix() ? this.prefix + "-" : "";
     }
 
     private String constructVersionPart() {
@@ -109,7 +128,7 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
     }
 
     private String constructOptionalSuffixPart() {
-        return this.suffix == null ? "" : this.suffixSeparator + this.suffix;
+        return this.hasSuffix() ? this.suffixSeparator + this.suffix : "";
     }
 
     private String constructOptionalDockerImageRevisionPart() {

@@ -24,7 +24,9 @@ class ExasolDockerImageReferenceTest {
             "8.12.9-d1x-d2, exasol/docker-db:8.12.9-d1x-d2", // "
             "7.1.rc1, exasol/docker-db:7.1.0.rc1", //
             "7.1.rc1-d4, exasol/docker-db:7.1.0.rc1-d4", //
-            // prefixed image references:
+            // pre-release versions
+            "prerelease-8.17.0, exasol/docker-db:prerelease-8.17.0", //
+            // image references with repository:
             "docker-db:8, exasol/docker-db:8.0.0", //
             "docker-db:8.3, exasol/docker-db:8.3.0", //
             "docker-db:8.4.5, exasol/docker-db:8.4.5", //
@@ -141,6 +143,23 @@ class ExasolDockerImageReferenceTest {
         } else {
             assertAll(() -> assertThat(reference.hasSuffix(), equalTo(true)),
                     () -> assertThat("expected suffix", reference.getSuffix(), equalTo(expectedSuffix)));
+        }
+    }
+
+    @CsvSource({ //
+            "7,", //
+            "7.1,", //
+            "prerelease-8, prerelease", //
+            "identifier_with_underscores-8, identifier_with_underscores", //
+    })
+    @ParameterizedTest
+    void testGetPrefix(final String input, final String expectedPrefix) {
+        final ExasolDockerImageReference reference = DockerImageReferenceFactory.parse(input);
+        if (expectedPrefix == null) {
+            assertThat("no prefix expected", reference.hasPrefix(), equalTo(false));
+        } else {
+            assertAll(() -> assertThat(reference.hasPrefix(), equalTo(true)),
+                    () -> assertThat("expected prefix", reference.getPrefix(), equalTo(expectedPrefix)));
         }
     }
 }
