@@ -29,7 +29,6 @@ Added `prerelease-8.17.0` to the CI test matrix. Default version is now 7.1.20.
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.9.2` to `5.9.3`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.9.2` to `5.9.3`
 * Updated `org.mockito:mockito-junit-jupiter:5.2.0` to `5.3.1`
-* Updated `org.slf4j:slf4j-jdk14:1.7.36` to `2.0.7`
 * Updated `org.testcontainers:junit-jupiter:1.18.0` to `1.18.1`
 
 ### Plugin Dependency Updates

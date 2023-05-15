@@ -130,9 +130,7 @@ class TlsConnectionIT {
             KeyStoreException, NoSuchAlgorithmException, CertificateException {
         final SSLContext sslContext = createSslContextWithCertificate();
         final HostnameVerifier hostnameVerifier = (hostname, session) -> true;
-
         final HttpsURLConnection connection = prepareHttpsURLConnection(sslContext, hostnameVerifier);
-
         assertThat(connection.getResponseCode(), either(equalTo(401)).or(equalTo(404)).or(equalTo(405)));
     }
 

@@ -109,7 +109,8 @@
             To get the complete log during tests we redirect slf4j to JUL with this dependency. -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>2.0.7</version>
+            <!-- Don't update to 2.0 here, because this currently breaks integration with the testcontainer -->
+            <version>1.7.36</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
