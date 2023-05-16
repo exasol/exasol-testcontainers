@@ -2,8 +2,7 @@ package com.exasol.containers.tls;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.*;
@@ -36,7 +35,7 @@ class TlsConnectionIT {
 
     @Test
     void testJdbcConnectionWithCertificate()
-            throws SQLException, CertificateEncodingException, NoSuchAlgorithmException {
+            throws SQLException {
         final String fingerprint = getFingerprint();
         final String url = "jdbc:exa:" + CONTAINER.getHost() + "/" + fingerprint + ":"
                 + CONTAINER.getFirstMappedDatabasePort() + ";validateservercertificate=1";
@@ -56,14 +55,22 @@ class TlsConnectionIT {
     void testGetTlsCertificateFingerprint() {
         final Optional<String> actualFingerprint = CONTAINER.getTlsCertificateFingerprint();
         final String expectedFingerprint = getFingerprint();
-        assertAll(() -> assertTrue(actualFingerprint.isPresent()),
-                () -> assertThat(actualFingerprint.get(), not(emptyOrNullString())),
-                () -> assertThat(actualFingerprint.get(), hasLength(64)),
-                () -> assertThat(actualFingerprint.get(), equalTo(expectedFingerprint)));
+        if (actualFingerprint.isPresent()) {
+            final String actual = actualFingerprint.get();
+            assertAll(() -> assertThat(actual, not(emptyOrNullString())), () -> assertThat(actual, hasLength(64)),
+                    () -> assertThat(actual, equalTo(expectedFingerprint)));
+        } else {
+            fail("Unable to get actual TLS fingerprint");
+        }
     }
 
     private String getFingerprint() {
-        return new CertificateProvider(CONTAINER, new ContainerFileOperations(CONTAINER)).getSha256Fingerprint().get();
+        final Optional<String> fingerprint = new CertificateProvider(CONTAINER, new ContainerFileOperations(CONTAINER))
+                .getSha256Fingerprint();
+        if (fingerprint.isPresent())
+            return fingerprint.get();
+        else
+            throw new IllegalStateException("Unable to retrieve TLS fingerpring from certificate provider");
     }
 
     @Test
@@ -100,11 +107,9 @@ class TlsConnectionIT {
     }
 
     @Test
-    void testHttpsUrlConnectionFailsWithoutSslCertificate() throws IOException, KeyManagementException,
-            KeyStoreException, NoSuchAlgorithmException, CertificateException {
+    void testHttpsUrlConnectionFailsWithoutSslCertificate() throws IOException {
         final HttpsURLConnection connection = prepareHttpsURLConnection(null, null);
-
-        ExceptionAssertions.assertThrowsWithMessage(SSLHandshakeException.class, () -> connection.getResponseCode(),
+        ExceptionAssertions.assertThrowsWithMessage(SSLHandshakeException.class, connection::getResponseCode,
                 "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target");
     }
 
@@ -115,7 +120,7 @@ class TlsConnectionIT {
 
         final HttpsURLConnection connection = prepareHttpsURLConnection(sslContext, null);
 
-        ExceptionAssertions.assertThrowsWithMessage(SSLHandshakeException.class, () -> connection.getResponseCode(),
+        ExceptionAssertions.assertThrowsWithMessage(SSLHandshakeException.class, connection::getResponseCode,
                 either(equalTo("No subject alternative names present"))
                         .or(equalTo("No name matching localhost found")));
     }
@@ -125,15 +130,12 @@ class TlsConnectionIT {
             KeyStoreException, NoSuchAlgorithmException, CertificateException {
         final SSLContext sslContext = createSslContextWithCertificate();
         final HostnameVerifier hostnameVerifier = (hostname, session) -> true;
-
         final HttpsURLConnection connection = prepareHttpsURLConnection(sslContext, hostnameVerifier);
-
         assertThat(connection.getResponseCode(), either(equalTo(401)).or(equalTo(404)).or(equalTo(405)));
     }
 
     private HttpsURLConnection prepareHttpsURLConnection(final SSLContext sslContext,
-            final HostnameVerifier hostnameVerifier) throws MalformedURLException, IOException, KeyStoreException,
-            NoSuchAlgorithmException, CertificateException, KeyManagementException, ProtocolException {
+            final HostnameVerifier hostnameVerifier) throws IOException {
         final URL url = new URL(CONTAINER.getRpcUrl());
         final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         if (sslContext != null) {
@@ -148,37 +150,37 @@ class TlsConnectionIT {
 
     @Test
     void testCertificateFailsWithHttpClient() throws KeyManagementException, KeyStoreException,
-            NoSuchAlgorithmException, CertificateException, IOException, InterruptedException, URISyntaxException {
-
+            NoSuchAlgorithmException, CertificateException, IOException {
         final SSLContext sslContext = createSslContextWithCertificate();
-
         ExceptionAssertions.assertThrowsWithMessage(IOException.class, () -> sendRequestWithHttpClient(sslContext),
                 either(equalTo("No subject alternative names present"))
                         .or(equalTo("No name matching localhost found")));
     }
 
+    private SSLContext createSslContextWithCertificate() throws KeyStoreException, IOException,
+            NoSuchAlgorithmException, CertificateException, KeyManagementException {
+        final Optional<X509Certificate> tlsCertificate = CONTAINER.getTlsCertificate();
+        if (tlsCertificate.isPresent()) {
+            final X509Certificate certificate = tlsCertificate.get();
+            final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null);
+            keyStore.setCertificateEntry("caCert", certificate);
+            final TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(keyStore);
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+            return sslContext;
+        } else {
+            throw new IllegalStateException("Unable to retrieve TLS certificate trying to create SSL context.");
+        }
+    }
+
     private HttpResponse<String> sendRequestWithHttpClient(final SSLContext sslContext)
             throws IOException, InterruptedException, URISyntaxException {
         final HttpClient httpClient = HttpClient.newBuilder().sslContext(sslContext).build();
-
         final HttpRequest request = HttpRequest.newBuilder(new URI(CONTAINER.getRpcUrl()))
                 .POST(BodyPublishers.ofString("")).build();
         return httpClient.send(request, BodyHandlers.ofString());
-    }
-
-    private SSLContext createSslContextWithCertificate() throws KeyStoreException, IOException,
-            NoSuchAlgorithmException, CertificateException, KeyManagementException {
-        final X509Certificate certificate = CONTAINER.getTlsCertificate().get();
-        final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(null);
-        keyStore.setCertificateEntry("caCert", certificate);
-
-        final TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustManagerFactory.init(keyStore);
-
-        final SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-        return sslContext;
     }
 }

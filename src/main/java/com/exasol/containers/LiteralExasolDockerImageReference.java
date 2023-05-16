@@ -67,6 +67,15 @@ class LiteralExasolDockerImageReference implements ExasolDockerImageReference {
     }
 
     @Override
+    public String getPrefix() {
+        throw new IllegalStateException(ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE);
+    }
+
+    @Override
+    public boolean hasPrefix() {
+        return false;
+    }
+    @Override
     public String getSuffix() {
         throw new IllegalStateException(ILLEGAL_VERSION_DETAIL_ACCESS_MESSAGE);
     }

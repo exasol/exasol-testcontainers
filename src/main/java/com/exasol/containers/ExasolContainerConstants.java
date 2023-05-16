@@ -1,21 +1,16 @@
 package com.exasol.containers;
 
 import java.nio.file.Path;
-import java.util.Set;
 
 /**
  * Constants for the Exasol Docker containers (like image ID and version).
  */
 public final class ExasolContainerConstants {
     /** Version of the Exasol Docker image */
-    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.1.19";
+    public static final String EXASOL_DOCKER_IMAGE_VERSION = "7.1.20";
 
     /** Reference name of the Exasol Docker image */
     public static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
-
-    /** Complete Docker image reference */
-    public static final String EXASOL_DOCKER_IMAGE_REFERENCE = EXASOL_DOCKER_IMAGE_ID + ":"
-            + EXASOL_DOCKER_IMAGE_VERSION;
 
     /** Exasol initial administrator username */
     public static final String DEFAULT_ADMIN_USER = "SYS";
@@ -45,9 +40,6 @@ public final class ExasolContainerConstants {
 
     /** BucketFS log filename pattern */
     public static final String BUCKETFS_DAEMON_LOG_FILENAME_PATTERN = "bucketfsd.*.log";
-
-    /** File extensions of supported (i.e. auto-expanded) archive formats in BucketFS */
-    public static final Set<String> SUPPORTED_ARCHIVE_EXTENSIONS = Set.of(".tar", ".tgz", ".tar.gz", ".zip");
 
     /** Name of the property with which the docker image name can be overridden */
     public static final String DOCKER_IMAGE_OVERRIDE_PROPERTY = "com.exasol.dockerdb.image";

@@ -1,8 +1,7 @@
 package com.exasol.containers;
 
 import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
-import static com.exasol.containers.VersionBasedExasolDockerImageReference.SUFFIX_NOT_PRESENT;
-import static com.exasol.containers.VersionBasedExasolDockerImageReference.VERSION_NOT_PRESENT;
+import static com.exasol.containers.VersionBasedExasolDockerImageReference.*;
 import static java.lang.Integer.parseInt;
 
 import java.util.regex.Matcher;
@@ -17,11 +16,13 @@ import org.slf4j.LoggerFactory;
 public final class DockerImageReferenceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockerImageReferenceFactory.class);
 
-    private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = //
-            Pattern.compile("(?:(?:exasol/)?(?:docker-db:))?" // prefix (optional)
-                    + "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?" // Exasol version (partially optional)
-                    + "(?:([-.])([a-zA-Z]\\w*))??" // suffix (optional)
-                    + "(?:-d(\\d+))?"); // docker image revision (optional)
+    private static final String REPOSITORY_PATTERN = "(?:(?:exasol/)?docker-db:)?";
+    private static final String VERSION_PREFIX_PATTERN = "(?:(\\w+)-)?";
+    private static final String EXASOL_VERSION_PATTERN = "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?"; // (partially optional)
+    private static final String SUFFIX_PATTERN = "(?:([-.])([a-zA-Z]\\w*))??";
+    private static final String DOCKER_IMAGE_REVISION_PATTERN = "(?:-d(\\d+))?";
+    private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = Pattern.compile(REPOSITORY_PATTERN
+            + VERSION_PREFIX_PATTERN + EXASOL_VERSION_PATTERN + SUFFIX_PATTERN + DOCKER_IMAGE_REVISION_PATTERN);
 
     private DockerImageReferenceFactory() {
         // prevent instantiation
@@ -75,14 +76,15 @@ public final class DockerImageReferenceFactory {
     public static ExasolDockerImageReference parse(final String reference) {
         final Matcher matcher = DOCKER_IMAGE_VERSION_PATTERN.matcher(reference);
         if (matcher.matches()) {
-            final int major = parseInt(matcher.group(1));
-            final int minor = (matcher.group(2) == null) ? 0 : parseInt(matcher.group(2));
-            final int fix = (matcher.group(3) == null) ? 0 : parseInt(matcher.group(3));
-            final String suffixSeparator = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(4);
-            final String suffix = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5);
-            final int dockerImageRevision = (matcher.group(6) == null) ? VERSION_NOT_PRESENT
-                    : parseInt(matcher.group(6));
-            return new VersionBasedExasolDockerImageReference(major, minor, fix, suffixSeparator, suffix,
+            final String prefix = (matcher.group(1) == null) ? PREFIX_NOT_PRESENT : matcher.group(1);
+            final int major = parseInt(matcher.group(2));
+            final int minor = (matcher.group(3) == null) ? 0 : parseInt(matcher.group(3));
+            final int fix = (matcher.group(4) == null) ? 0 : parseInt(matcher.group(4));
+            final String suffixSeparator = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5);
+            final String suffix = (matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6);
+            final int dockerImageRevision = (matcher.group(7) == null) ? VERSION_NOT_PRESENT
+                    : parseInt(matcher.group(7));
+            return new VersionBasedExasolDockerImageReference(major, minor, fix, prefix, suffixSeparator, suffix,
                     dockerImageRevision);
         } else {
             return new LiteralExasolDockerImageReference(reference);

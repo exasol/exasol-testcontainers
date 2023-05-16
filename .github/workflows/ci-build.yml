@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker_db_version: ["7.0.22", "7.1.19"]
+        docker_db_version: ["7.0.22", "7.1.20", "prerelease-8.17.0"]
     env:
       DEFAULT_DB_VERSION: "7.1.19"
     runs-on: ubuntu-latest
