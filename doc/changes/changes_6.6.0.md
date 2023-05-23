@@ -2,7 +2,7 @@
 
 Code name: Support for Exasol 8 Pre-Releases
 
-## Summary
+## Summary  
 
 To be prepared for the upcoming version 8 of Exasol, this version of the Exasol Test Containers adds support for pre-releases using a prefix in the name of Docker Containers.
 
