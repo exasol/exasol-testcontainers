@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 6.6.0, released 2023-05-12
+# Test Containers for Exasol on Docker 6.6.0, released 2023-05-23
 
 Code name: Support for Exasol 8 Pre-Releases
 
