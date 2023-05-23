@@ -57,7 +57,7 @@ jobs:
         env:
           SUPPORT_DIR: ${{ github.workspace }}/target/support
       - name: Publish support package for ${{ matrix.docker_db_version }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: support-db-${{ matrix.docker_db_version }}-run-${{ github.run_id }}
