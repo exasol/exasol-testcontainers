@@ -32,6 +32,13 @@ class TlsConnectionIT {
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true).withRequiredServices(ExasolService.JDBC);
 
+    // Skip TLS tests for version 8 until https://github.com/exasol/exasol-testcontainers/issues/232 is solved.
+    @BeforeAll
+    static void beforeAll() {
+        Assumptions.assumeFalse(CONTAINER.getDockerImageReference().getMajor() == 8,
+                "TLS with version 8 not yet supported. See https://github.com/exasol/exasol-testcontainers/issues/232");
+    }
+
     @Test
     void testJdbcConnectionWithCertificate()
             throws SQLException {

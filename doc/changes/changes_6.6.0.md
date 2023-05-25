@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 6.6.0, released 2023-05-23
+# Test Containers for Exasol on Docker 6.6.0, released 2023-05-25
 
 Code name: Support for Exasol 8 Pre-Releases
 
@@ -8,9 +8,13 @@ To be prepared for the upcoming version 8 of Exasol, this version of the Exasol 
 
 Added `prerelease-8.17.0` to the CI test matrix. Default version is now 7.1.20.
 
+## Known Limitations
+
+Due to changed TLS behavior in 8 pre-release, the Exasol Testcontainer does not work with TLS on version Exasol version 8 yet. Support will be added with #232.
+
 ## Features
 
-* 200: Test with Exasol database version 8 pre-release
+* #200: Test with Exasol database version 8 pre-release
 
 ## Dependency Updates
 
