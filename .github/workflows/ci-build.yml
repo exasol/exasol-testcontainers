@@ -11,9 +11,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # ATTENTION: When changing the versions in the matrix, make sure one of them is listed as default version below
+        # Only for the default version you will get a Sonar analysis!
         docker_db_version: ["7.0.22", "7.1.20", "prerelease-8.17.0"]
     env:
-      DEFAULT_DB_VERSION: "7.1.19"
+      DEFAULT_DB_VERSION: "7.1.20"
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.docker_db_version }}
@@ -57,7 +59,7 @@ jobs:
         env:
           SUPPORT_DIR: ${{ github.workspace }}/target/support
       - name: Publish support package for ${{ matrix.docker_db_version }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: support-db-${{ matrix.docker_db_version }}-run-${{ github.run_id }}
