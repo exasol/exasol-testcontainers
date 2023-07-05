@@ -88,7 +88,7 @@ public class JdbcDriver implements DatabaseDriver {
                 + "PREFIX=" + this.prefix + "\n" //
                 + "NOSECURITY=" + (this.securityManagerEnabled ? "NO" : "YES") + "\n" //
                 + "FETCHSIZE=100000\n" //
-                + "INSERTSIZE=-1";
+                + "INSERTSIZE=-1\n"; // note that the trailing newline is mandatory!
     }
 
     private String getDriverFilename() {

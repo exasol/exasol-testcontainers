@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>6.6.0</version>
+    <version>6.6.1</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
@@ -104,6 +104,27 @@
             <version>2.0.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- Derby database and driver to allow testing connectivity between Exasol and external database -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbynet</artifactId>
+            <!-- We need an older Derby version because the loader in Exasol 7.1 is only compatible with Java 8 -->
+            <version>10.14.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <!-- We need an older Derby version because the loader in Exasol 7.1 is only compatible with Java 8 -->
+            <version>10.14.2.0</version>
+        </dependency>
+        <!-- We need the UDF API for making a test UDF that exercises a JDBC connection -->
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>udf-api-java</artifactId>
+            <version>1.0.2</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <!-- org.testcontainers:testcontainers uses org.slf4j:slf4j-api for logging.
             To get the complete log during tests we redirect slf4j to JUL with this dependency. -->
@@ -181,7 +202,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>6.6.0</version>
+        <version>6.6.1</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
