@@ -6,6 +6,12 @@ Code name: Driver Manager Fix
 
 In this release we fixed a bug that prevented installation of drivers via the driver manager.
 
+Test matrix changes:
+
+* Removed now discontinued Exasol 7.0
+* Upgraded from 7.1.20 to 7.1.21 
+* Upgraded prerelease-8.17.0 to 8.18.1
+
 ## Features
 
 * #228: Fixed bug in driver manager
