@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 6.6.1, released 2023-07-05
+# Test Containers for Exasol on Docker 6.6.1, released 2023-07-06
 
 Code name: Driver Manager Fix
 
