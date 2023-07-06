@@ -68,7 +68,6 @@ class ExasolDriverManagerIT {
             waitForDerbyServerToAcceptConnections(derbyServer);
             final Driver derbyDriver = DriverManager.getDriver("jdbc:derby://localhost");
             final Path driverPath = getPathToDriverJarFile(derbyDriver);
-            System.out.println("Driver path: " + driverPath);
             final ExasolDriverManager exasolDriverManager = EXASOL.getDriverManager();
             final DatabaseDriver driver = JdbcDriver.builder(DERBY_DRIVER_NAME) //
                     .prefix("jdbc:derby:") //
@@ -83,7 +82,7 @@ class ExasolDriverManagerIT {
                     final Statement statement = exasolConnection.createStatement();
                     final ResultSet result = statement.executeQuery("IMPORT FROM JDBC " //
                             + "AT 'jdbc:derby://" + hostIP + ":" + DERBY_PORT + "/test' " //
-                            + "USER '" + DERBY_USER + "' IDENTIFIED BY 'open sesame'"
+                            + "USER '" + DERBY_USER + "' IDENTIFIED BY '" + DERBY_PASSWORD + "' " //
                             + "STATEMENT 'SELECT * FROM T'")) {
                 result.next();
                 assertThat(result.getString(1), equalTo(expectedContent));
