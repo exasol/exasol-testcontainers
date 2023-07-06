@@ -16,7 +16,6 @@ import java.sql.*;
 import java.util.List;
 import java.util.UUID;
 
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.derby.drda.NetworkServerControl;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
