@@ -4,7 +4,7 @@ Code name: Driver Manager Fix
 
 ## Summary
 
-In this release we fixed a bug that prevented installation of drivers via the driver manager.
+In this release we fixed a bug that prevented installation of JDBC drivers via the driver manager.
 
 Test matrix changes:
 

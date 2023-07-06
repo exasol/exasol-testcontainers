@@ -16,6 +16,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.UUID;
 
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.derby.drda.NetworkServerControl;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,9 +37,7 @@ class ExasolDriverManagerIT {
             .withReuse(true);
     public static final int DERBY_PORT = 1527;
     public static final String DERBY_USER = "app";
-    public static final String DERBY_PASSWORD = "open sesame";
-    private static NetworkServerControl derbyServer;
-
+    public static final String DERBY_PASSWORD = "open_sesame";
 
     // [itest->dsn~installing-a-jdbc-driver-from-host-filesystem~1]
     @Test
@@ -65,29 +64,33 @@ class ExasolDriverManagerIT {
     @Test
     void testInstallDerbyDriver(@TempDir final Path derbyTempDir) throws Exception {
         final String hostIP = EXASOL.getHostIp();
-        startDerbyServer(derbyTempDir, hostIP);
-        waitForDerbyServerToAcceptConnections();
-        final Driver derbyDriver = DriverManager.getDriver("jdbc:derby://localhost");
-        final Path driverPath = getPathToDriverJarFile(derbyDriver);
-        System.out.println("Driver path: " + driverPath);
-        final ExasolDriverManager exasolDriverManager = EXASOL.getDriverManager();
-        final DatabaseDriver driver = JdbcDriver.builder(DERBY_DRIVER_NAME) //
-                .prefix("jdbc:derby:") //
-                .sourceFile(driverPath) //
-                .mainClass(derbyDriver.getClass().getCanonicalName()) //
-                .enableSecurityManager(false) //
-                .build();
-        exasolDriverManager.install(driver);
-        final String expectedContent = "from Derby";
-        prepareDerbyInMemoryTableWithContent(expectedContent, hostIP);
-        try (final Connection exasolConnection = EXASOL.createConnection();
-             final Statement statement = exasolConnection.createStatement();
-             final ResultSet result = statement.executeQuery("IMPORT FROM JDBC " //
-                     + "AT 'jdbc:derby://" + hostIP + ":" + DERBY_PORT + "/test' " //
-                     + "USER '" + DERBY_USER + "' IDENTIFIED BY 'open sesame'"
-                     + "STATEMENT 'SELECT * FROM T'")) {
-            result.next();
-            assertThat(result.getString(1), equalTo(expectedContent));
+        final NetworkServerControl derbyServer = startDerbyServer(derbyTempDir, hostIP);
+        try {
+            waitForDerbyServerToAcceptConnections(derbyServer);
+            final Driver derbyDriver = DriverManager.getDriver("jdbc:derby://localhost");
+            final Path driverPath = getPathToDriverJarFile(derbyDriver);
+            System.out.println("Driver path: " + driverPath);
+            final ExasolDriverManager exasolDriverManager = EXASOL.getDriverManager();
+            final DatabaseDriver driver = JdbcDriver.builder(DERBY_DRIVER_NAME) //
+                    .prefix("jdbc:derby:") //
+                    .sourceFile(driverPath) //
+                    .mainClass(derbyDriver.getClass().getCanonicalName()) //
+                    .enableSecurityManager(false) //
+                    .build();
+            exasolDriverManager.install(driver);
+            final String expectedContent = "from Derby";
+            prepareDerbyInMemoryTableWithContent(expectedContent, hostIP);
+            try (final Connection exasolConnection = EXASOL.createConnection();
+                    final Statement statement = exasolConnection.createStatement();
+                    final ResultSet result = statement.executeQuery("IMPORT FROM JDBC " //
+                            + "AT 'jdbc:derby://" + hostIP + ":" + DERBY_PORT + "/test' " //
+                            + "USER '" + DERBY_USER + "' IDENTIFIED BY 'open sesame'"
+                            + "STATEMENT 'SELECT * FROM T'")) {
+                result.next();
+                assertThat(result.getString(1), equalTo(expectedContent));
+            }
+        } finally {
+            shutDownDerbyServer(derbyServer, hostIP);
         }
     }
 
@@ -96,38 +99,47 @@ class ExasolDriverManagerIT {
     }
 
     private void prepareDerbyInMemoryTableWithContent(final String content, final String hostIP) throws SQLException {
-        try (final Connection derbyConnection =
-                     DriverManager.getConnection("jdbc:derby://" + hostIP + ":" + DERBY_PORT + "/test;create=true;");
+        final String jdbcUrl = "jdbc:derby://" + hostIP + ":" + DERBY_PORT + "/test;create=true;";
+        try (final Connection derbyConnection = DriverManager.getConnection(jdbcUrl);
              final Statement statement = derbyConnection.createStatement()) {
             statement.execute("CREATE TABLE T(C VARCHAR(40))");
             statement.execute("INSERT INTO T VALUES ('" + content + "')");
         }
     }
 
-    private static void startDerbyServer(final Path derbyHomeDir, final String hostIP) throws Exception {
+    private NetworkServerControl startDerbyServer(final Path derbyHomeDir, final String hostIP) throws Exception {
         System.setProperty("derby.system.home", derbyHomeDir.toString());
-        System.setProperty("derby.user."+ DERBY_USER, DERBY_PASSWORD);
-        derbyServer = new NetworkServerControl(InetAddress.getByName(hostIP), DERBY_PORT);
+        System.setProperty("derby.user." + DERBY_USER, DERBY_PASSWORD);
+        final NetworkServerControl derbyServer = new NetworkServerControl(InetAddress.getByName(hostIP), DERBY_PORT);
         derbyServer.start(new PrintWriter(System.out));
+        return derbyServer;
     }
 
     @SuppressWarnings("java:S2925") // We need to wait for the server to come up with "sleep" in a loop.
-    private static void waitForDerbyServerToAcceptConnections() throws InterruptedException {
+    private static void waitForDerbyServerToAcceptConnections(final NetworkServerControl derbyServer)
+            throws InterruptedException {
         for (int attempts = 0; attempts < 20; ++attempts) {
             try {
                 derbyServer.ping();
                 return;
-            }
-            catch(final Exception exception) {
+            } catch (final Exception exception) {
                 Thread.sleep(500);
             }
         }
         throw new IllegalStateException("Derby database server required for integration tests did not start up.");
     }
 
-    private static void shutdownDerbyServer() throws Exception {
-        if(derbyServer != null) {
-            derbyServer.shutdown();
+    private static void shutDownDerbyServer(final NetworkServerControl derbyServer, final String hostIp)
+            throws Exception {
+        if (derbyServer != null) {
+            try {
+                DriverManager.getConnection("jdbc:derby://" + hostIp + "/test;shutdown=true", DERBY_USER, DERBY_PASSWORD);
+            }
+            catch (final SQLNonTransientConnectionException exception) {
+                if (!exception.getMessage().contains("SQLSTATE: 08006")) {
+                    throw new RuntimeException("Failed to shut down Derby database server.", exception);
+                }
+            }
         }
     }
 }
