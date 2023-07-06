@@ -77,7 +77,7 @@ Needs: req
 ### EXAoperation Simulation
 `feat~exaoperation-simulation~1`
 
-ETC simulates selected functions of [EXAoperation](https://docs.exasol.com/administration/on-premise/admin_interface/exaoperation.htm).
+ETC simulates selected functions of EXAoperation.
 
 Needs: req
 
@@ -522,7 +522,7 @@ Needs: dsn
 
 ### EXAoperation Simulation
 
-The Exasol test container is based on Exasol's `docker-db` which does not include [EXAoperation](https://docs.exasol.com/administration/on-premise/admin_interface/exaoperation.htm). That being said some integration tests require a subset of the EXAoperation functions in order to be executable.
+The Exasol test container is based on Exasol's `docker-db` which does not include EXAoperation. That being said some integration tests require a subset of the EXAoperation functions in order to be executable.
 
 #### Installing an EXAoperation Plug-in
 `req~installing-an-exaoperation-plug-in~1`

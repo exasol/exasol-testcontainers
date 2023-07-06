@@ -472,7 +472,7 @@ If your are looking for an example, please check the integration test `ExaLoader
 
 ### Secure Connections with TLS
 
-Exasol uses TLS certificates to encrypt JDBC connection, bucket access and the RPC API. In a normal installation you can [configure a custom certificate](https://docs.exasol.com/administration/on-premise/access_management/tls_certificate.htm). The docker container automatically generates a new self-signed certificate at startup.
+Exasol uses TLS certificates to encrypt JDBC connection, bucket access and the RPC API. In a normal installation you can [configure a custom certificate](https://github.com/exasol/exasol-java-tutorial/blob/main/tls-tutorial/doc/tls_with_exasol.md). The docker container automatically generates a new self-signed certificate at startup.
 
 #### Securing JDBC Connections
 

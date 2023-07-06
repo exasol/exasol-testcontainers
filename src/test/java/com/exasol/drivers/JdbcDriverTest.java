@@ -96,7 +96,7 @@ class JdbcDriverTest {
                 .build() //
                 .toString(), //
                 equalTo("JDBC driver \"the_name\" (com.example.Driver), source: \"" //
-                        + Paths.get("/the/path").toString() + "\""));
+                        + Paths.get("/the/path") + "\""));
     }
 
     @Test
@@ -112,7 +112,7 @@ class JdbcDriverTest {
                         + "PREFIX=jdbc:another_prefix\n" //
                         + "NOSECURITY=NO\n" //
                         + "FETCHSIZE=100000\n" //
-                        + "INSERTSIZE=-1"));
+                        + "INSERTSIZE=-1\n"));
     }
 
     @Test
@@ -150,7 +150,7 @@ class JdbcDriverTest {
     }
 
     private void assertBuilderValidationException(final JdbcDriver.Builder builder, final String expectedMessagePart) {
-        final Throwable exception = assertThrows(IllegalStateException.class, () -> builder.build());
+        final Throwable exception = assertThrows(IllegalStateException.class, builder::build);
         assertThat(exception.getMessage(), containsString(expectedMessagePart));
     }
 }

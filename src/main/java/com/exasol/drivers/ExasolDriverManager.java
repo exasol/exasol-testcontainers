@@ -102,7 +102,7 @@ public class ExasolDriverManager {
     public String getManifest() {
         return this.installedDrivers.values() //
                 .stream() //
-                .map(DatabaseDriver::getManifest)//
-                .collect(Collectors.joining("\n\n"));
+                .map(DatabaseDriver::getManifest) //
+                .collect(Collectors.joining("\n"));
     }
 }
