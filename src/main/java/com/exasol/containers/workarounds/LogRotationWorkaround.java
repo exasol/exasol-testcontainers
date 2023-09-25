@@ -15,9 +15,7 @@ import com.exasol.containers.ssh.SshException;
  * This is a workaround for an issue with broken log rotation present in Exasol's `docker-db` version 7.0.x and below.
  */
 public class LogRotationWorkaround implements Workaround {
-    static final Logger LOGGER = LoggerFactory.getLogger(LogRotationWorkaround.class);
-    @SuppressWarnings("java:S1075") // This is a fixed path. It won't change.
-    static final String ANACRON_SPOOL = "/var/spool/anacron/cron.daily";
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogRotationWorkaround.class);
     private final ExasolContainer<? extends ExasolContainer<?>> exasol;
 
     /**
@@ -43,9 +41,7 @@ public class LogRotationWorkaround implements Workaround {
             final ExasolDockerImageReference reference = this.exasol.getDockerImageReference();
             if (reference.hasMajor() && //
                     ((reference.getMajor() < 7) //
-                            || ((reference.getMajor() == 7) && reference.hasMinor() && (reference.getMinor() < 1))))
-
-            {
+                            || ((reference.getMajor() == 7) && reference.hasMinor() && (reference.getMinor() < 1)))) {
                 LOGGER.trace("Log rotation workaround required, since Exasol version is below 7.1.");
                 return true;
             } else {
@@ -61,8 +57,9 @@ public class LogRotationWorkaround implements Workaround {
             final ExecResult result = this.exasol.execInContainer("sed", "-i", "-es/'bucketfsd[^']*log' //",
                     "/etc/cron.daily/exa-logrotate");
             if (result.getExitCode() != ExitCode.OK) {
-                throw new WorkaroundException("Unable to apply log rotation workaround. Error during comand execution: "
-                        + result.getStderr());
+                throw new WorkaroundException(
+                        "Unable to apply log rotation workaround. Error during command execution: "
+                                + result.getStderr());
             }
         } catch (final UnsupportedOperationException | IOException | SshException exception) {
             throw new WorkaroundException("Unable to apply log rotation workaround.", exception);
