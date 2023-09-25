@@ -6,7 +6,7 @@ Code name: Fix vulnerability CVE-2023-42503
 
 This release fixes vulnerability CVE-2023-42503 in transitive dependency `org.apache.commons:commons-compress`.
 
-The release also updates the default Exasol version to 7.1.23
+The release also updates the default Exasol version to 7.1.23.
 
 ## Security
 
