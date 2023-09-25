@@ -13,23 +13,29 @@ jobs:
       matrix:
         # ATTENTION: When changing the versions in the matrix, make sure one of them is listed as default version below
         # Only for the default version you will get a Sonar analysis!
-        docker_db_version: ["7.1.21", "8.18.1"]
+        docker_db_version: ["7.1.23", "8.22.0"]
     env:
-      DEFAULT_DB_VERSION: "7.1.21"
+      DEFAULT_DB_VERSION: "7.1.23"
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.docker_db_version }}
       cancel-in-progress: true
     steps:
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
       - name: Checkout the repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK 11
+      - name: Set up JDK 11 & 17
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
-          java-version: 11
+          java-version: |
+            17
+            11
           cache: "maven"
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
@@ -49,13 +55,13 @@ jobs:
           echo "Support information archives are written to $SUPPORT_DIR"
           echo
           mkdir -p "$SUPPORT_DIR"
-          mvn --batch-mode clean verify \
-          -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-          -DtrimStackTrace=false \
-          -Dcom.exasol.dockerdb.image=${{ matrix.docker_db_version }} \
-          -Dcom.exasol.containers.support_information_target_dir="$SUPPORT_DIR" \
-          -Dcom.exasol.containers.monitored_exit=EXIT_ANY \
-          -Pslow
+          JAVA_HOME=$JAVA_HOME_11_X64 mvn --batch-mode clean verify \
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+            -DtrimStackTrace=false \
+            -Dcom.exasol.dockerdb.image=${{ matrix.docker_db_version }} \
+            -Dcom.exasol.containers.support_information_target_dir="$SUPPORT_DIR" \
+            -Dcom.exasol.containers.monitored_exit=EXIT_ANY \
+            -Pslow
         env:
           SUPPORT_DIR: ${{ github.workspace }}/target/support
       - name: Publish support package for ${{ matrix.docker_db_version }}
@@ -72,7 +78,7 @@ jobs:
       - name: Sonar analysis
         if: ${{ env.SONAR_TOKEN != null && env.DEFAULT_DB_VERSION == matrix.docker_db_version }}
         run: |
-          mvn --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          JAVA_HOME=$JAVA_HOME_17_X64 mvn --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DtrimStackTrace=false \
               -Dsonar.organization=exasol \

@@ -8,3 +8,5 @@ pk_generated_parent.pom                                          linguist-genera
 .github/workflows/release_droid_print_quick_checksum.yml         linguist-generated=true
 .github/workflows/release_droid_release_on_maven_central.yml     linguist-generated=true
 .github/workflows/release_droid_upload_github_release_assets.yml linguist-generated=true
+.settings/org.eclipse.jdt.core.prefs                             linguist-generated=true
+.settings/org.eclipse.jdt.core.prefs                             linguist-generated=true
