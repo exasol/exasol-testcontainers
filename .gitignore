@@ -2,6 +2,9 @@
 /.classpath
 /.project
 /.settings/org.eclipse.jdt.apt.core.prefs
+/.settings/org.sonarlint.eclipse.core.prefs
+/.settings/org.eclipse.m2e.core.prefs
+/.settings/org.eclipse.core.resources.prefs
 
 # Intellij
 .idea
@@ -10,7 +13,6 @@
 
 /.DS_Store
 .dbeaver
-.settings/org.sonarlint.eclipse.core.prefs
 .DS_Store
 *.swp
 local
