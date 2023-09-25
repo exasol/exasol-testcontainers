@@ -103,6 +103,6 @@ class LogRotationWorkaroundTest {
         when(exasolMock.execInContainer(anyStrings())).thenReturn(mockResult);
         final Workaround workaround = new LogRotationWorkaround(exasolMock);
         final WorkaroundException exception = assertThrows(WorkaroundException.class, () -> workaround.apply());
-        assertThat(exception.getMessage(), containsString("Error during comand execution: reason"));
+        assertThat(exception.getMessage(), containsString("Error during command execution: reason"));
     }
 }
