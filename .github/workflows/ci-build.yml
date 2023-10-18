@@ -13,7 +13,7 @@ jobs:
       matrix:
         # ATTENTION: When changing the versions in the matrix, make sure one of them is listed as default version below
         # Only for the default version you will get a Sonar analysis!
-        docker_db_version: ["7.1.23", "8.22.0"]
+        docker_db_version: ["7.1.23", "8.23.0"]
     env:
       DEFAULT_DB_VERSION: "7.1.23"
     runs-on: ubuntu-latest
