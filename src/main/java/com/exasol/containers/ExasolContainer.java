@@ -715,7 +715,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                         + " after {{after}} seconds. Last connection exception was: {{exception}}")
                 .parameter("url", getJdbcUrl(), "JDBC URL of the connection to the Exasol Testcontainer")
                 .parameter("query", getTestQueryString(), "Query used to test the connection")
-                .parameter("after", timeoutAfter.toSeconds() + "." + timeoutAfter.toSecondsPart())
+                .parameter("after", timeoutAfter.toSeconds())
                 .parameter("exception",
                         (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
                         "exception thrown on last connection attempt")
@@ -741,9 +741,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 throw new ContainerLaunchException("Startup check query failed. Exasol container start-up failed.");
             }
         } catch (final NoDriverFoundException exception) {
-            throw new ContainerLaunchException(
-                    "Unable to determine start status of container, because the referenced JDBC driver was not found.",
-                    exception);
+            throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-24").message(
+                    "Unable to determine start status of container, because the referenced JDBC driver was not found: {{cause}}",
+                    exception.getMessage()).toString(), exception);
         } catch (final SQLException exception) {
             this.lastConnectionException = exception;
             sleepBeforeNextConnectionAttempt();
