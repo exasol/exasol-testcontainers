@@ -21,7 +21,7 @@
 | [JUnit Jupiter Params][12]                     | [Eclipse Public License v2.0][13] |
 | [Testcontainers :: JUnit Jupiter Extension][0] | [MIT][1]                          |
 | [Hamcrest][14]                                 | [BSD License 3][15]               |
-| [mockito-junit-jupiter][16]                    | [The MIT License][17]             |
+| [mockito-junit-jupiter][16]                    | [MIT][17]                         |
 | [junit-pioneer][18]                            | [Eclipse Public License v2.0][13] |
 | [Apache Derby Network Server][10]              | [Apache 2][11]                    |
 | [Exasol UDF API for Java][19]                  | [MIT License][20]                 |
