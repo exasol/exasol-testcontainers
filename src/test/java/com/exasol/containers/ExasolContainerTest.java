@@ -21,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
@@ -67,7 +66,7 @@ class ExasolContainerTest {
     void testWaitUntilContainerStartedThrowsExceptionOnMissingJdbcDriver() throws NoDriverFoundException, SQLException {
         doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
         final String message = "Mock Driver-Not-Found Exception";
-        Mockito.doThrow(new NoDriverFoundException(message, new Exception("Mock cause"))).when(this.containerSpy)
+        doThrow(new NoDriverFoundException(message, new Exception("Mock cause"))).when(this.containerSpy)
                 .createConnection(anyString());
         assertThrowsLaunchException(equalTo(
                 "E-ETC-24: Unable to determine start status of container, because the referenced JDBC driver was not found: '"
