@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 6.6.3, released 2023-11-07
+# Test Containers for Exasol on Docker 6.6.3, released 2023-11-08
 
 Code name: Fixed CVE-2023-4043 in `org.eclipse.parsson:parsson`
 
