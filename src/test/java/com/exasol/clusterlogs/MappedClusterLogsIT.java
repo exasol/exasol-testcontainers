@@ -23,7 +23,7 @@ class MappedClusterLogsIT {
     private static Path tempDir;
 
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>("8.23.0") //
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>() //
             .withClusterLogsPath(tempDir) //
             .withRequiredServices();
 
