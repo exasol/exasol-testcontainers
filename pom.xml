@@ -171,6 +171,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.2</version>
                 <configuration>
                     <!-- Switching module path off is absolutely vital, otherwise Surefire versions newer than 3.0.0-M3
                     don't find test! -->
