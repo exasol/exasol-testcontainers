@@ -1,12 +1,15 @@
-name: Dependencies Check
+name: Report Security Issues for Repository
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 2 * * *"
 
 jobs:
-  build:
+  report_security_issues:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
 
     steps:
       - uses: actions/checkout@v4
@@ -16,5 +19,17 @@ jobs:
           distribution: "temurin"
           java-version: 11
           cache: "maven"
-      - name: Checking dependencies for vulnerabilities
-        run: mvn --batch-mode org.sonatype.ossindex.maven:ossindex-maven-plugin:audit -f pom.xml
+
+      - name: Generate ossindex report
+        run: |
+          mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
+              org.sonatype.ossindex.maven:ossindex-maven-plugin:audit-aggregate \
+              -Dossindex.reportFile=$(pwd)/ossindex-report.json \
+              -Dossindex.fail=false
+
+      - name: Report Security Issues
+        uses: exasol/python-toolbox/.github/actions/security-issues@main
+        with:
+          format: "maven"
+          command: "cat ossindex-report.json"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
