@@ -3,15 +3,14 @@ package com.exasol.clusterlogs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.com.google.common.io.Files;
 
 import com.exasol.containers.ExasolContainer;
 
@@ -21,13 +20,21 @@ class MappedClusterLogsIT {
     private static final Path TEMP_DIR = createTempDir();
 
     private static Path createTempDir() {
-        final File tempDir = Files.createTempDir();
-        tempDir.deleteOnExit();
-        return tempDir.toPath();
+        final Path tempDir = createTempPath();
+        tempDir.toFile().deleteOnExit();
+        return tempDir;
+    }
+
+    private static Path createTempPath() {
+        try {
+            return Files.createTempDirectory("MappedClusterLogsIT");
+        } catch (final IOException exception) {
+            throw new UncheckedIOException(exception);
+        }
     }
 
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>() //
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>("8.23.0") //
             .withClusterLogsPath(TEMP_DIR) //
             .withRequiredServices();
 
