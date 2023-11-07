@@ -27,14 +27,14 @@ class MappedClusterLogsIT {
 
     private static Path createTempPath() {
         try {
-            return Files.createTempDirectory("MappedClusterLogsIT");
+            return Files.createTempDirectory(MappedClusterLogsIT.class.getName());
         } catch (final IOException exception) {
             throw new UncheckedIOException(exception);
         }
     }
 
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>("8.23.0") //
+    private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>() //
             .withClusterLogsPath(TEMP_DIR) //
             .withRequiredServices();
 
