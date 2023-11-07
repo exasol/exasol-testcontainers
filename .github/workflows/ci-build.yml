@@ -16,7 +16,7 @@ jobs:
         docker_db_version: ["7.1.23", "8.23.0"]
     env:
       DEFAULT_DB_VERSION: "7.1.23"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.docker_db_version }}
       cancel-in-progress: true
