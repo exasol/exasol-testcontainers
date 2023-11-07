@@ -129,8 +129,8 @@ class ExasolContainerTest {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
             final IllegalStateException exception = assertThrows(IllegalStateException.class,
                     container::getClusterConfiguration);
-            assertThat(exception.getMessage(),
-                    equalTo("Tried to access Exasol cluster configuration before it was read from the container."));
+            assertThat(exception.getMessage(), equalTo(
+                    "E-ETC-25: Tried to access Exasol cluster configuration before it was read from the container. Wait until startup is complete."));
         }
     }
 

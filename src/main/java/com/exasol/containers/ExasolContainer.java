@@ -238,7 +238,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private int getFirstDatabasePort() {
-        return this.clusterConfiguration.getDatabaseServiceConfiguration(0).getPort();
+        return this.getClusterConfiguration().getDatabaseServiceConfiguration(0).getPort();
     }
 
     @Override
@@ -426,8 +426,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public synchronized ClusterConfiguration getClusterConfiguration() {
         if (this.clusterConfiguration == null) {
-            throw new IllegalStateException(
-                    "Tried to access Exasol cluster configuration before it was read from the container.");
+            throw new IllegalStateException(ExaError.messageBuilder("E-ETC-25")
+                    .message("Tried to access Exasol cluster configuration before it was read from the container.")
+                    .mitigation("Wait until startup is complete.").toString());
         }
         return this.clusterConfiguration;
     }
@@ -704,7 +705,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void waitUntilStatementCanBeExecuted() {
-        LOGGER.trace("Waiting {} for JDBC connection to {}", this.connectionWaitTimeout, getJdbcUrl());
+        LOGGER.trace("Waiting {} for JDBC connection", this.connectionWaitTimeout);
         sleepBeforeNextConnectionAttempt();
         final Instant before = Instant.now();
         final Instant expiry = before.plus(this.connectionWaitTimeout);
