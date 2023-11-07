@@ -84,7 +84,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
-    private int connectionWaitTimeoutSeconds = 250;
+    private int connectionWaitTimeoutSeconds = 600;
     private ExasolDriverManager driverManager = null;
     private final ContainerStatusCache statusCache = new ContainerStatusCache(CACHE_DIRECTORY);
     private ContainerStatus status = null;
@@ -350,7 +350,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected String getTestQueryString() {
-        return "SELECT 1 FROM DUAL";
+        return "SELECT 1";
     }
 
     @Override
@@ -710,7 +710,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             }
         }
         final Duration timeoutAfter = Duration.between(before, Instant.now());
-        throw new ContainerLaunchException(ExaError.messageBuilder("F-ETC-5")
+        final ContainerLaunchException exception = new ContainerLaunchException(ExaError.messageBuilder("F-ETC-5")
                 .message("Exasol container start-up timed out trying connection to {{url}} using query {{query}}"
                         + " after {{after}} seconds. Last connection exception was: {{exception}}")
                 .parameter("url", getJdbcUrl(), "JDBC URL of the connection to the Exasol Testcontainer")
@@ -720,6 +720,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                         (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
                         "exception thrown on last connection attempt")
                 .toString(), this.lastConnectionException);
+        LOGGER.error(exception.getMessage(), this.lastConnectionException);
+        throw exception;
     }
 
     private void sleepBeforeNextConnectionAttempt() {
