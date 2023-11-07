@@ -84,6 +84,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
+    /** Timeout for JDBC connection. Typically this takes around 40s. */
     private Duration connectionWaitTimeout = Duration.ofSeconds(250);
     private ExasolDriverManager driverManager = null;
     private final ContainerStatusCache statusCache = new ContainerStatusCache(CACHE_DIRECTORY);
