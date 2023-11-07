@@ -84,7 +84,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
-    private int connectionWaitTimeoutSeconds = 600;
+    private Duration connectionWaitTimeout = Duration.ofSeconds(250);
     private ExasolDriverManager driverManager = null;
     private final ContainerStatusCache statusCache = new ContainerStatusCache(CACHE_DIRECTORY);
     private ContainerStatus status = null;
@@ -701,11 +701,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void waitUntilStatementCanBeExecuted() {
+        LOGGER.trace("Waiting {} for JDBC connection to {}", this.connectionWaitTimeout, getJdbcUrl());
         sleepBeforeNextConnectionAttempt();
         final Instant before = Instant.now();
-        final Instant expiry = before.plusSeconds(this.connectionWaitTimeoutSeconds);
+        final Instant expiry = before.plus(this.connectionWaitTimeout);
         while (Instant.now().isBefore(expiry)) {
             if (isConnectionAvailable()) {
+                LOGGER.trace("Connection succeeded after {}", Duration.between(before, Instant.now()));
                 return;
             }
         }
@@ -891,7 +893,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return self
      */
     public ExasolContainer<T> withJdbcConnectionTimeout(final int timeoutInSeconds) {
-        this.connectionWaitTimeoutSeconds = timeoutInSeconds;
+        this.connectionWaitTimeout = Duration.ofSeconds(timeoutInSeconds);
         return this;
     }
 
@@ -901,7 +903,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return JDBC connection timeout in seconds.
      */
     public int getJdbcConnectionTimeout() {
-        return this.connectionWaitTimeoutSeconds;
+        return (int) this.connectionWaitTimeout.toSeconds();
     }
 
     /**
