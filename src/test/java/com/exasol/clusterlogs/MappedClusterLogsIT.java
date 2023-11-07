@@ -7,8 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -17,6 +16,7 @@ import com.exasol.containers.ExasolContainer;
 
 @Tag("slow")
 @Testcontainers
+@Disabled("See https://github.com/exasol/exasol-testcontainers/issues/240")
 class MappedClusterLogsIT {
 
     @TempDir
