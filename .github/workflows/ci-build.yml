@@ -13,9 +13,9 @@ jobs:
       matrix:
         # ATTENTION: When changing the versions in the matrix, make sure one of them is listed as default version below
         # Only for the default version you will get a Sonar analysis!
-        docker_db_version: ["7.1.23", "8.22.0"]
+        docker_db_version: ["7.1.24", "8.23.1"]
     env:
-      DEFAULT_DB_VERSION: "7.1.23"
+      DEFAULT_DB_VERSION: "7.1.24"
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.docker_db_version }}
@@ -26,7 +26,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /usr/share/dotnet
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 11 & 17
@@ -83,7 +83,7 @@ jobs:
               -DtrimStackTrace=false \
               -Dsonar.organization=exasol \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN
+              -Dsonar.token=$SONAR_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

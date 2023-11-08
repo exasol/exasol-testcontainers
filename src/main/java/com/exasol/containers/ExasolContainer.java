@@ -84,7 +84,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean reused = false;
     private final ExasolDockerImageReference dockerImageReference;
     private boolean portAutodetectFailed = false;
-    private int connectionWaitTimeoutSeconds = 250;
+    /** Timeout for JDBC connection. Typically this takes around 40s. */
+    private Duration connectionWaitTimeout = Duration.ofSeconds(250);
     private ExasolDriverManager driverManager = null;
     private final ContainerStatusCache statusCache = new ContainerStatusCache(CACHE_DIRECTORY);
     private ContainerStatus status = null;
@@ -237,7 +238,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private int getFirstDatabasePort() {
-        return this.clusterConfiguration.getDatabaseServiceConfiguration(0).getPort();
+        return this.getClusterConfiguration().getDatabaseServiceConfiguration(0).getPort();
     }
 
     @Override
@@ -350,7 +351,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~exasol-container-ready-criteria~3]
     @Override
     protected String getTestQueryString() {
-        return "SELECT 1 FROM DUAL";
+        return "SELECT 1";
     }
 
     @Override
@@ -425,8 +426,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public synchronized ClusterConfiguration getClusterConfiguration() {
         if (this.clusterConfiguration == null) {
-            throw new IllegalStateException(
-                    "Tried to access Exasol cluster configuration before it was read from the container.");
+            throw new IllegalStateException(ExaError.messageBuilder("E-ETC-25")
+                    .message("Tried to access Exasol cluster configuration before it was read from the container.")
+                    .mitigation("Wait until startup is complete.").toString());
         }
         return this.clusterConfiguration;
     }
@@ -639,8 +641,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     protected void waitUntilClusterConfigurationAvailable() {
         if (!this.reused) {
-            LOGGER.trace("Waiting for cluster configuration to become available.");
-            final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*");
+            final Duration timeout = Duration.ofSeconds(60);
+            LOGGER.trace("Waiting {} for cluster configuration to become available.", timeout);
+            final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*")
+                    .withStartupTimeout(timeout);
             strategy.waitUntilReady(this);
         }
         clusterConfigurationIsAvailable();
@@ -701,11 +705,13 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     private void waitUntilStatementCanBeExecuted() {
+        LOGGER.trace("Waiting {} for JDBC connection", this.connectionWaitTimeout);
         sleepBeforeNextConnectionAttempt();
         final Instant before = Instant.now();
-        final Instant expiry = before.plusSeconds(this.connectionWaitTimeoutSeconds);
+        final Instant expiry = before.plus(this.connectionWaitTimeout);
         while (Instant.now().isBefore(expiry)) {
             if (isConnectionAvailable()) {
+                LOGGER.trace("Connection succeeded after {}", Duration.between(before, Instant.now()));
                 return;
             }
         }
@@ -715,7 +721,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                         + " after {{after}} seconds. Last connection exception was: {{exception}}")
                 .parameter("url", getJdbcUrl(), "JDBC URL of the connection to the Exasol Testcontainer")
                 .parameter("query", getTestQueryString(), "Query used to test the connection")
-                .parameter("after", timeoutAfter.toSeconds() + "." + timeoutAfter.toSecondsPart())
+                .parameter("after", timeoutAfter.toSeconds())
                 .parameter("exception",
                         (this.lastConnectionException == null) ? "none" : this.lastConnectionException.getMessage(),
                         "exception thrown on last connection attempt")
@@ -741,9 +747,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
                 throw new ContainerLaunchException("Startup check query failed. Exasol container start-up failed.");
             }
         } catch (final NoDriverFoundException exception) {
-            throw new ContainerLaunchException(
-                    "Unable to determine start status of container, because the referenced JDBC driver was not found.",
-                    exception);
+            throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-24").message(
+                    "Unable to determine start status of container, because the referenced JDBC driver was not found: {{cause}}",
+                    exception.getMessage()).toString(), exception);
         } catch (final SQLException exception) {
             this.lastConnectionException = exception;
             sleepBeforeNextConnectionAttempt();
@@ -891,7 +897,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return self
      */
     public ExasolContainer<T> withJdbcConnectionTimeout(final int timeoutInSeconds) {
-        this.connectionWaitTimeoutSeconds = timeoutInSeconds;
+        this.connectionWaitTimeout = Duration.ofSeconds(timeoutInSeconds);
         return this;
     }
 
@@ -901,7 +907,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return JDBC connection timeout in seconds.
      */
     public int getJdbcConnectionTimeout() {
-        return this.connectionWaitTimeoutSeconds;
+        return (int) this.connectionWaitTimeout.toSeconds();
     }
 
     /**

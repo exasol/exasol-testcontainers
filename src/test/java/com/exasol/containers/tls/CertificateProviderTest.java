@@ -46,7 +46,7 @@ class CertificateProviderTest {
         final Optional<X509Certificate> certificate = this.certificateProvider.getCertificate();
         assertThat(certificate.isPresent(), is(true));
         assertThat(certificate.get(), notNullValue());
-        assertThat(certificate.get().getIssuerDN().getName(), equalTo("CN=exacluster.local"));
+        assertThat(certificate.get().getIssuerX500Principal().getName(), equalTo("CN=exacluster.local"));
     }
 
     private void simulateTlsCert(final String certContent) throws ExasolContainerException {

@@ -28,8 +28,8 @@ class CertificateProviderIT {
         final Optional<X509Certificate> optionalCertificate = CONTAINER.getTlsCertificate();
         final var certificate = optionalCertificate.get();
         assertAll(() -> assertThat(certificate, notNullValue()),
-                () -> assertThat(certificate.getIssuerDN().getName(), equalTo("CN=exacluster.local")),
-                () -> assertThat(certificate.getSubjectDN().getName(),
+                () -> assertThat(certificate.getIssuerX500Principal().getName(), equalTo("CN=exacluster.local")),
+                () -> assertThat(certificate.getSubjectX500Principal().getName(),
                         either(equalTo("CN=*.exacluster.local")).or(equalTo("CN=srv.exacluster.local"))),
                 () -> assertThat(certificate.getNotBefore(), lessThan(now)),
                 () -> assertThat(certificate.getNotAfter(), greaterThan(now)));

@@ -14,12 +14,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer.NoDriverFoundException;
@@ -36,8 +37,9 @@ class ExasolContainerTest {
 
     @BeforeEach
     void beforeEach() throws NoDriverFoundException {
-        final ExasolContainer<?> container = new ExasolContainer<>();
+        final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>();
         container.withRequiredServices();
+        container.withJdbcConnectionTimeout(10);
         this.containerSpy = spy(container);
     }
 
@@ -48,20 +50,28 @@ class ExasolContainerTest {
         doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
         doReturn(this.connectionMock).when(this.containerSpy).createConnection(any());
         when(this.connectionMock.createStatement()).thenThrow(new SQLException("Mock Exception"));
-        assertThrowsLaunchException("timed out", () -> this.containerSpy.waitUntilContainerStarted());
+        assertThrowsLaunchException(
+                allOf(Matchers
+                        .startsWith("F-ETC-5: Exasol container start-up timed out trying connection to 'jdbc:exa:"),
+                        Matchers.endsWith("Last connection exception was: 'Mock Exception'")),
+                () -> this.containerSpy.waitUntilContainerStarted());
     }
 
-    private void assertThrowsLaunchException(final String expectedMessageFragment, final Executable executable) {
+    private void assertThrowsLaunchException(final Matcher<String> expectedMessage, final Executable executable) {
         final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, executable);
-        assertThat(exception.getMessage(), containsString(expectedMessageFragment));
+        assertThat(exception.getMessage(), expectedMessage);
     }
 
     @Test
     void testWaitUntilContainerStartedThrowsExceptionOnMissingJdbcDriver() throws NoDriverFoundException, SQLException {
         doNothing().when(this.containerSpy).waitUntilClusterConfigurationAvailable();
-        Mockito.doThrow(new NoDriverFoundException("Mock Driver-Not-Found Exception", new Exception("Mock cause")))
-                .when(this.containerSpy).createConnection(anyString());
-        assertThrowsLaunchException("driver was not found", () -> this.containerSpy.waitUntilContainerStarted());
+        final String message = "Mock Driver-Not-Found Exception";
+        doThrow(new NoDriverFoundException(message, new Exception("Mock cause"))).when(this.containerSpy)
+                .createConnection(anyString());
+        assertThrowsLaunchException(equalTo(
+                "E-ETC-24: Unable to determine start status of container, because the referenced JDBC driver was not found: '"
+                        + message + "'"),
+                () -> this.containerSpy.waitUntilContainerStarted());
     }
 
     @SuppressWarnings("deprecation")
@@ -119,8 +129,8 @@ class ExasolContainerTest {
         try (final ExasolContainer<?> container = new ExasolContainer<>()) {
             final IllegalStateException exception = assertThrows(IllegalStateException.class,
                     container::getClusterConfiguration);
-            assertThat(exception.getMessage(),
-                    equalTo("Tried to access Exasol cluster configuration before it was read from the container."));
+            assertThat(exception.getMessage(), equalTo(
+                    "E-ETC-25: Tried to access Exasol cluster configuration before it was read from the container. Wait until startup is complete."));
         }
     }
 
