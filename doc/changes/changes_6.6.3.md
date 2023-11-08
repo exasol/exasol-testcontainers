@@ -6,6 +6,8 @@ Code name: Fixed CVE-2023-4043 in `org.eclipse.parsson:parsson`
 
 This release fixes CVE-2023-4043 in runtime dependency `org.eclipse.parsson:parsson`.
 
+The release also updates the default Exasol version to 7.1.24.
+
 **Known Issue:** When configuring a cluster log path by calling `ExasolContainer.withClusterLogsPath()` startup of the container fails with a timeout when waiting for the JDBC connection. This will be fixed in [#240](https://github.com/exasol/exasol-testcontainers/issues/240).
 
 ## Security
