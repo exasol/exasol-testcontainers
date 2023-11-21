@@ -198,6 +198,16 @@
                     <useResultFile>false</useResultFile>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.ossindex.maven</groupId>
+                <artifactId>ossindex-maven-plugin</artifactId>
+                <configuration>
+                    <excludeVulnerabilityIds>
+                        <!-- org.apache.derby:derby:jar:10.14.2.0 is required only for tests, newer versions don't support Java 8 any more. -->
+                        <exclude>CVE-2022-46337</exclude>
+                    </excludeVulnerabilityIds>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <parent>

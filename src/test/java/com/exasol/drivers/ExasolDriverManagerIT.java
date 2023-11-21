@@ -92,14 +92,14 @@ class ExasolDriverManagerIT {
         }
     }
 
-    private static Path getPathToDriverJarFile(final Driver derbyDriver) {
-        return Path.of(derbyDriver.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
+    private static Path getPathToDriverJarFile(final Driver driver) {
+        return Path.of(driver.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
     }
 
     private void prepareDerbyInMemoryTableWithContent(final String content, final String hostIP) throws SQLException {
         final String jdbcUrl = "jdbc:derby://" + hostIP + ":" + DERBY_PORT + "/test;create=true;";
         try (final Connection derbyConnection = DriverManager.getConnection(jdbcUrl);
-             final Statement statement = derbyConnection.createStatement()) {
+                final Statement statement = derbyConnection.createStatement()) {
             statement.execute("CREATE TABLE T(C VARCHAR(40))");
             statement.execute("INSERT INTO T VALUES ('" + content + "')");
         }
@@ -131,9 +131,9 @@ class ExasolDriverManagerIT {
             throws Exception {
         if (derbyServer != null) {
             try {
-                DriverManager.getConnection("jdbc:derby://" + hostIp + "/test;shutdown=true", DERBY_USER, DERBY_PASSWORD);
-            }
-            catch (final SQLNonTransientConnectionException exception) {
+                DriverManager.getConnection("jdbc:derby://" + hostIp + "/test;shutdown=true", DERBY_USER,
+                        DERBY_PASSWORD);
+            } catch (final SQLNonTransientConnectionException exception) {
                 if (!exception.getMessage().contains("SQLSTATE: 08006")) {
                     throw new RuntimeException("Failed to shut down Derby database server.", exception);
                 }

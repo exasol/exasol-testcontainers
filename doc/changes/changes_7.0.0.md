@@ -6,6 +6,8 @@ Code name: Removed `withClusterLogsPath()`
 
 This release removes method `ExasolContainer.withClusterLogsPath()` because the underlying method `addFileSystemBind()` is broken. We decided to remove the method because it is not widely used.
 
+**Note:** This release excludes vulnerability CVE-2022-46337 in `org.apache.derby:derby:jar:10.14.2.0` which is required only for tests. Newer versions don't support Java 8 any more.
+
 ## Breaking Change
 
 * #240: Removed `ExasolContainer.withClusterLogsPath()`
