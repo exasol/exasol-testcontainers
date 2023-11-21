@@ -3,6 +3,9 @@ package com.exasol.containers.wait.strategy;
 import static com.exasol.containers.ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +30,9 @@ public class BucketFsWaitStrategy extends LogFileEntryWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        LOGGER.debug("Waiting for BucketFS to be ready.");
+        LOGGER.debug("Waiting {} for BucketFS to be ready.", this.startupTimeout);
+        final Instant start = Instant.now();
         super.waitUntilReady();
-        LOGGER.debug("BucketFS is ready.");
+        LOGGER.debug("BucketFS is ready after {}.", Duration.between(start, Instant.now()));
     }
 }
