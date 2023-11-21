@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 7.0.0, released 2023-11-21
+# Test Containers for Exasol on Docker 7.0.0, released 2023-11-22
 
 Code name: Removed `withClusterLogsPath()`
 
