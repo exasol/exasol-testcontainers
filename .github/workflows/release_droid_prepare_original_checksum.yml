@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Free Disk Space
+        if: ${{ false }}
         run: |
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /usr/share/dotnet

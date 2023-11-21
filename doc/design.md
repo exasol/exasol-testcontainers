@@ -416,14 +416,11 @@ Needs: impl, utest, itest
 
 ### Mapping the Cluster Log Directory to the Host
 
-`dsn~mapping-the-log-directory-to-the-host~1`
+`dsn~mapping-the-log-directory-to-the-host~2`
 
 The `ExasolContainer` lets integrators map the cluster log directory to a configurable directory on the host.
 
-Covers:
-* [`req~reading-log-files~1`](system_requirements.md#reading-log-files)
-
-Needs: impl, itest
+This feature was removed because mapping the log directory with `addFileSystemBind()` is broken and does not work any more, see [#240](https://github.com/exasol/exasol-testcontainers/issues/240).
 
 ### Clock Synchronization for Log Timestamp Correlation
 `dsn~clock-synchronization~1`

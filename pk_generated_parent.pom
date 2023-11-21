@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers-generated-parent</artifactId>
-    <version>6.6.3</version>
+    <version>7.0.0</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,6 +57,12 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <showWarnings>true</showWarnings>
+                    <compilerArgs>
+                        <!-- We turn off `processing` because it complains about every annotation -->
+                        <arg>-Xlint:all,-processing</arg>
+                        <!-- Don't add -Werror as this will let the build fail for linter warnings -->
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -121,7 +127,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.2</version>
                 <configuration>
                     <!-- Set the highest log level for coverage testing, so that we
           have a chance to reach branches in the logging lambdas too. -->
@@ -219,7 +225,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -261,10 +267,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.2</version>
                 <configuration>
-                    <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches
-          <property>	                      in the logging lambdas too. -->
+                    <!-- Set the highest log level for coverage testing, so that we have a chance to reach branches in the logging lambdas too. -->
                     <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
                     <systemPropertyVariables/>
                     <excludedGroups>${test.excludeTags}</excludedGroups>
