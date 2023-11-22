@@ -3,6 +3,8 @@ package com.exasol.containers.wait.strategy;
 import static com.exasol.containers.ExasolContainerConstants.BUCKETFS_DAEMON_LOG_FILENAME_PATTERN;
 import static com.exasol.containers.ExasolContainerConstants.EXASOL_CORE_DAEMON_LOGS_PATH;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -31,9 +33,10 @@ public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        LOGGER.debug("Waiting for UDF language container to be ready.");
+        LOGGER.debug("Waiting {} for UDF language container to be ready.", this.startupTimeout);
+        final Instant start = Instant.now();
         super.waitUntilReady();
-        LOGGER.debug("UDF language container is ready.");
+        LOGGER.debug("UDF language container is ready after {}.", Duration.between(start, Instant.now()));
     }
 
     @Override

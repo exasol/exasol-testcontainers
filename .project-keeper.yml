@@ -4,5 +4,9 @@ sources:
     modules:
       - maven_central
       - integration_tests
-excludes:
-  - "E-PK-CORE-18: Outdated content: '.github/workflows/ci-build.yml'"
+build:
+  runnerOs: ubuntu-latest
+  freeDiskSpace: true
+  exasolDbVersions:
+    - "8.23.1"
+    - "7.1.24"

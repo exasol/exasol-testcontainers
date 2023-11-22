@@ -484,24 +484,6 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return getBucket(DEFAULT_BUCKETFS, DEFAULT_BUCKET);
     }
 
-    /**
-     * Map the path of the Exasol cluster logs to a path on the host.
-     * <p>
-     * When the container is created with this option, then the cluster log directory is mapped to the given path on the
-     * host. The logs are then created inside that directory and are accessible as normal files on the host for
-     * debugging purposes.
-     * </p>
-     *
-     * @param clusterLogsHostPath path on the host to which the directory for the cluster logs is mapped
-     * @return {@code this} for fluent programming
-     */
-    // [impl->dsn~mapping-the-log-directory-to-the-host~1]
-    public T withClusterLogsPath(final Path clusterLogsHostPath) {
-        LOGGER.debug("Mapping cluster log directory to host path: \"{}\"", clusterLogsHostPath);
-        addFileSystemBind(clusterLogsHostPath.toString(), EXASOL_LOGS_PATH, BindMode.READ_WRITE);
-        return self();
-    }
-
     @Override
     protected void containerIsStarting(final InspectContainerResponse containerInfo) {
         final String containerId = containerInfo.getId();
