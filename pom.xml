@@ -41,11 +41,18 @@
             <version>${testcontainers.version}</version>
             <scope>compile</scope>
         </dependency>
-        <!-- Upgrade transitive dependency of org.testcontainers:testcontainers to fix CVE-2024-25710 and CVE-2024-26308 -->
         <dependency>
+            <!-- Upgrade transitive dependency of org.testcontainers:testcontainers to fix CVE-2024-25710 and CVE-2024-26308 -->
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.26.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <!-- Required to fix "NoClassDefFoundError: org/apache/commons/codec/Charsets" -->
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.16.1</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

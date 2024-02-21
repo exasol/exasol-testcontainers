@@ -22,6 +22,7 @@ The release also updates the default Exasol DB version from 7.1.24 to 7.1.25.
 
 ### Runtime Dependency Updates
 
+* Added `commons-codec:commons-codec:1.16.1`
 * Added `org.apache.commons:commons-compress:1.26.0`
 
 ### Test Dependency Updates
