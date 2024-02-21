@@ -4,8 +4,6 @@ sources:
     modules:
       - maven_central
       - integration_tests
-excludes:
-  - "E-PK-CORE-18: Outdated content: '.github/workflows/release_droid_release_on_maven_central.yml'"
 build:
   runnerOs: ubuntu-latest
   freeDiskSpace: true
