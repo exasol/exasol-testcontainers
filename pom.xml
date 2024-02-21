@@ -41,6 +41,13 @@
             <version>${testcontainers.version}</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Upgrade transitive dependency of org.testcontainers:testcontainers to fix CVE-2024-25710 and CVE-2024-26308 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.26.0</version>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>jdbc</artifactId>

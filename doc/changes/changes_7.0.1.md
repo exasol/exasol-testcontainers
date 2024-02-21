@@ -20,6 +20,10 @@ The release also updates the default Exasol DB version from 7.1.24 to 7.1.25.
 * Updated `org.testcontainers:jdbc:1.19.2` to `1.19.5`
 * Updated `org.testcontainers:testcontainers:1.19.2` to `1.19.5`
 
+### Runtime Dependency Updates
+
+* Added `org.apache.commons:commons-compress:1.26.0`
+
 ### Test Dependency Updates
 
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.10.1` to `5.10.2`
