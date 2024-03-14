@@ -168,7 +168,7 @@ As you will learn in section ["Automatic Cluster Configuration Parsing"](#automa
 
 Unfortunately this in case of exposed ports, this mechanism kicks in too late. Ports must be exposed _before_ the container starts. And at that time the cluster configuration obviously is not available yet.
 
-That means if you use non-standard ports for your services, you must expose the ports manually using the "withExposedPorts(...)" method when you instantiate the container.
+That means if you use non-standard ports for your services, you must expose the ports manually using the "withExposedPorts(...)" method when you instantiate the container. Keep in mind that doing this overrides the default ports that are exposed by the container, so make sure you also include those in the "withExposedPorts(...)".
 
 ## Overriding the Docker Image in a Build
 
