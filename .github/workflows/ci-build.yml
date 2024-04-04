@@ -3,13 +3,18 @@
 name: CI Build
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   pull_request:
 
 jobs:
   matrix-build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: "bash"
+    permissions:
+      contents: read
+      checks: write # Allow scacap/action-surefire-report
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.exasol_db_version }}
       cancel-in-progress: true
@@ -38,7 +43,7 @@ jobs:
             17
           cache: "maven"
       - name: Cache SonarCloud packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -46,6 +51,7 @@ jobs:
       - name: Enable testcontainer reuse
         run: echo 'testcontainers.reuse.enable=true' > "$HOME/.testcontainers.properties"
       - name: Run tests and build with Maven
+        id: pk-verify
         run: |
           mvn --batch-mode clean verify \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -71,8 +77,58 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      - name: Verify Release Artifacts
+        run: |
+          print_message() {
+              local -r message=$1
+              echo "$message"
+              echo "$message" >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          print_message "# Release Artifacts"
+
+          IFS=$'\n' artifacts_array=($ARTIFACTS)
+          missing_files=()
+          for file in "${artifacts_array[@]}";
+          do  
+              echo "Checking if file $file exists..."
+              if ! [[ -f "$file" ]]; then
+                  print_message "* ⚠️ \`$file\` does not exist ⚠️"
+                  echo "Content of directory $(dirname "$file"):"
+                  ls "$(dirname "$file")"
+                  missing_files+=("$file")
+              else
+                  print_message "* \`$file\` ✅" 
+              fi
+          done
+          print_message ""
+          number_of_missing_files=${#missing_files[@]}
+          if [[ $number_of_missing_files -gt 0 ]]; then
+              print_message "⚠️ $number_of_missing_files release artifact(s) missing ⚠️"
+              exit 1
+          else
+              print_message "All ${#artifacts_array[@]} artifact(s) present ✅"
+          fi
+        env:
+          ARTIFACTS: ${{ steps.pk-verify.outputs.release-artifacts }}
+
   build:
     needs: matrix-build
     runs-on: ubuntu-latest
     steps:
       - run: echo "Build successful"
+
+  # [impl->dsn~release-workflow.ci-build-starts-release~1]
+  start_release:
+    needs: build
+    if: ${{ github.ref == 'refs/heads/main' }}
+    concurrency:
+      cancel-in-progress: false
+      group: "release"
+    secrets: inherit
+    permissions:
+      contents: write
+      actions: read
+    uses: ./.github/workflows/release.yml
+    with:
+      started-from-ci: true
