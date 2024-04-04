@@ -32,7 +32,7 @@
 | ----------------------------- | ----------------------- |
 | [Apache Commons Compress][21] | [Apache-2.0][22]        |
 | [Apache Commons Codec][23]    | [Apache-2.0][22]        |
-| [EXASolution JDBC Driver][24] | [EXAClient License][25] |
+| [Exasol JDBC Driver][24]      | [EXAClient License][25] |
 
 ## Plugin Dependencies
 
@@ -83,8 +83,8 @@
 [21]: https://commons.apache.org/proper/commons-compress/
 [22]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [23]: https://commons.apache.org/proper/commons-codec/
-[24]: http://www.exasol.com
-[25]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/7.1.20/exasol-jdbc-7.1.20-license.txt
+[24]: http://www.exasol.com/
+[25]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/24.1.0/exasol-jdbc-24.1.0-license.txt
 [26]: http://sonarsource.github.io/sonar-scanner-maven/
 [27]: http://www.gnu.org/licenses/lgpl.txt
 [28]: https://maven.apache.org/plugins/maven-toolchains-plugin/
