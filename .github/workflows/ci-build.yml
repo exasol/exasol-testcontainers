@@ -21,9 +21,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        exasol_db_version: ["8.25.0", "7.1.25"]
+        exasol_db_version: ["8.26.0", "7.1.26"]
     env:
-      DEFAULT_EXASOL_DB_VERSION: "8.25.0"
+      DEFAULT_EXASOL_DB_VERSION: "8.26.0"
     steps:
       - name: Free Disk Space
         if: ${{ true }}
