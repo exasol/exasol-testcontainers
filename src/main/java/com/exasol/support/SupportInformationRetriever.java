@@ -1,7 +1,5 @@
 package com.exasol.support;
 
-import static org.testcontainers.containers.BindMode.READ_WRITE;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -64,6 +62,7 @@ public class SupportInformationRetriever {
     // [impl->dsn~configure-support-information-retriever-via-api~1]
     public void mapTargetDirectory(final Path targetDirectory) {
         this.targetDirectory = targetDirectory;
+        @SuppressWarnings("deprecation") // Will be fixed in https://github.com/exasol/exasol-testcontainers/issues/253
         this.container.withFileSystemBind(targetDirectory.toString(), MAPPED_HOST_DIRECTORY, READ_WRITE);
     }
 
