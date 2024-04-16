@@ -19,8 +19,10 @@ class FileVisitor {
         this.ssh = ssh;
     }
 
-    String visit(final String rfile, final ContentProcessor consumer) throws IOException, JSchException {
-        final String command = String.format("scp -f '%s'", rfile.replace("'", "'\\''"));
+    @SuppressWarnings("try") // auto-closeable resource connection is never referenced in body of corresponding try
+                             // statement
+    String visit(final String remoteFilePath, final ContentProcessor consumer) throws IOException, JSchException {
+        final String command = String.format("scp -f '%s'", remoteFilePath.replace("'", "'\\''"));
         final Channel channel = this.ssh.openChannel("exec");
         ((ChannelExec) channel).setCommand(command);
         final OutputStream out = channel.getOutputStream();
@@ -32,11 +34,11 @@ class FileVisitor {
                 if (checkAck(in) != 'C') {
                     return result;
                 }
-                readFilemode(in);
-                final int filesize = readFilesize(in);
+                readFileMode(in);
+                final int fileSize = readFileSize(in);
                 readFilename(in);
                 sendZeroByte(out);
-                result = consumer.process(in, this.ssh.getCharset(), filesize);
+                result = consumer.process(in, this.ssh.getCharset(), fileSize);
                 if (checkAck(in) != 0) {
                     throw new SshException("ack != 0");
                 }
@@ -49,13 +51,13 @@ class FileVisitor {
         stream.flush();
     }
 
-    private String readFilemode(final InputStream stream) throws IOException {
+    private String readFileMode(final InputStream stream) throws IOException {
         final byte[] buf = new byte[5];
         stream.read(buf, 0, 5);
         return new String(buf, 0, 5);
     }
 
-    private int readFilesize(final InputStream in) throws IOException {
+    private int readFileSize(final InputStream in) throws IOException {
         int filesize = 0;
         final byte[] buf = new byte[1];
         while (true) {

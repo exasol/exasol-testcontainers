@@ -17,22 +17,27 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExitType;
+import com.exasol.containers.*;
 
 @Tag("slow")
 @Testcontainers
 class SupportInformationRetrieverIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(SupportInformationRetrieverIT.class);
     private static final String SYSINFO_FILENAME = "sysinfo.txt";
+
+    @BeforeAll
+    static void assumeSupportPackageSupported() {
+        // These tests don't work with Exasol v8. We will fix this in
+        // https://github.com/exasol/exasol-testcontainers/issues/254
+        ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolEight();
+    }
 
     // [itest->dsn~configure-support-information-retriever-via-api~1]
     @Test
@@ -68,14 +73,16 @@ class SupportInformationRetrieverIT {
             }
         } catch (final IOException exception) {
             throw new AssertionError("Unable to check entry '" + entryFragment + "' in archive '" + pathToArchive
-                    + "'. Cause: " + exception.getMessage());
+                    + "'. Cause: " + exception, exception);
         }
         assertThat("Entry '" + entryFragment + "' present in archive '" + pathToArchive + "'", present, is(true));
     }
 
     private Path getHostSupportBundlePath(final Path parentDirectory) {
         final String filename = findSupportArchive(parentDirectory);
-        return parentDirectory.resolve(filename);
+        final Path path = parentDirectory.resolve(filename);
+        LOGGER.info("Support bundle archive path: {}", path);
+        return path;
     }
 
     private String findSupportArchive(final Path directory) {
