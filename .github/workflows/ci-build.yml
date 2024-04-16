@@ -7,8 +7,9 @@ on:
     ]
     
   pull_request: null
+  workflow_dispatch: null
 jobs:
-  matrix-build:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run: {
@@ -16,27 +17,20 @@ jobs:
       }
     permissions: {
       contents: read,
-      checks: write
+      checks: write,
+      issues: read
     }
     concurrency: {
-      group: '${{ github.workflow }}-${{ github.ref }}-${{ matrix.exasol_db_version }}',
+      group: '${{ github.workflow }}-${{ github.ref }}',
       cancel-in-progress: true
     }
-    strategy:
-      fail-fast: false
-      matrix:
-        exasol_db_version: [
-          8.26.0,
-          7.1.26
-        ]
-        
-    env: {
-      DEFAULT_EXASOL_DB_VERSION: 8.26.0
+    outputs: {
+      release-required: '${{ steps.check-release.outputs.release-required }}'
     }
     steps:
       - name: Free Disk Space
         id: free-disk-space
-        if: ${{ true }}
+        if: ${{ false }}
         run: |
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /usr/share/dotnet
@@ -74,13 +68,11 @@ jobs:
           mvn --batch-mode clean verify \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DtrimStackTrace=false \
-              -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
-        env: {
-          EXASOL_DB_VERSION: '${{ matrix.exasol_db_version }}'
-        }
+              -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }} \
+              -Pexpensive
       - name: Sonar analysis
         id: sonar-analysis
-        if: ${{ env.SONAR_TOKEN != null && matrix.exasol_db_version == env.DEFAULT_EXASOL_DB_VERSION }}
+        if: ${{ env.SONAR_TOKEN != null }}
         run: |
           mvn --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -100,46 +92,19 @@ jobs:
         id: upload-artifacts
         uses: actions/upload-artifact@v4
         with: {
-          name: 'artifacts-exasol-${{ matrix.exasol_db_version }}',
+          name: artifacts,
           path: '${{ steps.build-pk-verify.outputs.release-artifacts }}',
           retention-days: 5
         }
-  build:
-    needs: matrix-build
-    runs-on: ubuntu-latest
-    defaults:
-      run: {
-        shell: bash
-      }
-    permissions: {
-      contents: read,
-      issues: read
-    }
-    outputs: {
-      release-required: '${{ steps.check-release.outputs.release-required }}'
-    }
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-        with: {
-          fetch-depth: 0
-        }
-      - name: Set up JDKs
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: |
-            11
-            17
-          cache: maven
       - name: Check if release is needed
         id: check-release
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           if mvn --batch-mode com.exasol:project-keeper-maven-plugin:verify-release --projects .; then
               echo "### ✅ Release preconditions met, start release" >> "$GITHUB_STEP_SUMMARY"
               echo "release-required=true" >> "$GITHUB_OUTPUT"
           else
-              echo "### 🛑 Not all release preconditions met, skipping release" >> "$GITHUB_STEP_SUMMARY"
+              echo "### 🛑 Release precondition not met, skipping release" >> "$GITHUB_STEP_SUMMARY"
               echo "See log output for details." >> "$GITHUB_STEP_SUMMARY"
               echo "release-required=false" >> "$GITHUB_OUTPUT"
           fi
