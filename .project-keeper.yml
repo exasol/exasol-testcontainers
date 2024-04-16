@@ -8,5 +8,32 @@ build:
   runnerOs: ubuntu-latest
   freeDiskSpace: true
   exasolDbVersions:
-    - "8.25.0"
-    - "7.1.25"
+    - "8.26.0"
+    - "7.1.26"
+  workflows:
+    - name: ci-build.yml
+      stepCustomizations:
+        # Run quick tests first
+        - action: INSERT_AFTER
+          stepId: enable-testcontainer-reuse
+          content:
+            name: Run fast tests
+            id: build-quick-verify
+            run: |
+              mvn --batch-mode clean verify -Pfast \
+                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                  -DtrimStackTrace=false \
+                  -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
+        # Enable slow tests
+        - action: REPLACE
+          stepId: build-pk-verify
+          content:
+            name: Run tests and build with Maven
+            id: build-pk-verify
+            run: |
+              mvn --batch-mode verify -Pslow \
+                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                  -DtrimStackTrace=false \
+                  -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
+excludes:
+  - "E-PK-CORE-17: Missing required file: 'release_config.yml'"

@@ -1,15 +1,16 @@
 package com.exasol.database;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.sql.SQLException;
 
 import org.junit.jupiter.api.*;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.UncheckedSqlException;
 
 @Tag("slow")
 @Testcontainers
@@ -30,7 +31,9 @@ class DatabaseServiceIT {
     @Test
     void testStop() throws InterruptedException {
         this.service.stop();
-        assertThrows(SQLException.class, () -> CONTAINER.createConnectionForUser("SYS", "exasol"));
+        final UncheckedSqlException exception = assertThrows(UncheckedSqlException.class,
+                () -> CONTAINER.createConnectionForUser("SYS", "exasol"));
+        assertThat(exception.getMessage(), startsWith("E-ETC-26: Failed to connect to 'jdbc:exa:"));
     }
 
     @Order(2)

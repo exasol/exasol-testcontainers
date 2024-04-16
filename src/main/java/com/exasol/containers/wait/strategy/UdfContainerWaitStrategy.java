@@ -33,7 +33,8 @@ public class UdfContainerWaitStrategy extends LogFileEntryWaitStrategy {
 
     @Override
     protected void waitUntilReady() {
-        LOGGER.debug("Waiting {} for UDF language container to be ready.", this.startupTimeout);
+        LOGGER.debug("Waiting {} for UDF language container to be ready.",
+                Duration.ofMillis(getWaitTimeOutMilliseconds()));
         final Instant start = Instant.now();
         super.waitUntilReady();
         LOGGER.debug("UDF language container is ready after {}.", Duration.between(start, Instant.now()));
