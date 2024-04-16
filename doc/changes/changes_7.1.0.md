@@ -16,12 +16,18 @@ This release updates the following methods to throw the runtime exception `Unche
 
 * #250: Added support for installing custom Script Language Containers
 
+## Bugfixes
+
+* #252: Replaced unmaintained SSH library `com.jcraft:jsch` with `com.github.mwiede:jsch`
+
 ## Dependency Updates
 
 ### Compile Dependency Updates
 
 * Updated `com.exasol:bucketfs-java:3.1.1` to `3.1.2`
 * Updated `com.exasol:database-cleaner:1.1.2` to `1.1.3`
+* Added `com.github.mwiede:jsch:0.2.17`
+* Removed `com.jcraft:jsch:0.1.55`
 * Updated `org.testcontainers:jdbc:1.19.5` to `1.19.7`
 * Updated `org.testcontainers:testcontainers:1.19.5` to `1.19.7`
 
@@ -33,6 +39,7 @@ This release updates the following methods to throw the runtime exception `Unche
 ### Test Dependency Updates
 
 * Updated `com.exasol:udf-api-java:1.0.4` to `1.0.5`
+* Added `nl.jqno.equalsverifier:equalsverifier:3.16.1`
 * Updated `org.mockito:mockito-junit-jupiter:5.10.0` to `5.11.0`
 * Updated `org.testcontainers:junit-jupiter:1.19.5` to `1.19.7`
 
