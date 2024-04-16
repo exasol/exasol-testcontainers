@@ -10,9 +10,6 @@ build:
   exasolDbVersions:
     - "8.26.0"
     - "7.1.26"
-excludes:
-  - "E-PK-CORE-17: Missing required file: 'release_config.yml'"
-build:
   workflows:
     - name: ci-build.yml
       stepCustomizations:
@@ -26,4 +23,6 @@ build:
                   -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
                   -DtrimStackTrace=false \
                   -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }} \
-                  -Pexpensive
+                  -Pslow
+excludes:
+  - "E-PK-CORE-17: Missing required file: 'release_config.yml'"
