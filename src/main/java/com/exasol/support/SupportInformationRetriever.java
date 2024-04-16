@@ -5,6 +5,7 @@ import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 
@@ -63,7 +64,7 @@ public class SupportInformationRetriever {
     @SuppressWarnings("deprecation") // Will be fixed in https://github.com/exasol/exasol-testcontainers/issues/253
     public void mapTargetDirectory(final Path targetDirectory) {
         this.targetDirectory = targetDirectory;
-        this.container.withFileSystemBind(targetDirectory.toString(), MAPPED_HOST_DIRECTORY, READ_WRITE);
+        this.container.withFileSystemBind(targetDirectory.toString(), MAPPED_HOST_DIRECTORY, BindMode.READ_WRITE);
     }
 
     /**
