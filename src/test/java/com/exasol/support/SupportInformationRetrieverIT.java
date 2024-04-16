@@ -68,14 +68,16 @@ class SupportInformationRetrieverIT {
             }
         } catch (final IOException exception) {
             throw new AssertionError("Unable to check entry '" + entryFragment + "' in archive '" + pathToArchive
-                    + "'. Cause: " + exception.getMessage());
+                    + "'. Cause: " + exception, exception);
         }
         assertThat("Entry '" + entryFragment + "' present in archive '" + pathToArchive + "'", present, is(true));
     }
 
     private Path getHostSupportBundlePath(final Path parentDirectory) {
         final String filename = findSupportArchive(parentDirectory);
-        return parentDirectory.resolve(filename);
+        final Path path = parentDirectory.resolve(filename);
+        LOGGER.info("Support bundle archive path: {}", path);
+        return path;
     }
 
     private String findSupportArchive(final Path directory) {
