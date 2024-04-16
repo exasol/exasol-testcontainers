@@ -137,11 +137,16 @@ public class Ssh {
 
     Channel openChannel(final String type) throws JSchException {
         if (!this.session.isConnected()) {
-            LOGGER.info("Trying to open SSH channel to docker container");
-            final Retry<JSchException> retry = new Retry<>(JSchException.class, Duration.ofSeconds(60));
-            retry.retry(this.session::connect);
-            LOGGER.info("SSH channel successfully opened");
+            connectWithRetry();
         }
         return this.session.openChannel(type);
+    }
+
+    private void connectWithRetry() throws JSchException {
+        final Duration timeout = Duration.ofSeconds(60);
+        LOGGER.info("Trying to open SSH channel to docker container with timeout {}", timeout);
+        final Retry<JSchException> retry = new Retry<>(JSchException.class, timeout);
+        retry.retry(this.session::connect);
+        LOGGER.info("SSH channel successfully opened");
     }
 }

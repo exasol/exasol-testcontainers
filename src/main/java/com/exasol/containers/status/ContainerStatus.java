@@ -3,8 +3,6 @@ package com.exasol.containers.status;
 import java.io.Serializable;
 import java.util.*;
 
-import javax.annotation.processing.Generated;
-
 import com.exasol.containers.ExasolService;
 
 /**
@@ -93,13 +91,11 @@ public final class ContainerStatus implements Serializable {
         this.appliedWorkarounds.addAll(ids);
     }
 
-    @Generated("org.eclipse.Eclipse")
     @Override
     public int hashCode() {
         return Objects.hash(this.containerId, this.serviceStatuses, this.appliedWorkarounds);
     }
 
-    @Generated("org.eclipse.Eclipse")
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
