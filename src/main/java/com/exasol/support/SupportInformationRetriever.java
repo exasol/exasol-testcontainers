@@ -60,9 +60,9 @@ public class SupportInformationRetriever {
      * @param targetDirectory host directory in which to create the support bundle
      */
     // [impl->dsn~configure-support-information-retriever-via-api~1]
+    @SuppressWarnings("deprecation") // Will be fixed in https://github.com/exasol/exasol-testcontainers/issues/253
     public void mapTargetDirectory(final Path targetDirectory) {
         this.targetDirectory = targetDirectory;
-        @SuppressWarnings("deprecation") // Will be fixed in https://github.com/exasol/exasol-testcontainers/issues/253
         this.container.withFileSystemBind(targetDirectory.toString(), MAPPED_HOST_DIRECTORY, READ_WRITE);
     }
 
