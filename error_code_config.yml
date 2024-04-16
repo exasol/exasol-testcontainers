@@ -5,4 +5,4 @@ error-tags:
       - com.exasol.support
       - com.exasol.clusterlogs
       - com.exasol.bucketfs.testcontainers
-    highest-index: 25
+    highest-index: 26

@@ -339,7 +339,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         try {
             return driver.connect(url, info);
         } catch (final SQLException exception) {
-            throw new UncheckedSqlException(ExaError.messageBuilder("")
+            throw new UncheckedSqlException(ExaError.messageBuilder("E-ETC-26")
                     .message("Failed to connect to {{jdbc url}}: {{error message}}", url, exception.getMessage())
                     .toString(), exception);
         }
