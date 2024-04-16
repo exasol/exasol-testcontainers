@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import com.exasol.containers.ExasolService;
+import com.exasol.containers.slc.ScriptLanguageContainer;
 
 /**
  * State information about the Exasol docker container.
@@ -108,5 +109,15 @@ public final class ContainerStatus implements Serializable {
         return Objects.equals(this.containerId, other.containerId)
                 && Objects.equals(this.serviceStatuses, other.serviceStatuses)
                 && Objects.equals(this.appliedWorkarounds, other.appliedWorkarounds);
+    }
+
+    public boolean isInstalled(ScriptLanguageContainer slc) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isInstalled'");
+    }
+
+    public void addInstalledSlc(ScriptLanguageContainer slc) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addInstalledSlc'");
     }
 }

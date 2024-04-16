@@ -35,6 +35,8 @@ import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
+import com.exasol.containers.slc.ScriptLanguageContainer;
+import com.exasol.containers.slc.ScriptLanguageContainerInstaller;
 import com.exasol.containers.ssh.*;
 import com.exasol.containers.status.ContainerStatus;
 import com.exasol.containers.status.ContainerStatusCache;
@@ -94,6 +96,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private SQLException lastConnectionException = null;
     private Path temporaryCredentialsDirectory = CACHE_DIRECTORY;
     private DockerAccess dockerAccess = null;
+    private final List<ScriptLanguageContainer> scriptLanguageContainers = new ArrayList<>();
 
     /**
      * Create a new instance of an {@link ExasolContainer} from a specific docker image.
@@ -136,6 +139,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             addExposedPorts(getDefaultInternalRpcPort());
             addExposedPorts(SSH_PORT);
         } catch (final PortDetectionException exception) {
+            LOGGER.warn("Failed to detect internal ports.", exception);
             this.portAutodetectFailed = true;
         }
     }
@@ -422,6 +426,17 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         return self();
     }
 
+    /**
+     * Install an additional custom Script Language Container (SLC).
+     * 
+     * @param scriptLanguageContainer definition for the SLC to install
+     * @return self reference for fluent programming
+     */
+    public T withScriptLanguageContainer(final ScriptLanguageContainer scriptLanguageContainer) {
+        this.scriptLanguageContainers.add(scriptLanguageContainer);
+        return self();
+    }
+
     private void addMandatoryServices(final HashSet<ExasolService> services) {
         services.add(ExasolService.JDBC);
     }
@@ -584,6 +599,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         super.containerIsStarted(containerInfo, reused);
         applyWorkarounds();
         cleanUpDatabaseIfNecessary();
+        installSlcIfNecessary();
         cacheContainerStatus();
     }
 
@@ -604,6 +620,18 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void cleanUpDatabaseIfNecessary() {
         if (this.reused) {
             purgeDatabase();
+        }
+    }
+
+    private void installSlcIfNecessary() {
+        final ScriptLanguageContainerInstaller slcManager = ScriptLanguageContainerInstaller.create(this);
+        for (final ScriptLanguageContainer slc : this.scriptLanguageContainers) {
+            if (this.status.isInstalled(slc)) {
+                LOGGER.debug("SLC {} already installed. Skipping installation.", slc);
+            } else {
+                slcManager.install(slc);
+                this.status.addInstalledSlc(slc);
+            }
         }
     }
 
@@ -631,10 +659,12 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     protected void waitUntilClusterConfigurationAvailable() {
         if (!this.reused) {
             final Duration timeout = Duration.ofSeconds(60);
+            final Instant start = Instant.now();
             LOGGER.trace("Waiting {} for cluster configuration to become available.", timeout);
             final WaitStrategy strategy = new LogMessageWaitStrategy().withRegEx(".*exadt:: setting hostname.*")
                     .withStartupTimeout(timeout);
             strategy.waitUntilReady(this);
+            LOGGER.trace("Cluster configuration available after {}.", Duration.between(start, Instant.now()));
         }
         clusterConfigurationIsAvailable();
     }
