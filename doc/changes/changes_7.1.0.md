@@ -39,6 +39,7 @@ This release updates the following methods to throw the runtime exception `Unche
 ### Test Dependency Updates
 
 * Updated `com.exasol:udf-api-java:1.0.4` to `1.0.5`
+* Added `com.jparams:to-string-verifier:1.4.8`
 * Added `nl.jqno.equalsverifier:equalsverifier:3.16.1`
 * Updated `org.mockito:mockito-junit-jupiter:5.10.0` to `5.11.0`
 * Updated `org.testcontainers:junit-jupiter:1.19.5` to `1.19.7`
