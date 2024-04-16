@@ -327,24 +327,31 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @param user     username
      * @param password password of the user
      * @return database connection
-     * @throws SQLException if the connection cannot be established
+     * @throws UncheckedSqlException if the connection cannot be established
      */
     // [impl->dsn~exasol-container-provides-a-jdbc-connection-for-username-and-password~1]
-    public Connection createConnectionForUser(final String user, final String password) throws SQLException {
+    public Connection createConnectionForUser(final String user, final String password) throws UncheckedSqlException {
         final Driver driver = getJdbcDriverInstance();
         final Properties info = new Properties();
         info.put("user", user);
         info.put("password", password);
-        return driver.connect(constructUrlForConnection(""), info);
+        final String url = constructUrlForConnection("");
+        try {
+            return driver.connect(url, info);
+        } catch (final SQLException exception) {
+            throw new UncheckedSqlException(ExaError.messageBuilder("")
+                    .message("Failed to connect to {{jdbc url}}: {{error message}}", url, exception.getMessage())
+                    .toString(), exception);
+        }
     }
 
     /**
      * Create a JDBC connection using default username and password.
      *
      * @return database connection
-     * @throws SQLException if the connection cannot be established
+     * @throws UncheckedSqlException if the connection cannot be established
      */
-    public Connection createConnection() throws SQLException {
+    public Connection createConnection() throws UncheckedSqlException {
         return createConnectionForUser(getUsername(), getPassword());
     }
 

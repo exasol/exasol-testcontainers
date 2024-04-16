@@ -4,6 +4,14 @@ Code name:
 
 ## Summary
 
+### Refactoring
+
+This release updates the following methods to throw the runtime exception `UncheckedSqlException` instead of the checked exception `SqlException`. This simplifies exception handling in clients.
+
+* `ExasolContainer.createConnectionForUser()`
+* `ExasolContainer.createConnection()`
+
+
 ## Features
 
 * #250: Added support for installing custom Script Language Containers
