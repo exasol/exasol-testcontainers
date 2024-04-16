@@ -141,6 +141,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <version>3.16.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <!-- org.testcontainers:testcontainers uses org.slf4j:slf4j-api for logging.
             To get the complete log during tests we redirect slf4j to JUL with this dependency. -->
             <groupId>org.slf4j</groupId>

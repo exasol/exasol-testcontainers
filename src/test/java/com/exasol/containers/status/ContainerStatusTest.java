@@ -14,8 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 @Tag("fast")
 class ContainerStatusTest {
+
+    @Test
+    void testEqualsContract() {
+        EqualsVerifier.forClass(ContainerStatus.class).verify();
+    }
+
     @Test
     void testGetContainerId() throws Exception {
         final String containerId = "the_id";
