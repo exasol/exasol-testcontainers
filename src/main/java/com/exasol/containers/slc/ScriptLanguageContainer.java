@@ -1,8 +1,13 @@
 package com.exasol.containers.slc;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
+
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This represents an Exasol Script Language Container (SLC) that can be installed on an Exasol database. A SLC allows
@@ -15,11 +20,15 @@ public final class ScriptLanguageContainer implements Serializable {
     private final String udfEntryPoint;
     /* We use type String instead of Path, because Path is not serializable. */
     private final String localFile;
+    private final URL url;
+    private final String sha512sum;
 
     private ScriptLanguageContainer(final Builder builder) {
         this.language = Objects.requireNonNull(builder.language, "language");
         this.alias = builder.alias;
-        this.localFile = Objects.requireNonNull(builder.localFile, "localFile");
+        this.localFile = builder.localFile;
+        this.url = builder.url;
+        this.sha512sum = builder.sha512sum;
         this.udfEntryPoint = builder.udfEntryPoint;
     }
 
@@ -60,10 +69,30 @@ public final class ScriptLanguageContainer implements Serializable {
     }
 
     /**
+     * Get the local file of the SLC. This is only set if {@link getUrl} returns {@code null}.
+     * 
      * @return the local file of the SLC
      */
     public Path getLocalFile() {
-        return Path.of(localFile);
+        return Optional.ofNullable(localFile).map(Path::of).orElse(null);
+    }
+
+    /**
+     * Get the URL of the SLC. This is only set if {@link getLocalFile()} returns {@code null}.
+     * 
+     * @return URL of the SLC
+     */
+    public URL getUrl() {
+        return this.url;
+    }
+
+    /**
+     * Get the sha512sum of the SLC. This is required for SLCs downloaded from the internet.
+     * 
+     * @return sha512sum of the SLC
+     */
+    public String getSha512sum() {
+        return this.sha512sum;
     }
 
     @Override
@@ -101,6 +130,8 @@ public final class ScriptLanguageContainer implements Serializable {
         private Language language;
         private String alias;
         private String localFile;
+        private URL url;
+        private String sha512sum;
 
         private Builder() {
             // prevent instantiation from outside
@@ -155,13 +186,65 @@ public final class ScriptLanguageContainer implements Serializable {
         }
 
         /**
-         * Set the local file of the SLC.
+         * Set the local file of the SLC. Use this method if the SLC is available as a local file.
+         * <p>
+         * This is an alternative to {@link #url(URL)}.
          * 
          * @param localFile local file of the SLC
          * @return {@code this} for fluent programming
          */
         public Builder localFile(final Path localFile) {
             this.localFile = localFile.toAbsolutePath().toString();
+            return this;
+        }
+
+        /**
+         * Set the URL of the SLC. Use this method if the SLC is not available as a local file but can be downloaded
+         * from a server.
+         * <p>
+         * This is an alternative to {@link #localFile(Path)}.
+         * 
+         * 
+         * @param url url of the SLC
+         * @return {@code this} for fluent programming
+         */
+        public Builder url(final URL url) {
+            this.url = url;
+            return this;
+        }
+
+        /**
+         * Use a released SLC from <a href=
+         * "https://github.com/exasol/script-languages-release/releases">https://github.com/exasol/script-languages-release</a>.
+         * <p>
+         * This is a convenience method that sets the URL using {@link #url(URL)} based on version and file name.
+         * 
+         * @return {@code this} for fluent programming
+         */
+        public Builder slcRelease(final String version, final String fileName) {
+            return url(parseUrl("https://extensions-internal.exasol.com/com.exasol/script-languages-release/" + version
+                    + "/" + fileName));
+        }
+
+        private URL parseUrl(final String url) {
+            try {
+                return new URL(url);
+            } catch (final MalformedURLException exception) {
+                throw new IllegalArgumentException(
+                        ExaError.messageBuilder("E-ETC-36").message("Could not parse SLC URL {{url}}.", url).toString(),
+                        exception);
+            }
+        }
+
+        /**
+         * Set the sha512sum of the SLC. This is required for SLCs when {@link #url(URL)} or
+         * {@link #slcRelease(String, String)} was used.
+         * 
+         * @param sha512sum sha512sum of the SLC
+         * @return {@code this} for fluent programming
+         */
+        public Builder sha512sum(final String sha512sum) {
+            this.sha512sum = sha512sum;
             return this;
         }
 

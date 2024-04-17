@@ -10,6 +10,7 @@ import java.util.concurrent.TimeoutException;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.slc.fileprovider.FileProvider;
 import com.exasol.errorreporting.ExaError;
 
 public class ScriptLanguageContainerInstaller {
@@ -36,8 +37,9 @@ public class ScriptLanguageContainerInstaller {
 
     public void install(final ScriptLanguageContainer slc) {
         validateSlc(slc);
-        final String containerName = slc.getLocalFile().getFileName().toString();
-        uploadToBucketFs(slc.getLocalFile(), containerName);
+        final Path localPath = FileProvider.forSlc(slc).getLocalFile();
+        final String containerName = localPath.getFileName().toString();
+        uploadToBucketFs(localPath, containerName);
         final String unpackedContainerName = "template-Exasol-all-python-3.10_release";
 
         final SlcConfiguration configuration = slcConfigurator.read();
@@ -57,6 +59,9 @@ public class ScriptLanguageContainerInstaller {
     }
 
     private void validateSlc(final ScriptLanguageContainer slc) {
+        if (slc.getUrl() != null) {
+            return;
+        }
         final String fileName = slc.getLocalFile().getFileName().toString();
         if (SUPPORTED_SLC_FILE_EXTENSIONS.stream().noneMatch(fileName::endsWith)) {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-35")

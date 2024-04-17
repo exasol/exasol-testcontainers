@@ -4,7 +4,6 @@ import static com.exasol.matcher.ResultSetStructureMatcher.table;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
 import java.sql.*;
 import java.util.concurrent.TimeoutException;
 
@@ -21,11 +20,12 @@ class ExasolContainerSlcIT {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final long timestamp = System.currentTimeMillis();
             final String alias = "MY_SLC_" + timestamp;
-            final Path slcFile = Path.of("/Users/chp/Downloads/template-Exasol-all-python-3.10_release.tar.gz");
             final ScriptLanguageContainer slc = ScriptLanguageContainer.builder() //
                     .alias(alias) //
                     .language(Language.PYTHON) //
-                    .localFile(slcFile) //
+                    .slcRelease("7.1.0", "template-Exasol-all-python-3.10_release.tar.gz") //
+                    .sha512sum(
+                            "db19e16b9cb5b3d02c44ad6e401eb9296b0483c0078a2e23ac00ad7f26473d115febb0c799a86aed33f49252947a86aa7e8927571a2679131da52e5fc090939c") //
                     .build();
             container.withReuse(true).withScriptLanguageContainer(slc).start();
 
