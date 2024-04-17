@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import com.exasol.containers.slc.ScriptLanguageContainer;
 import com.exasol.containers.slc.ScriptLanguageContainer.Builder;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
+import com.exasol.testutil.SerializableVerifier;
 import com.jparams.verifier.tostring.ToStringVerifier;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -32,6 +33,11 @@ class ContainerStatusTest {
     @Test
     void testToString() {
         ToStringVerifier.forClass(ContainerStatus.class).verify();
+    }
+
+    @Test
+    void testSerializable() {
+        SerializableVerifier.assertSerializable(ContainerStatus.class, ContainerStatus.create("container"));
     }
 
     @Test

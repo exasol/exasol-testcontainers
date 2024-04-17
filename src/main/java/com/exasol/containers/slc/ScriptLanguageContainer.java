@@ -1,5 +1,6 @@
 package com.exasol.containers.slc;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -7,15 +8,19 @@ import java.util.Objects;
  * This represents an Exasol Script Language Container (SLC) that can be installed on an Exasol database. A SLC allows
  * running User Defined Functions (UDFs) in a specific language.
  */
-public final class ScriptLanguageContainer {
+public final class ScriptLanguageContainer implements Serializable {
+    private static final long serialVersionUID = -3295522116885302191L;
     private final Language language;
     private final String alias;
-    private final Path localFile;
+    private final String udfEntryPoint;
+    /* We use type String instead of Path, because Path is not serializable. */
+    private final String localFile;
 
     private ScriptLanguageContainer(final Builder builder) {
         this.language = Objects.requireNonNull(builder.language, "language");
-        this.alias = Objects.requireNonNull(builder.alias, "alias");
+        this.alias = builder.alias;
         this.localFile = Objects.requireNonNull(builder.localFile, "localFile");
+        this.udfEntryPoint = builder.udfEntryPoint;
     }
 
     /**
@@ -38,24 +43,38 @@ public final class ScriptLanguageContainer {
      * @return the alias of the SLC
      */
     public String getAlias() {
-        return alias;
+        if (this.alias != null) {
+            return alias;
+        }
+        return language.getDefaultAlias();
+    }
+
+    /**
+     * @return the path of the UDF entry point
+     */
+    public String getUdfEntryPoint() {
+        if (this.udfEntryPoint != null) {
+            return udfEntryPoint;
+        }
+        return language.getDefaultUdfEntryPoint();
     }
 
     /**
      * @return the local file of the SLC
      */
     public Path getLocalFile() {
-        return localFile;
+        return Path.of(localFile);
     }
 
     @Override
     public String toString() {
-        return "ScriptLanguageContainer [language=" + language + ", alias=" + alias + ", localFile=" + localFile + "]";
+        return "ScriptLanguageContainer [language=" + language + ", alias=" + alias + ", udfEntryPoint=" + udfEntryPoint
+                + ", localFile=" + localFile + "]";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(language, alias, localFile);
+        return Objects.hash(language, alias, localFile, udfEntryPoint);
     }
 
     @Override
@@ -71,16 +90,17 @@ public final class ScriptLanguageContainer {
         }
         final ScriptLanguageContainer other = (ScriptLanguageContainer) obj;
         return language == other.language && Objects.equals(alias, other.alias)
-                && Objects.equals(localFile, other.localFile);
+                && Objects.equals(udfEntryPoint, other.udfEntryPoint) && Objects.equals(localFile, other.localFile);
     }
 
     /**
      * A builder class for {@link ScriptLanguageContainer} instances.
      */
     public static class Builder {
+        private String udfEntryPoint;
         private Language language;
         private String alias;
-        private Path localFile;
+        private String localFile;
 
         private Builder() {
             // prevent instantiation from outside
@@ -98,7 +118,15 @@ public final class ScriptLanguageContainer {
         }
 
         /**
-         * Set the alias of the SLC.
+         * Set the alias of the SLC. If this is not set, the default alias for the language will be used. Please note
+         * that using the default alias will overwrite the built-in SLC for that language.
+         * <p>
+         * Default values:
+         * <ul>
+         * <li>Java: {@code JAVA}</li>
+         * <li>R: {@code R}</li>
+         * <li>Python: {@code PYTHON3}</li>
+         * </ul>
          * 
          * @param alias alias of the SLC
          * @return {@code this} for fluent programming
@@ -109,13 +137,31 @@ public final class ScriptLanguageContainer {
         }
 
         /**
+         * Set the path of the entry point for the User Defined Function (UDF). If not set, the default entry point for
+         * the language will be used.
+         * <p>
+         * Default values:
+         * <ul>
+         * <li>Java, R: {@code /exaudf/exaudfclient}</li>
+         * <li>Python 3: {@code /exaudf/exaudfclient_py3}</li>
+         * </ul>
+         *
+         * @param udfEntryPoint entry point for the UDF
+         * @return {@code this} for fluent programming
+         */
+        public Builder udfEntryPoint(final String udfEntryPoint) {
+            this.udfEntryPoint = udfEntryPoint;
+            return this;
+        }
+
+        /**
          * Set the local file of the SLC.
          * 
          * @param localFile local file of the SLC
          * @return {@code this} for fluent programming
          */
         public Builder localFile(final Path localFile) {
-            this.localFile = localFile;
+            this.localFile = localFile.toAbsolutePath().toString();
             return this;
         }
 
@@ -134,10 +180,47 @@ public final class ScriptLanguageContainer {
      */
     public enum Language {
         /** SLC supports running Java UDFs */
-        JAVA,
+        JAVA("java", "JAVA", "/exaudf/exaudfclient"),
         /** SLC supports running R UDFs */
-        R,
+        R("r", "R", "/exaudf/exaudfclient"),
         /** SLC supports running Python UDFs */
-        PYTHON
+        PYTHON("python", "PYTHON3", "/exaudf/exaudfclient_py3");
+
+        private final String name;
+        private final String defaultAlias;
+        private final String defaultUdfEntryPoint;
+
+        private Language(final String name, final String defaultAlias, final String defaultUdfEntryPoint) {
+            this.name = name;
+            this.defaultAlias = defaultAlias;
+            this.defaultUdfEntryPoint = defaultUdfEntryPoint;
+        }
+
+        /**
+         * Get the default UDF entry point for the language.
+         * 
+         * @return default UDF entry point
+         */
+        String getDefaultUdfEntryPoint() {
+            return this.defaultUdfEntryPoint;
+        }
+
+        /**
+         * Get the default alias for the language.
+         * 
+         * @return default alias
+         */
+        String getDefaultAlias() {
+            return defaultAlias;
+        }
+
+        /**
+         * Get the language name used for specifying the SLC.
+         * 
+         * @return name of the language
+         */
+        public String getName() {
+            return name;
+        }
     }
 }

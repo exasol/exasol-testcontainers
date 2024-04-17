@@ -66,7 +66,7 @@ public class ContainerStatusCache {
             return (ContainerStatus) objectInputStream.readObject();
         } catch (final IOException | ClassNotFoundException exception) {
             throw new ContainerStatusCacheException(
-                    "Unable to read container state from cache file \"" + cacheFile + "\".");
+                    "Unable to read container state from cache file '" + cacheFile + "'.", exception);
         }
     }
 
