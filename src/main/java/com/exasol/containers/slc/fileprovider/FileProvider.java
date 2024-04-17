@@ -3,6 +3,7 @@ package com.exasol.containers.slc.fileprovider;
 import java.nio.file.Path;
 
 import com.exasol.containers.slc.ScriptLanguageContainer;
+import com.exasol.errorreporting.ExaError;
 
 /**
  * This interface provides access to local files for a {@link ScriptLanguageContainer}, independent if the SLC uses a
@@ -21,8 +22,11 @@ public interface FileProvider {
     private static FileProvider createProvider(final ScriptLanguageContainer slc) {
         if (slc.getLocalFile() != null) {
             return new LocalFileProvider(slc.getLocalFile());
-        } else {
+        } else if (slc.getUrl() != null) {
             return new UrlFileProvider(slc.getUrl());
+        } else {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-39")
+                    .message("SLC must have either a local file or a URL").toString());
         }
     }
 

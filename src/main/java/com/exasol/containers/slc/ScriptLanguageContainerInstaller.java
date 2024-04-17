@@ -60,6 +60,7 @@ public class ScriptLanguageContainerInstaller {
 
     private void validateSlc(final ScriptLanguageContainer slc) {
         if (slc.getUrl() != null) {
+            // FIXME: verify checksum is present
             return;
         }
         final String fileName = slc.getLocalFile().getFileName().toString();
