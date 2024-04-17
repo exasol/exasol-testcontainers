@@ -40,6 +40,13 @@
             <artifactId>testcontainers</artifactId>
             <version>${testcontainers.version}</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <!-- Exclude old JUnit to avoid accidentally importing it -->
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <!-- Upgrade transitive dependency of org.testcontainers:testcontainers to fix CVE-2024-25710 and CVE-2024-26308 -->
