@@ -1,9 +1,11 @@
 package com.exasol.containers;
 
+import static com.exasol.matcher.ResultSetStructureMatcher.table;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
@@ -17,24 +19,31 @@ class ExasolContainerSlcIT {
     @Test
     void installSlc() throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
-            final String alias = "MY_SLC";
-            final Path slc = Path.of("/Users/chp/Downloads/template-Exasol-all-python-3.10_release.tar.gz");
-            container.withReuse(true)
-                    .withScriptLanguageContainer(ScriptLanguageContainer.builder().alias(alias)
-                            .language(Language.PYTHON).udfEntryPoint("/exaudf/exaudfclient_py3").localFile(slc).build())
-                    .start();
+            final long timestamp = System.currentTimeMillis();
+            final String alias = "MY_SLC_" + timestamp;
+            final Path slcFile = Path.of("/Users/chp/Downloads/template-Exasol-all-python-3.10_release.tar.gz");
+            final ScriptLanguageContainer slc = ScriptLanguageContainer.builder() //
+                    .alias(alias) //
+                    .language(Language.PYTHON) //
+                    .localFile(slcFile) //
+                    .build();
+            container.withReuse(true).withScriptLanguageContainer(slc).start();
 
-            final Connection connection = container.createConnection();
-            final String schemaName = "TEST";
-            connection.createStatement().execute("create schema " + schemaName);
-            final String udf = "CREATE " + alias + " SCALAR SCRIPT " + schemaName
-                    + ".my_python_udf(input_parameter VARCHAR(2000))\n" + //
-                    "RETURNS VARCHAR(2000) AS\n" + //
-                    "def run(ctx):\n" + //
-                    "  return ctx.input_parameter\n" + //
-                    "/";
-            connection.createStatement().execute(udf);
-            connection.createStatement().executeQuery("select test.my_python_udf('abc')");
+            try (final Connection connection = container.createConnection();
+                    Statement statement = connection.createStatement()) {
+
+                final String schemaName = "TEST_" + timestamp;
+                statement.execute("create schema " + schemaName);
+                final String udf = "CREATE " + alias + " SCALAR SCRIPT " + schemaName + ".get_python_version()\n" + //
+                        "RETURNS VARCHAR(2000) AS\n" + //
+                        "import sys\n" + //
+                        "def run(ctx):\n" + //
+                        "  return f\"{sys.version_info.major}.{sys.version_info.minor}\"\n" + //
+                        "/";
+                statement.execute(udf);
+                assertThat(statement.executeQuery("select " + schemaName + ".get_python_version()"),
+                        table().row("3.10").matches());
+            }
         }
     }
 }

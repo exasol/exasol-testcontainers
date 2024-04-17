@@ -38,6 +38,7 @@ This release updates the following methods to throw the runtime exception `Unche
 
 ### Test Dependency Updates
 
+* Added `com.exasol:hamcrest-resultset-matcher:1.6.5`
 * Updated `com.exasol:udf-api-java:1.0.4` to `1.0.5`
 * Added `com.jparams:to-string-verifier:1.4.8`
 * Added `nl.jqno.equalsverifier:equalsverifier:3.16.1`

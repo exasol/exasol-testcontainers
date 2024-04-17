@@ -26,10 +26,10 @@ class ScriptLanguageContainerInstallerTest {
 
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = {
-            "wrong-extension.txt; E-ETC-28: File 'wrong-extension.txt' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
-            "uppercase.TAR.GZ; E-ETC-28: File 'uppercase.TAR.GZ' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
-            "uppercase.TAR.bz2; E-ETC-28: File 'uppercase.TAR.bz2' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
-            "uppercase.ZIP; E-ETC-28: File 'uppercase.ZIP' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
+            "wrong-extension.txt; E-ETC-35: File 'wrong-extension.txt' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
+            "uppercase.TAR.GZ; E-ETC-35: File 'uppercase.TAR.GZ' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
+            "uppercase.TAR.bz2; E-ETC-35: File 'uppercase.TAR.bz2' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
+            "uppercase.ZIP; E-ETC-35: File 'uppercase.ZIP' has an unsupported file extension. The following file extensions are supported for SLCs: ['.tar.gz', '.tar.bz2', '.zip'].",
             "missing.zip; E-ETC-27: Local file '/path/to/missing.zip' does not exist",
             "missing.tar.gz; E-ETC-27: Local file '/path/to/missing.tar.gz' does not exist",
             "missing.tar.bz2; E-ETC-27: Local file '/path/to/missing.tar.bz2' does not exist", })
