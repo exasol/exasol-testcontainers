@@ -17,6 +17,7 @@ public final class ContainerStatus implements Serializable {
     private final Map<ExasolService, ServiceStatus> serviceStatuses = new EnumMap<>(ExasolService.class);
     /** @serial */
     private final Set<String> appliedWorkarounds = new HashSet<>();
+    private final Set<ScriptLanguageContainer> installedSlcs = new HashSet<>();
 
     private ContainerStatus(final String containerId) {
         this.containerId = containerId;
@@ -92,9 +93,34 @@ public final class ContainerStatus implements Serializable {
         this.appliedWorkarounds.addAll(ids);
     }
 
+    /**
+     * Check if the given Script Language Container (SLC) is installed.
+     * 
+     * @param slc SLC to check
+     * @return {@code true} if the SLC is installed
+     */
+    public boolean isInstalled(final ScriptLanguageContainer slc) {
+        return installedSlcs.contains(slc);
+    }
+
+    /**
+     * Add an installed Script Language Container (SLC).
+     * 
+     * @param slc SLC to add
+     */
+    public void addInstalledSlc(final ScriptLanguageContainer slc) {
+        this.installedSlcs.add(slc);
+    }
+
+    @Override
+    public String toString() {
+        return "ContainerStatus [containerId=" + containerId + ", serviceStatuses=" + serviceStatuses
+                + ", appliedWorkarounds=" + appliedWorkarounds + ", installedSlcs=" + installedSlcs + "]";
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(this.containerId, this.serviceStatuses, this.appliedWorkarounds);
+        return Objects.hash(this.containerId, this.serviceStatuses, this.appliedWorkarounds, this.installedSlcs);
     }
 
     @Override
@@ -108,16 +134,7 @@ public final class ContainerStatus implements Serializable {
         final ContainerStatus other = (ContainerStatus) obj;
         return Objects.equals(this.containerId, other.containerId)
                 && Objects.equals(this.serviceStatuses, other.serviceStatuses)
-                && Objects.equals(this.appliedWorkarounds, other.appliedWorkarounds);
-    }
-
-    public boolean isInstalled(ScriptLanguageContainer slc) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isInstalled'");
-    }
-
-    public void addInstalledSlc(ScriptLanguageContainer slc) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addInstalledSlc'");
+                && Objects.equals(this.appliedWorkarounds, other.appliedWorkarounds)
+                && Objects.equals(this.installedSlcs, other.installedSlcs);
     }
 }

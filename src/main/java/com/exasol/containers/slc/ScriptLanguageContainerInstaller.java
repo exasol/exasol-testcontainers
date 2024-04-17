@@ -1,9 +1,11 @@
 package com.exasol.containers.slc;
 
+import java.nio.file.Files;
 import java.sql.Connection;
 
 import com.exasol.bucketfs.Bucket;
 import com.exasol.containers.ExasolContainer;
+import com.exasol.errorreporting.ExaError;
 
 public class ScriptLanguageContainerInstaller {
 
@@ -24,6 +26,10 @@ public class ScriptLanguageContainerInstaller {
     }
 
     public void install(final ScriptLanguageContainer slc) {
+        if (!Files.exists(slc.getLocalFile())) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-27")
+                    .message("Local file {{local file}} does not exist", slc.getLocalFile()).toString());
+        }
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'install'");
     }
