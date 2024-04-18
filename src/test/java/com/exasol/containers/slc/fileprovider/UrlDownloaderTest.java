@@ -36,6 +36,7 @@ class UrlDownloaderTest {
                         + "': java.net.UnknownHostException: invalid-url"));
     }
 
+    // [utest->dsn~install-custom-slc.url~1]
     @Test
     void downloadFromValidUrl() throws IOException {
         download("https://example.com");

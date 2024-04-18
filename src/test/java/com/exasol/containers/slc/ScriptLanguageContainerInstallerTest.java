@@ -119,6 +119,7 @@ class ScriptLanguageContainerInstallerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { ".zip", ".tar.gz", ".tar.bz2" })
+    // [utest->dsn~install-custom-slc~1]
     void install(final String fileExtension) throws IOException, BucketAccessException, TimeoutException {
         final Path file = tempDir.resolve("file" + fileExtension);
         Files.createFile(file);

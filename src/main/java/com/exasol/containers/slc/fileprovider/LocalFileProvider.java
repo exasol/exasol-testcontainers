@@ -2,6 +2,7 @@ package com.exasol.containers.slc.fileprovider;
 
 import java.nio.file.Path;
 
+// [impl->dsn~install-custom-slc.local-file~1]
 class LocalFileProvider implements FileProvider {
     private final Path localFile;
 

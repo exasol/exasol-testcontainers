@@ -23,6 +23,7 @@ class ChecksumVerifyingFileProvider implements FileProvider {
         this.expectedSha512sum = sha512sum;
     }
 
+    // [impl->dsn~install-custom-slc.verify-checksum~1]
     @Override
     public Path getLocalFile() {
         final Path localFile = this.delegate.getLocalFile();

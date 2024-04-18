@@ -208,6 +208,7 @@ public final class ScriptLanguageContainer implements Serializable {
          * @param localFile local file of the SLC
          * @return {@code this} for fluent programming
          */
+        // [impl->dsn~install-custom-slc.local-file~1]
         public Builder localFile(final Path localFile) {
             this.localFile = localFile.toString();
             return this;
@@ -223,6 +224,7 @@ public final class ScriptLanguageContainer implements Serializable {
          * @param url url of the SLC
          * @return {@code this} for fluent programming
          */
+        // [impl->dsn~install-custom-slc.url~1]
         public Builder url(final String url) {
             this.url = url;
             return this;
@@ -238,6 +240,7 @@ public final class ScriptLanguageContainer implements Serializable {
          * @param fileName file name of the SLC
          * @return {@code this} for fluent programming
          */
+        // [impl->dsn~install-custom-slc.url~1]
         public Builder slcRelease(final String version, final String fileName) {
             return url("https://extensions-internal.exasol.com/com.exasol/script-languages-release/" + version + "/"
                     + fileName);
@@ -250,6 +253,7 @@ public final class ScriptLanguageContainer implements Serializable {
          * @param sha512sum sha512sum of the SLC
          * @return {@code this} for fluent programming
          */
+        // [impl->dsn~install-custom-slc.verify-checksum~1]
         public Builder sha512sum(final String sha512sum) {
             this.sha512sum = sha512sum;
             return this;

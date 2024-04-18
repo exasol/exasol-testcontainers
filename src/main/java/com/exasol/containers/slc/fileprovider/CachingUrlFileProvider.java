@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.exasol.containers.ExasolContainerConstants;
 
+// [impl->dsn~install-custom-slc.url~1]
 class CachingUrlFileProvider implements FileProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CachingUrlFileProvider.class);
     private final UrlDownloader urlDownloader;

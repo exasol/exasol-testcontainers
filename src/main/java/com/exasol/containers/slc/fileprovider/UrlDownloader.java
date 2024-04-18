@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.exasol.errorreporting.ExaError;
 
+// [impl->dsn~install-custom-slc.url~1]
 class UrlDownloader {
     private static final Logger LOGGER = LoggerFactory.getLogger(UrlDownloader.class);
 

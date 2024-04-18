@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 class LocalFileProviderTest {
 
+    // [utest->dsn~install-custom-slc.local-file~1]
     @Test
     void getLocalFile() {
         final Path path = Path.of("file");

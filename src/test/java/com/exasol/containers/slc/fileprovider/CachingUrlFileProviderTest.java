@@ -54,6 +54,7 @@ class CachingUrlFileProviderTest {
         assertThat(Files.exists(cacheDir), is(true));
     }
 
+    // [utest->dsn~install-custom-slc.url~1]
     @Test
     void downloadFileIfMissing() throws MalformedURLException {
         final URL url = new URL("http://url/file");

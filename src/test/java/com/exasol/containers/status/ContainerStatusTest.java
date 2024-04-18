@@ -81,6 +81,7 @@ class ContainerStatusTest {
                 .localFile(Path.of("java17.tar.gz")).build()), is(false));
     }
 
+    // [utest->dsn~install-custom-slc.only-if-required~1]
     @Test
     void testInstalledSlc() {
         final ContainerStatus status = ContainerStatus.create("irrelevant");
@@ -90,6 +91,7 @@ class ContainerStatusTest {
         assertThat(status.isInstalled(slcBuilder.build()), is(true));
     }
 
+    // [utest->dsn~install-custom-slc.only-if-required~1]
     @Test
     void testInstalledSlcDifferentValue() {
         final ContainerStatus status = ContainerStatus.create("irrelevant");

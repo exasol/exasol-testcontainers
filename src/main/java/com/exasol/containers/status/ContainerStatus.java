@@ -100,6 +100,7 @@ public final class ContainerStatus implements Serializable {
      * @param slc SLC to check
      * @return {@code true} if the SLC is installed
      */
+    // [impl->dsn~install-custom-slc.only-if-required~1]
     public boolean isInstalled(final ScriptLanguageContainer slc) {
         return installedSlcs.contains(slc);
     }
@@ -109,6 +110,7 @@ public final class ContainerStatus implements Serializable {
      * 
      * @param slc SLC to add
      */
+    // [impl->dsn~install-custom-slc.only-if-required~1]
     public void addInstalledSlc(final ScriptLanguageContainer slc) {
         this.installedSlcs.add(slc);
     }

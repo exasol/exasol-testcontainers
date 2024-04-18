@@ -27,6 +27,9 @@ class ExasolContainerSlcIT {
 
     @Test
     @Order(1)
+    // [itest->dsn~install-custom-slc~1]
+    // [itest->dsn~install-custom-slc.url~1]
+    // [itest->dsn~install-custom-slc.verify-checksum~1]
     void installSlc() throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final ScriptLanguageContainer slc = createSlc();
@@ -40,7 +43,9 @@ class ExasolContainerSlcIT {
 
     @Test
     @Order(2)
-    void slcAlreadyInstalled() throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
+    // [itest->dsn~install-custom-slc.only-if-required~1]
+    void installationSkippedWhenAlreadyInstalled()
+            throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final ScriptLanguageContainer slc = createSlc();
             container.withReuse(true).withScriptLanguageContainer(slc);
