@@ -363,6 +363,46 @@ The test container knows the cluster setup, including the [bucket credentials](#
 
 Creating and deleting of buckets and BucketFS services is not yet supported by the Exasol test container.
 
+## Installing Custom Script Language Containers (SLC)
+
+Exasol User Defined Functions (UDF) run inside a Script Language Container. The Exasol DB contains SLC that is used by default. If you need to test UDFs against a custom SLC (e.g. containing a newer Java version or additional libraries), you can install a custom SLC.
+
+```java
+// Create Script Language Container definition
+ScriptLanguageContainer slc = ScriptLanguageContainer.builder()
+    .language(Language.JAVA)
+    .localFile(Path.of("/path/to/java17-slc.tar.gz"))
+    .build();
+// Pass definition to ExasolContainer
+ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>().withReuse(true).withScriptLanguageContainer(slc);
+```
+
+You can also specify a released SLC from [script-languages-release](https://github.com/exasol/script-languages-release/releases):
+
+```java
+ScriptLanguageContainer slc = ScriptLanguageContainer.builder()
+    .language(Language.PYTHON)
+    .slcRelease("7.1.0", "template-Exasol-all-python-3.10_release.tar.gz")
+    .sha512sum("db19e16b9cb5b3d02c44ad6e401eb9296b0483c0078a2e23ac00ad7f26473d115febb0c799a86aed33f49252947a86aa7e8927571a2679131da52e5fc090939c")
+    .build();
+```
+
+You can also specify the URL directly:
+
+```java
+ScriptLanguageContainer slc = ScriptLanguageContainer.builder()
+    .language(Language.PYTHON)
+    .url("https://github.com/exasol/script-languages-release/releases/download/7.1.0/template-Exasol-all-python-3.10_release.tar.gz")
+    .sha512sum("db19e16b9cb5b3d02c44ad6e401eb9296b0483c0078a2e23ac00ad7f26473d115febb0c799a86aed33f49252947a86aa7e8927571a2679131da52e5fc090939c")
+    .build();
+```
+
+Please note:
+* The SHA512 checksum is required to ensure the validity of downloaded files.
+* When reusing a Docker Container, ETC installs the SLC only once.
+* By default, ETC uses SLC aliases `JAVA`, `R` and `PYTHON3` depending on the chosen language. This will overwrite the default SLC for the language. If necessary you can specify a custom alias, e.g. `.alias("JAVA17")`.
+* See the [Exasol DB documentation](https://docs.exasol.com/db/latest/database_concepts/udf_scripts/adding_new_packages_script_languages.htm) for details about installing SLCs.
+
 ## Viewing Cluster Logs
 
 A running Exasol cluster produces a lot of logs. In the Docker version those logs are located internally under `/exa/logs`. Since this happens inside the Docker container, logs by default are not visible in an integration test.
