@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.exasol.errorreporting.ExaError;
 
-public class ChecksumVerifyingFileProvider implements FileProvider {
+class ChecksumVerifyingFileProvider implements FileProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChecksumVerifyingFileProvider.class);
     private final FileProvider delegate;
     private final String expectedSha512sum;

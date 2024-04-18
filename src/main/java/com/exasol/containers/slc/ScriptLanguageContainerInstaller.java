@@ -13,36 +13,63 @@ import com.exasol.containers.ExasolContainer;
 import com.exasol.containers.slc.fileprovider.FileProvider;
 import com.exasol.errorreporting.ExaError;
 
+/**
+ * This class installs a {@link ScriptLanguageContainer} into the Exasol database.
+ */
 public class ScriptLanguageContainerInstaller {
     private static final List<String> SUPPORTED_SLC_FILE_EXTENSIONS = List.of(".tar.gz", ".tar.bz2", ".zip");
     private final Bucket bucket;
     private final SlcConfigurator slcConfigurator;
     private final SlcUrlFormatter slcUrlFormatter;
 
-    public ScriptLanguageContainerInstaller(final Bucket bucket, final SlcConfigurator slcConfigurator,
+    private ScriptLanguageContainerInstaller(final Bucket bucket, final SlcConfigurator slcConfigurator,
             final SlcUrlFormatter slcUrlFormatter) {
         this.bucket = bucket;
         this.slcConfigurator = slcConfigurator;
         this.slcUrlFormatter = slcUrlFormatter;
     }
 
+    /**
+     * Create a new {@link ScriptLanguageContainerInstaller} for a given {@link ExasolContainer}.
+     * 
+     * @param container Exasol container
+     * @return new {@link ScriptLanguageContainerInstaller}
+     */
     public static ScriptLanguageContainerInstaller create(final ExasolContainer<?> container) {
         return ScriptLanguageContainerInstaller.create(container.createConnection(), container.getDefaultBucket());
     }
 
+    /**
+     * Create a new {@link ScriptLanguageContainerInstaller} for a given {@link Connection} and {@link Bucket}.
+     * 
+     * @param connection connection to an Exasol database
+     * @param bucket     bucket to upload the SLC to
+     * @return new {@link ScriptLanguageContainerInstaller}
+     */
     public static ScriptLanguageContainerInstaller create(final Connection connection, final Bucket bucket) {
         return new ScriptLanguageContainerInstaller(bucket, new SlcConfigurator(connection), new SlcUrlFormatter());
     }
 
+    /**
+     * Install a {@link ScriptLanguageContainer} into the Exasol database.
+     * <p>
+     * This will perform the following steps:
+     * <ol>
+     * <li>Validate the given SLC configuration</li>
+     * <li>Download the SLC if necessary</li>
+     * <li>Upload the SLC to the bucket filesystem</li>
+     * <li>Update the SLC configuration in the Exasol database</li>
+     * </ol>
+     * 
+     * @param slc script language container to install
+     */
     public void install(final ScriptLanguageContainer slc) {
         final FileProvider fileProvider = FileProvider.forSlc(slc);
         validateSlc(slc, fileProvider);
-        final Path localPath = fileProvider.getLocalFile();
-        final String fileName = localPath.getFileName().toString();
-        uploadToBucketFs(localPath, fileName);
-        final SlcConfiguration configuration = slcConfigurator.read();
-        configuration.setAlias(slc.getAlias(), slcUrlFormatter.format(slc, removeExtension(slc, fileName)));
-        slcConfigurator.write(configuration);
+        final Path localFile = fileProvider.getLocalFile();
+        final String fileName = localFile.getFileName().toString();
+        uploadToBucketFs(localFile, fileName);
+        updateSlcConfiguration(slc, fileName);
     }
 
     private void uploadToBucketFs(final Path file, final String pathInBucket) {
@@ -86,6 +113,12 @@ public class ScriptLanguageContainerInstaller {
                             SUPPORTED_SLC_FILE_EXTENSIONS)
                     .toString();
         }
+    }
+
+    private void updateSlcConfiguration(final ScriptLanguageContainer slc, final String fileName) {
+        final SlcConfiguration configuration = slcConfigurator.read();
+        configuration.setAlias(slc.getAlias(), slcUrlFormatter.format(slc, removeExtension(slc, fileName)));
+        slcConfigurator.write(configuration);
     }
 
     private String removeExtension(final ScriptLanguageContainer slc, final String fileName) {

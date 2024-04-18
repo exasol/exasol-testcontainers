@@ -17,6 +17,7 @@ public final class ContainerStatus implements Serializable {
     private final Map<ExasolService, ServiceStatus> serviceStatuses = new EnumMap<>(ExasolService.class);
     /** @serial */
     private final Set<String> appliedWorkarounds = new HashSet<>();
+    /** @serial */
     private final Set<ScriptLanguageContainer> installedSlcs = new HashSet<>();
 
     private ContainerStatus(final String containerId) {

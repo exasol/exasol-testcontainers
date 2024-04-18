@@ -11,6 +11,12 @@ import com.exasol.errorreporting.ExaError;
  */
 public interface FileProvider {
 
+    /**
+     * Create a new {@link FileProvider} for a given {@link ScriptLanguageContainer}, depending on the configuration.
+     * 
+     * @param slc the {@link ScriptLanguageContainer}
+     * @return new {@link FileProvider}
+     */
     public static FileProvider forSlc(final ScriptLanguageContainer slc) {
         final FileProvider provider = createProvider(slc);
         if (slc.getSha512sum() != null) {

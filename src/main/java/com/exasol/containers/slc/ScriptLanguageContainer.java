@@ -15,12 +15,17 @@ import com.exasol.errorreporting.ExaError;
  */
 public final class ScriptLanguageContainer implements Serializable {
     private static final long serialVersionUID = -3295522116885302191L;
+    /** @serial */
     private final Language language;
+    /** @serial */
     private final String alias;
+    /** @serial */
     private final String udfEntryPoint;
-    /* We use type String instead of Path, because Path is not serializable. */
+    /** @serial We use type String instead of Path, because Path is not serializable. */
     private final String localFile;
+    /** @serial */
     private final String url;
+    /** @serial */
     private final String sha512sum;
 
     private ScriptLanguageContainer(final Builder builder) {
@@ -198,7 +203,7 @@ public final class ScriptLanguageContainer implements Serializable {
         /**
          * Set the local file of the SLC. Use this method if the SLC is available as a local file.
          * <p>
-         * This is an alternative to {@link #url(URL)}.
+         * This is an alternative to {@link #url(String)}.
          * 
          * @param localFile local file of the SLC
          * @return {@code this} for fluent programming
@@ -227,8 +232,10 @@ public final class ScriptLanguageContainer implements Serializable {
          * Use a released SLC from <a href=
          * "https://github.com/exasol/script-languages-release/releases">https://github.com/exasol/script-languages-release</a>.
          * <p>
-         * This is a convenience method that sets the URL using {@link #url(URL)} based on version and file name.
+         * This is a convenience method that sets the URL using {@link #url(String)} based on version and file name.
          * 
+         * @param version  version of the SLC release
+         * @param fileName file name of the SLC
          * @return {@code this} for fluent programming
          */
         public Builder slcRelease(final String version, final String fileName) {
@@ -237,7 +244,7 @@ public final class ScriptLanguageContainer implements Serializable {
         }
 
         /**
-         * Set the sha512sum of the SLC. This is required for SLCs when {@link #url(URL)} or
+         * Set the sha512sum of the SLC. This is required for SLCs when {@link #url(String)} or
          * {@link #slcRelease(String, String)} was used.
          * 
          * @param sha512sum sha512sum of the SLC
