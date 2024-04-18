@@ -47,10 +47,14 @@ class CachingUrlFileProvider implements FileProvider {
         if (Files.exists(localCacheDir)) {
             return;
         }
+        createDirectories(localCacheDir);
+    }
+
+    private static void createDirectories(final Path dir) {
         try {
-            Files.createDirectories(this.localCacheDir);
+            Files.createDirectories(dir);
         } catch (final IOException exception) {
-            throw new UncheckedIOException("Unable to create cache directory '" + this.localCacheDir + "'", exception);
+            throw new UncheckedIOException("Unable to create cache directory '" + dir + "'", exception);
         }
     }
 

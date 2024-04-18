@@ -3,7 +3,6 @@ package com.exasol.containers.slc.fileprovider;
 import java.nio.file.Path;
 
 class LocalFileProvider implements FileProvider {
-
     private final Path localFile;
 
     LocalFileProvider(final Path localFile) {
