@@ -31,7 +31,7 @@ class FileProviderTest {
     @Test
     void forSlcReturnsUrlProvider() throws MalformedURLException {
         final FileProvider provider = create(slcBuilder().url("http://0.0.0.0/file"));
-        assertThat(provider, instanceOf(UrlFileProvider.class));
+        assertThat(provider, instanceOf(CachingUrlFileProvider.class));
     }
 
     @Test

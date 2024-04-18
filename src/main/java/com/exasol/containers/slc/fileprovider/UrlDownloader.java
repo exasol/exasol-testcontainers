@@ -15,7 +15,6 @@ class UrlDownloader {
     void download(final URL url, final Path targetPath) {
         LOGGER.debug("Downloading URL {} to {}...", url, targetPath);
         try (InputStream in = url.openStream()) {
-            Files.createDirectories(targetPath.getParent());
             final long fileSize = Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
             LOGGER.debug("Downloaded {} with size {} bytes.", targetPath, fileSize);
         } catch (final IOException exception) {

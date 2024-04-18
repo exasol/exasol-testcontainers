@@ -1,6 +1,7 @@
 package com.exasol.containers.slc.fileprovider;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,27 +26,51 @@ public class ChecksumVerifyingFileProvider implements FileProvider {
         final String calculatedChecksum = calculateSha512sum(localFile);
         if (calculatedChecksum.equalsIgnoreCase(this.expectedSha512sum)) {
             return localFile;
-        } else {
-            throw new IllegalStateException(ExaError.messageBuilder("E-ETC-37").message(
-                    "Sha512 checksum verification failed for file {{file}}, expected {{expected checksum}} but got {{calculated checksum}}",
-                    localFile, expectedSha512sum, calculatedChecksum).toString());
         }
+        throw new IllegalStateException(ExaError.messageBuilder("E-ETC-37").message(
+                "Sha512 checksum verification failed for file {{file}}, expected {{expected checksum}} but got {{calculated checksum}}",
+                localFile, expectedSha512sum, calculatedChecksum).toString());
     }
 
     private static String calculateSha512sum(final Path localFile) {
+        final byte[] fileContent = readContent(localFile);
+        final byte[] checksum = calculateSha512Checksum(fileContent);
+        return formatChecksum(checksum);
+    }
+
+    private static byte[] readContent(final Path localFile) {
         try {
-            final MessageDigest md = MessageDigest.getInstance("SHA-512");
-            md.update(Files.readAllBytes(localFile));
-            final byte[] digest = md.digest();
-            final BigInteger bigInt = new BigInteger(1, digest);
-            String sha512 = bigInt.toString(16);
-            while (sha512.length() < 64) {
-                sha512 = "0" + sha512;
-            }
-            return sha512;
-        } catch (NoSuchAlgorithmException | IOException exception) {
-            throw new IllegalStateException(exception);
+            return Files.readAllBytes(localFile);
+        } catch (final IOException exception) {
+            throw new UncheckedIOException("Failed to read file content from '" + localFile + "'", exception);
         }
+    }
+
+    private static byte[] calculateSha512Checksum(final byte[] content) {
+        final MessageDigest md = createDigest();
+        md.update(content);
+        return md.digest();
+    }
+
+    private static MessageDigest createDigest() {
+        try {
+            return MessageDigest.getInstance("SHA-512");
+        } catch (final NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("Failed to create SHA-512 message digest.", exception);
+        }
+    }
+
+    private static String formatChecksum(final byte[] digest) {
+        final BigInteger bigInt = new BigInteger(1, digest);
+        return zeroPad(bigInt.toString(16));
+    }
+
+    @SuppressWarnings("java:S1643") // Using StringBuilder is not necessary here
+    private static String zeroPad(String checksum) {
+        while (checksum.length() < 64) {
+            checksum = "0" + checksum;
+        }
+        return checksum;
     }
 
     @Override

@@ -27,7 +27,7 @@ public interface FileProvider {
         if (slc.getLocalFile() != null) {
             return new LocalFileProvider(slc.getLocalFile());
         } else if (slc.getUrl() != null) {
-            return new UrlFileProvider(slc.getUrl());
+            return new CachingUrlFileProvider(slc.getUrl());
         } else {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-39")
                     .message("SLC must have either a local file or a URL").toString());
