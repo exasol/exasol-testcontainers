@@ -21,6 +21,7 @@ import com.exasol.containers.slc.ScriptLanguageContainer;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
 
 @Tag("slow")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ExasolContainerSlcIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerSlcIT.class);
     private static final long TIMESTAMP = System.currentTimeMillis();
