@@ -86,6 +86,10 @@ The `HostIpDetector` detects the IP address of the host the container is running
 
 The `SupportInformationRetriever` module provides access to cluster logs, configuration and core-dumps.
 
+## `ScriptLanguageContainerInstaller`
+
+The `ScriptLanguageContainerInstaller` is responsible for installing custom Script Language Containers (SLC).
+
 # Runtime
 
 This section describes the runtime behavior of the software.
@@ -409,6 +413,56 @@ Covers:
   req~bucket-authentication~1
 * [`req~waiting-for-bucket-content-synchronization~1`](system_requirements.md#waiting-for-bucket-content-synchronization)
 * [`req~downloading-a-file-from-bucketfs~1`](system_requirements.md#downloading-a-file-from-bucketfs)
+
+Needs: impl, utest, itest
+
+## Install Custom Script Language Containers (SLC)
+`dsn~install-custom-slc~1`
+
+The `ExasolContainer` lets integrators install custom SLCs during container startup.
+
+Covers:
+* [`req~install-custom-slc~1`](system_requirements.md#install-custom-slc)
+
+Needs: impl, utest, itest
+
+### Only Install SLC When Not Yet Done
+`dsn~install-custom-slc.only-if-required~1`
+
+The `ExasolContainer` checks the container status if a given SLC was already installed and skips installation.
+
+Rationale:
+In case a container is reused we want to skip installation to speed-up tests.
+
+Needs: impl, utest, itest
+
+### Install SLC From Local File
+`dsn~install-custom-slc.local-file~1`
+
+ETC allows installing SLCs from a local file.
+
+Rationale:
+This is useful during development when testing an SLC that was not yet released.
+
+Needs: impl, utest
+
+### Install SLC From a URL
+`dsn~install-custom-slc.url~1`
+
+ETC allows installing SLCs from an URL.
+
+Rationale:
+This is useful for running tests during CI with a released SLC.
+
+Needs: impl, utest, itest
+
+### Verify SLC Checksum
+`dsn~install-custom-slc.verify-checksum~1`
+
+ETC verifies the Sha512 checksum of SLCs downloaded from the internet.
+
+Rationale:
+This is required to ensure the integrity of the downloaded file.
 
 Needs: impl, utest, itest
 

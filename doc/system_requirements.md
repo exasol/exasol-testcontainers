@@ -31,9 +31,9 @@ Integrators integrate their solution with Exasol. To test this, they need a fram
 
 The following list gives you an overview of terms and abbreviations commonly used in ETC documents.
 
-* Container: (Docker container)[https://docs.docker.com/glossary/#container]
+* Container: [Docker container](https://docs.docker.com/glossary/#container)
 * Docker: Container-based virtualization framework
-* Image: (Docker image)[https://docs.docker.com/glossary/#image]
+* Image: [Docker image](https://docs.docker.com/glossary/#image)
 
 ## Features
 
@@ -57,6 +57,13 @@ Needs: req
 `feat~bucketfs-access~1`
 
 ETC provides access to the BucketFS service(s) of the Exasol database.
+
+Needs: req
+
+### Install Custom Script Language Containers (SLC)
+`feat~install-custom-slc~1`
+
+ETC allows installing custom SLCs during.
 
 Needs: req
 
@@ -481,6 +488,22 @@ Files uploaded to Bucket FS are not immediately usable due to internal synchroni
 Covers:
 
 * [`feat~bucketfs-access~1`](#bucketfs-access)
+
+Needs: dsn
+
+### Install Custom SLC
+`req~install-custom-slc~1`
+
+ETC lets Integrators install custom SLCs.
+
+Rationale:
+
+Integrators want to test their integration with a custom Script Language Container (SLC). This is necessary in the following cases:
+* Integrators want to use a later Java version than supported by the default SLC that comes with the Exasol Docker container
+* Integrators want to use additional Python libraries and build a custom SLC with the required libraries
+
+Covers:
+* [`feat~install-custom-slc~1`](#install-custom-script-language-containers-slc)
 
 Needs: dsn
 

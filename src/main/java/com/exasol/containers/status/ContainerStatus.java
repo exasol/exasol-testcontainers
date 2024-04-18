@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import com.exasol.containers.ExasolService;
+import com.exasol.containers.slc.ScriptLanguageContainer;
 
 /**
  * State information about the Exasol docker container.
@@ -16,6 +17,8 @@ public final class ContainerStatus implements Serializable {
     private final Map<ExasolService, ServiceStatus> serviceStatuses = new EnumMap<>(ExasolService.class);
     /** @serial */
     private final Set<String> appliedWorkarounds = new HashSet<>();
+    /** @serial */
+    private final Set<ScriptLanguageContainer> installedSlcs = new HashSet<>();
 
     private ContainerStatus(final String containerId) {
         this.containerId = containerId;
@@ -91,9 +94,36 @@ public final class ContainerStatus implements Serializable {
         this.appliedWorkarounds.addAll(ids);
     }
 
+    /**
+     * Check if the given Script Language Container (SLC) is installed.
+     * 
+     * @param slc SLC to check
+     * @return {@code true} if the SLC is installed
+     */
+    // [impl->dsn~install-custom-slc.only-if-required~1]
+    public boolean isInstalled(final ScriptLanguageContainer slc) {
+        return installedSlcs.contains(slc);
+    }
+
+    /**
+     * Add an installed Script Language Container (SLC).
+     * 
+     * @param slc SLC to add
+     */
+    // [impl->dsn~install-custom-slc.only-if-required~1]
+    public void addInstalledSlc(final ScriptLanguageContainer slc) {
+        this.installedSlcs.add(slc);
+    }
+
+    @Override
+    public String toString() {
+        return "ContainerStatus [containerId=" + containerId + ", serviceStatuses=" + serviceStatuses
+                + ", appliedWorkarounds=" + appliedWorkarounds + ", installedSlcs=" + installedSlcs + "]";
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(this.containerId, this.serviceStatuses, this.appliedWorkarounds);
+        return Objects.hash(this.containerId, this.serviceStatuses, this.appliedWorkarounds, this.installedSlcs);
     }
 
     @Override
@@ -107,6 +137,7 @@ public final class ContainerStatus implements Serializable {
         final ContainerStatus other = (ContainerStatus) obj;
         return Objects.equals(this.containerId, other.containerId)
                 && Objects.equals(this.serviceStatuses, other.serviceStatuses)
-                && Objects.equals(this.appliedWorkarounds, other.appliedWorkarounds);
+                && Objects.equals(this.appliedWorkarounds, other.appliedWorkarounds)
+                && Objects.equals(this.installedSlcs, other.installedSlcs);
     }
 }

@@ -1,8 +1,10 @@
-# Test Containers for Exasol on Docker 7.1.0, released 2024-??-??
+# Test Containers for Exasol on Docker 7.1.0, released 2024-04-18
 
-Code name:
+Code name: Install Custom SLC
 
 ## Summary
+
+This release allows installing custom Script Language Containers (SLC) into the Exasol Docker container. This is useful for testing UDFs with a SLC containing additional libraries or a newer Java version. See the [user guide](https://github.com/exasol/exasol-testcontainers/blob/main/doc/user_guide/user_guide.md#installing-custom-script-language-containers-slc) for detailed usage instructions.
 
 ### Refactoring
 
@@ -10,7 +12,6 @@ This release updates the following methods to throw the runtime exception `Unche
 
 * `ExasolContainer.createConnectionForUser()`
 * `ExasolContainer.createConnection()`
-
 
 ## Features
 
@@ -38,7 +39,9 @@ This release updates the following methods to throw the runtime exception `Unche
 
 ### Test Dependency Updates
 
+* Added `com.exasol:hamcrest-resultset-matcher:1.6.5`
 * Updated `com.exasol:udf-api-java:1.0.4` to `1.0.5`
+* Added `com.jparams:to-string-verifier:1.4.8`
 * Added `nl.jqno.equalsverifier:equalsverifier:3.16.1`
 * Updated `org.mockito:mockito-junit-jupiter:5.10.0` to `5.11.0`
 * Updated `org.testcontainers:junit-jupiter:1.19.5` to `1.19.7`
