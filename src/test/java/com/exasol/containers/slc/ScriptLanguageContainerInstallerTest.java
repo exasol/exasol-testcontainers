@@ -1,29 +1,43 @@
 package com.exasol.containers.slc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.exasol.bucketfs.Bucket;
+import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
 
 @ExtendWith(MockitoExtension.class)
 class ScriptLanguageContainerInstallerTest {
 
     @Mock
-    private Connection connectionMock;
+    Connection connectionMock;
     @Mock
-    private Bucket bucketMock;
+    Bucket bucketMock;
+    @Mock
+    SlcConfigurator slcConfiguratorMock;
+    @TempDir
+    Path tempDir;
 
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = {
@@ -89,7 +103,37 @@ class ScriptLanguageContainerInstallerTest {
                 startsWith("E-ETC-41: SLC must have either a local file or a URL, not both"));
     }
 
+    @Test
+    void uploadFiles(@TempDir final Path tempDir) throws IOException, BucketAccessException, TimeoutException {
+        final Path file = tempDir.resolve("file.zip");
+        Files.createFile(file);
+        doThrow(new BucketAccessException("expected")).when(bucketMock).uploadFile(file, "file.zip");
+        final ScriptLanguageContainer slc = ScriptLanguageContainer.builder().language(Language.PYTHON).localFile(file)
+                .build();
+        final ScriptLanguageContainerInstaller installer = testee();
+
+        final IllegalStateException exception = assertThrows(IllegalStateException.class, () -> installer.install(slc));
+        assertThat(exception.getMessage(),
+                equalTo("E-ETC-34: Failed to upload local file file '" + file + "' to bucket at 'file.zip'."));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { ".zip", ".tar.gz", ".tar.bz2" })
+    void install(final String fileExtension) throws IOException, BucketAccessException, TimeoutException {
+        final Path file = tempDir.resolve("file" + fileExtension);
+        Files.createFile(file);
+        final SlcConfiguration config = SlcConfiguration.parse("");
+        when(slcConfiguratorMock.read()).thenReturn(config);
+
+        testee().install(ScriptLanguageContainer.builder().language(Language.PYTHON).localFile(file).build());
+
+        assertAll(() -> assertThat(config.format(), equalTo(
+                "PYTHON3=localzmq+protobuf:///bfsdefault/default/file?lang=python#buckets/bfsdefault/default/file/exaudf/exaudfclient_py3")),
+                () -> verify(bucketMock).uploadFile(file, file.getFileName().toString()),
+                () -> verify(slcConfiguratorMock).write(same(config)));
+    }
+
     private ScriptLanguageContainerInstaller testee() {
-        return ScriptLanguageContainerInstaller.create(connectionMock, bucketMock);
+        return new ScriptLanguageContainerInstaller(bucketMock, slcConfiguratorMock, new SlcUrlFormatter());
     }
 }

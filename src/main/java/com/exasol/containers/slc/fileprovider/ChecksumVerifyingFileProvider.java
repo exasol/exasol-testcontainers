@@ -8,10 +8,13 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.exasol.errorreporting.ExaError;
 
 public class ChecksumVerifyingFileProvider implements FileProvider {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChecksumVerifyingFileProvider.class);
     private final FileProvider delegate;
     private final String expectedSha512sum;
 
@@ -25,6 +28,7 @@ public class ChecksumVerifyingFileProvider implements FileProvider {
         final Path localFile = this.delegate.getLocalFile();
         final String calculatedChecksum = calculateSha512sum(localFile);
         if (calculatedChecksum.equalsIgnoreCase(this.expectedSha512sum)) {
+            LOGGER.debug("Sha512 checksum of file '{}' is correct: {}", localFile, calculatedChecksum);
             return localFile;
         }
         throw new IllegalStateException(ExaError.messageBuilder("E-ETC-37").message(

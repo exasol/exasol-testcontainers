@@ -14,7 +14,6 @@ import com.exasol.containers.slc.fileprovider.FileProvider;
 import com.exasol.errorreporting.ExaError;
 
 public class ScriptLanguageContainerInstaller {
-
     private static final List<String> SUPPORTED_SLC_FILE_EXTENSIONS = List.of(".tar.gz", ".tar.bz2", ".zip");
     private final Bucket bucket;
     private final SlcConfigurator slcConfigurator;
@@ -39,10 +38,10 @@ public class ScriptLanguageContainerInstaller {
         final FileProvider fileProvider = FileProvider.forSlc(slc);
         validateSlc(slc, fileProvider);
         final Path localPath = fileProvider.getLocalFile();
-        final String containerName = localPath.getFileName().toString();
-        uploadToBucketFs(localPath, containerName);
+        final String fileName = localPath.getFileName().toString();
+        uploadToBucketFs(localPath, fileName);
         final SlcConfiguration configuration = slcConfigurator.read();
-        configuration.setAlias(slc.getAlias(), slcUrlFormatter.format(slc, containerName));
+        configuration.setAlias(slc.getAlias(), slcUrlFormatter.format(slc, removeExtension(slc, fileName)));
         slcConfigurator.write(configuration);
     }
 
@@ -87,5 +86,11 @@ public class ScriptLanguageContainerInstaller {
                             SUPPORTED_SLC_FILE_EXTENSIONS)
                     .toString();
         }
+    }
+
+    private String removeExtension(final ScriptLanguageContainer slc, final String fileName) {
+        final String extension = SUPPORTED_SLC_FILE_EXTENSIONS.stream().filter(fileName::endsWith).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(wrongFileExtensionErrorMessage(slc, fileName)));
+        return fileName.substring(0, fileName.length() - extension.length());
     }
 }

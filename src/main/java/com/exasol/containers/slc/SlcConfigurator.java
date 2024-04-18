@@ -2,6 +2,9 @@ package com.exasol.containers.slc;
 
 import java.sql.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.exasol.containers.UncheckedSqlException;
 import com.exasol.errorreporting.ExaError;
 
@@ -10,7 +13,7 @@ import com.exasol.errorreporting.ExaError;
  * Exasol database.
  */
 class SlcConfigurator {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(SlcConfigurator.class);
     private final Connection connection;
 
     SlcConfigurator(final Connection connection) {
@@ -34,6 +37,7 @@ class SlcConfigurator {
      */
     void write(final SlcConfiguration config) {
         final String value = config.format();
+        LOGGER.debug("Writing SLC configuration to database: {}", value);
         try (Statement statement = connection.createStatement()) {
             statement.execute("ALTER SYSTEM SET SCRIPT_LANGUAGES='" + value + "'");
             statement.execute("ALTER SESSION SET SCRIPT_LANGUAGES='" + value + "'");

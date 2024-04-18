@@ -9,9 +9,10 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.exasol.containers.ExasolContainerConstants;
+
 class CachingUrlFileProvider implements FileProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CachingUrlFileProvider.class);
-
     private final UrlDownloader urlDownloader;
     private final Path localCacheDir;
     private final URL url;
@@ -27,7 +28,7 @@ class CachingUrlFileProvider implements FileProvider {
     }
 
     private static Path getDefaultCacheDir() {
-        return Path.of(System.getProperty("user.home")).resolve(".cache/exasol-testcontainers");
+        return ExasolContainerConstants.CACHE_DIRECTORY.resolve("slcs");
     }
 
     @Override
