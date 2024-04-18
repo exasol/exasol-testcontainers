@@ -35,8 +35,9 @@ class SlcConfigurator {
      * 
      * @param config the configuration to write
      */
+    @SuppressWarnings("java:S2077") // ALTER SESSION and ALTER SYSTEM don't support prepared statements
     void write(final SlcConfiguration config) {
-        final String value = config.format();
+        final String value = escapeQuotes(config.format());
         LOGGER.debug("Writing SLC configuration to database: {}", value);
         try (Statement statement = connection.createStatement()) {
             statement.execute("ALTER SYSTEM SET SCRIPT_LANGUAGES='" + value + "'");
@@ -45,6 +46,10 @@ class SlcConfigurator {
             throw new UncheckedSqlException(ExaError.messageBuilder("E-ETC-32")
                     .message("Failed to write SLC configuration to the database").toString(), exception);
         }
+    }
+
+    private String escapeQuotes(final String config) {
+        return config.replace("'", "''");
     }
 
     private String getScriptLanguagesSystemValue() {
