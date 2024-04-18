@@ -22,7 +22,7 @@ public class ScriptLanguageContainerInstaller {
     private final SlcConfigurator slcConfigurator;
     private final SlcUrlFormatter slcUrlFormatter;
 
-    private ScriptLanguageContainerInstaller(final Bucket bucket, final SlcConfigurator slcConfigurator,
+    ScriptLanguageContainerInstaller(final Bucket bucket, final SlcConfigurator slcConfigurator,
             final SlcUrlFormatter slcUrlFormatter) {
         this.bucket = bucket;
         this.slcConfigurator = slcConfigurator;
