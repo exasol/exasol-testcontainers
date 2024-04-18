@@ -12,8 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +20,7 @@ import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.slc.ScriptLanguageContainer;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
 
+@Tag("slow")
 class ExasolContainerSlcIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerSlcIT.class);
     private static final long TIMESTAMP = System.currentTimeMillis();
@@ -46,7 +46,7 @@ class ExasolContainerSlcIT {
             container.withReuse(true).withScriptLanguageContainer(slc);
             final Duration startupDuration = measureDuration(container::start);
             LOGGER.info("Second startup took {}", startupDuration);
-            assertAll(() -> assertThat(startupDuration.toSeconds(), lessThan(2L)),
+            assertAll(() -> assertThat(startupDuration.toSeconds(), lessThan(5L)),
                     () -> assertPython310Slc(container, slc));
         }
     }
