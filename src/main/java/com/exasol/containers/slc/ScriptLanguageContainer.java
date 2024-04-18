@@ -20,7 +20,7 @@ public final class ScriptLanguageContainer implements Serializable {
     private final String udfEntryPoint;
     /* We use type String instead of Path, because Path is not serializable. */
     private final String localFile;
-    private final URL url;
+    private final String url;
     private final String sha512sum;
 
     private ScriptLanguageContainer(final Builder builder) {
@@ -83,7 +83,16 @@ public final class ScriptLanguageContainer implements Serializable {
      * @return URL of the SLC
      */
     public URL getUrl() {
-        return this.url;
+        return Optional.ofNullable(url).map(ScriptLanguageContainer::parseUrl).orElse(null);
+    }
+
+    private static URL parseUrl(final String url) {
+        try {
+            return new URL(url);
+        } catch (final MalformedURLException exception) {
+            throw new IllegalArgumentException(
+                    ExaError.messageBuilder("E-ETC-36").message("Invalid SLC URL: {{url}}", url).toString(), exception);
+        }
     }
 
     /**
@@ -98,12 +107,12 @@ public final class ScriptLanguageContainer implements Serializable {
     @Override
     public String toString() {
         return "ScriptLanguageContainer [language=" + language + ", alias=" + alias + ", udfEntryPoint=" + udfEntryPoint
-                + ", localFile=" + localFile + "]";
+                + ", localFile=" + localFile + ", url=" + url + ", sha512sum=" + sha512sum + "]";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(language, alias, localFile, udfEntryPoint);
+        return Objects.hash(language, alias, localFile, udfEntryPoint, url, sha512sum);
     }
 
     @Override
@@ -119,7 +128,8 @@ public final class ScriptLanguageContainer implements Serializable {
         }
         final ScriptLanguageContainer other = (ScriptLanguageContainer) obj;
         return language == other.language && Objects.equals(alias, other.alias)
-                && Objects.equals(udfEntryPoint, other.udfEntryPoint) && Objects.equals(localFile, other.localFile);
+                && Objects.equals(udfEntryPoint, other.udfEntryPoint) && Objects.equals(localFile, other.localFile)
+                && Objects.equals(url, other.url) && Objects.equals(sha512sum, other.sha512sum);
     }
 
     /**
@@ -130,7 +140,7 @@ public final class ScriptLanguageContainer implements Serializable {
         private Language language;
         private String alias;
         private String localFile;
-        private URL url;
+        private String url;
         private String sha512sum;
 
         private Builder() {
@@ -194,7 +204,7 @@ public final class ScriptLanguageContainer implements Serializable {
          * @return {@code this} for fluent programming
          */
         public Builder localFile(final Path localFile) {
-            this.localFile = localFile.toAbsolutePath().toString();
+            this.localFile = localFile.toString();
             return this;
         }
 
@@ -208,7 +218,7 @@ public final class ScriptLanguageContainer implements Serializable {
          * @param url url of the SLC
          * @return {@code this} for fluent programming
          */
-        public Builder url(final URL url) {
+        public Builder url(final String url) {
             this.url = url;
             return this;
         }
@@ -222,18 +232,8 @@ public final class ScriptLanguageContainer implements Serializable {
          * @return {@code this} for fluent programming
          */
         public Builder slcRelease(final String version, final String fileName) {
-            return url(parseUrl("https://extensions-internal.exasol.com/com.exasol/script-languages-release/" + version
-                    + "/" + fileName));
-        }
-
-        private URL parseUrl(final String url) {
-            try {
-                return new URL(url);
-            } catch (final MalformedURLException exception) {
-                throw new IllegalArgumentException(
-                        ExaError.messageBuilder("E-ETC-36").message("Could not parse SLC URL {{url}}.", url).toString(),
-                        exception);
-            }
+            return url("https://extensions-internal.exasol.com/com.exasol/script-languages-release/" + version + "/"
+                    + fileName);
         }
 
         /**

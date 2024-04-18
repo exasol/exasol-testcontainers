@@ -47,4 +47,9 @@ public class ChecksumVerifyingFileProvider implements FileProvider {
             throw new IllegalStateException(exception);
         }
     }
+
+    @Override
+    public String getFileName() {
+        return delegate.getFileName();
+    }
 }

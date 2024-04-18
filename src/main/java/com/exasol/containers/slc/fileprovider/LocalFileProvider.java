@@ -14,4 +14,9 @@ public class LocalFileProvider implements FileProvider {
     public Path getLocalFile() {
         return this.localFile;
     }
+
+    @Override
+    public String getFileName() {
+        return this.localFile.getFileName().toString();
+    }
 }

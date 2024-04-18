@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
@@ -31,13 +30,13 @@ class FileProviderTest {
 
     @Test
     void forSlcReturnsUrlProvider() throws MalformedURLException {
-        final FileProvider provider = create(slcBuilder().url(new URL("http://0.0.0.0/file")));
+        final FileProvider provider = create(slcBuilder().url("http://0.0.0.0/file"));
         assertThat(provider, instanceOf(UrlFileProvider.class));
     }
 
     @Test
     void forSlcReturnsUrlProviderWithChecksumVerifier() throws MalformedURLException {
-        final FileProvider provider = create(slcBuilder().url(new URL("http://0.0.0.0/file")).sha512sum("checksum"));
+        final FileProvider provider = create(slcBuilder().url("http://0.0.0.0/file").sha512sum("checksum"));
         assertThat(provider, instanceOf(ChecksumVerifyingFileProvider.class));
     }
 

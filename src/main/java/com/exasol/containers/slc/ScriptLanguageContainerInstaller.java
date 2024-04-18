@@ -36,14 +36,13 @@ public class ScriptLanguageContainerInstaller {
     }
 
     public void install(final ScriptLanguageContainer slc) {
-        validateSlc(slc);
-        final Path localPath = FileProvider.forSlc(slc).getLocalFile();
+        final FileProvider fileProvider = FileProvider.forSlc(slc);
+        validateSlc(slc, fileProvider);
+        final Path localPath = fileProvider.getLocalFile();
         final String containerName = localPath.getFileName().toString();
         uploadToBucketFs(localPath, containerName);
-        final String unpackedContainerName = "template-Exasol-all-python-3.10_release";
-
         final SlcConfiguration configuration = slcConfigurator.read();
-        configuration.setAlias(slc.getAlias(), slcUrlFormatter.format(slc, unpackedContainerName));
+        configuration.setAlias(slc.getAlias(), slcUrlFormatter.format(slc, containerName));
         slcConfigurator.write(configuration);
     }
 
@@ -58,22 +57,35 @@ public class ScriptLanguageContainerInstaller {
         }
     }
 
-    private void validateSlc(final ScriptLanguageContainer slc) {
-        if (slc.getUrl() != null) {
-            // FIXME: verify checksum is present
-            return;
-        }
-        final String fileName = slc.getLocalFile().getFileName().toString();
+    private void validateSlc(final ScriptLanguageContainer slc, final FileProvider fileProvider) {
+        final String fileName = fileProvider.getFileName();
         if (SUPPORTED_SLC_FILE_EXTENSIONS.stream().noneMatch(fileName::endsWith)) {
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-35")
-                    .message("File {{file name}} has an unsupported file extension.", fileName)
-                    .mitigation("The following file extensions are supported for SLCs: {{supported file extensions}}.",
-                            SUPPORTED_SLC_FILE_EXTENSIONS)
-                    .toString());
+            throw new IllegalArgumentException(wrongFileExtensionErrorMessage(slc, fileName));
         }
-        if (!Files.exists(slc.getLocalFile())) {
+        if (slc.getLocalFile() != null && !Files.exists(slc.getLocalFile())) {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-27")
                     .message("Local file {{local file}} does not exist", slc.getLocalFile()).toString());
+        }
+        if (slc.getUrl() != null && slc.getSha512sum() == null) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-42")
+                    .message("An URL is specified but sha512sum checksum is missing").toString());
+        }
+    }
+
+    private String wrongFileExtensionErrorMessage(final ScriptLanguageContainer slc, final String fileName) {
+        if (slc.getLocalFile() != null) {
+            return ExaError.messageBuilder("E-ETC-35")
+                    .message("File {{file path}} has an unsupported file extension.", slc.getLocalFile())
+                    .mitigation("The following file extensions are supported for SLCs: {{supported file extensions}}.",
+                            SUPPORTED_SLC_FILE_EXTENSIONS)
+                    .toString();
+        } else {
+            return ExaError.messageBuilder("E-ETC-40")
+                    .message("Filename {{file name}} of URL {{url}} has an unsupported file extension.", fileName,
+                            slc.getUrl())
+                    .mitigation("The following file extensions are supported for SLCs: {{supported file extensions}}.",
+                            SUPPORTED_SLC_FILE_EXTENSIONS)
+                    .toString();
         }
     }
 }

@@ -35,6 +35,11 @@ class UrlFileProvider implements FileProvider {
         return localPath;
     }
 
+    @Override
+    public String getFileName() {
+        return getUrlFileName(url);
+    }
+
     private Path getCachePath() {
         return CACHE_DIR.resolve(getUrlFileName(url));
     }

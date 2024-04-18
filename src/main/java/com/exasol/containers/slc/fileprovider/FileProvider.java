@@ -20,6 +20,10 @@ public interface FileProvider {
     }
 
     private static FileProvider createProvider(final ScriptLanguageContainer slc) {
+        if (slc.getLocalFile() != null && slc.getUrl() != null) {
+            throw new IllegalArgumentException(ExaError.messageBuilder("E-ETC-41")
+                    .message("SLC must have either a local file or a URL, not both").toString());
+        }
         if (slc.getLocalFile() != null) {
             return new LocalFileProvider(slc.getLocalFile());
         } else if (slc.getUrl() != null) {
@@ -36,4 +40,11 @@ public interface FileProvider {
      * @return local path
      */
     Path getLocalFile();
+
+    /**
+     * Get the name of the file.
+     * 
+     * @return file name
+     */
+    String getFileName();
 }
