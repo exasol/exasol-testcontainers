@@ -886,15 +886,21 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return default internal port of the BucketFS
      */
     public int getDefaultInternalBucketfsPort() {
-        if (this.dockerImageReference.hasMajor()) {
+        if (this.dockerImageReference.hasMajor() && this.dockerImageReference.hasMinor()
+                && this.dockerImageReference.hasFix()) {
+            if (this.dockerImageReference.getMajor() > 8
+                    || (this.dockerImageReference.getMajor() == 8 && this.dockerImageReference.getMinor() >= 29)) {
+                return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V8_29_AND_ABOVE;
+            }
             if (this.dockerImageReference.getMajor() >= 7) {
                 return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE;
             } else {
                 return DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT;
             }
         } else {
-            throw new UnsupportedOperationException("Could not detect internal BucketFS port for custom image. " //
-                    + "Please specify the port explicitly using withExposedPorts().");
+            throw new UnsupportedOperationException(
+                    "Could not detect internal BucketFS port for custom image '" + this.dockerImageReference + "'. " //
+                            + "Please specify the port explicitly using withExposedPorts().");
         }
     }
 

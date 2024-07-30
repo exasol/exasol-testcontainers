@@ -53,8 +53,11 @@ public final class ExasolContainerConstants {
     /** Default BucketFS port for Exasol versions in Docker before 7.0 */
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
 
-    /** Default BucketFS port for Exasol versions in Docker from 7.0 on */
+    /** Default BucketFS port for Exasol versions in Docker from 7.0 on (unencrypted) */
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V7_AND_ABOVE = 2580;
+
+    /** Default BucketFS port for Exasol versions in Docker from 8.29.1 on (TLS) */
+    static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT_V8_29_AND_ABOVE = 2581;
 
     /** Default RPC port for Exasol versions in Docker */
     static final int DEFAULT_CONTAINER_INTERNAL_RPC_PORT = 443;
