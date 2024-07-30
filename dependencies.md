@@ -42,7 +42,7 @@
 | Dependency                                              | License                               |
 | ------------------------------------------------------- | ------------------------------------- |
 | [SonarQube Scanner for Maven][32]                       | [GNU LGPL 3][33]                      |
-| [Apache Maven Toolchains Plugin][34]                    | [Apache License, Version 2.0][22]     |
+| [Apache Maven Toolchains Plugin][34]                    | [Apache-2.0][22]                      |
 | [Apache Maven Compiler Plugin][35]                      | [Apache-2.0][22]                      |
 | [Apache Maven Enforcer Plugin][36]                      | [Apache-2.0][22]                      |
 | [Maven Flatten Plugin][37]                              | [Apache Software Licenese][22]        |
@@ -93,7 +93,7 @@
 [28]: https://commons.apache.org/proper/commons-compress/
 [29]: https://commons.apache.org/proper/commons-codec/
 [30]: http://www.exasol.com/
-[31]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/24.1.0/exasol-jdbc-24.1.0-license.txt
+[31]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/24.1.1/exasol-jdbc-24.1.1-license.txt
 [32]: http://sonarsource.github.io/sonar-scanner-maven/
 [33]: http://www.gnu.org/licenses/lgpl.txt
 [34]: https://maven.apache.org/plugins/maven-toolchains-plugin/
