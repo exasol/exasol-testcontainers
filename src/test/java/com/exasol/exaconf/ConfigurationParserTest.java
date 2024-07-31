@@ -26,6 +26,17 @@ class ConfigurationParserTest {
                 () -> assertThat(serviceConfiguration.getHttpsPort(), equalTo(7878)));
     }
 
+    @Test
+    void testGetBucketFsServiceConfigurationMissingHttpPort() {
+        final ClusterConfiguration clusterConfiguration = parseConfiguration("[BucketFS : the-fs]\n" //
+                + "    HttpsPort = 7878");
+        final BucketFsServiceConfiguration serviceConfiguration = clusterConfiguration
+                .getBucketFsServiceConfiguration("the-fs");
+        assertAll(() -> assertThat(serviceConfiguration.getName(), equalTo("the-fs")),
+                () -> assertThat(serviceConfiguration.getHttpPort(), equalTo(0)),
+                () -> assertThat(serviceConfiguration.getHttpsPort(), equalTo(7878)));
+    }
+
     private ClusterConfiguration parseConfiguration(final String rawConfig) {
         return new ConfigurationParser(rawConfig).parse();
     }
@@ -33,6 +44,7 @@ class ConfigurationParserTest {
     @Test
     void testGetBucketConfiguration() {
         final ClusterConfiguration clusterConfiguration = parseConfiguration("[BucketFS : the-fs]\n" //
+                + "    HttpPort = 6583\n" //
                 + "    [[Bucket : the-bucket]]\n" //
                 + "    # Ignore this comment when parsing.\n" //
                 + "        ReadPasswd = cmVhZA==\n" //
@@ -89,6 +101,7 @@ class ConfigurationParserTest {
     @ParameterizedTest
     void testIgnoreLineWithoutCommentAndAssignment(final String illegalLine) {
         final ClusterConfiguration clusterConfiguration = parseConfiguration("[BucketFS : the-fs]\n" //
+                + "    HttpsPort = 1234\n" //
                 + "    [[Bucket : the-bucket]]\n" //
                 + illegalLine + "\n"//
                 + "        Public = True");

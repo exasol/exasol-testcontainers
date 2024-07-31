@@ -1,12 +1,16 @@
-# Test Containers for Exasol on Docker 7.1.1, released 2024-??-??
+# Test Containers for Exasol on Docker 7.1.1, released 2024-08-01
 
-Code name:
+Code name: Fix startup of Docker DB 8.29.1
 
 ## Summary
 
-## Features
+This release fixes a `NullPointerException` when starting an Exasol Docker DB 8.29.1 or later. Starting with 8.29.1 Docker DB requires TLS encrypted connections for accessing BucketFS. Exasol Testcontainers automatically choses the right protocol depending on the DB version.
 
-* ISSUE_NUMBER: description
+This release also updates the default Docker DB version to 7.1.29.
+
+## Bugfix
+
+* #257: Fixed `NullPointerException` during startup of 8.29.1
 
 ## Dependency Updates
 

@@ -8,8 +8,8 @@ build:
   runnerOs: ubuntu-latest
   freeDiskSpace: true
   exasolDbVersions:
-    - "8.26.0"
-    - "7.1.26"
+    - "8.29.1"
+    - "7.1.29"
   workflows:
     - name: ci-build.yml
       stepCustomizations:
