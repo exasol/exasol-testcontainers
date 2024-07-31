@@ -4,10 +4,16 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.file.Path;
 import java.sql.*;
+import java.time.Duration;
+import java.time.Instant;
 
 import org.apache.derby.drda.NetworkServerControl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class LocalDerbyServer implements AutoCloseable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalDerbyServer.class);
+    private static final Duration STARTUP_TIMEOUT = Duration.ofSeconds(10);
     public static final String DRIVER_NAME = "DERBY";
     public static final int DERBY_PORT = 1527;
     public static final String DERBY_USER = "app";
@@ -42,15 +48,24 @@ class LocalDerbyServer implements AutoCloseable {
 
     @SuppressWarnings("java:S2925") // We need to wait for the server to come up with "sleep" in a loop.
     private static void waitForDerbyServerToAcceptConnections(final NetworkServerControl derbyServer) {
-        for (int attempts = 0; attempts < 20; ++attempts) {
+        LOGGER.debug("Waiting {} for derby server to start..", STARTUP_TIMEOUT);
+        final Instant start = Instant.now();
+        while (true) {
             try {
                 derbyServer.ping();
+                LOGGER.debug("Local derby server started in {}", Duration.between(start, Instant.now()));
                 return;
             } catch (final Exception exception) {
+                final Duration duration = Duration.between(start, Instant.now());
+                if (STARTUP_TIMEOUT.minus(duration).isNegative()) {
+                    throw new IllegalStateException(
+                            "Derby database server required for integration tests did not start up within "
+                                    + STARTUP_TIMEOUT + ".",
+                            exception);
+                }
                 sleep();
             }
         }
-        throw new IllegalStateException("Derby database server required for integration tests did not start up.");
     }
 
     private static void sleep() {
