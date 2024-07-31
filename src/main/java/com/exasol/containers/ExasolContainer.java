@@ -33,6 +33,7 @@ import org.testcontainers.utility.*;
 import com.exasol.bucketfs.Bucket;
 import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
 import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory;
+import com.exasol.bucketfs.testcontainers.TestcontainerBucketFactory.Builder;
 import com.exasol.clusterlogs.LogPatternDetectorFactory;
 import com.exasol.config.ClusterConfiguration;
 import com.exasol.containers.slc.ScriptLanguageContainer;
@@ -479,12 +480,14 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      * @return bucket control object
      */
     public Bucket getBucket(final String bucketFsName, final String bucketName, final FilterStrategy filterStrategy) {
-        return TestcontainerBucketFactory.builder() //
+        final Builder builder = TestcontainerBucketFactory.builder() //
                 .host(getHost()) //
                 .clusterConfiguration(getClusterConfiguration()) //
                 .portMappings(getPortMappings()) //
                 .detectorFactory(this.detectorFactory) //
-                .filterStrategy(filterStrategy) //
+                .filterStrategy(filterStrategy);
+        getTlsCertificate().ifPresent(builder::certificate);
+        return builder //
                 .build() //
                 .getBucket(bucketFsName, bucketName);
     }

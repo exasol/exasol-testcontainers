@@ -1,5 +1,6 @@
 package com.exasol.bucketfs.testcontainers;
 
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
     private final Map<String, Bucket> buckets = new HashMap<>();
     private String host;
     private ClusterConfiguration clusterConfiguration;
+    private X509Certificate certificate;
     private Map<Integer, Integer> portMappings;
     private LogPatternDetectorFactory detectorFactory;
     private FilterStrategy filterStrategy = FilterStrategy.TIME_STAMP;
@@ -58,6 +60,8 @@ public final class TestcontainerBucketFactory implements BucketFactory {
                     .serviceName(serviceName) //
                     .name(bucketName) //
                     .host(this.host) //
+                    .certificate(this.certificate) //
+                    .allowAlternativeHostName(this.host) //
                     .readPassword(bucketConfiguration.getReadPassword()) //
                     .writePassword(bucketConfiguration.getWritePassword());
             if (serviceConfiguration.getHttpsPort() != 0) {
@@ -135,6 +139,15 @@ public final class TestcontainerBucketFactory implements BucketFactory {
          */
         public Builder filterStrategy(final FilterStrategy value) {
             this.factory.filterStrategy = value;
+            return this;
+        }
+
+        /**
+         * @param certificate TLS certificate for connecting to the BucketFS service
+         * @return this for fluent programming
+         */
+        public Builder certificate(final X509Certificate certificate) {
+            this.factory.certificate = Objects.requireNonNull(certificate, "certificate");
             return this;
         }
 
