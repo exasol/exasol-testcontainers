@@ -155,7 +155,6 @@ public final class TestcontainerBucketFactory implements BucketFactory {
          * @return new instance of {@link TestcontainerBucketFactory}
          */
         public TestcontainerBucketFactory build() {
-            Objects.requireNonNull(factory.portMappings, "portMappings");
             return this.factory;
         }
     }
