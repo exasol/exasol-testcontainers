@@ -10,7 +10,7 @@ This release also updates the default Docker DB version to 7.1.29.
 
 ## Bugfix
 
-* #257: Fixed `NullPointerException` during startup of 8.29.1
+* #258: Fixed `NullPointerException` during startup of 8.29.1
 
 ## Dependency Updates
 
