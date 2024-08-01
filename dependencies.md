@@ -18,7 +18,7 @@
 | [JUnit Jupiter Engine][10]                     | [Eclipse Public License v2.0][11] |
 | [JUnit Jupiter Params][10]                     | [Eclipse Public License v2.0][11] |
 | [Testcontainers :: JUnit Jupiter Extension][0] | [MIT][1]                          |
-| [Hamcrest][12]                                 | [BSD License 3][13]               |
+| [Hamcrest][12]                                 | [BSD-3-Clause][13]                |
 | [mockito-junit-jupiter][14]                    | [MIT][15]                         |
 | [junit-pioneer][16]                            | [Eclipse Public License v2.0][11] |
 | [Apache Derby Network Server][17]              | [Apache 2][18]                    |
@@ -75,7 +75,7 @@
 [10]: https://junit.org/junit5/
 [11]: https://www.eclipse.org/legal/epl-v20.html
 [12]: http://hamcrest.org/JavaHamcrest/
-[13]: http://opensource.org/licenses/BSD-3-Clause
+[13]: https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE
 [14]: https://github.com/mockito/mockito
 [15]: https://opensource.org/licenses/MIT
 [16]: https://junit-pioneer.org/
