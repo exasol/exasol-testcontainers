@@ -18,8 +18,6 @@ This release also updates the default Docker DB version to 7.1.29.
 
 * Updated `com.exasol:bucketfs-java:3.1.2` to `3.2.0`
 * Updated `com.github.mwiede:jsch:0.2.17` to `0.2.18`
-* Updated `org.testcontainers:jdbc:1.19.7` to `1.20.1`
-* Updated `org.testcontainers:testcontainers:1.19.7` to `1.20.1`
 
 ### Runtime Dependency Updates
 
@@ -33,7 +31,6 @@ This release also updates the default Docker DB version to 7.1.29.
 * Updated `org.junit.jupiter:junit-jupiter-engine:5.10.2` to `5.10.3`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.10.2` to `5.10.3`
 * Updated `org.mockito:mockito-junit-jupiter:5.11.0` to `5.12.0`
-* Updated `org.testcontainers:junit-jupiter:1.19.7` to `1.20.1`
 
 ### Plugin Dependency Updates
 
