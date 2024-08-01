@@ -70,17 +70,11 @@ jobs:
       - name: Run fast tests
         id: build-quick-verify
         run: |
-          mvn --batch-mode clean verify -Pfast \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-              -DtrimStackTrace=false \
-              -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
+          mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
       - name: Run tests and build with Maven
         id: build-pk-verify
         run: |
-          mvn --batch-mode verify -Pslow \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-              -DtrimStackTrace=false \
-              -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
+          mvn --batch-mode verify -Pslow -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
       - name: Sonar analysis
         id: sonar-analysis
         if: ${{ env.SONAR_TOKEN != null && matrix.exasol_db_version == env.DEFAULT_EXASOL_DB_VERSION }}
