@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 7.1.1, released 2024-08-02
+# Test Containers for Exasol on Docker 7.1.1, released 2024-08-05
 
 Code name: Fix startup of Docker DB 8.29.1
 
