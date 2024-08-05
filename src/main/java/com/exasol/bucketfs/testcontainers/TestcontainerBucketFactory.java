@@ -75,7 +75,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
                         mappedPort);
                 builder.port(mappedPort).useTls(false);
             } else {
-                throw new IllegalStateException("Neither HTTPS nor HTTP port is defined");
+                throw new IllegalStateException("Neither HTTPS nor HTTP port is defined for BucketFS");
             }
             return builder.build();
         });
