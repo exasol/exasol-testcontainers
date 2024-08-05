@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Tag;
@@ -49,8 +48,7 @@ class BucketIT {
     }
 
     @Test
-    void testUploadFile(@TempDir final Path tempDir)
-            throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+    void testUploadFile(@TempDir final Path tempDir) throws IOException, BucketAccessException, TimeoutException {
         final String fileName = "test-uploaded.txt";
         final Path testFile = createTestFile(tempDir, fileName, 10000);
         final Bucket bucket = container.getDefaultBucket();
@@ -60,7 +58,7 @@ class BucketIT {
 
     @Test
     void uploadFileWithFilterStrategyLineNumber(@TempDir final Path tempDir)
-            throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+            throws IOException, BucketAccessException, TimeoutException {
         final String fileName = "test-uploaded.txt";
         final Path testFile = createTestFile(tempDir, fileName, 10000);
         final Bucket bucket = container.getBucket( //
@@ -72,7 +70,7 @@ class BucketIT {
     }
 
     @Test
-    void testUploadZipArchive() throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+    void testUploadZipArchive() throws BucketAccessException, TimeoutException {
         final String filename = "sample-archive.zip";
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadInputStream(() -> BucketIT.class.getResourceAsStream("/" + filename), filename);
@@ -89,7 +87,7 @@ class BucketIT {
     @ValueSource(strings = { "dir1/", "dir2/sub2/", "dir3/sub3/subsub3/", "/dir4/", "/dir5/sub5/" })
     @ParameterizedTest
     void testUploadToDirectoryInBucket(final String pathInBucket, @TempDir final Path tempDir)
-            throws BucketAccessException, InterruptedException, IOException, TimeoutException {
+            throws BucketAccessException, IOException, TimeoutException {
         final String fileName = "file.txt";
         final Path file = createTestFile(tempDir, fileName, 1);
         final Bucket bucket = container.getDefaultBucket();
@@ -98,7 +96,7 @@ class BucketIT {
     }
 
     @Test
-    void testUploadStringContent() throws IOException, BucketAccessException, InterruptedException, TimeoutException {
+    void testUploadStringContent() throws BucketAccessException, InterruptedException, TimeoutException {
         final String content = "Hello BucketFS!";
         final String pathInBucket = "string-uploaded.txt";
         final Bucket bucket = container.getDefaultBucket();
@@ -107,7 +105,7 @@ class BucketIT {
     }
 
     @Test
-    void testUploadInputStreamContent() throws BucketAccessException, InterruptedException, TimeoutException {
+    void testUploadInputStreamContent() throws BucketAccessException, TimeoutException {
         final String content = "Hello BucketFS!";
         final String pathInBucket = "string-uploaded.txt";
         final Bucket bucket = container.getDefaultBucket();
@@ -169,8 +167,8 @@ class BucketIT {
     }
 
     @Test
-    void testReplaceFile(@TempDir final Path tempDir) throws InterruptedException, BucketAccessException,
-            TimeoutException, IOException, NoSuchAlgorithmException {
+    void testReplaceFile(@TempDir final Path tempDir)
+            throws InterruptedException, BucketAccessException, TimeoutException, IOException {
         final int scaleContentSizeBy = 10000000;
         final String fileName = "replace_me.txt";
         final String absolutePathInContainer = "/exa/data/bucketfs/bfsdefault/.dest/default/" + fileName;

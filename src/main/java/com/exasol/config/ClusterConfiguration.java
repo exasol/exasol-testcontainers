@@ -38,6 +38,7 @@ public class ClusterConfiguration {
     public String getAuthenticationToken() {
         return this.parameters.get(GLOBAL_SECTION + "/AuthenticationToken");
     }
+
     /**
      * Get the database version.
      *
@@ -46,6 +47,7 @@ public class ClusterConfiguration {
     public String getDBVersion() {
         return this.parameters.get(GLOBAL_SECTION + "/DBVersion");
     }
+
     /**
      * Get the read password for the default Bucket ({@code bfsdefault/default}).
      *
@@ -81,11 +83,16 @@ public class ClusterConfiguration {
      */
     public BucketFsServiceConfiguration getBucketFsServiceConfiguration(final String name) {
         final String serviceKey = BUCKET_SERVICE_KEY_PREFIX + name;
+        final int httpPort = Integer.parseInt(getOrDefault(serviceKey, "HttpPort", "0"));
+        final int httpsPort = Integer.parseInt(getOrDefault(serviceKey, "HttpsPort", "0"));
+        if (httpPort == 0 && httpsPort == 0) {
+            throw new IllegalStateException("Found neither HTTP nor HTTPS port in parameters " + this.parameters);
+        }
         final Builder builder = BucketFsServiceConfiguration //
                 .builder() //
                 .name(name) //
-                .httpPort(Integer.parseInt(getOrDefault(serviceKey, "HttpPort", "0"))) //
-                .httpsPort(Integer.parseInt(getOrDefault(serviceKey, "HttpsPort", "0")));
+                .httpPort(httpPort) //
+                .httpsPort(httpsPort);
         final Set<String> bucketNames = getBucketNames(serviceKey);
         for (final String bucketName : bucketNames) {
             addBucketConfiguration(serviceKey, bucketName, builder);

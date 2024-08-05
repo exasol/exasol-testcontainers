@@ -1,7 +1,10 @@
 package com.exasol.bucketfs.testcontainers;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.security.cert.X509Certificate;
+import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.exasol.bucketfs.*;
 import com.exasol.bucketfs.testcontainers.LogBasedBucketFsMonitor.FilterStrategy;
@@ -12,6 +15,7 @@ import com.exasol.config.*;
  * Factory for objects abstracting buckets in Exasol's BucketFS.
  */
 public final class TestcontainerBucketFactory implements BucketFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestcontainerBucketFactory.class);
 
     /**
      * @return Builder to create new instances of {@link TestcontainerBucketFactory}
@@ -23,6 +27,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
     private final Map<String, Bucket> buckets = new HashMap<>();
     private String host;
     private ClusterConfiguration clusterConfiguration;
+    private X509Certificate certificate;
     private Map<Integer, Integer> portMappings;
     private LogPatternDetectorFactory detectorFactory;
     private FilterStrategy filterStrategy = FilterStrategy.TIME_STAMP;
@@ -48,23 +53,42 @@ public final class TestcontainerBucketFactory implements BucketFactory {
         this.buckets.computeIfAbsent(bucketPath, key -> {
             final LogBasedBucketFsMonitor monitor = new LogBasedBucketFsMonitor( //
                     this.detectorFactory, this.filterStrategy);
-            return SyncAwareBucket //
+            final com.exasol.bucketfs.SyncAwareBucket.Builder<?> builder = SyncAwareBucket //
                     .builder() //
                     .monitor(monitor)//
                     .stateRetriever(monitor.createStateRetriever()) //
                     .serviceName(serviceName) //
                     .name(bucketName) //
                     .host(this.host) //
-                    .port(mapPort(serviceConfiguration.getHttpPort())) //
+                    .certificate(this.certificate) //
+                    .allowAlternativeHostName(this.host) //
                     .readPassword(bucketConfiguration.getReadPassword()) //
-                    .writePassword(bucketConfiguration.getWritePassword()) //
-                    .build();
+                    .writePassword(bucketConfiguration.getWritePassword());
+            if (serviceConfiguration.getHttpsPort() != 0) {
+                final int mappedPort = mapPort(serviceConfiguration.getHttpsPort());
+                LOGGER.debug("Using encrypted BucketFS port {} (mapped to {})", serviceConfiguration.getHttpsPort(),
+                        mappedPort);
+                builder.port(mappedPort).useTls(true);
+            } else if (serviceConfiguration.getHttpPort() != 0) {
+                final int mappedPort = mapPort(serviceConfiguration.getHttpPort());
+                LOGGER.debug("Using unencrypted BucketFS port {} (mapped to {})", serviceConfiguration.getHttpPort(),
+                        mappedPort);
+                builder.port(mappedPort).useTls(false);
+            } else {
+                throw new IllegalStateException("Neither HTTPS nor HTTP port is defined for BucketFS");
+            }
+            return builder.build();
         });
         return this.buckets.get(bucketPath);
     }
 
     private int mapPort(final int internalPort) {
-        return this.portMappings.get(internalPort);
+        final Integer port = this.portMappings.get(internalPort);
+        if (port == null) {
+            throw new IllegalStateException(
+                    "Internal port " + internalPort + " is not mapped. Current port mappings: " + this.portMappings);
+        }
+        return port.intValue();
     }
 
     /**
@@ -96,7 +120,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
          * @return this for fluent programming
          */
         public Builder portMappings(final Map<Integer, Integer> value) {
-            this.factory.portMappings = value;
+            this.factory.portMappings = Objects.requireNonNull(value, "portMappings");
             return this;
         }
 
@@ -115,6 +139,15 @@ public final class TestcontainerBucketFactory implements BucketFactory {
          */
         public Builder filterStrategy(final FilterStrategy value) {
             this.factory.filterStrategy = value;
+            return this;
+        }
+
+        /**
+         * @param certificate TLS certificate for connecting to the BucketFS service
+         * @return this for fluent programming
+         */
+        public Builder certificate(final X509Certificate certificate) {
+            this.factory.certificate = Objects.requireNonNull(certificate, "certificate");
             return this;
         }
 
