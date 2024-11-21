@@ -86,7 +86,7 @@ public final class TestcontainerBucketFactory implements BucketFactory {
         final Integer port = this.portMappings.get(internalPort);
         if (port == null) {
             throw new IllegalStateException(
-                    "Internal port " + internalPort + " is not mapped. Current port mappings: " + this.portMappings);
+                    "Internal BucketFS port " + internalPort + " is not mapped. Current port mappings: " + this.portMappings);
         }
         return port.intValue();
     }
