@@ -2,9 +2,9 @@ package com.exasol.containers;
 
 import static com.exasol.matcher.ResultSetStructureMatcher.table;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.*;
 import java.time.Duration;
@@ -16,12 +16,23 @@ import org.slf4j.LoggerFactory;
 
 import com.exasol.containers.slc.ScriptLanguageContainer;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
+import org.testcontainers.containers.ContainerLaunchException;
 
 @Tag("slow")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ExasolContainerSlcIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExasolContainerSlcIT.class);
     private static final long TIMESTAMP = System.currentTimeMillis();
+
+    @Test
+    void installSlcFailsIfNoBucketFSPortExposed() {
+        try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
+            final ScriptLanguageContainer slc = createSlc();
+            container.withExposedPorts(8563).withScriptLanguageContainer(slc);
+            ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, container::start);
+            assertThat(exception.getMessage(), startsWith("E-ETC-43"));
+        }
+    }
 
     @Test
     @Order(1)

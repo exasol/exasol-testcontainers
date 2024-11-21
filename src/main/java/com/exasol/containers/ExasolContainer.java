@@ -529,6 +529,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     @Override
     public void start() {
+        checkScriptLanguageContainersRequiresExposedBucketFSPort();
         super.start();
         checkClusterConfigurationForMinimumSupportedDBVersion();
         ContainerSynchronizationVerifier.create(ContainerTimeService.create(this)).verifyClocksInSync();
@@ -689,6 +690,15 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private void checkClusterConfigurationForMinimumSupportedDBVersion() {
         final String dbVersion = this.clusterConfiguration.getDBVersion();
         DBVersionChecker.minimumSupportedDbVersionCheck(dbVersion);
+    }
+
+    private void checkScriptLanguageContainersRequiresExposedBucketFSPort() {
+        final int bucketfsPort = getDefaultInternalBucketfsPort();
+        if (!scriptLanguageContainers.isEmpty() && !getExposedPorts().contains(bucketfsPort)) {
+            throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-43")
+                    .message("Installation of ScriptLanguageContainer requires the BucketFS port {{port}} " +
+                            "to be exposed", bucketfsPort).toString());
+        }
     }
 
     /**
