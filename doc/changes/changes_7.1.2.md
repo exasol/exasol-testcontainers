@@ -4,9 +4,11 @@ Code name: Allow withExposedPorts
 
 ## Summary
 
-This versions fixes an issue that prevented the container startup when using the option `withExposedPorts`.
+This release fixes an issue that prevented the container startup when using the option `withExposedPorts`.
 The installation of ScriptLanguageContainers requires the BucketFS internal port to be available, but this shouldn't 
 be the case when no SLC has been requested to be installed.
+
+It also bumps default docker image to 7.1.30.
 
 ## Bugfix
 
