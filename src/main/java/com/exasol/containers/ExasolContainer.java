@@ -628,6 +628,10 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     // [impl->dsn~install-custom-slc.only-if-required~1]
     private void installSlcIfNecessary() {
+        if (this.scriptLanguageContainers.isEmpty()) {
+            return;
+        }
+
         final ScriptLanguageContainerInstaller slcManager = ScriptLanguageContainerInstaller.create(this);
         for (final ScriptLanguageContainer slc : this.scriptLanguageContainers) {
             if (this.status.isInstalled(slc)) {
