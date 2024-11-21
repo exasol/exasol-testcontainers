@@ -6,17 +6,14 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.io.FileNotFoundException;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.slc.ScriptLanguageContainer;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
 
@@ -31,7 +28,7 @@ class ExasolContainerSlcIT {
     // [itest->dsn~install-custom-slc~1]
     // [itest->dsn~install-custom-slc.url~1]
     // [itest->dsn~install-custom-slc.verify-checksum~1]
-    void installSlc() throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
+    void installSlc() {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final ScriptLanguageContainer slc = createSlc();
             container.withReuse(true).withScriptLanguageContainer(slc);
@@ -45,8 +42,7 @@ class ExasolContainerSlcIT {
     @Test
     @Order(2)
     // [itest->dsn~install-custom-slc.only-if-required~1]
-    void installationSkippedWhenAlreadyInstalled()
-            throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
+    void installationSkippedWhenAlreadyInstalled() {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final ScriptLanguageContainer slc = createSlc();
             container.withReuse(true).withScriptLanguageContainer(slc);
