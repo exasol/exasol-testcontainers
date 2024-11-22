@@ -32,13 +32,6 @@ class SupportInformationRetrieverIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(SupportInformationRetrieverIT.class);
     private static final String SYSINFO_FILENAME = "sysinfo.txt";
 
-    @BeforeAll
-    static void assumeSupportPackageSupported() {
-        // These tests don't work with Exasol v8. We will fix this in
-        // https://github.com/exasol/exasol-testcontainers/issues/254
-        ExasolContainerAssumptions.assumeDockerDbVersionNotOverriddenToBelowExasolEight();
-    }
-
     // [itest->dsn~configure-support-information-retriever-via-api~1]
     @Test
     void testWriteSupportBundleOnExit(@TempDir final Path tempDir) {

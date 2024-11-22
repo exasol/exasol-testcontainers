@@ -26,7 +26,7 @@ public class SupportInformationRetriever {
     /** Name of the property that allows overriding the monitored container exit */
     public static final String MONITORED_EXIT_PROPERTY = "com.exasol.containers.monitored_exit";
     static final String SUPPORT_ARCHIVE_PREFIX = "exacluster_debuginfo_";
-    private static final String EXASUPPORT_EXECUTABLE = "exasupport";
+    private static final String[] EXASUPPORT_COMMAND = {"exasupport", "-d", "0"};
     private static final Logger LOGGER = LoggerFactory.getLogger(SupportInformationRetriever.class);
     private static final String MAPPED_HOST_DIRECTORY = "/exa/tmp/support";
     private static final ExitType DEFAULT_MONITORED_EXIT_TYPE = ExitType.EXIT_NONE;
@@ -95,7 +95,7 @@ public class SupportInformationRetriever {
     @SuppressWarnings("java:S112")
     private void createArchiveBundle(final ExitType exitType) {
         try {
-            final ExecResult result = this.container.execInContainer(EXASUPPORT_EXECUTABLE);
+            final ExecResult result = this.container.execInContainer(EXASUPPORT_COMMAND);
             if (result.getExitCode() == ExitCode.OK) {
                 final String filename = extractFilenameFromConsoleMessage(result);
                 final String hostPath = getHostPath(filename);

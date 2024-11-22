@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 7.1.2, released 2024-??-??
+# Test Containers for Exasol on Docker 7.1.2, released 2024-10-22
 
 Code name: Allow withExposedPorts
 
@@ -8,11 +8,14 @@ This release fixes an issue that prevented the container startup when using the 
 The installation of ScriptLanguageContainers requires the BucketFS internal port to be available, but this shouldn't 
 be the case when no SLC has been requested to be installed.
 
-It also bumps default docker image to 7.1.30.
+It also adapts the support of information retrieval at exit to work with Exasol v8.
+
+The default docker image was bumped to 7.1.30.
 
 ## Bugfix
 
 * #257: Container startup fails when using withExposedPorts()
+* #254: Adapt SupportInformationRetriever for Exasol v8
 
 ## Dependency Updates
 
