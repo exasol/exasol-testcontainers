@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 7.1.2, released 2024-10-22
+# Test Containers for Exasol on Docker 7.1.2, released 2024-11-22
 
 Code name: Allow withExposedPorts
 
