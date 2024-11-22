@@ -8,4 +8,4 @@ pk_generated_parent.pom                    linguist-generated=true
 .github/workflows/dependencies_update.yml  linguist-generated=true
 .github/workflows/release.yml              linguist-generated=true
 .settings/org.eclipse.jdt.core.prefs       linguist-generated=true
-.settings/org.eclipse.jdt.core.prefs       linguist-generated=true
+.settings/org.eclipse.jdt.ui.prefs         linguist-generated=true

@@ -2,23 +2,21 @@ package com.exasol.containers;
 
 import static com.exasol.matcher.ResultSetStructureMatcher.table;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.FileNotFoundException;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.containers.slc.ScriptLanguageContainer;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
+import org.testcontainers.containers.ContainerLaunchException;
 
 @Tag("slow")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -27,11 +25,21 @@ class ExasolContainerSlcIT {
     private static final long TIMESTAMP = System.currentTimeMillis();
 
     @Test
+    void installSlcFailsIfNoBucketFSPortExposed() {
+        try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
+            final ScriptLanguageContainer slc = createSlc();
+            container.withExposedPorts(8563).withScriptLanguageContainer(slc);
+            ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, container::start);
+            assertThat(exception.getMessage(), startsWith("E-ETC-43"));
+        }
+    }
+
+    @Test
     @Order(1)
     // [itest->dsn~install-custom-slc~1]
     // [itest->dsn~install-custom-slc.url~1]
     // [itest->dsn~install-custom-slc.verify-checksum~1]
-    void installSlc() throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
+    void installSlc() {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final ScriptLanguageContainer slc = createSlc();
             container.withReuse(true).withScriptLanguageContainer(slc);
@@ -45,8 +53,7 @@ class ExasolContainerSlcIT {
     @Test
     @Order(2)
     // [itest->dsn~install-custom-slc.only-if-required~1]
-    void installationSkippedWhenAlreadyInstalled()
-            throws FileNotFoundException, BucketAccessException, TimeoutException, SQLException {
+    void installationSkippedWhenAlreadyInstalled() {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final ScriptLanguageContainer slc = createSlc();
             container.withReuse(true).withScriptLanguageContainer(slc);
