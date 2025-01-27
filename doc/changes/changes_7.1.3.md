@@ -1,12 +1,14 @@
 # Test Containers for Exasol on Docker 7.1.3, released 2025-??-??
 
-Code name:
+Code name: Custom container names
 
 ## Summary
 
-## Features
+This release allows using custom container names. This is useful when using custom Exasol Docker DB images located in a different Docker registry, e.g. `ghcr.io/org/custom-project/docker-db:8.32.0`.
 
-* ISSUE_NUMBER: description
+## Bugfixes
+
+* #264: Allowed using custom container names
 
 ## Dependency Updates
 
