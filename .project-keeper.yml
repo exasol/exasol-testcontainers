@@ -15,6 +15,7 @@ build:
       stepCustomizations:
         # Run quick tests first
         - action: INSERT_AFTER
+          job: matrix-build
           stepId: enable-testcontainer-reuse
           content:
             name: Run fast tests
@@ -23,6 +24,7 @@ build:
               mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
         # Enable slow tests
         - action: REPLACE
+          job: matrix-build
           stepId: build-pk-verify
           content:
             name: Run tests and build with Maven

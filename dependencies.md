@@ -43,7 +43,7 @@
 | [Apache Maven Clean Plugin][31]                         | [Apache-2.0][22]                      |
 | [Apache Maven Install Plugin][32]                       | [Apache-2.0][22]                      |
 | [Apache Maven Resources Plugin][33]                     | [Apache-2.0][22]                      |
-| [Apache Maven Site Plugin][34]                          | [Apache License, Version 2.0][22]     |
+| [Apache Maven Site Plugin][34]                          | [Apache-2.0][22]                      |
 | [SonarQube Scanner for Maven][35]                       | [GNU LGPL 3][36]                      |
 | [Apache Maven Toolchains Plugin][37]                    | [Apache-2.0][22]                      |
 | [Apache Maven Compiler Plugin][38]                      | [Apache-2.0][22]                      |
@@ -96,12 +96,12 @@
 [27]: http://www.slf4j.org
 [28]: https://commons.apache.org/proper/commons-compress/
 [29]: http://www.exasol.com/
-[30]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/24.1.1/exasol-jdbc-24.1.1-license.txt
+[30]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/24.2.1/exasol-jdbc-24.2.1-license.txt
 [31]: https://maven.apache.org/plugins/maven-clean-plugin/
 [32]: https://maven.apache.org/plugins/maven-install-plugin/
 [33]: https://maven.apache.org/plugins/maven-resources-plugin/
 [34]: https://maven.apache.org/plugins/maven-site-plugin/
-[35]: http://sonarsource.github.io/sonar-scanner-maven/
+[35]: http://docs.sonarqube.org/display/PLUG/Plugin+Library/sonar-maven-plugin
 [36]: http://www.gnu.org/licenses/lgpl.txt
 [37]: https://maven.apache.org/plugins/maven-toolchains-plugin/
 [38]: https://maven.apache.org/plugins/maven-compiler-plugin/
