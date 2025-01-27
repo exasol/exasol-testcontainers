@@ -27,6 +27,7 @@ import com.exasol.containers.ExasolContainer;
 @Testcontainers
 class ExasolDriverManagerIT {
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>() //
             .withRequiredServices(BUCKETFS) //
             .withReuse(true);

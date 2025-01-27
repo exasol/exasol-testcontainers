@@ -17,6 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class HostIpDetectorIT {
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>().withReuse(true);
 
     // [itest->dsn~host-ip-address-detection~1]

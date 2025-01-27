@@ -24,6 +24,7 @@ import com.exasol.config.ClusterConfiguration;
 class ExasolContainerIT {
 
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true).withRequiredServices(ExasolService.JDBC);
 

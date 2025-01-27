@@ -21,6 +21,7 @@ import com.exasol.containers.ExasolService;
 class LogPatternDetectorIT {
 
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()
             .withRequiredServices(ExasolService.BUCKETFS) //
             .withReuse(true);

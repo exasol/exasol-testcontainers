@@ -13,6 +13,7 @@ import com.exasol.containers.ExasolContainer;
 class SlcConfiguratorIT {
 
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     static ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>().withReuse(true);
 
     @Test

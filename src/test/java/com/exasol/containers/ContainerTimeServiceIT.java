@@ -17,6 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class ContainerTimeServiceIT {
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true);
     private static ContainerTimeService service;

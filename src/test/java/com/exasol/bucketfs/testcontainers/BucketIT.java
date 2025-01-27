@@ -33,6 +33,7 @@ class BucketIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(BucketIT.class);
 
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>() //
             .withLogConsumer(new Slf4jLogConsumer(LOGGER));
 
