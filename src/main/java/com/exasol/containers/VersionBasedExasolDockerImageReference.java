@@ -18,6 +18,7 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
     public static final int VERSION_NOT_PRESENT = -1;
     public static final String PREFIX_NOT_PRESENT = null;
     public static final String SUFFIX_NOT_PRESENT = null;
+    private final String dockerImageId;
     private final int major;
     private final int minor;
     private final int fix;
@@ -39,6 +40,12 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
      */
     public VersionBasedExasolDockerImageReference(final int major, final int minor, final int fix, final String prefix,
             final String suffixSeparator, final String suffix, final int dockerImageRevision) {
+        this(EXASOL_DOCKER_IMAGE_ID, major, minor, fix, prefix, suffixSeparator, suffix, dockerImageRevision);
+    }
+
+    VersionBasedExasolDockerImageReference(final String dockerImageId, final int major, final int minor, final int fix,
+            final String prefix, final String suffixSeparator, final String suffix, final int dockerImageRevision) {
+        this.dockerImageId = dockerImageId;
         this.major = major;
         this.minor = minor;
         this.fix = fix;
@@ -112,7 +119,7 @@ class VersionBasedExasolDockerImageReference implements ExasolDockerImageReferen
 
     @Override
     public String toString() {
-        return EXASOL_DOCKER_IMAGE_ID + ":" //
+        return dockerImageId + ":" //
                 + constructPrefixPart() //
                 + constructVersionPart() //
                 + constructOptionalSuffixPart() //
