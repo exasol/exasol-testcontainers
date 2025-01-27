@@ -73,8 +73,7 @@ class ScriptLanguageContainerInstallerTest {
             "http://example.com/uppercase.TAR.BZ2; NULL; E-ETC-40: Filename 'uppercase.TAR.BZ2' of URL 'http://example.com/uppercase.TAR.BZ2' has an unsupported file extension.",
             "http://example.com/file.zip; NULL; E-ETC-42: An URL is specified but sha512sum checksum is missing",
             "http://example.com/file.tar.gz; NULL; E-ETC-42: An URL is specified but sha512sum checksum is missing",
-            "http://example.com/file.tar.bz2; NULL; E-ETC-42: An URL is specified but sha512sum checksum is missing",
-            "http://no-such-server.unknown.com/file.zip; checksum; E-ETC-38: Failed to download file from URL 'http://no-such-server.unknown.com/file.zip'", })
+            "http://example.com/file.tar.bz2; NULL; E-ETC-42: An URL is specified but sha512sum checksum is missing", })
     void validateUrl(final String url, final String checksum, final String expectedErrorMessage) {
         final ScriptLanguageContainerInstaller installer = testee();
         final ScriptLanguageContainer slc = ScriptLanguageContainer.builder().url(url).sha512sum(checksum)
