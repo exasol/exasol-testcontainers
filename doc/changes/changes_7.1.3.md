@@ -6,10 +6,16 @@ Code name: Custom container names
 
 This release allows using custom container names. This is useful when using custom Exasol Docker DB images located in a different Docker registry, e.g. `ghcr.io/org/custom-project/docker-db:8.32.0`. The release also sets parameter `logintimeout` for the JDBC connection to the database. The default value is 10 seconds. You can configure a custom timeout by calling `container.withJdbcLoginTimeout(Duration.ofSeconds(3))`.
 
+We also removed section "Mapping Logs to a Directory on the Host" from the user guide as we removed the feature `withClusterLogsPath()` in release 7.0.0.
+
 ## Bugfixes
 
 * #264: Allowed using custom container names
 * #263: Added `logintimeout` to JDBC URL
+
+## Documentation
+
+* #248: Removed outdated section "Mapping Logs to a Directory on the Host" from user guide
 
 ## Dependency Updates
 
