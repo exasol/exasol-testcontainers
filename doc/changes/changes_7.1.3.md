@@ -1,14 +1,15 @@
-# Test Containers for Exasol on Docker 7.1.3, released 2025-??-??
+# Test Containers for Exasol on Docker 7.1.3, released 2025-01-28
 
 Code name: Custom container names
 
 ## Summary
 
-This release allows using custom container names. This is useful when using custom Exasol Docker DB images located in a different Docker registry, e.g. `ghcr.io/org/custom-project/docker-db:8.32.0`.
+This release allows using custom container names. This is useful when using custom Exasol Docker DB images located in a different Docker registry, e.g. `ghcr.io/org/custom-project/docker-db:8.32.0`. The release also sets parameter `logintimeout` for the JDBC connection to the database. The default value is 10 seconds. You can configure a custom timeout by calling `container.withJdbcLoginTimeout(Duration.ofSeconds(3))`.
 
 ## Bugfixes
 
 * #264: Allowed using custom container names
+* #263: Added `logintimeout` to JDBC URL
 
 ## Dependency Updates
 
