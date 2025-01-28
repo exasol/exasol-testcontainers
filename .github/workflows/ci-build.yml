@@ -71,6 +71,11 @@ jobs:
         id: build-quick-verify
         run: |
           mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
+      - {
+        name: Fix "VM Crashed" error by allowing unprivileged user namespaces,
+        id: fix-vm-crashed,
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      }
       - name: Run tests and build with Maven
         id: build-pk-verify
         run: |
