@@ -89,6 +89,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     private boolean portAutodetectFailed = false;
     /** Timeout for JDBC connection. Typically this takes around 40s. */
     private Duration connectionWaitTimeout = Duration.ofSeconds(250);
+    /** Parameter {@code logintimeout} for the JDBC driver. */
+    private Duration jdbcLoginTimeout = Duration.ofSeconds(10);
     private ExasolDriverManager driverManager = null;
     private final ContainerStatusCache statusCache = new ContainerStatusCache(CACHE_DIRECTORY);
     private ContainerStatus status = null;
@@ -264,11 +266,20 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
 
     private String getJdbcUrlWithFingerprint(final String fingerprint) {
         return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort()
-                + ";validateservercertificate=1;fingerprint=" + fingerprint + ";";
+                + ";validateservercertificate=1;fingerprint=" + fingerprint + ";" + getCommonJdbcParameters();
     }
 
     private String getJdbcUrlWithoutFingerprint() {
-        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort() + ";validateservercertificate=0" + ";";
+        return "jdbc:exa:" + getHost() + ":" + getFirstMappedDatabasePort() + ";validateservercertificate=0" + ";"
+                + getCommonJdbcParameters();
+    }
+
+    private String getCommonJdbcParameters() {
+        if (jdbcLoginTimeout != null) {
+            return String.format("logintimeout=%d;", jdbcLoginTimeout.toMillis());
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -951,6 +962,23 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      */
     public int getJdbcConnectionTimeout() {
         return (int) this.connectionWaitTimeout.toSeconds();
+    }
+
+    /**
+     * Set parameter {@code logintimeout} for the JDBC driver. Default: 10 seconds.
+     * 
+     * <p>
+     * The maximum time that the driver will wait to establish a connection. This timeout is required to limit the
+     * overall login time. When this is {@code null}, the driver will wait indefinitely for the connection to be
+     * established.
+     * </p>
+     * 
+     * @param timeout login timeout parameter for the JDBC driver.
+     * @return self
+     */
+    public ExasolContainer<T> withJdbcLoginTimeout(final Duration timeout) {
+        this.jdbcLoginTimeout = timeout;
+        return this;
     }
 
     /**

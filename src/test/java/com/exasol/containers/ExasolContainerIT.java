@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
@@ -23,7 +24,9 @@ import com.exasol.config.ClusterConfiguration;
 @Testcontainers
 class ExasolContainerIT {
 
+    private static final Duration DEFAULT_JDBC_LOGIN_TIMEOUT = Duration.ofSeconds(10);
     @Container // [itest->dsn~exasol-container-starts-with-test~1]
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true).withRequiredServices(ExasolService.JDBC);
 
@@ -44,12 +47,38 @@ class ExasolContainerIT {
         final String ipRegexp = zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255 + "\\." + zeroTo255;
         final String hostNamePattern = "(localhost|" + ipRegexp + ")";
         assertThat(CONTAINER.getJdbcUrl(), matchesPattern(
-                "jdbc:exa:" + hostNamePattern + ":\\d{1,5};validateservercertificate=1;fingerprint=\\w{64};"));
+                "jdbc:exa:" + hostNamePattern + ":\\d{1,5};validateservercertificate=1;fingerprint=\\w{64};.*"));
     }
 
     @Test
-    void testJdbcUrlValidatesServerCertificate() throws SQLException {
-        assertThat(CONTAINER.getJdbcUrl(), containsString(";validateservercertificate=1"));
+    void testGetJdbcUrlContainsDefaultLoginTimeout() {
+        assertThat(CONTAINER.getJdbcUrl(),
+                containsString(";logintimeout=" + DEFAULT_JDBC_LOGIN_TIMEOUT.toMillis() + ";"));
+    }
+
+    @Test
+    void testGetJdbcUrlContainsCustomLoginTimeout() {
+        try {
+            CONTAINER.withJdbcLoginTimeout(Duration.ofSeconds(3));
+            assertThat(CONTAINER.getJdbcUrl(), containsString(";logintimeout=3000;"));
+        } finally {
+            CONTAINER.withJdbcLoginTimeout(DEFAULT_JDBC_LOGIN_TIMEOUT);
+        }
+    }
+
+    @Test
+    void testGetJdbcUrlWithoutLoginTimeout() {
+        try {
+            CONTAINER.withJdbcLoginTimeout(null);
+            assertThat(CONTAINER.getJdbcUrl(), not(containsString("logintimeout")));
+        } finally {
+            CONTAINER.withJdbcLoginTimeout(DEFAULT_JDBC_LOGIN_TIMEOUT);
+        }
+    }
+
+    @Test
+    void testJdbcUrlValidatesServerCertificate() {
+        assertThat(CONTAINER.getJdbcUrl(), containsString(";validateservercertificate=1;"));
     }
 
     @Test

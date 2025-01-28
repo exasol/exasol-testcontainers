@@ -16,6 +16,7 @@ import com.exasol.containers.UncheckedSqlException;
 @Testcontainers
 class DatabaseServiceIT {
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withRequiredServices();
     private DatabaseService service;

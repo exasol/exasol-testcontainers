@@ -17,12 +17,15 @@ public final class DockerImageReferenceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DockerImageReferenceFactory.class);
 
     private static final String REPOSITORY_PATTERN = "(?:(?:exasol/)?docker-db:)?";
+    private static final String CUSTOM_IMAGE_PATTERN = "(?:([\\w./-]+):)";
     private static final String VERSION_PREFIX_PATTERN = "(?:(\\w+)-)?";
     private static final String EXASOL_VERSION_PATTERN = "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?"; // (partially optional)
     private static final String SUFFIX_PATTERN = "(?:([-.])([a-zA-Z]\\w*))??";
     private static final String DOCKER_IMAGE_REVISION_PATTERN = "(?:-d(\\d+))?";
-    private static final Pattern DOCKER_IMAGE_VERSION_PATTERN = Pattern.compile(REPOSITORY_PATTERN
+    private static final Pattern OFFICIAL_DOCKER_IMAGE_VERSION_PATTERN = Pattern.compile(REPOSITORY_PATTERN
             + VERSION_PREFIX_PATTERN + EXASOL_VERSION_PATTERN + SUFFIX_PATTERN + DOCKER_IMAGE_REVISION_PATTERN);
+    private static final Pattern CUSTOM_DOCKER_IMAGE_VERSION_PATTERN = Pattern
+            .compile(CUSTOM_IMAGE_PATTERN + EXASOL_VERSION_PATTERN + SUFFIX_PATTERN);
 
     private DockerImageReferenceFactory() {
         // prevent instantiation
@@ -59,10 +62,10 @@ public final class DockerImageReferenceFactory {
      * The following shortened reference strings are are supported and reference the standard Exasol {@code docker-db}:
      * </p>
      * <ul>
-     * <li>&lt;major&gt; (7)</li>
-     * <li>&lt;major&gt;.&lt;minor&gt; (7.1)</li>
-     * <li>&lt;major&gt;.&lt;minor&gt;.&lt;fix&gt; (7.1.5)</li>
-     * <li>&lt;major&gt;.&lt;minor&gt;.&lt;fix&gt;-&lt;docker-image-revision&gt; (7.1.5-d2)</li>
+     * <li>{@code &lt;major&gt;} (7)</li>
+     * <li>{@code &lt;major&gt;.&lt;minor&gt;} (7.1)</li>
+     * <li>{@code &lt;major&gt;.&lt;minor&gt;.&lt;fix&gt;} (7.1.5)</li>
+     * <li>{@code &lt;major&gt;.&lt;minor&gt;.&lt;fix&gt;-&lt;docker-image-revision&gt;} (7.1.5-d2)</li>
      * <li>All of the above prefixed by <code>docker-db:</code> or <code>exasol/docker-db:</code></li>
      * </ul>
      * <p>
@@ -74,20 +77,40 @@ public final class DockerImageReferenceFactory {
      */
     // [impl->dsn~shortened-docker-image-references~2]
     public static ExasolDockerImageReference parse(final String reference) {
-        final Matcher matcher = DOCKER_IMAGE_VERSION_PATTERN.matcher(reference);
+        final Matcher matcher = OFFICIAL_DOCKER_IMAGE_VERSION_PATTERN.matcher(reference);
         if (matcher.matches()) {
-            final String prefix = (matcher.group(1) == null) ? PREFIX_NOT_PRESENT : matcher.group(1);
-            final int major = parseInt(matcher.group(2));
-            final int minor = (matcher.group(3) == null) ? 0 : parseInt(matcher.group(3));
-            final int fix = (matcher.group(4) == null) ? 0 : parseInt(matcher.group(4));
-            final String suffixSeparator = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5);
-            final String suffix = (matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6);
-            final int dockerImageRevision = (matcher.group(7) == null) ? VERSION_NOT_PRESENT
-                    : parseInt(matcher.group(7));
-            return new VersionBasedExasolDockerImageReference(major, minor, fix, prefix, suffixSeparator, suffix,
-                    dockerImageRevision);
+            return buildOfficialImage(matcher);
+        }
+        final Matcher customImageMatcher = CUSTOM_DOCKER_IMAGE_VERSION_PATTERN.matcher(reference);
+        if (customImageMatcher.matches()) {
+            return buildCustomImage(customImageMatcher);
         } else {
             return new LiteralExasolDockerImageReference(reference);
         }
+    }
+
+    private static ExasolDockerImageReference buildOfficialImage(final Matcher matcher) {
+        return VersionBasedExasolDockerImageReference.builder() //
+                .major(parseInt(matcher.group(2))) //
+                .minor((matcher.group(3) == null) ? 0 : parseInt(matcher.group(3))) //
+                .fix((matcher.group(4) == null) ? 0 : parseInt(matcher.group(4))) //
+                .prefix((matcher.group(1) == null) ? PREFIX_NOT_PRESENT : matcher.group(1)) //
+                .suffixSeparator((matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5)) //
+                .suffix((matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6)) //
+                .dockerImageRevision((matcher.group(7) == null) ? VERSION_NOT_PRESENT : parseInt(matcher.group(7))) //
+                .build();
+    }
+
+    private static ExasolDockerImageReference buildCustomImage(final Matcher matcher) {
+        return VersionBasedExasolDockerImageReference.builder() //
+                .dockerImageId(matcher.group(1)) //
+                .major(parseInt(matcher.group(2))) //
+                .minor((matcher.group(3) == null) ? 0 : parseInt(matcher.group(3))) //
+                .fix((matcher.group(4) == null) ? 0 : parseInt(matcher.group(4))) //
+                .prefix(null) //
+                .suffixSeparator((matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5)) //
+                .suffix((matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6)) //
+                .dockerImageRevision(VERSION_NOT_PRESENT) //
+                .build();
     }
 }

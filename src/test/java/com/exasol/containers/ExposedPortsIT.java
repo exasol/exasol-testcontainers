@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 class ExposedPortsIT {
 
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>()
             .withExposedPorts(8563)
             .withReuse(true);

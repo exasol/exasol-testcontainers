@@ -14,6 +14,7 @@ import com.exasol.containers.ExasolContainer;
 @Testcontainers
 class ClusterConfigAccessIT {
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withRequiredServices().withReuse(true);
 

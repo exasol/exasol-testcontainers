@@ -31,6 +31,7 @@ import com.exasol.exaoperation.ExaOperationEmulatorException;
 class PluginIT {
 
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()
             .withRequiredServices();
     private static Plugin plugin;

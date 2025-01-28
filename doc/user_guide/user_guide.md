@@ -407,28 +407,6 @@ Please note:
 
 A running Exasol cluster produces a lot of logs. In the Docker version those logs are located internally under `/exa/logs`. Since this happens inside the Docker container, logs by default are not visible in an integration test.
 
-### Mapping Logs to a Directory on the Host
-
-You can map the logs to a directory on the host &mdash; typically a temporary directory in order to be able to read them during the test.
-
-To achieve this, call the method `withClusterLogsPath(final Path clusterLogsHostPath)` when initializing the Exasol test container.
-
-Example:
-
-```java
-private static final Path TEMP_DIR = createTempDir();
-
-private static Path createTempDir() {
-    final File tempDir = Files.createTempDir();
-    tempDir.deleteOnExit();
-    return tempDir.toPath();
-}
-
-@Container
-private static final ExasolContainer<? extends ExasolContainer<?>> container
-        = new ExasolContainer<>().withClusterLogsPath(TEMP_DIR);
-```
-
 #### Don't mix Annotations That Depend on Each Other
 
 Note that you should not use the [`@TempDir` annotation of JUnit](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/io/TempDir.html) in this particular situation because the _initialization order of annotated fields is not guaranteed_.

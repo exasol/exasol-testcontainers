@@ -29,6 +29,7 @@ import com.exasol.testutil.ExceptionAssertions;
 @Testcontainers
 class TlsConnectionIT {
     @Container
+    @SuppressWarnings("resource") // Will be closed by @Testcontainers
     private static final ExasolContainer<? extends ExasolContainer<?>> CONTAINER = new ExasolContainer<>()
             .withReuse(true).withRequiredServices(ExasolService.JDBC);
 
@@ -40,8 +41,7 @@ class TlsConnectionIT {
     }
 
     @Test
-    void testJdbcConnectionWithCertificate()
-            throws SQLException {
+    void testJdbcConnectionWithCertificate() throws SQLException {
         final String fingerprint = getFingerprint();
         final String url = "jdbc:exa:" + CONTAINER.getHost() + "/" + fingerprint + ":"
                 + CONTAINER.getFirstMappedDatabasePort() + ";validateservercertificate=1";
