@@ -90,25 +90,27 @@ public final class DockerImageReferenceFactory {
     }
 
     private static ExasolDockerImageReference buildOfficialImage(final Matcher matcher) {
-        final String prefix = (matcher.group(1) == null) ? PREFIX_NOT_PRESENT : matcher.group(1);
-        final int major = parseInt(matcher.group(2));
-        final int minor = (matcher.group(3) == null) ? 0 : parseInt(matcher.group(3));
-        final int fix = (matcher.group(4) == null) ? 0 : parseInt(matcher.group(4));
-        final String suffixSeparator = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5);
-        final String suffix = (matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6);
-        final int dockerImageRevision = (matcher.group(7) == null) ? VERSION_NOT_PRESENT : parseInt(matcher.group(7));
-        return new VersionBasedExasolDockerImageReference(major, minor, fix, prefix, suffixSeparator, suffix,
-                dockerImageRevision);
+        return VersionBasedExasolDockerImageReference.builder() //
+                .major(parseInt(matcher.group(2))) //
+                .minor((matcher.group(3) == null) ? 0 : parseInt(matcher.group(3))) //
+                .fix((matcher.group(4) == null) ? 0 : parseInt(matcher.group(4))) //
+                .prefix((matcher.group(1) == null) ? PREFIX_NOT_PRESENT : matcher.group(1)) //
+                .suffixSeparator((matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5)) //
+                .suffix((matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6)) //
+                .dockerImageRevision((matcher.group(7) == null) ? VERSION_NOT_PRESENT : parseInt(matcher.group(7))) //
+                .build();
     }
 
     private static ExasolDockerImageReference buildCustomImage(final Matcher matcher) {
-        final String imageId = matcher.group(1);
-        final int major = parseInt(matcher.group(2));
-        final int minor = (matcher.group(3) == null) ? 0 : parseInt(matcher.group(3));
-        final int fix = (matcher.group(4) == null) ? 0 : parseInt(matcher.group(4));
-        final String suffixSeparator = (matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5);
-        final String suffix = (matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6);
-        return new VersionBasedExasolDockerImageReference(imageId, major, minor, fix, null, suffixSeparator, suffix,
-                VERSION_NOT_PRESENT);
+        return VersionBasedExasolDockerImageReference.builder() //
+                .dockerImageId(matcher.group(1)) //
+                .major(parseInt(matcher.group(2))) //
+                .minor((matcher.group(3) == null) ? 0 : parseInt(matcher.group(3))) //
+                .fix((matcher.group(4) == null) ? 0 : parseInt(matcher.group(4))) //
+                .prefix(null) //
+                .suffixSeparator((matcher.group(5) == null) ? SUFFIX_NOT_PRESENT : matcher.group(5)) //
+                .suffix((matcher.group(6) == null) ? SUFFIX_NOT_PRESENT : matcher.group(6)) //
+                .dockerImageRevision(VERSION_NOT_PRESENT) //
+                .build();
     }
 }

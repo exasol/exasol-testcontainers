@@ -102,7 +102,7 @@ class BucketIT {
         final String pathInBucket = "string-uploaded.txt";
         final Bucket bucket = container.getDefaultBucket();
         bucket.uploadStringContent(content, pathInBucket);
-        assertThat(bucket.listContents(), hasItem(pathInBucket.toString()));
+        assertThat(bucket.listContents(), hasItem(pathInBucket));
     }
 
     @Test

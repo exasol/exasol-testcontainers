@@ -34,6 +34,8 @@ class DockerImageReferenceFactoryTest {
     @CsvSource(value = { "1, exasol/docker-db:1.0.0-d1, 1, 0, 0", //
             "1.2, exasol/docker-db:1.2.0-d1, 1, 2, 0", //
             "1.2.3, exasol/docker-db:1.2.3-d1, 1, 2, 3", //
+            "1.2.3-d4, exasol/docker-db:1.2.3-d4, 1, 2, 3", //
+            "prefix-1.2.3, exasol/docker-db:prefix-1.2.3-d1, 1, 2, 3", //
             "1.2.3-revision, exasol/docker-db:1.2.3-revision-d1, 1, 2, 3", //
             "8.9.1, exasol/docker-db:8.9.1, 8, 9, 1", //
             "8.9.1-revision, exasol/docker-db:8.9.1-revision, 8, 9, 1", //
@@ -41,7 +43,9 @@ class DockerImageReferenceFactoryTest {
             "9.8.7-revision, exasol/docker-db:9.8.7-revision, 9, 8, 7", //
             "10.8.7, exasol/docker-db:10.8.7, 10, 8, 7", //
             "docker-db:1.2.3, exasol/docker-db:1.2.3-d1, 1, 2, 3",
+            "docker-db:1.2.3-d4, exasol/docker-db:1.2.3-d4, 1, 2, 3",
             "docker-db:8.29.5, exasol/docker-db:8.29.5, 8, 29, 5",
+            "docker-db:prefix-8.29.5, exasol/docker-db:prefix-8.29.5, 8, 29, 5",
             "exasol/docker-db:1.2.3, exasol/docker-db:1.2.3-d1, 1, 2, 3",
             "exasol/docker-db:1.2.3-revision, exasol/docker-db:1.2.3-revision-d1, 1, 2, 3",
             "4.5.6-x, exasol/docker-db:4.5.6-x-d1, 4, 5, 6", //
