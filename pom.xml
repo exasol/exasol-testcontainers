@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>7.1.3</version>
+    <version>7.1.4</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
     <url>https://github.com/exasol/exasol-testcontainers/</url>
     <properties>
-        <testcontainers.version>1.20.4</testcontainers.version>
-        <junit.version>5.11.4</junit.version>
+        <testcontainers.version>1.20.6</testcontainers.version>
+        <junit.version>5.12.0</junit.version>
     </properties>
     <profiles>
         <profile>
@@ -49,6 +49,14 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <!-- Explicitly upgrade transitive dependency of commons-compress to fix
+            NoSuchMethodError: 'long org.apache.commons.io.file.attribute.FileTimes.toUnixTime(java.nio.file.attribute.FileTime)' -->
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.18.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>jdbc</artifactId>
             <version>${testcontainers.version}</version>
@@ -57,7 +65,7 @@
         <dependency>
             <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.2.23</version>
+            <version>0.2.24</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -72,12 +80,12 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
-            <version>24.2.1</version>
+            <version>25.2.2</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -102,7 +110,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.15.2</version>
+            <version>5.16.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -110,6 +118,13 @@
             <artifactId>junit-pioneer</artifactId>
             <version>2.3.0</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <!-- Fix error launching tests: "java.lang.NoSuchMethodError: 'org.junit.platform.engine.reporting.OutputDirectoryProvider org.junit.platform.engine.EngineDiscoveryRequest.getOutputDirectoryProvider()" -->
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-launcher</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Derby database and driver to allow testing connectivity between Exasol and external database -->
         <dependency>
@@ -136,7 +151,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.18.1</version>
+            <version>3.19.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -257,7 +272,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>7.1.3</version>
+        <version>7.1.4</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
