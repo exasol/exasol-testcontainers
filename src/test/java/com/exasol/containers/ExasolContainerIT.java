@@ -2,7 +2,9 @@ package com.exasol.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -10,6 +12,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.Container.ExecResult;
+import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -118,5 +122,15 @@ class ExasolContainerIT {
     void testGetExaConnectionAddress() {
         final String address = CONTAINER.getExaConnectionAddress();
         assertThat(address, matchesPattern("(?:[.0-9]+|localhost):[0-9]{1,5}"));
+    }
+
+    @Test
+    void testCopyToContainerWorks() throws IOException, InterruptedException {
+        final String containerPath = "/tmp/test.txt";
+        final String content = "content";
+        CONTAINER.copyFileToContainer(Transferable.of(content), containerPath);
+        final ExecResult result = CONTAINER.execInContainer("cat", containerPath);
+        assertAll(() -> assertThat(result.getExitCode(), is(0)),
+                () -> assertThat(result.getStdout(), equalTo(content)));
     }
 }
