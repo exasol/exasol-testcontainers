@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>7.1.4</version>
+    <version>7.1.5</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
     <url>https://github.com/exasol/exasol-testcontainers/</url>
     <properties>
         <testcontainers.version>1.20.6</testcontainers.version>
-        <junit.version>5.12.0</junit.version>
+        <junit.version>5.12.1</junit.version>
     </properties>
     <profiles>
         <profile>
@@ -110,7 +110,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.16.0</version>
+            <version>5.16.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -151,7 +151,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.19.1</version>
+            <version>3.19.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -191,7 +191,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>4.5.0</version>
+                <version>5.0.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -272,7 +272,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>7.1.4</version>
+        <version>7.1.5</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
