@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>7.1.4</version>
+    <version>7.1.5</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
@@ -191,7 +191,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>4.5.0</version>
+                <version>5.0.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -264,6 +264,8 @@
                     <excludeVulnerabilityIds>
                         <!-- org.apache.derby:derby:jar:10.14.2.0 is required only for tests, newer versions don't support Java 8 any more. -->
                         <exclude>CVE-2022-46337</exclude>
+                        <!-- Exasol's JDBC driver was fixed in version 24.2.1, but OSSIndex does not reflect that yet -->
+                        <exclude>CVE-2024-55551</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
             </plugin>
@@ -272,7 +274,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>7.1.4</version>
+        <version>7.1.5</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
