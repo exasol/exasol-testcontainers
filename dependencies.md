@@ -43,6 +43,56 @@
 | ------------------------------------------------------- | ------------------------------------------- |
 | [Apache Maven Clean Plugin][32]                         | [Apache-2.0][22]                            |
 | [Apache Maven Install Plugin][33]                       | [Apache-2.0][22]                            |
+| [Apache Maven Resources Plugin][34]                     | [Apache-2.0][22]                            |
+| [Apache Maven Site Plugin][35]                          | [Apache-2.0][22]                            |
+| [SonarQube Scanner for Maven][36]                       | [GNU LGPL 3][37]                            |
+| [Apache Maven Toolchains Plugin][38]                    | [Apache-2.0][22]                            |
+| [Apache Maven Compiler Plugin][39]                      | [Apache-2.0][22]                            |
+| [Apache Maven Enforcer Plugin][40]                      | [Apache-2.0][22]                            |
+| [Maven Flatten Plugin][41]                              | [Apache Software Licenese][22]              |
+| [org.sonatype.ossindex.maven:ossindex-maven-plugin][42] | [ASL2][18]                                  |
+| [Maven Surefire Plugin][43]                             | [Apache-2.0][22]                            |
+| [Versions Maven Plugin][44]                             | [Apache License, Version 2.0][22]           |
+| [duplicate-finder-maven-plugin Maven Mojo][45]          | [Apache License 2.0][46]                    |
+| [Apache Maven Artifact Plugin][47]                      | [Apache-2.0][22]                            |
+| [Apache Maven Deploy Plugin][48]                        | [Apache-2.0][22]                            |
+| [Apache Maven GPG Plugin][49]                           | [Apache-2.0][22]                            |
+| [Apache Maven Source Plugin][50]                        | [Apache License, Version 2.0][22]           |
+| [Apache Maven Javadoc Plugin][51]                       | [Apache-2.0][22]                            |
+| [Nexus Staging Maven Plugin][52]                        | [Eclipse Public License][53]                |
+| [Project Keeper Maven plugin][54]                       | [The MIT License][55]                       |
+| [OpenFastTrace Maven Plugin][56]                        | [GNU General Public License v3.0][57]       |
+| [Maven Failsafe Plugin][58]                             | [Apache-2.0][22]                            |
+| [JaCoCo :: Maven Plugin][59]                            | [EPL-2.0][60]                               |
+| [Quality Summarizer Maven Plugin][61]                   | [MIT License][62]                           |
+| [error-code-crawler-maven-plugin][63]                   | [MIT License][64]                           |
+| [Git Commit Id Maven Plugin][65]                        | [GNU Lesser General Public License 3.0][66] |
+
+[0]: https://java.testcontainers.org
+[1]: http://opensource.org/licenses/MIT
+[2]: https://github.com/mwiede/jsch
+[3]: https://github.com/mwiede/jsch/blob/master/LICENSE.txt
+[4]: https://github.com/mwiede/jsch/blob/master/LICENSE.JZlib.txt
+[5]: https://github.com/mwiede/jsch/blob/master/LICENSE.jBCrypt.txt
+[6]: https://github.com/exasol/database-cleaner/
+[7]: https://github.com/exasol/database-cleaner/blob/main/LICENSE
+[8]: https://github.com/exasol/bucketfs-java/
+[9]: https://github.com/exasol/bucketfs-java/blob/main/LICENSE
+[10]: https://junit.org/junit5/
+[11]: https://www.eclipse.org/legal/epl-v20.html
+[12]: http://hamcrest.org/JavaHamcrest/
+[13]: https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE
+[14]: https://github.com/mockito/mockito
+[15]: https://opensource.org/licenses/MIT
+[16]: https://junit-pioneer.org/
+[17]: http://db.apache.org/derby/
+[18]: http://www.apache.org/licenses/LICENSE-2.0.txt
+[19]: https://github.com/exasol/udf-api-java/
+[20]: https://github.com/exasol/udf-api-java/blob/main/LICENSE
+[21]: https://www.jqno.nl/equalsverifier
+[22]: https://www.apache.org/licenses/LICENSE-2.0.txt
+[23]: https://github.com/jparams/to-string-verifier
+[24]: http://www.opensource.org/licenses/mit-license.php
 [25]: https://github.com/exasol/hamcrest-resultset-matcher/
 [26]: https://github.com/exasol/hamcrest-resultset-matcher/blob/main/LICENSE
 [27]: http://www.slf4j.org
