@@ -98,7 +98,7 @@
 [28]: https://commons.apache.org/proper/commons-compress/
 [29]: https://commons.apache.org/proper/commons-io/
 [30]: http://www.exasol.com/
-[31]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/25.2.2/exasol-jdbc-25.2.2-license.txt
+[31]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/25.2.3/exasol-jdbc-25.2.3-license.txt
 [32]: https://maven.apache.org/plugins/maven-clean-plugin/
 [33]: https://maven.apache.org/plugins/maven-install-plugin/
 [34]: https://maven.apache.org/plugins/maven-resources-plugin/
