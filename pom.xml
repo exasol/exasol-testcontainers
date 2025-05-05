@@ -264,7 +264,7 @@
                     <excludeVulnerabilityIds>
                         <!-- org.apache.derby:derby:jar:10.14.2.0 is required only for tests, newer versions don't support Java 8 any more. -->
                         <exclude>CVE-2022-46337</exclude>
-                        <!-- Exasol's driver was fixed in version 24.2.1, but OSSIndex does not reflect that yet -->
+                        <!-- Exasol's JDBC driver was fixed in version 24.2.1, but OSSIndex does not reflect that yet -->
                         <exclude>CVE-2024-55551</exclude>
                     </excludeVulnerabilityIds>
                 </configuration>
