@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>7.1.5</version>
+    <version>7.1.6</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>bucketfs-java</artifactId>
-            <version>3.2.1</version>
+            <version>3.2.3</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -191,7 +191,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>5.0.1</version>
+                <version>5.1.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -274,7 +274,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>7.1.5</version>
+        <version>7.1.6</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
