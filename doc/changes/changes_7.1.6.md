@@ -16,6 +16,10 @@ This release updates compile and plugin dependencies of the project to fix trans
 
 * Updated `com.exasol:bucketfs-java:3.2.1` to `3.2.3`
 
+### Runtime Dependency Updates
+
+* Updated `com.exasol:exasol-jdbc:25.2.2` to `25.2.3`
+
 ### Plugin Dependency Updates
 
 * Updated `com.exasol:project-keeper-maven-plugin:5.0.1` to `5.1.0`
