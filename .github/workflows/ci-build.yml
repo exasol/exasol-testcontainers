@@ -16,7 +16,7 @@ on:
     
 jobs:
   matrix-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run: {
         shell: bash
@@ -32,12 +32,11 @@ jobs:
       fail-fast: false
       matrix:
         exasol_db_version: [
-          8.32.0,
-          7.1.30
+          8.31.0
         ]
         
     env: {
-      DEFAULT_EXASOL_DB_VERSION: 8.32.0
+      DEFAULT_EXASOL_DB_VERSION: 8.31.0
     }
     steps:
       - name: Free Disk Space
