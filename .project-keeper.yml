@@ -9,7 +9,7 @@ build:
   freeDiskSpace: true
   exasolDbVersions:
     - "8.34.0"
-    - "7.1.30" # Exasol 7.1.x does not yet support the latest Ubuntu version
+  # - "7.1.30" # Exasol 7.1.x does not yet support the latest Ubuntu version
   workflows:
     - name: ci-build.yml
       stepCustomizations:
