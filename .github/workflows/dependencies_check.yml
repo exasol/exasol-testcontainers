@@ -46,9 +46,9 @@ jobs:
               org.sonatype.ossindex.maven:ossindex-maven-plugin:audit-aggregate \
               -Dossindex.reportFile=$(pwd)/ossindex-report.json \
               -Dossindex.fail=false
-      - name: Report Security Issues
-        id: security-issues
-        uses: exasol/python-toolbox/.github/actions/security-issues@main
+      - name: Create GitHub Issues
+        id: create-security-issues
+        uses: exasol/python-toolbox/.github/actions/security-issues@1.1.0
         with: {
           format: maven,
           command: cat ossindex-report.json,

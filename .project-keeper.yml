@@ -5,7 +5,7 @@ sources:
       - maven_central
       - integration_tests
 build:
-  runnerOs: ubuntu-latest
+  runnerOs: ubuntu-24.04
   freeDiskSpace: true
   exasolDbVersions:
     - "8.32.0"
