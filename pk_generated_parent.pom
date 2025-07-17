@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers-generated-parent</artifactId>
-    <version>7.1.6</version>
+    <version>7.1.7</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,17 +14,11 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <test.excludeTags/>
         <gpg.skip>true</gpg.skip>
+        <central-publishing.autoPublish>false</central-publishing.autoPublish>
+        <central-publishing.skipPublishing>false</central-publishing.skipPublishing>
+        <central-publishing.waitUntil>validated</central-publishing.waitUntil>
+        <central-publishing.deploymentName>Manual deployment of repo exasol-testcontainers</central-publishing.deploymentName>
     </properties>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
     <licenses>
         <license>
             <name>MIT License</name>
@@ -315,25 +309,18 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.7.0</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <stagingProgressPauseDurationSeconds>15</stagingProgressPauseDurationSeconds>
-                    <stagingProgressTimeoutMinutes>30</stagingProgressTimeoutMinutes>
+                    <publishingServerId>maven-central-portal</publishingServerId>
+                    <!-- We could directly use properties on the command line (e.g. -DautoPublish=true), but this way it's more explicit. -->
+                    <autoPublish>${central-publishing.autoPublish}</autoPublish>
+                    <waitUntil>${central-publishing.waitUntil}</waitUntil>
+                    <deploymentName>${central-publishing.deploymentName}</deploymentName>
+                    <skipPublishing>${central-publishing.skipPublishing}</skipPublishing>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

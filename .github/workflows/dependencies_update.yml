@@ -172,5 +172,5 @@ jobs:
           message_format: '{workflow} created Pull Request ${{ steps.create-pr.outputs.pr_url }}'
         }
         env: {
-          SLACK_WEBHOOK_URL: '${{ secrets.INTEGRATION_TEAM_SLACK_NOTIFICATION_WEBHOOK }}'
+          SLACK_WEBHOOK_URL: '${{ secrets.INTEGRATION_TEAM_SECURITY_UPDATES_WEBHOOK }}'
         }
