@@ -1,12 +1,20 @@
-# Test Containers for Exasol on Docker 7.1.7, released 2025-??-??
+# Test Containers for Exasol on Docker 7.1.7, released 2025-07-17
 
-Code name:
+Code name: Security update on top of 7.1.6
 
 ## Summary
 
-## Features
+This is a security update release. We updated all direct dependencies to their respective latest versions.
 
-* ISSUE_NUMBER: description
+We also updated the following transitive dependencies:
+
+`org.apache.commons:commons-compress` from 1.12.4 (coming from testcontainers) to 1.26.1 to fix CVE-2024-25710 and CVE-2024-26308. These vulnerabilities could allow attackers to cause denial of service through infinite loops when processing corrupted DUMP files [[1]](https://www.cvedetails.com/cve/CVE-2024-25710/) or trigger out-of-memory errors via resource exhaustion [[2]](https://www.cvedetails.com/cve/CVE-2024-26308/).
+
+`org.apache.commons:commons-lang3` from 3.14.0 to 3.18.0 to fix CVE-2025-48924. This vulnerability could lead to application crashes through uncontrolled recursion when processing certain inputs, potentially causing StackOverflowError [[3]](https://nvd.nist.gov/vuln/detail/CVE-2025-48924).
+
+## Security
+
+* 274: Fixed CVE-2024-25710, CVE-2024-26308 and CVE-2025-48924 by updating transitive dependencies. 
 
 ## Dependency Updates
 
