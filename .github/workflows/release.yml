@@ -9,6 +9,12 @@ on:
         required: true,
         default: false
       }
+      maven-central-auto-publish: {
+        description: 'Automatically publish to Maven Central. Deactivate to manually publish at https://central.sonatype.com/publishing/deployments',
+        required: true,
+        type: boolean,
+        default: true
+      }
   workflow_dispatch:
     inputs:
       skip-maven-central: {
@@ -16,6 +22,12 @@ on:
         required: true,
         type: boolean,
         default: false
+      }
+      maven-central-auto-publish: {
+        description: 'Automatically publish to Maven Central. Deactivate to manually publish at https://central.sonatype.com/publishing/deployments',
+        required: true,
+        type: boolean,
+        default: true
       }
       skip-github-release: {
         description: Skip creating the GitHub release,
@@ -56,7 +68,7 @@ jobs:
             11
             17
           cache: maven
-          server-id: ossrh
+          server-id: maven-central-portal
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
@@ -120,11 +132,18 @@ jobs:
         if: ${{ true && (! inputs.skip-maven-central) }}
         run: |
           echo "#### Maven Central Release" >> "$GITHUB_STEP_SUMMARY"
-          mvn --batch-mode -Dgpg.skip=false -DskipTests deploy
-          echo "Published to Maven Central ✅" >> "$GITHUB_STEP_SUMMARY"
+          mvn --batch-mode -Dgpg.skip=false -DskipTests deploy \
+              -Dcentral-publishing.deploymentName="Auto release of repo ${{ github.repository }} using PK release.yml" \
+              -Dcentral-publishing.autoPublish=${{ inputs.maven-central-auto-publish }}
+          if [[ "${{ inputs.maven-central-auto-publish }}" == "true" ]]; then
+            echo "Published to Maven Central ✅" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Uploaded to Maven Central ✅" >> "$GITHUB_STEP_SUMMARY"
+            echo "⚠️ Go to https://central.sonatype.com/publishing/deployments to publish the release ⚠️" >> "$GITHUB_STEP_SUMMARY"
+          fi
         env: {
-          MAVEN_USERNAME: '${{ secrets.OSSRH_USERNAME }}',
-          MAVEN_PASSWORD: '${{ secrets.OSSRH_PASSWORD }}',
+          MAVEN_USERNAME: '${{ secrets.MAVEN_CENTRAL_PORTAL_USERNAME }}',
+          MAVEN_PASSWORD: '${{ secrets.MAVEN_CENTRAL_PORTAL_TOKEN }}',
           MAVEN_GPG_PASSPHRASE: '${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}'
         }
       - name: Calculate Artifact Checksums
