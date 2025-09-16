@@ -3,8 +3,7 @@ package com.exasol.containers;
 import static com.exasol.bucketfs.BucketConstants.DEFAULT_BUCKET;
 import static com.exasol.bucketfs.BucketConstants.DEFAULT_BUCKETFS;
 import static com.exasol.containers.ExasolContainerConstants.*;
-import static com.exasol.containers.ExasolService.BUCKETFS;
-import static com.exasol.containers.ExasolService.UDF;
+import static com.exasol.containers.ExasolService.*;
 import static com.exasol.containers.ExitType.EXIT_ERROR;
 import static com.exasol.containers.ExitType.EXIT_SUCCESS;
 import static com.exasol.containers.exec.ExitCode.OK;
@@ -23,6 +22,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.exasol.containers.wait.strategy.JsonRPCWaitStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.*;
@@ -554,11 +554,26 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
             waitUntilStatementCanBeExecuted();
             waitForBucketFs();
             waitForUdfContainer();
+            waitForJSONRPC();
             LOGGER.info("Exasol container started after waiting for the following services to become available: {}",
                     this.requiredServices);
         } catch (final Exception exception) {
             this.errorWhileWaitingForServices = true;
             throw exception;
+        }
+    }
+
+    protected void waitForJSONRPC() {
+        if (isServiceReady(JSONRPC)) {
+            LOGGER.debug("JsonRPC marked running in container status cache. Skipping startup monitoring.");
+        } else {
+            if (this.requiredServices.contains(JSONRPC)) {
+                this.status.setServiceStatus(JSONRPC, NOT_READY);
+                new JsonRPCWaitStrategy(this.detectorFactory).waitUntilReady(this);
+                this.status.setServiceStatus(JSONRPC, READY);
+            } else {
+                this.status.setServiceStatus(JSONRPC, NOT_CHECKED);
+            }
         }
     }
 
