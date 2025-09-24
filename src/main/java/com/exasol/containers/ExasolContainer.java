@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.exasol.containers.wait.strategy.JsonRPCWaitStrategy;
+import com.exasol.containers.wait.strategy.JsonRpcServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.*;
@@ -569,8 +569,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         } else {
             if (this.requiredServices.contains(JSONRPC)) {
                 this.status.setServiceStatus(JSONRPC, NOT_READY);
-                new JsonRPCWaitStrategy(this.detectorFactory).waitUntilReady(this);
-                this.status.setServiceStatus(JSONRPC, READY);
+                boolean started = new JsonRpcServiceMonitor(getRpcUrl()).isServiceStarted();
+                this.status.setServiceStatus(JSONRPC, started ? READY : NOT_READY);
             } else {
                 this.status.setServiceStatus(JSONRPC, NOT_CHECKED);
             }
