@@ -42,10 +42,9 @@ public class JsonRpcServiceMonitor {
        try{
            HttpRequest request = getRequest();
            final HttpResponse<String> response = sendRequest(request);
-
            final String responseBody = response.body();
            LOGGER.info("Received response {} for request {} with body '{}", response, request, responseBody);
-           return responseBody != null;  // TODO Long Poll to check the status
+           return response.statusCode() != 503; // just checking if the service is up,
        } catch (URISyntaxException e) {
            LOGGER.error("Exception occurred while checking the jrpc service status {}", e.getMessage());
            return false;
