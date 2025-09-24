@@ -9,5 +9,7 @@ public enum ExasolService {
     /** Bucket filesystem */
     BUCKETFS,
     /** database connection via JDBC */
-    JDBC
+    JDBC,
+    /** Json RPC service */
+    JSONRPC
 }
