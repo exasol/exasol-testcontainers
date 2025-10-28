@@ -1,22 +1,22 @@
 {
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit",
-        "source.generate.finalModifiers": "explicit",
-        "source.fixAll": "explicit"
-    },
-    "java.codeGeneration.useBlocks": true,
-    "java.saveActions.organizeImports": true,
-    "java.sources.organizeImports.starThreshold": 3,
-    "java.sources.organizeImports.staticStarThreshold": 3,
-    "java.test.config": {
-        "vmArgs": [
-            "-Djava.util.logging.config.file=src/test/resources/logging.properties",
-            "-Dcom.exasol.dockerdb.image=8.32.0"
-        ]
-    },
-    "sonarlint.connectedMode.project": {
-        "connectionId": "exasol",
-        "projectKey": "com.exasol:exasol-testcontainers"
-    }
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.generate.finalModifiers": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "java.codeGeneration.useBlocks": true,
+  "java.saveActions.organizeImports": true,
+  "java.sources.organizeImports.starThreshold": 3,
+  "java.sources.organizeImports.staticStarThreshold": 3,
+  "java.test.config": {
+    "vmArgs": [
+      "-Djava.util.logging.config.file=src/test/resources/logging.properties",
+      "-Dcom.exasol.dockerdb.image=2025.1.3"
+    ]
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "exasol",
+    "projectKey": "com.exasol:exasol-testcontainers"
+  }
 }
