@@ -3,7 +3,8 @@ name: CI Build
 on:
   push:
     branches: [
-      main
+      main,
+      release/*
     ]
     
   pull_request:
@@ -32,12 +33,13 @@ jobs:
       fail-fast: false
       matrix:
         exasol_db_version: [
-          8.32.0,
+          2025.1.3,
+          8.29.12,
           7.1.30
         ]
         
     env: {
-      DEFAULT_EXASOL_DB_VERSION: 8.32.0
+      DEFAULT_EXASOL_DB_VERSION: 2025.1.3
     }
     steps:
       - name: Free Disk Space
@@ -48,19 +50,22 @@ jobs:
           sudo rm -rf /usr/share/dotnet
       - name: Checkout the repository
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with: {
           fetch-depth: 0
         }
       - name: Set up JDKs
         id: setup-java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: |-
             11
             17
           cache: maven
+          server-id: ossindex
+          server-username: OSSINDEX_USERNAME
+          server-password: OSSINDEX_API_TOKEN
       - name: Cache SonarCloud packages
         id: cache-sonar
         uses: actions/cache@v4
@@ -78,6 +83,10 @@ jobs:
         id: build-quick-verify
         run: |
           mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
+        env: {
+          OSSINDEX_USERNAME: '${{ secrets.OSSINDEX_USERNAME }}',
+          OSSINDEX_API_TOKEN: '${{ secrets.OSSINDEX_API_TOKEN }}'
+        }
       - {
         name: Fix "VM Crashed" error by allowing unprivileged user namespaces,
         id: fix-vm-crashed,
@@ -87,6 +96,10 @@ jobs:
         id: build-pk-verify
         run: |
           mvn --batch-mode verify -Pslow -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
+        env: {
+          OSSINDEX_USERNAME: '${{ secrets.OSSINDEX_USERNAME }}',
+          OSSINDEX_API_TOKEN: '${{ secrets.OSSINDEX_API_TOKEN }}'
+        }
       - name: Sonar analysis
         id: sonar-analysis
         if: ${{ env.SONAR_TOKEN != null && matrix.exasol_db_version == env.DEFAULT_EXASOL_DB_VERSION }}
@@ -123,7 +136,7 @@ jobs:
                '{"pattern": "^https?://(www.)?eclipse.org"}' \
                '{"pattern": "^https?://projects.eclipse.org"}' \
                ']}' > ./target/broken_links_checker.json
-      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      - uses: tcort/github-action-markdown-link-check@v1
         id: run-link-check
         with: {
           use-quiet-mode: yes,
@@ -146,23 +159,28 @@ jobs:
     steps:
       - name: Checkout the repository
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with: {
           fetch-depth: 0
         }
       - name: Set up JDK 17
         id: setup-java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with: {
           distribution: temurin,
           java-version: '17',
-          cache: maven
+          cache: maven,
+          server-id: ossindex,
+          server-username: OSSINDEX_USERNAME,
+          server-password: OSSINDEX_API_TOKEN
         }
-      - {
-        name: Run tests and build with Maven 17,
-        id: build-next-java,
+      - name: Run tests and build with Maven 17
+        id: build-next-java
         run: mvn --batch-mode clean package -DtrimStackTrace=false -Djava.version=17
-      }
+        env: {
+          OSSINDEX_USERNAME: '${{ secrets.OSSINDEX_USERNAME }}',
+          OSSINDEX_API_TOKEN: '${{ secrets.OSSINDEX_API_TOKEN }}'
+        }
   build:
     needs: [
       matrix-build,
@@ -183,13 +201,13 @@ jobs:
     steps:
       - name: Checkout the repository
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with: {
           fetch-depth: 0
         }
       - name: Set up JDKs
         id: setup-java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: |-
@@ -198,7 +216,7 @@ jobs:
           cache: maven
       - name: Check if release is needed
         id: check-release
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
         run: |
           if mvn --batch-mode com.exasol:project-keeper-maven-plugin:verify-release --projects .; then
               echo "### ✅ Release preconditions met, start release" >> "$GITHUB_STEP_SUMMARY"
@@ -213,7 +231,7 @@ jobs:
         }
   start_release:
     needs: build
-    if: ${{ github.ref == 'refs/heads/main' && needs.build.outputs.release-required == 'true' }}
+    if: ${{ needs.build.outputs.release-required == 'true' }}
     concurrency: {
       cancel-in-progress: false,
       group: release
