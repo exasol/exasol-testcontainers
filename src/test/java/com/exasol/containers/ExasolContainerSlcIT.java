@@ -74,10 +74,9 @@ class ExasolContainerSlcIT {
         return ScriptLanguageContainer.builder() //
                 .alias("MY_SLC_" + TIMESTAMP) //
                 .language(Language.PYTHON) //
-                .slcRelease("10.1.0",
-                        "template-Exasol-all-python-3.12-release-I4FAKAOTX2WGHDOXJQCKISPWF66HDCJLSV2PJS26RZ454GBOUCUA.tar.gz") //
+                .slcRelease("7.1.0", "template-Exasol-all-python-3.10_release.tar.gz") //
                 .sha512sum(
-                        "935b3d516e996f6d25948ba8a54c1b7f70f7f0e3f517e36481fdf0196c2c5cfc2841f86e891f3df9517746b7fb605db47cdded1b8ff78d9482ddaa621db43a34") //
+                        "db19e16b9cb5b3d02c44ad6e401eb9296b0483c0078a2e23ac00ad7f26473d115febb0c799a86aed33f49252947a86aa7e8927571a2679131da52e5fc090939c") //
                 .build();
     }
 
