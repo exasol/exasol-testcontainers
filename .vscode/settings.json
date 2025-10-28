@@ -13,7 +13,10 @@
     "vmArgs": [
       "-Djava.util.logging.config.file=src/test/resources/logging.properties",
       "-Dcom.exasol.dockerdb.image=2025.1.3"
-    ]
+    ],
+    "env": {
+      "TESTCONTAINERS_RYUK_DISABLED": "true"
+    }
   },
   "sonarlint.connectedMode.project": {
     "connectionId": "exasol",
