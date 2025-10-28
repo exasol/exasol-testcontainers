@@ -24,6 +24,7 @@ class ExasolDockerImageReferenceTest {
             "8.12.9-d1x-d2, exasol/docker-db:8.12.9-d1x-d2", // "
             "7.1.rc1, exasol/docker-db:7.1.0.rc1", //
             "7.1.rc1-d4, exasol/docker-db:7.1.0.rc1-d4", //
+            "2025.1.3, exasol/docker-db:2025.1.3", //
             // pre-release versions
             "prerelease-8.17.0, exasol/docker-db:prerelease-8.17.0", //
             // image references with repository:
@@ -32,14 +33,17 @@ class ExasolDockerImageReferenceTest {
             "docker-db:8.4.5, exasol/docker-db:8.4.5", //
             "docker-db:8.4.5-d6, exasol/docker-db:8.4.5-d6", //
             "docker-db:9-beta, exasol/docker-db:9.0.0-beta", //
+            "docker-db:2025.1.3, exasol/docker-db:2025.1.3", //
             "exasol/docker-db:8, exasol/docker-db:8.0.0", //
             "exasol/docker-db:8.3, exasol/docker-db:8.3.0", //
             "exasol/docker-db:8.4.5, exasol/docker-db:8.4.5", //
             "exasol/docker-db:8.4.5-d6, exasol/docker-db:8.4.5-d6", //
             "exasol/docker-db:9.3-alpha, exasol/docker-db:9.3.0-alpha", //
+            "exasol/docker-db:2025.1.3, exasol/docker-db:2025.1.3", //
             // unconventional image references:
             "foo/bar:latest, foo/bar:latest", //
-            "baz/zoo:1.2.3.4, baz/zoo:1.2.3.4" //
+            "baz/zoo:1.2.3.4, baz/zoo:1.2.3.4", //
+            "baz/zoo:2025.1.3, baz/zoo:2025.1.3" //
     })
     @ParameterizedTest
     void testToString(final String input, final String expectedReference) {

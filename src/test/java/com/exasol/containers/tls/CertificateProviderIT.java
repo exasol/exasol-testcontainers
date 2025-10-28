@@ -31,7 +31,9 @@ class CertificateProviderIT {
         assertAll(() -> assertThat(certificate, notNullValue()),
                 () -> assertThat(certificate.getIssuerX500Principal().getName(), equalTo("CN=exacluster.local")),
                 () -> assertThat(certificate.getSubjectX500Principal().getName(),
-                        either(equalTo("CN=*.exacluster.local")).or(equalTo("CN=srv.exacluster.local"))),
+                        either(equalTo("CN=*.exacluster.local"))
+                                .or(equalTo("CN=srv.exacluster.local"))
+                                .or(equalTo("CN=exacluster.local"))),
                 () -> assertThat(certificate.getNotBefore(), lessThan(now)),
                 () -> assertThat(certificate.getNotAfter(), greaterThan(now)));
     }

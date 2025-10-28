@@ -13,10 +13,10 @@ import java.time.Instant;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.ContainerLaunchException;
 
 import com.exasol.containers.slc.ScriptLanguageContainer;
 import com.exasol.containers.slc.ScriptLanguageContainer.Language;
-import org.testcontainers.containers.ContainerLaunchException;
 
 @Tag("slow")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -29,7 +29,7 @@ class ExasolContainerSlcIT {
         try (final ExasolContainer<? extends ExasolContainer<?>> container = new ExasolContainer<>()) {
             final ScriptLanguageContainer slc = createSlc();
             container.withExposedPorts(8563).withScriptLanguageContainer(slc);
-            ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, container::start);
+            final ContainerLaunchException exception = assertThrows(ContainerLaunchException.class, container::start);
             assertThat(exception.getMessage(), startsWith("E-ETC-43"));
         }
     }
@@ -45,7 +45,7 @@ class ExasolContainerSlcIT {
             container.withReuse(true).withScriptLanguageContainer(slc);
             final Duration startupDuration = measureDuration(container::start);
             LOGGER.info("First startup took {}", startupDuration);
-            assertAll(() -> assertThat(startupDuration.toSeconds(), greaterThan(45L)),
+            assertAll(() -> assertThat("First startup duration [s]", startupDuration.toSeconds(), greaterThan(20L)),
                     () -> assertPython310Slc(container, slc));
         }
     }
@@ -59,7 +59,7 @@ class ExasolContainerSlcIT {
             container.withReuse(true).withScriptLanguageContainer(slc);
             final Duration startupDuration = measureDuration(container::start);
             LOGGER.info("Second startup took {}", startupDuration);
-            assertAll(() -> assertThat(startupDuration.toSeconds(), lessThan(5L)),
+            assertAll(() -> assertThat("Second startup duration [s]", startupDuration.toSeconds(), lessThan(5L)),
                     () -> assertPython310Slc(container, slc));
         }
     }

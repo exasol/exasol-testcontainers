@@ -1,7 +1,7 @@
 package com.exasol.containers;
 
 import static com.exasol.containers.ExasolContainerConstants.DOCKER_IMAGE_OVERRIDE_PROPERTY;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * This class contains shared assumptions about the Exasol container used in the tests.
