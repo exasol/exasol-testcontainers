@@ -6,6 +6,8 @@ Code name: Update Default Exasol Version to 2025.1.3
 
 This release updates the default Exasol version from v7 to the latest 2015.1.3. We now run integration tests using Exasol versions 2015.1.3, 8.29.12 and 7.1.30.
 
+**Note:** This release upgrades the [major version of the Testcontainers library](https://github.com/testcontainers/testcontainers-java/releases/tag/2.0.0) to 2.0.1.
+
 ## Features
 
 * #278: Update default Exasol version from v7 to 2015.1.3
