@@ -7,9 +7,7 @@
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
     <url>https://github.com/exasol/exasol-testcontainers/</url>
-    <properties>
-        <testcontainers.version>1.21.3</testcontainers.version>
-    </properties>
+    <properties/>
     <profiles>
         <profile>
             <id>fast</id>
@@ -33,24 +31,26 @@
             </properties>
         </profile>
     </profiles>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>2.0.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <!-- Explicitly adding commons-compress with fixed CVE-2024-25710 and CVE-2024-26308 since 1.24.0 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.28.0</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>jdbc</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-jdbc</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -83,8 +83,7 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

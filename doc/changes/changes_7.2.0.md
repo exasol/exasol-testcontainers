@@ -19,11 +19,13 @@ This release updates the default Exasol version from v7 to the latest 2015.1.3. 
 * Updated `com.github.mwiede:jsch:2.27.2` to `2.27.5`
 * Removed `org.apache.commons:commons-compress:1.26.1`
 * Removed `org.apache.commons:commons-lang3:3.18.0`
+* Removed `org.testcontainers:jdbc:1.21.3`
+* Added `org.testcontainers:testcontainers-jdbc:2.0.1`
+* Updated `org.testcontainers:testcontainers:1.21.3` to `2.0.1`
 
 ### Runtime Dependency Updates
 
 * Updated `com.exasol:exasol-jdbc:25.2.4` to `25.2.5`
-* Added `org.apache.commons:commons-compress:1.28.0`
 
 ### Test Dependency Updates
 
@@ -32,6 +34,8 @@ This release updates the default Exasol version from v7 to the latest 2015.1.3. 
 * Removed `org.junit.jupiter:junit-jupiter-api:5.13.3`
 * Updated `org.junit.jupiter:junit-jupiter-params:5.13.3` to `5.13.4`
 * Updated `org.mockito:mockito-junit-jupiter:5.18.0` to `5.20.0`
+* Removed `org.testcontainers:junit-jupiter:1.21.3`
+* Added `org.testcontainers:testcontainers-junit-jupiter:2.0.1`
 
 ### Plugin Dependency Updates
 
