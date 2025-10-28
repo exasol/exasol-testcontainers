@@ -42,6 +42,7 @@ class LogRotationWorkaroundTest {
             "7.0, true , false", //
             "7.1, true , false", //
             "8  , true , false", //
+            "2025.1.3, true , false", //
     })
     @ParameterizedTest
     void testNecessaryWhenReused(final String reference, final boolean reused, final boolean necessary,
