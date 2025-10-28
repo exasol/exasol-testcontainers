@@ -24,7 +24,6 @@ This release updates the default Exasol version from v7 to the latest 2015.1.3. 
 
 * Updated `com.exasol:exasol-jdbc:25.2.4` to `25.2.5`
 * Added `org.apache.commons:commons-compress:1.28.0`
-* Added `org.apache.commons:commons-lang3:3.19.0`
 
 ### Test Dependency Updates
 
