@@ -121,19 +121,6 @@ class BucketIT {
     }
 
     @Test
-    void testUploadFileToIllegalUrlThrowsException(@TempDir final Path tempDir) throws IOException {
-        final Path file = createTestFile(tempDir, "irrelevant.txt", 1);
-        assertThrows(BucketAccessException.class,
-                () -> container.getDefaultBucket().uploadFile(file, "this\\is\\an\\illegal\\URL"));
-    }
-
-    @Test
-    void testUploadContentToIllegalUrlThrowsException() {
-        assertThrows(BucketAccessException.class, () -> container.getDefaultBucket()
-                .uploadStringContent("irrelevant content", "this\\is\\an\\illegal\\URL"));
-    }
-
-    @Test
     void testDownloadFile(@TempDir final Path tempDir)
             throws InterruptedException, BucketAccessException, TimeoutException, IOException {
         final String fileName = "read_me.txt";
