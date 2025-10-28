@@ -77,7 +77,8 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>6.0.0</version>
+            <!-- Don't upgrade, version 6 requires Java 17. -->
+            <version>5.13.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>

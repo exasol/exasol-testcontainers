@@ -30,7 +30,7 @@ This release updates the default Exasol version from v7 to the latest 2015.1.3. 
 * Updated `com.exasol:hamcrest-resultset-matcher:1.7.1` to `1.7.2`
 * Updated `com.exasol:udf-api-java:1.0.6` to `1.0.7`
 * Removed `org.junit.jupiter:junit-jupiter-api:5.13.3`
-* Updated `org.junit.jupiter:junit-jupiter-params:5.13.3` to `6.0.0`
+* Updated `org.junit.jupiter:junit-jupiter-params:5.13.3` to `5.13.4`
 * Updated `org.mockito:mockito-junit-jupiter:5.18.0` to `5.20.0`
 
 ### Plugin Dependency Updates
