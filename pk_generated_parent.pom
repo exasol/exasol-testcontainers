@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.exasol</groupId>
     <artifactId>exasol-testcontainers-generated-parent</artifactId>
-    <version>7.2.1</version>
+    <version>7.2.2</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -172,14 +172,17 @@
                 <configuration>
                     <!-- Set the highest log level for coverage testing, so that we
           have a chance to reach branches in the logging lambdas too. -->
-                    <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties ${argLine}</argLine>
+                    <argLine>${argLine}</argLine>
                     <excludedGroups>${test.excludeTags}</excludedGroups>
+                    <systemProperties>
+                        <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
+                    </systemProperties>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>2.20.1</version>
                 <executions>
                     <execution>
                         <id>display-updates</id>

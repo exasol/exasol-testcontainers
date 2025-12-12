@@ -56,7 +56,8 @@ class DockerImageReferenceFactoryTest {
             "custom/docker-db:8.32.0, custom/docker-db:8.32.0, 8, 32, 0",
             "ghcr.io/org/custom/docker-db:8.32.0, ghcr.io/org/custom/docker-db:8.32.0, 8, 32, 0",
             "ghcr.io/org/custom/docker-db:8.32.0-revision, ghcr.io/org/custom/docker-db:8.32.0-revision, 8, 32, 0",
-            "ghcr.io/exasol/custom-project/docker-db:8.34.0, ghcr.io/exasol/custom-project/docker-db:8.34.0, 8, 34, 0" })
+            "ghcr.io/exasol/custom-project/docker-db:8.34.0, ghcr.io/exasol/custom-project/docker-db:8.34.0, 8, 34, 0",
+            "exadockerci4/docker-db:2025.1.8_dev_java_slc_only, exadockerci4/docker-db:2025.1.8_dev_java_slc_only, 2025, 1, 8" })
     void testParseVersion(final String version, final String expected, final int expectedMajor, final int expectedMinor,
             final int expectedFixVersion) {
         final ExasolDockerImageReference testee = DockerImageReferenceFactory.parse(version);
