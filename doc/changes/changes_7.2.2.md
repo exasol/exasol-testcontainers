@@ -10,8 +10,3 @@ This release relaxes the rules for custom image names. You can now use images wi
 
 * #283: Relaxed rules for custom image names
 
-## Dependency Updates
-
-### Plugin Dependency Updates
-
-* Updated `org.codehaus.mojo:versions-maven-plugin:2.19.1` to `2.20.1`
