@@ -20,7 +20,7 @@ public final class DockerImageReferenceFactory {
     private static final String CUSTOM_IMAGE_PATTERN = "(?:([\\w./-]+):)";
     private static final String VERSION_PREFIX_PATTERN = "(?:(\\w+)-)?";
     private static final String EXASOL_VERSION_PATTERN = "(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?"; // (partially optional)
-    private static final String SUFFIX_PATTERN = "(?:([-.])([a-zA-Z]\\w*))??";
+    private static final String SUFFIX_PATTERN = "(?:([-._])([a-zA-Z]\\w*))??";
     private static final String DOCKER_IMAGE_REVISION_PATTERN = "(?:-d(\\d+))?";
     private static final Pattern OFFICIAL_DOCKER_IMAGE_VERSION_PATTERN = Pattern.compile(REPOSITORY_PATTERN
             + VERSION_PREFIX_PATTERN + EXASOL_VERSION_PATTERN + SUFFIX_PATTERN + DOCKER_IMAGE_REVISION_PATTERN);

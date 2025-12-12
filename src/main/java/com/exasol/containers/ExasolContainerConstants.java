@@ -7,7 +7,7 @@ import java.nio.file.Path;
  */
 public final class ExasolContainerConstants {
     /** Default version of the Exasol Docker image */
-    public static final String EXASOL_DOCKER_IMAGE_VERSION = "2025.1.3";
+    public static final String EXASOL_DOCKER_IMAGE_VERSION = "2025.1.8";
 
     /** Reference name of the Exasol Docker image */
     public static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
