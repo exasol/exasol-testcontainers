@@ -28,7 +28,7 @@ jobs:
       - {
         name: Checkout,
         id: checkout,
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       }
       - name: Set up JDKs
         id: setup-jdks
@@ -55,7 +55,7 @@ jobs:
         }
       - name: Create GitHub Issues
         id: create-security-issues
-        uses: exasol/python-toolbox/.github/actions/security-issues@1.9.0
+        uses: exasol/python-toolbox/.github/actions/security-issues@4.0.1
         with: {
           format: maven,
           command: cat ossindex-report.json,

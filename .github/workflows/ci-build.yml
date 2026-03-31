@@ -50,7 +50,7 @@ jobs:
           sudo rm -rf /usr/share/dotnet
       - name: Checkout the repository
         id: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with: {
           fetch-depth: 0
         }
@@ -68,7 +68,7 @@ jobs:
           server-password: OSSINDEX_API_TOKEN
       - name: Cache SonarCloud packages
         id: cache-sonar
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with: {
           path: ~/.sonar/cache,
           key: '${{ runner.os }}-sonar',
@@ -120,7 +120,7 @@ jobs:
         }
       - name: Upload artifacts
         id: upload-artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with: {
           name: 'artifacts-exasol-${{ matrix.exasol_db_version }}',
           path: '${{ steps.build-pk-verify.outputs.release-artifacts }}',
@@ -159,7 +159,7 @@ jobs:
     steps:
       - name: Checkout the repository
         id: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with: {
           fetch-depth: 0
         }
@@ -201,7 +201,7 @@ jobs:
     steps:
       - name: Checkout the repository
         id: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with: {
           fetch-depth: 0
         }
