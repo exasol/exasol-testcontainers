@@ -94,7 +94,7 @@
 [26]: https://github.com/exasol/hamcrest-resultset-matcher/blob/main/LICENSE
 [27]: http://www.slf4j.org
 [28]: https://www.exasol.com/
-[29]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/25.2.5/exasol-jdbc-25.2.5-license.txt
+[29]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/26.2.7/exasol-jdbc-26.2.7-license.txt
 [30]: https://maven.apache.org/plugins/maven-clean-plugin/
 [31]: https://maven.apache.org/plugins/maven-install-plugin/
 [32]: https://maven.apache.org/plugins/maven-resources-plugin/
