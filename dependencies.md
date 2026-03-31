@@ -54,7 +54,7 @@
 | [Apache Maven Artifact Plugin][45]                      | [Apache-2.0][22]                            |
 | [Apache Maven Deploy Plugin][46]                        | [Apache-2.0][22]                            |
 | [Apache Maven GPG Plugin][47]                           | [Apache-2.0][22]                            |
-| [Apache Maven Source Plugin][48]                        | [Apache License, Version 2.0][22]           |
+| [Apache Maven Source Plugin][48]                        | [Apache-2.0][22]                            |
 | [Apache Maven Javadoc Plugin][49]                       | [Apache-2.0][22]                            |
 | [Central Publishing Maven Plugin][50]                   | [The Apache License, Version 2.0][22]       |
 | [Project Keeper Maven plugin][51]                       | [The MIT License][52]                       |
@@ -94,12 +94,12 @@
 [26]: https://github.com/exasol/hamcrest-resultset-matcher/blob/main/LICENSE
 [27]: http://www.slf4j.org
 [28]: https://www.exasol.com/
-[29]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/25.2.5/exasol-jdbc-25.2.5-license.txt
+[29]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/26.2.7/exasol-jdbc-26.2.7-license.txt
 [30]: https://maven.apache.org/plugins/maven-clean-plugin/
 [31]: https://maven.apache.org/plugins/maven-install-plugin/
 [32]: https://maven.apache.org/plugins/maven-resources-plugin/
 [33]: https://maven.apache.org/plugins/maven-site-plugin/
-[34]: http://docs.sonarqube.org/display/PLUG/Plugin+Library/sonar-scanner-maven/sonar-maven-plugin
+[34]: https://docs.sonarsource.com/sonarqube-server/latest/extension-guide/developing-a-plugin/plugin-basics/sonar-scanner-maven/sonar-maven-plugin/
 [35]: http://www.gnu.org/licenses/lgpl.txt
 [36]: https://maven.apache.org/plugins/maven-toolchains-plugin/
 [37]: https://maven.apache.org/plugins/maven-compiler-plugin/

@@ -23,7 +23,9 @@ public class DBVersionChecker {
      * @param dbVersion database version string
      */
     public static void minimumSupportedDbVersionCheck(String dbVersion) {
-        String[] dbVersionSplit = dbVersion.split(Pattern.quote("."));
+        final int hyphenIndex = dbVersion.indexOf('-');
+        final String versionCore = (hyphenIndex >= 0) ? dbVersion.substring(0, hyphenIndex) : dbVersion;
+        String[] dbVersionSplit = versionCore.split(Pattern.quote("."));
         if (dbVersionSplit.length != 3) {
             throw new ContainerLaunchException(
                     ExaError.messageBuilder("E-ETC-14").message("Failed to parse database version. Version tag is invalid.").ticketMitigation().toString());
