@@ -8,8 +8,8 @@ build:
   runnerOs: ubuntu-24.04
   freeDiskSpace: true
   exasolDbVersions:
-    - "2025.1.8"
-    - "8.29.13"
+    - "2025.2.1"
+    - "2025.1.10"
     - "7.1.30"
   workflows:
     - name: ci-build.yml
@@ -29,10 +29,7 @@ build:
             name: Run fast tests
             id: build-quick-verify
             run: |
-              mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
-            env:
-              OSSINDEX_USERNAME: ${{ secrets.OSSINDEX_USERNAME }}
-              OSSINDEX_API_TOKEN: ${{ secrets.OSSINDEX_API_TOKEN }}
+              mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }} -DossindexSkip=true
         # Enable slow tests
         - action: REPLACE
           job: matrix-build
@@ -41,7 +38,4 @@ build:
             name: Run tests and build with Maven
             id: build-pk-verify
             run: |
-              mvn --batch-mode verify -Pslow -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
-            env:
-              OSSINDEX_USERNAME: ${{ secrets.OSSINDEX_USERNAME }}
-              OSSINDEX_API_TOKEN: ${{ secrets.OSSINDEX_API_TOKEN }}
+              mvn --batch-mode verify -Pslow -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }} -DossindexSkip=true

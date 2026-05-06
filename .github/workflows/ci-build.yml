@@ -33,13 +33,13 @@ jobs:
       fail-fast: false
       matrix:
         exasol_db_version: [
-          2025.1.8,
-          8.29.13,
+          2025.2.1,
+          2025.1.10,
           7.1.30
         ]
         
     env: {
-      DEFAULT_EXASOL_DB_VERSION: 2025.1.8
+      DEFAULT_EXASOL_DB_VERSION: 2025.2.1
     }
     steps:
       - name: Free Disk Space
@@ -52,7 +52,8 @@ jobs:
         id: checkout
         uses: actions/checkout@v6
         with: {
-          fetch-depth: 0
+          fetch-depth: 0,
+          persist-credentials: false
         }
       - name: Set up JDKs
         id: setup-java
@@ -63,9 +64,6 @@ jobs:
             11
             17
           cache: maven
-          server-id: ossindex
-          server-username: OSSINDEX_USERNAME
-          server-password: OSSINDEX_API_TOKEN
       - name: Cache SonarCloud packages
         id: cache-sonar
         uses: actions/cache@v5
@@ -82,11 +80,7 @@ jobs:
       - name: Run fast tests
         id: build-quick-verify
         run: |
-          mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
-        env: {
-          OSSINDEX_USERNAME: '${{ secrets.OSSINDEX_USERNAME }}',
-          OSSINDEX_API_TOKEN: '${{ secrets.OSSINDEX_API_TOKEN }}'
-        }
+          mvn --batch-mode clean verify -Pfast -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }} -DossindexSkip=true
       - {
         name: Fix "VM Crashed" error by allowing unprivileged user namespaces,
         id: fix-vm-crashed,
@@ -95,16 +89,13 @@ jobs:
       - name: Run tests and build with Maven
         id: build-pk-verify
         run: |
-          mvn --batch-mode verify -Pslow -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }}
-        env: {
-          OSSINDEX_USERNAME: '${{ secrets.OSSINDEX_USERNAME }}',
-          OSSINDEX_API_TOKEN: '${{ secrets.OSSINDEX_API_TOKEN }}'
-        }
+          mvn --batch-mode verify -Pslow -Dcom.exasol.dockerdb.image=${{ matrix.exasol_db_version }} -DossindexSkip=true
       - name: Sonar analysis
         id: sonar-analysis
         if: ${{ env.SONAR_TOKEN != null && matrix.exasol_db_version == env.DEFAULT_EXASOL_DB_VERSION }}
         run: |
           mvn --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+              -DossindexSkip=true \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DtrimStackTrace=false \
               -Dsonar.token=$SONAR_TOKEN
@@ -120,7 +111,7 @@ jobs:
         }
       - name: Upload artifacts
         id: upload-artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with: {
           name: 'artifacts-exasol-${{ matrix.exasol_db_version }}',
           path: '${{ steps.build-pk-verify.outputs.release-artifacts }}',
@@ -136,7 +127,7 @@ jobs:
                '{"pattern": "^https?://(www.)?eclipse.org"}' \
                '{"pattern": "^https?://projects.eclipse.org"}' \
                ']}' > ./target/broken_links_checker.json
-      - uses: tcort/github-action-markdown-link-check@v1
+      - uses: tcort/github-action-markdown-link-check@e7c7a18363c842693fadde5d41a3bd3573a7a225
         id: run-link-check
         with: {
           use-quiet-mode: yes,
@@ -161,7 +152,8 @@ jobs:
         id: checkout
         uses: actions/checkout@v6
         with: {
-          fetch-depth: 0
+          fetch-depth: 0,
+          persist-credentials: false
         }
       - name: Set up JDK 17
         id: setup-java
@@ -169,22 +161,91 @@ jobs:
         with: {
           distribution: temurin,
           java-version: '17',
-          cache: maven,
-          server-id: ossindex,
-          server-username: OSSINDEX_USERNAME,
-          server-password: OSSINDEX_API_TOKEN
+          cache: maven
         }
       - name: Run tests and build with Maven 17
         id: build-next-java
-        run: mvn --batch-mode clean package -DtrimStackTrace=false -Djava.version=17
+        run: |
+          mvn --batch-mode clean package -DtrimStackTrace=false -Djava.version=17 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DossindexSkip=true
+  ossindex:
+    runs-on: ubuntu-latest
+    defaults:
+      run: {
+        shell: bash
+      }
+    permissions: {
+      contents: read
+    }
+    concurrency: {
+      group: '${{ github.workflow }}-ossindex-${{ github.ref }}',
+      cancel-in-progress: true
+    }
+    steps:
+      - name: Checkout the repository
+        id: checkout
+        uses: actions/checkout@v6
+        with: {
+          persist-credentials: false
+        }
+      - name: Set up JDKs
+        id: setup-java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |-
+            11
+            17
+          cache: maven
+          server-id: ossindex
+          server-username: OSSINDEX_USERNAME
+          server-password: OSSINDEX_API_TOKEN
+      - name: Run Ossindex
+        id: ossindex
+        run: |
+          mvn --batch-mode test-compile \
+              org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
+              org.sonatype.ossindex.maven:ossindex-maven-plugin:audit-aggregate \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
         env: {
           OSSINDEX_USERNAME: '${{ secrets.OSSINDEX_USERNAME }}',
           OSSINDEX_API_TOKEN: '${{ secrets.OSSINDEX_API_TOKEN }}'
         }
+  lint-github-actions:
+    runs-on: ubuntu-latest
+    defaults:
+      run: {
+        shell: bash
+      }
+    permissions: {
+      security-events: write,
+      contents: read,
+      actions: read
+    }
+    concurrency: {
+      group: '${{ github.workflow }}-github-actions-linter-${{ github.ref }}',
+      cancel-in-progress: true
+    }
+    steps:
+      - name: Checkout the repository
+        id: checkout
+        uses: actions/checkout@v6
+        with: {
+          persist-credentials: false
+        }
+      - name: Lint GitHub actions with Zizmore
+        id: lint-github-actions
+        uses: zizmorcore/zizmor-action@b1d7e1fb5de872772f31590499237e7cce841e8e
+        with: {
+          advanced-security: false
+        }
   build:
     needs: [
       matrix-build,
-      next-java-compatibility
+      next-java-compatibility,
+      ossindex,
+      lint-github-actions
     ]
     runs-on: ubuntu-latest
     defaults:
@@ -203,7 +264,8 @@ jobs:
         id: checkout
         uses: actions/checkout@v6
         with: {
-          fetch-depth: 0
+          fetch-depth: 0,
+          persist-credentials: false
         }
       - name: Set up JDKs
         id: setup-java
