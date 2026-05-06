@@ -146,6 +146,37 @@ If necessary you can even pick a specific Docker image revision (though in most 
 
 If you omit the Docker image revision, it always defaults to `d1`.
 
+### Using Exasol Nano
+
+Exasol Nano is a lightweight single-node Exasol runtime for JDBC-focused integration tests. Use
+`ExasolNanoContainer` when you only need the SQL endpoint and want a smaller container than the full
+`exasol/docker-db` image.
+
+```java
+import com.exasol.containers.ExasolNanoContainer;
+
+try (final ExasolNanoContainer<? extends ExasolNanoContainer<?>> container = new ExasolNanoContainer<>()) {
+    container.start();
+    try (final Connection connection = container.createConnection()) {
+        // run test SQL
+    }
+}
+```
+
+The no-argument constructor uses `exasol/nano:latest`. You can provide another image reference explicitly:
+
+```java
+new ExasolNanoContainer<>("exasol/nano:latest");
+```
+
+`ExasolNanoContainer` exposes Nano's SQL port `8563` and Web UI port `8443`, configures the container with
+1 GiB shared memory, and waits until `SELECT 1` succeeds over JDBC.
+
+The Nano container deliberately does not provide the `docker-db`-specific APIs from `ExasolContainer`, such as
+BucketFS access, UDF/SLC installation, EXAoperation emulation, cluster configuration access, driver management,
+database service control, RPC access, or support archive creation. Container reuse is the regular Testcontainers
+reuse behavior; unlike `ExasolContainer`, Nano does not perform automatic database cleanup before reuse.
+
 ### Using Non-standard Port Numbers
 
 Exasol's `docker-db` has a fixed cluster configuration. The ports for the database service and the BucketFS service are constant. That being said, if you want to experiment with your own Docker images, you might use different port numbers.
