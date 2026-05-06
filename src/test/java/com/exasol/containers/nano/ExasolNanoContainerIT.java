@@ -1,6 +1,6 @@
-package com.exasol.containers;
+package com.exasol.containers.nano;
 
-import static com.exasol.containers.ExasolNanoContainer.EXASOL_NANO_WEB_UI_PORT;
+import static com.exasol.containers.nano.ExasolNanoContainer.EXASOL_NANO_WEB_UI_PORT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;

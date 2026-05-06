@@ -1,4 +1,4 @@
-package com.exasol.containers;
+package com.exasol.containers.nano;
 
 import static com.exasol.containers.ExasolContainerConstants.*;
 
@@ -14,6 +14,8 @@ import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import com.exasol.containers.ExasolContainer;
+import com.exasol.containers.UncheckedSqlException;
 import com.exasol.errorreporting.ExaError;
 
 /**
@@ -38,7 +40,7 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
             + EXASOL_NANO_DOCKER_IMAGE_TAG;
 
     /** Default SQL port for Exasol Nano */
-    public static final int EXASOL_NANO_SQL_PORT = ExasolContainerConstants.DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE;
+    public static final int EXASOL_NANO_SQL_PORT = 8563;
 
     /** Default Web UI port for Exasol Nano */
     public static final int EXASOL_NANO_WEB_UI_PORT = 8443;

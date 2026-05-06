@@ -1,8 +1,8 @@
-package com.exasol.containers;
+package com.exasol.containers.nano;
 
 import static com.exasol.containers.ExasolContainerConstants.DEFAULT_ADMIN_USER;
 import static com.exasol.containers.ExasolContainerConstants.DEFAULT_SYS_USER_PASSWORD;
-import static com.exasol.containers.ExasolNanoContainer.*;
+import static com.exasol.containers.nano.ExasolNanoContainer.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
