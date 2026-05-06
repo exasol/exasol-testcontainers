@@ -44,13 +44,23 @@ public final class ExasolContainerConstants {
     /** Name of the property with which the docker image name can be overridden */
     public static final String DOCKER_IMAGE_OVERRIDE_PROPERTY = "com.exasol.dockerdb.image";
 
-    /** Default database port for Exasol versions in Docker before 7.0 */
+    /**
+     * Default database port for Exasol versions in Docker before 7.0
+     * 
+     * @deprecated Exasol versions before 7.0 are no longer supported in the latest version of this library.
+     */
+    @Deprecated(since = "7.3.0", forRemoval = true)
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT = 8888;
 
     /** Default database port for Exasol versions in Docker from 7.0 on */
     static final int DEFAULT_CONTAINER_INTERNAL_DATABASE_PORT_V7_AND_ABOVE = 8563;
 
-    /** Default BucketFS port for Exasol versions in Docker before 7.0 */
+    /**
+     * Default BucketFS port for Exasol versions in Docker before 7.0
+     * 
+     * @deprecated Exasol versions before 7.0 are no longer supported in the latest version of this library.
+     */
+    @Deprecated(since = "7.3.0", forRemoval = true)
     static final int DEFAULT_CONTAINER_INTERNAL_BUCKETFS_PORT = 6583;
 
     /** Default BucketFS port for Exasol versions in Docker from 7.0 on (unencrypted) */
