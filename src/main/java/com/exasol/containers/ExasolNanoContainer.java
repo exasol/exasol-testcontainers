@@ -174,7 +174,7 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
     /**
      * Set the timeout for the JDBC readiness check.
      *
-     * @param timeoutInSeconds timeout in seconds
+     * @param timeout timeout for the JDBC readiness check
      * @return self
      */
     public ExasolNanoContainer withJdbcConnectionTimeout(final Duration timeout) {

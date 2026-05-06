@@ -227,6 +227,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      *
      * @return default internal port of the database
      */
+    @SuppressWarnings("removal") // We still need to support the old port for older versions of Exasol
     public int getDefaultInternalDatabasePort() {
         if (this.dockerImageReference.hasMajor()) {
             if (this.dockerImageReference.getMajor() >= 7) {
@@ -708,7 +709,8 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
         if (!scriptLanguageContainers.isEmpty() && !getExposedPorts().contains(bucketfsPort)) {
             throw new ContainerLaunchException(ExaError.messageBuilder("E-ETC-43")
                     .message("Installation of ScriptLanguageContainer requires the BucketFS port {{port}} " +
-                            "to be exposed", bucketfsPort).toString());
+                            "to be exposed", bucketfsPort)
+                    .toString());
         }
     }
 
@@ -913,6 +915,7 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
      *
      * @return default internal port of the BucketFS
      */
+    @SuppressWarnings("removal") // We still need to support the old port for older versions of Exasol
     public int getDefaultInternalBucketfsPort() {
         if (this.dockerImageReference.hasMajor() && this.dockerImageReference.hasMinor()
                 && this.dockerImageReference.hasFix()) {
