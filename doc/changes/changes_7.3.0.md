@@ -1,12 +1,14 @@
-# Test Containers for Exasol on Docker 7.3.0, released 2026-??-??
+# Test Containers for Exasol on Docker 7.3.0, released 2026-04-??
 
-Code name:
+Code name: Nano support
 
 ## Summary
 
+This release adds experimental support for the [Exasol Nano container](https://hub.docker.com/r/exasol/nano). See the [user guide](../user_guide/user_guide.md#using-exasol-nano) for usage instructions.
+
 ## Features
 
-* ISSUE_NUMBER: description
+* #287: Add support for Exasol Nano
 
 ## Dependency Updates
 
