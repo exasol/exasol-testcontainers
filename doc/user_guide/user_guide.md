@@ -148,14 +148,14 @@ If you omit the Docker image revision, it always defaults to `d1`.
 
 ### Using Exasol Nano
 
-Exasol Nano is a lightweight single-node Exasol runtime for JDBC-focused integration tests. Use
+[Exasol Nano](https://hub.docker.com/r/exasol/nano) is a lightweight single-node Exasol runtime for JDBC-focused integration tests. Use
 `ExasolNanoContainer` when you only need the SQL endpoint and want a smaller container than the full
 `exasol/docker-db` image.
 
 ```java
-import com.exasol.containers.ExasolNanoContainer;
+import com.exasol.containers.nano.ExasolNanoContainer;
 
-try (final ExasolNanoContainer<? extends ExasolNanoContainer<?>> container = new ExasolNanoContainer<>()) {
+try (final ExasolNanoContainer container = new ExasolNanoContainer()) {
     container.start();
     try (final Connection connection = container.createConnection()) {
         // run test SQL
@@ -166,7 +166,7 @@ try (final ExasolNanoContainer<? extends ExasolNanoContainer<?>> container = new
 The no-argument constructor uses `exasol/nano:latest`. You can provide another image reference explicitly:
 
 ```java
-new ExasolNanoContainer<>("exasol/nano:latest");
+new ExasolNanoContainer("exasol/nano:latest");
 ```
 
 `ExasolNanoContainer` exposes Nano's SQL port `8563` and Web UI port `8443`, configures the container with
