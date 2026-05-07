@@ -17,7 +17,6 @@ class ExasolNanoContainerIT {
         try (final ExasolNanoContainer container = new ExasolNanoContainer()) {
             container.start();
 
-            assertThat(container.getFirstMappedDatabasePort(), greaterThan(0));
             assertThat(container.getMappedPort(EXASOL_NANO_WEB_UI_PORT), greaterThan(0));
 
             try (final Connection connection = container.createConnection();

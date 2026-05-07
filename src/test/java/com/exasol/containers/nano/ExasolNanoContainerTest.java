@@ -6,7 +6,6 @@ import static com.exasol.containers.nano.ExasolNanoContainer.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.time.Duration;
 import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
@@ -76,22 +75,6 @@ class ExasolNanoContainerTest {
     }
 
     @Test
-    void omitsJdbcLoginTimeout() {
-        try (final ExasolNanoContainer container = new TestableExasolNanoContainer()) {
-            container.withJdbcLoginTimeout(null);
-            assertThat(container.getJdbcUrl(), equalTo("jdbc:exa:localhost:12345;validateservercertificate=0;"));
-        }
-    }
-
-    @Test
-    void setsJdbcLoginTimeout() {
-        try (final ExasolNanoContainer container = new TestableExasolNanoContainer()) {
-            container.withJdbcLoginTimeout(Duration.ofSeconds(3));
-            assertThat(container.getJdbcUrl(), containsString(";logintimeout=3000;"));
-        }
-    }
-
-    @Test
     void enablesReuse() {
         try (final ExasolNanoContainer container = new ExasolNanoContainer()) {
             container.withReuse(true);
@@ -110,11 +93,6 @@ class ExasolNanoContainerTest {
         @Override
         public String getHost() {
             return "localhost";
-        }
-
-        @Override
-        public Integer getFirstMappedDatabasePort() {
-            return 12345;
         }
     }
 }
