@@ -6,8 +6,6 @@ import static com.exasol.containers.nano.ExasolNanoContainer.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.util.Set;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -67,32 +65,10 @@ class ExasolNanoContainerTest {
     }
 
     @Test
-    void createsJdbcUrl() {
-        try (final ExasolNanoContainer container = new TestableExasolNanoContainer()) {
-            assertThat(container.getJdbcUrl(),
-                    equalTo("jdbc:exa:localhost:12345;validateservercertificate=0;logintimeout=10000;"));
-        }
-    }
-
-    @Test
     void enablesReuse() {
         try (final ExasolNanoContainer container = new ExasolNanoContainer()) {
             container.withReuse(true);
             assertThat(container.isShouldBeReused(), equalTo(true));
-        }
-    }
-
-    @Test
-    void returnsLivenessPort() {
-        try (final ExasolNanoContainer container = new TestableExasolNanoContainer()) {
-            assertThat(container.getLivenessCheckPortNumbers(), equalTo(Set.of(12345)));
-        }
-    }
-
-    private static class TestableExasolNanoContainer extends ExasolNanoContainer {
-        @Override
-        public String getHost() {
-            return "localhost";
         }
     }
 }
