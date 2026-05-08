@@ -56,15 +56,6 @@ class ExasolNanoContainerTest {
     }
 
     @Test
-    void overridesCredentials() {
-        try (final ExasolNanoContainer container = new ExasolNanoContainer()) {
-            container.withUsername("THE_USER").withPassword("THE_PASSWORD");
-            assertThat(container.getUsername(), equalTo("THE_USER"));
-            assertThat(container.getPassword(), equalTo("THE_PASSWORD"));
-        }
-    }
-
-    @Test
     void enablesReuse() {
         try (final ExasolNanoContainer container = new ExasolNanoContainer()) {
             container.withReuse(true);

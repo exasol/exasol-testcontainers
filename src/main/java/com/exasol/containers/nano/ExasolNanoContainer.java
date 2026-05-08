@@ -6,8 +6,6 @@ import java.sql.*;
 import java.time.Duration;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -24,8 +22,6 @@ import com.exasol.errorreporting.ExaError;
  */
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContainer> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolNanoContainer.class);
-
     /** Timeout for JDBC connection readiness checks. */
     private static final Duration CONNECTION_WAIT_TIMEOUT = Duration.ofSeconds(30);
 
@@ -50,9 +46,9 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
 
     static final Duration CONNECTION_TEST_RETRY_INTERVAL = Duration.ofMillis(500L);
 
-    private String username = DEFAULT_ADMIN_USER;
+    private static final String USERNAME = DEFAULT_ADMIN_USER;
     @SuppressWarnings("squid:S2068")
-    private String password = DEFAULT_SYS_USER_PASSWORD;
+    private static final String PASSWORD = DEFAULT_SYS_USER_PASSWORD;
 
     private final CertificateFingerprintExtractor logExtractor = new CertificateFingerprintExtractor();
 
@@ -97,12 +93,12 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
 
     @Override
     public String getUsername() {
-        return this.username;
+        return USERNAME;
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return PASSWORD;
     }
 
     /**
@@ -158,18 +154,6 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
     @Override
     protected String getTestQueryString() {
         return "SELECT 1";
-    }
-
-    @Override
-    public ExasolNanoContainer withUsername(final String username) {
-        this.username = username;
-        return self();
-    }
-
-    @Override
-    public ExasolNanoContainer withPassword(final String password) {
-        this.password = password;
-        return self();
     }
 
     @Override
