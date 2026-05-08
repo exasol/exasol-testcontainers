@@ -77,6 +77,11 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
         return JDBC_DRIVER_CLASS;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Get the JDBC URL including the TLS certificate fingerprint.
+     */
     @Override
     public String getJdbcUrl() {
         return String.format("jdbc:exa:%s:%d;fingerprint=%s", getHost(), getMappedPort(EXASOL_NANO_SQL_PORT), getCertificateFingerprint());
@@ -102,6 +107,16 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
     }
 
     /**
+     * Create a JDBC connection using default username and password.
+     *
+     * @return database connection
+     * @throws UncheckedSqlException if the connection cannot be established
+     */
+    public Connection createConnection() {
+        return createConnectionForUser(getUsername(), getPassword());
+    }
+
+    /**
      * Create a JDBC connection for the given user.
      *
      * @param user     username
@@ -124,6 +139,14 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The Exasol JDBC driver expects connection parameters to be separated by semicolons, e.g.
+     * {@code jdbc:exa:localhost:8563;fingerprint=abc123}. This method ensures that the provided query string is
+     * correctly appended to the base JDBC URL.
+     * </p>
+     */
     @Override
     protected String constructUrlForConnection(final String queryString) {
         final String baseUrl = getJdbcUrl();
@@ -139,16 +162,6 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
         return baseUrl.contains("?")
                 ? baseUrl + ";" + queryString.substring(1)
                 : baseUrl + queryString;
-    }
-
-    /**
-     * Create a JDBC connection using default username and password.
-     *
-     * @return database connection
-     * @throws UncheckedSqlException if the connection cannot be established
-     */
-    public Connection createConnection() {
-        return createConnectionForUser(getUsername(), getPassword());
     }
 
     @Override
