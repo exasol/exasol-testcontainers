@@ -6,7 +6,10 @@ import java.sql.*;
 import java.time.Duration;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 
 import com.exasol.containers.ExasolContainer;
@@ -22,8 +25,10 @@ import com.exasol.errorreporting.ExaError;
  */
 @SuppressWarnings("squid:S2160") // Superclass adds state but does not override equals() and hashCode().
 public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContainer> {
-    /** Timeout for JDBC connection readiness checks. */
-    private static final Duration CONNECTION_WAIT_TIMEOUT = Duration.ofSeconds(30);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExasolNanoContainer.class);
+
+    /** Timeout for container startup */
+    private static final Duration STARTUP_WAIT_TIMEOUT = Duration.ofSeconds(30);
 
     /** Reference name of the Exasol Nano Docker image */
     public static final String EXASOL_NANO_DOCKER_IMAGE_ID = "exasol/nano";
@@ -50,7 +55,7 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
     @SuppressWarnings("squid:S2068")
     private static final String PASSWORD = DEFAULT_SYS_USER_PASSWORD;
 
-    private final CertificateFingerprintExtractor logExtractor = new CertificateFingerprintExtractor();
+    private final CertificateFingerprintExtractor logExtractor;
 
     /**
      * Create a new Exasol Nano container with the default image {@code exasol/nano:latest}.
@@ -67,9 +72,9 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
     public ExasolNanoContainer(final String dockerImageName) {
         super(DockerImageName.parse(dockerImageName));
         addExposedPorts(EXASOL_NANO_SQL_PORT, EXASOL_NANO_WEB_UI_PORT);
-        withConnectTimeoutSeconds((int) CONNECTION_WAIT_TIMEOUT.toSeconds());
+        withConnectTimeoutSeconds((int) STARTUP_WAIT_TIMEOUT.toSeconds());
         withSharedMemorySize(EXASOL_NANO_SHARED_MEMORY_SIZE);
-        withLogConsumer(logExtractor);
+        this.logExtractor = new CertificateFingerprintExtractor(this::getLogs);
     }
 
     @Override
@@ -169,8 +174,19 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
         return "SELECT 1";
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * We override {@link JdbcDatabaseContainer#waitUntilContainerStarted()} because it tries to establish a JDBC connection
+     * to check if the container is ready. The JDBC URL contains the certificate fingerprint which is not known until
+     * the container has started. That's why we use a log-based wait strategy.
+     */
     @Override
     protected void waitUntilContainerStarted() {
-        logExtractor.waitForCertificateFingerprint(Duration.ofSeconds(30));
+        LOGGER.debug("Waiting {} until Exasol Nano container has started...", STARTUP_WAIT_TIMEOUT);
+        new LogMessageWaitStrategy()
+                .withRegEx(".*Database is now up and running.*")
+                .withStartupTimeout(STARTUP_WAIT_TIMEOUT)
+                .waitUntilReady(this);
     }
 }

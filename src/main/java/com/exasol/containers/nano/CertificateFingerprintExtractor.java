@@ -1,21 +1,17 @@
 package com.exasol.containers.nano;
 
-import java.time.Duration;
-import java.util.function.Consumer;
-import java.util.regex.Matcher;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.output.OutputFrame;
 
 import com.exasol.errorreporting.ExaError;
 
 /**
- * Extracts the certificate fingerprint from the Exasol Nano container logs
- * and provides a method to wait for it to become available.
+ * Extracts the certificate fingerprint from the Exasol Nano container logs, caching the result for subsequent calls.
  */
-class CertificateFingerprintExtractor implements Consumer<OutputFrame> {
+class CertificateFingerprintExtractor {
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateFingerprintExtractor.class);
 
     /**
@@ -27,54 +23,33 @@ class CertificateFingerprintExtractor implements Consumer<OutputFrame> {
      */
     private static final Pattern FINGERPRINT_PATTERN = Pattern.compile("/([0-9a-fA-F]{64}):\\d+");
 
-    private final StringBuilder log = new StringBuilder();
-    private volatile String certificateFingerprint;
+    private String certificateFingerprint;
 
-    @Override
-    public synchronized void accept(final OutputFrame frame) {
-        final String line = frame.getUtf8String();
-        this.log.append(line);
-        if (this.certificateFingerprint != null) {
-            return;
-        }
-        final Matcher matcher = FINGERPRINT_PATTERN.matcher(line);
-        if (matcher.find()) {
-            this.certificateFingerprint = matcher.group(1);
-        }
+    private final Supplier<String> logSupplier;
+
+    public CertificateFingerprintExtractor(final Supplier<String> logSupplier) {
+        this.logSupplier = logSupplier;
     }
 
-    synchronized String getCertificateFingerprint() {
+    String getCertificateFingerprint() {
         if (this.certificateFingerprint == null) {
-            throw new IllegalStateException(ExaError.messageBuilder("E-ETC-47")
-                    .message("Certificate fingerprint is not available. Complete log: {{log}}",
-                            this.log.toString())
-                    .ticketMitigation()
-                    .toString());
+            this.certificateFingerprint = extractFingerprintFromLogs();
         }
         return this.certificateFingerprint;
     }
 
-    void waitForCertificateFingerprint(final Duration timeout) {
-        LOGGER.debug("Waiting {} for certificate fingerprint to become available", timeout);
-        if (this.certificateFingerprint != null) {
-            return;
+    private String extractFingerprintFromLogs() {
+        final String logs = this.logSupplier.get();
+        final var matcher = FINGERPRINT_PATTERN.matcher(logs);
+        if (matcher.find()) {
+            final String fingerprint = matcher.group(1);
+            LOGGER.info("Extracted certificate fingerprint: {}", fingerprint);
+            return fingerprint;
+        } else {
+            throw new IllegalStateException(ExaError.messageBuilder("E-ETC-49")
+                    .message("Failed to extract certificate fingerprint from Exasol Nano logs: {{complete log}}.", logs)
+                    .ticketMitigation()
+                    .toString());
         }
-        final long endTime = System.currentTimeMillis() + timeout.toMillis();
-        while (System.currentTimeMillis() < endTime) {
-            if (this.certificateFingerprint != null) {
-                return;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IllegalStateException("Interrupted while waiting for certificate fingerprint", e);
-            }
-        }
-        throw new IllegalStateException(ExaError.messageBuilder("E-ETC-48")
-                .message("Timed out after {{timeout}} waiting for certificate fingerprint. Complete log: {{log}}",
-                        timeout, this.log.toString())
-                .ticketMitigation()
-                .toString());
     }
 }
