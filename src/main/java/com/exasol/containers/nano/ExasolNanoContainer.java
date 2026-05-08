@@ -84,7 +84,7 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
      */
     @Override
     public String getJdbcUrl() {
-        return String.format("jdbc:exa:%s:%d;fingerprint=%s", getHost(), getMappedPort(EXASOL_NANO_SQL_PORT), getCertificateFingerprint());
+        return String.format("jdbc:exa:%s:%d;fingerprint=%s;", getHost(), getMappedPort(EXASOL_NANO_SQL_PORT), getCertificateFingerprint());
     }
 
     /**
@@ -159,8 +159,8 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
             throw new IllegalArgumentException("The ';' character must be included");
         }
 
-        return baseUrl.contains("?")
-                ? baseUrl + ";" + queryString.substring(1)
+        return baseUrl.endsWith(";")
+                ? baseUrl + queryString.substring(1)
                 : baseUrl + queryString;
     }
 
