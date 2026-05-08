@@ -22,6 +22,7 @@ rules:
       # Generated workflows use boolean conditions like ${{ false }}
       - ci-build.yml
       - release.yml
+      - project-keeper-verify.yml
   secrets-inherit:
     ignore:
       # Required for passing slack webhooks
