@@ -54,7 +54,7 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
     @SuppressWarnings("squid:S2068")
     private String password = DEFAULT_SYS_USER_PASSWORD;
 
-    private final LogExtractor logExtractor = new LogExtractor();
+    private final CertificateFingerprintExtractor logExtractor = new CertificateFingerprintExtractor();
 
     /**
      * Create a new Exasol Nano container with the default image {@code exasol/nano:latest}.
@@ -108,7 +108,7 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
      * @return database connection
      * @throws UncheckedSqlException if the connection cannot be established
      */
-    public Connection createConnectionForUser(final String user, final String password) throws UncheckedSqlException {
+    public Connection createConnectionForUser(final String user, final String password) {
         final Driver driver = getJdbcDriverInstance();
         final Properties info = new Properties();
         info.put("user", user);
@@ -146,7 +146,7 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
      * @return database connection
      * @throws UncheckedSqlException if the connection cannot be established
      */
-    public Connection createConnection() throws UncheckedSqlException {
+    public Connection createConnection() {
         return createConnectionForUser(getUsername(), getPassword());
     }
 

@@ -11,9 +11,20 @@ import org.testcontainers.containers.output.OutputFrame;
 
 import com.exasol.errorreporting.ExaError;
 
-class LogExtractor implements Consumer<OutputFrame> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogExtractor.class);
-    // [INFO] "exaplus -u sys -P exasol -c localhost/f6cd8790e70f8a47ff9f606dbbfa48a3b8c6a92c2f1f89e2d27042970a46cff2:8563"
+/**
+ * Extracts the certificate fingerprint from the Exasol Nano container logs
+ * and provides a method to wait for it to become available.
+ */
+class CertificateFingerprintExtractor implements Consumer<OutputFrame> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CertificateFingerprintExtractor.class);
+
+    /**
+     * Matches lines containing the certificate fingerprint, e.g.:
+     * 
+     * <pre>
+     * [INFO] "exaplus -u sys -P exasol -c localhost/f6cd8790e70f8a47ff9f606dbbfa48a3b8c6a92c2f1f89e2d27042970a46cff2:8563"
+     * </pre>
+     */
     private static final Pattern FINGERPRINT_PATTERN = Pattern.compile("/([0-9a-fA-F]{64}):\\d+");
 
     private final StringBuilder log = new StringBuilder();
@@ -32,7 +43,7 @@ class LogExtractor implements Consumer<OutputFrame> {
         }
     }
 
-    public synchronized String getCertificateFingerprint() {
+    synchronized String getCertificateFingerprint() {
         if (this.certificateFingerprint == null) {
             throw new IllegalStateException(ExaError.messageBuilder("E-ETC-47")
                     .message("Certificate fingerprint is not available. Complete log: {{log}}",
@@ -43,8 +54,11 @@ class LogExtractor implements Consumer<OutputFrame> {
         return this.certificateFingerprint;
     }
 
-    public void waitForCertificateFingerprint(final Duration timeout) {
+    void waitForCertificateFingerprint(final Duration timeout) {
         LOGGER.debug("Waiting {} for certificate fingerprint to become available", timeout);
+        if (this.certificateFingerprint != null) {
+            return;
+        }
         final long endTime = System.currentTimeMillis() + timeout.toMillis();
         while (System.currentTimeMillis() < endTime) {
             if (this.certificateFingerprint != null) {

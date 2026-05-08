@@ -6,13 +6,14 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 
 import java.sql.*;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 @Tag("slow")
 class ExasolNanoContainerIT {
     @Test
+    @Timeout(value = 30, unit = TimeUnit.SECONDS)
     void startsAndProvidesJdbcConnection() throws SQLException {
         try (final ExasolNanoContainer container = new ExasolNanoContainer()) {
             container.start();
