@@ -36,3 +36,4 @@ pom.xml.versionsBackup
 /.apt_generated_tests/
 
 *.flattened-pom.xml
+/.serena/
