@@ -86,6 +86,11 @@ public class ExasolNanoContainer extends JdbcDatabaseContainer<ExasolNanoContain
         return String.format("jdbc:exa:%s:%d;fingerprint=%s", getHost(), getMappedPort(EXASOL_NANO_SQL_PORT), getCertificateFingerprint());
     }
 
+    /**
+     * Get the TLS certificate fingerprint of the Exasol Nano container.
+     * 
+     * @return the TLS certificate fingerprint
+     */
     public String getCertificateFingerprint() {
         return logExtractor.getCertificateFingerprint();
     }
