@@ -148,9 +148,7 @@ If you omit the Docker image revision, it always defaults to `d1`.
 
 ### Using Exasol Nano
 
-[Exasol Nano](https://hub.docker.com/r/exasol/nano) is a lightweight single-node Exasol runtime for JDBC-focused integration tests. Use
-`ExasolNanoContainer` when you only need the SQL endpoint and want a smaller container than the full
-`exasol/docker-db` image.
+[Exasol Nano](https://hub.docker.com/r/exasol/nano) is a lightweight single-node Exasol runtime for JDBC-focused integration tests. It usually starts up within 10 seconds. Use `ExasolNanoContainer` when you only need the SQL endpoint and want a smaller container than the full `exasol/docker-db` image.
 
 ```java
 import com.exasol.containers.nano.ExasolNanoContainer;
@@ -169,13 +167,12 @@ The no-argument constructor uses `exasol/nano:latest`. You can provide another i
 new ExasolNanoContainer("exasol/nano:latest");
 ```
 
-`ExasolNanoContainer` exposes Nano's SQL port `8563` and Web UI port `8443`, configures the container with
-1 GiB shared memory, and waits until `SELECT 1` succeeds over JDBC.
+The Nano container currently **does not** support the following APIs from `ExasolContainer`:
 
-The Nano container deliberately does not provide the `docker-db`-specific APIs from `ExasolContainer`, such as
-BucketFS access, UDF/SLC installation, EXAoperation emulation, cluster configuration access, driver management,
-database service control, RPC access, or support archive creation. Container reuse is the regular Testcontainers
-reuse behavior; unlike `ExasolContainer`, Nano does not perform automatic database cleanup before reuse.
+* Container reuse and automatic database cleanup
+* BucketFS access
+* UDFs / SLC installation
+* JDBC driver management
 
 ### Using Non-standard Port Numbers
 

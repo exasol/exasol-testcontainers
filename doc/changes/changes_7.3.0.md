@@ -4,7 +4,7 @@ Code name: Nano support
 
 ## Summary
 
-This release adds experimental support for the [Exasol Nano container](https://hub.docker.com/r/exasol/nano). See the [user guide](../user_guide/user_guide.md#using-exasol-nano) for usage instructions.
+This release adds basic support for the [Exasol Nano container](https://hub.docker.com/r/exasol/nano). See the [user guide](../user_guide/user_guide.md#using-exasol-nano) for usage instructions.
 
 ## Features
 
