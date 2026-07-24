@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>7.3.0</version>
+    <version>8.0.0</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId>
-            <version>2.28.2</version>
+            <version>2.28.5</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -71,14 +71,14 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
-            <version>26.2.7</version>
+            <version>26.2.8</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <!-- Don't upgrade, version 6 requires Java 17. -->
-            <version>5.13.4</version>
+            <version>5.14.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>udf-api-java</artifactId>
-            <version>1.0.8</version>
+            <version>1.0.10</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -177,7 +177,7 @@
             <plugin>
                 <groupId>com.exasol</groupId>
                 <artifactId>project-keeper-maven-plugin</artifactId>
-                <version>5.6.2</version>
+                <version>5.7.4</version>
                 <executions>
                     <execution>
                         <goals>
@@ -189,7 +189,7 @@
             <plugin>
                 <groupId>org.itsallcode</groupId>
                 <artifactId>openfasttrace-maven-plugin</artifactId>
-                <version>2.3.0</version>
+                <version>2.3.1</version>
                 <executions>
                     <execution>
                         <id>trace-requirements</id>
@@ -198,37 +198,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <useModulePath>false</useModulePath>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.basepom.maven</groupId>
-                <artifactId>duplicate-finder-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <printEqualFiles>true</printEqualFiles>
-                    <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
-                    <failBuildInCaseOfEqualContentConflict>true</failBuildInCaseOfEqualContentConflict>
-                    <failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
-                    <checkCompileClasspath>true</checkCompileClasspath>
-                    <checkRuntimeClasspath>true</checkRuntimeClasspath>
-                    <checkTestClasspath>false</checkTestClasspath>
-                    <preferLocal>true</preferLocal>
-                    <useResultFile>false</useResultFile>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -258,7 +227,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>7.3.0</version>
+        <version>8.0.0</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
