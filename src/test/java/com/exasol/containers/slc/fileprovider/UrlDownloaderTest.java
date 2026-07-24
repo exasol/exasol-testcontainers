@@ -39,8 +39,8 @@ class UrlDownloaderTest {
     // [utest->dsn~install-custom-slc.url~1]
     @Test
     void downloadFromValidUrl() throws IOException {
-        download("https://httpbin.org/html");
-        assertThat(Files.readString(targetPath), containsString("Herman Melville"));
+        download("https://example.com");
+        assertThat(Files.readString(targetPath), containsString("This domain is for use in documentation examples without needing permission"));
     }
 
     private void download(final String url) throws MalformedURLException {
