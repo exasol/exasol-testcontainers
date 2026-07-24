@@ -11,7 +11,7 @@
   "java.test.config": {
     "vmArgs": [
       "-Djava.util.logging.config.file=src/test/resources/logging.properties",
-      "-Dcom.exasol.dockerdb.image=2025.1.3"
+      "-Dcom.exasol.dockerdb.image=2026.1.0"
     ],
     "env": {
       "TESTCONTAINERS_RYUK_DISABLED": "true"

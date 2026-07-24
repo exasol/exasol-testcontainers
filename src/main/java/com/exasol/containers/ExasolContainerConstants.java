@@ -7,7 +7,7 @@ import java.nio.file.Path;
  */
 public final class ExasolContainerConstants {
     /** Default version of the Exasol Docker image */
-    public static final String EXASOL_DOCKER_IMAGE_VERSION = "2025.1.8";
+    public static final String EXASOL_DOCKER_IMAGE_VERSION = "2026.1.0";
 
     /** Reference name of the Exasol Docker image */
     public static final String EXASOL_DOCKER_IMAGE_ID = "exasol/docker-db";
@@ -46,7 +46,7 @@ public final class ExasolContainerConstants {
 
     /**
      * Default database port for Exasol versions in Docker before 7.0
-     * 
+     *
      * @deprecated Exasol versions before 7.0 are no longer supported in the latest version of this library.
      */
     @Deprecated(since = "7.3.0", forRemoval = true)
@@ -57,7 +57,7 @@ public final class ExasolContainerConstants {
 
     /**
      * Default BucketFS port for Exasol versions in Docker before 7.0
-     * 
+     *
      * @deprecated Exasol versions before 7.0 are no longer supported in the latest version of this library.
      */
     @Deprecated(since = "7.3.0", forRemoval = true)

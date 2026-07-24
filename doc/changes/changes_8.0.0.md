@@ -4,7 +4,7 @@ Code name: Fixed vulnerability CVE-2026-9563 in org.eclipse.parsson:parsson:jar:
 
 ## Summary
 
-**Breaking Changes**: Starting with this release, Exasol version 7.1 is no longer supported. Only the latest LTS version and the latest version are supported.
+**Breaking Changes**: Starting with this release, Exasol version 7.1 is no longer supported. Only the latest LTS version and the latest version are supported. The default Exasol version is now 2026.1.0.
 
 This release fixes the following vulnerability:
 
