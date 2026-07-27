@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 8.0.0, released 2026-07-24
+# Test Containers for Exasol on Docker 8.0.0, released 2026-07-27
 
 Code name: Fixed vulnerability CVE-2026-9563 in org.eclipse.parsson:parsson:jar:1.1.7:runtime
 
