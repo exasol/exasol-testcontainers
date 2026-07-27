@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>exasol-testcontainers</artifactId>
-    <version>8.0.0</version>
+    <version>8.0.1</version>
     <name>Test containers for Exasol on Docker</name>
     <description>This module provides abstraction for generation, startup, shutdown and use of an
         Exasol database running on Docker.</description>
@@ -66,14 +66,7 @@
         <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>bucketfs-java</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-        <dependency>
-            <!-- Upgrade transitive dependency of bucketfs-java to fix CVE-2026-9563. This can be removed once an updated bucketfs-java is available. -->
-            <groupId>org.eclipse.parsson</groupId>
-            <artifactId>parsson</artifactId>
-            <version>1.1.9</version>
-            <scope>runtime</scope>
+            <version>5.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.exasol</groupId>
@@ -234,7 +227,7 @@
     <parent>
         <artifactId>exasol-testcontainers-generated-parent</artifactId>
         <groupId>com.exasol</groupId>
-        <version>8.0.0</version>
+        <version>8.0.1</version>
         <relativePath>pk_generated_parent.pom</relativePath>
     </parent>
 </project>
