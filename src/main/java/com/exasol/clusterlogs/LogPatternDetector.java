@@ -90,6 +90,7 @@ public class LogPatternDetector {
     }
 
     private String escapedPattern() {
+        // BucketFS logs each backslash twice, so escape it accordingly for the AWK pattern.
         return this.pattern.replace("\\", "\\\\\\\\").replace("/", "\\/");
     }
 

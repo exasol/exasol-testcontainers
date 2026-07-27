@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -44,6 +44,6 @@ class UrlDownloaderTest {
     }
 
     private void download(final String url) throws MalformedURLException {
-        new UrlDownloader().download(new URL(url), targetPath);
+        new UrlDownloader().download(URI.create(url).toURL(), targetPath);
     }
 }
