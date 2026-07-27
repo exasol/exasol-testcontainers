@@ -20,6 +20,10 @@ In Eclipse Parsson published Maven Central artifacts before version 1.1.8, the J
 
 * #290: Fixed vulnerability CVE-2026-9563 in dependency `org.eclipse.parsson:parsson:jar:1.1.7:runtime`
 
+## Bugfixes
+
+* #293: Escape backslashes in BucketFS 8 synchronization log patterns
+
 ## Dependency Updates
 
 ### Compile Dependency Updates

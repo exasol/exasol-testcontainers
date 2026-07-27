@@ -3,6 +3,8 @@ package com.exasol.clusterlogs;
 import static com.exasol.testutil.VarArgsMatcher.anyStrings;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.io.UncheckedIOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.ExecResultFactory;
@@ -70,5 +73,24 @@ class LogPatternDetectorTest {
     void describe() {
         assertThat(this.detector.describe(), equalTo(
                 "Scanning for log message pattern \"pattern\" in \"path/logfilename\", using logEntryVerifier."));
+    }
+
+    @Test
+    void escapesBackslashesForAwkPattern() throws IOException, InterruptedException {
+        final LogPatternDetector backslashDetector = LogPatternDetector.builder()
+                .container(this.containerMock)
+                .logPath(LOG_PATH)
+                .logNamePattern(LOG_NAME_PATTERN)
+                .pattern("this\\is\\an\\illegal\\URL")
+                .build();
+        when(this.containerMock.execInContainer(anyStrings())).thenReturn(ExecResultFactory.result(0, "", ""));
+        final ArgumentCaptor<String> awkCommand = ArgumentCaptor.forClass(String.class);
+
+        backslashDetector.isPatternPresent();
+
+        verify(this.containerMock).execInContainer(eq("find"), eq(LOG_PATH), eq("-name"), eq(LOG_NAME_PATTERN),
+                eq("-exec"), eq("awk"), awkCommand.capture(), eq("{}"), eq("+"));
+        assertThat(awkCommand.getValue(),
+                equalTo("(NR>0)&&/this\\\\\\\\is\\\\\\\\an\\\\\\\\illegal\\\\\\\\URL/{a=$0}END{print a}"));
     }
 }

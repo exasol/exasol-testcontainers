@@ -9,7 +9,7 @@ build:
   freeDiskSpace: true
   exasolDbVersions:
     - "2026.1.0"
-    - "2025.1.17"
+    - "2025.1.13"
   workflows:
     - name: ci-build.yml
       stepCustomizations:

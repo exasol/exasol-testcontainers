@@ -78,15 +78,19 @@ public class LogPatternDetector {
      * @throws SshException         if using SSH access to docker container and remote execution of command failed
      */
     public boolean isPatternPresent() throws IOException, InterruptedException, SshException {
-        final Container.ExecResult result = this.container.execInContainer("find", this.logPath, //
-                "-name", this.logNamePattern, "-exec", "awk", //
-                awkCommand(this.afterLine, this.pattern.replace("/", "\\/")), //
+        final Container.ExecResult result = this.container.execInContainer("find", this.logPath,
+                "-name", this.logNamePattern, "-exec", "awk",
+                awkCommand(this.afterLine, escapedPattern()),
                 "{}", "+");
         if (result.getExitCode() == ExitCode.OK) {
             return this.logEntryVerifier.isLogMessageFound(result.getStdout());
         } else {
             return false;
         }
+    }
+
+    private String escapedPattern() {
+        return this.pattern.replace("\\", "\\\\\\\\").replace("/", "\\/");
     }
 
     private String awkCommand(final long afterLine, final String regex) {
