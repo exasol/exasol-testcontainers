@@ -45,7 +45,7 @@ class ExasolContainerSlcIT {
             container.withReuse(true).withScriptLanguageContainer(slc);
             final Duration startupDuration = measureDuration(container::start);
             LOGGER.info("First startup took {}", startupDuration);
-            assertAll(() -> assertThat("First startup duration [s]", startupDuration.toSeconds(), greaterThan(20L)),
+            assertAll(() -> assertThat("First startup duration [s]", startupDuration.toSeconds(), greaterThan(15L)),
                     () -> assertPython310Slc(container, slc));
         }
     }

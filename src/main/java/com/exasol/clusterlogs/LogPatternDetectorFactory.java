@@ -6,7 +6,6 @@ import com.exasol.bucketfs.monitor.BucketFsMonitor.State;
 import com.exasol.bucketfs.monitor.LineCountRetriever;
 import com.exasol.bucketfs.testcontainers.LogPatternProvider;
 import com.exasol.containers.ExasolContainer;
-import com.exasol.containers.ExasolDockerImageReference;
 
 /**
  * Factory for log entry scanners.
@@ -76,9 +75,6 @@ public class LogPatternDetectorFactory {
      * @return {@link LogPatternProvider} depending on major version of current docker image
      */
     public LogPatternProvider getLogPatternProvider() {
-        final ExasolDockerImageReference image = this.container.getDockerImageReference();
-        return (image.hasMajor() && (image.getMajor() < 8)) //
-                ? LogPatternProvider.DEFAULT
-                : LogPatternProvider.VERSION_8;
+        return LogPatternProvider.DEFAULT;
     }
 }
