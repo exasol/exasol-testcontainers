@@ -69,6 +69,13 @@
             <version>4.0.0</version>
         </dependency>
         <dependency>
+            <!-- Upgrade transitive dependency of bucketfs-java to fix CVE-2026-9563. This can be removed once an updated bucketfs-java is available. -->
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <version>1.1.9</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>com.exasol</groupId>
             <artifactId>exasol-jdbc</artifactId>
             <version>26.2.8</version>

@@ -33,6 +33,7 @@ In Eclipse Parsson published Maven Central artifacts before version 1.1.8, the J
 ### Runtime Dependency Updates
 
 * Updated `com.exasol:exasol-jdbc:26.2.7` to `26.2.8`
+* Added `org.eclipse.parsson:parsson:1.1.9`
 
 ### Test Dependency Updates
 
