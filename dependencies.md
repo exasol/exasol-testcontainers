@@ -95,7 +95,7 @@
 [26]: https://github.com/exasol/hamcrest-resultset-matcher/blob/main/LICENSE
 [27]: http://www.slf4j.org
 [28]: https://www.exasol.com/
-[29]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/26.2.8/exasol-jdbc-26.2.8-license.txt
+[29]: https://repo1.maven.org/maven2/com/exasol/exasol-jdbc/26.2.9/exasol-jdbc-26.2.9-license.txt
 [30]: https://docs.sonarsource.com/sonarqube-server/latest/extension-guide/developing-a-plugin/plugin-basics/sonar-scanner-maven/sonar-maven-plugin/
 [31]: http://www.gnu.org/licenses/lgpl.txt
 [32]: https://maven.apache.org/plugins/maven-toolchains-plugin/
