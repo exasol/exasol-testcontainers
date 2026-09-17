@@ -43,14 +43,14 @@ final class SshPortForwarder implements AutoCloseable {
         try {
             final ExecResult result = this.ssh.execute(PORT_FINDER_COMMAND);
             if (result.getExitCode() != 0) {
-                throw new SshException(ExaError.messageBuilder("E-ETC-51") //
-                        .message("Failed to find a free TCP port in the Exasol database: {{error}}") //
+                throw new SshException(ExaError.messageBuilder("E-ETC-51")
+                        .message("Failed to find a free TCP port in the Exasol database: {{error}}")
                         .parameter("error", result.getStderr()).ticketMitigation().toString());
             }
             return Integer.parseInt(result.getStdout().trim());
         } catch (final IOException | NumberFormatException exception) {
-            throw new SshException(ExaError.messageBuilder("E-ETC-51") //
-                    .message("Failed to find a free TCP port in the Exasol database.") //
+            throw new SshException(ExaError.messageBuilder("E-ETC-51")
+                    .message("Failed to find a free TCP port in the Exasol database.")
                     .ticketMitigation().toString(), exception);
         }
     }
