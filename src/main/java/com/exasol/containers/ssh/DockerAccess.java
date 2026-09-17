@@ -12,7 +12,6 @@ import org.testcontainers.containers.Container.ExecResult;
 
 import com.exasol.containers.ExasolContainerConstants;
 import com.exasol.errorreporting.ExaError;
-import com.jcraft.jsch.Session;
 
 /**
  * <ul>
@@ -98,7 +97,7 @@ public final class DockerAccess {
     // [impl->dsn~access-via-ssh~1]
     public synchronized Ssh getSsh() {
         if (this.cachedSshConnection == null) {
-            this.cachedSshConnection = createSshConnection();
+            this.cachedSshConnection = new Ssh(createSessionBuilder().build());
         }
         return this.cachedSshConnection;
     }
@@ -110,7 +109,7 @@ public final class DockerAccess {
      * @return address visible from the database
      */
     public synchronized InetSocketAddress makeLocalTcpServiceAccessibleFromDatabase(final int localPort) {
-        final SshPortForwarder portForwarder = new SshPortForwarder(createSshConnection());
+        final SshPortForwarder portForwarder = new SshPortForwarder(createSessionBuilder());
         try {
             final int remotePort = portForwarder.addReversePortForwarding(localPort);
             this.portForwarders.add(portForwarder);
@@ -127,12 +126,10 @@ public final class DockerAccess {
         this.portForwarders.clear();
     }
 
-    private Ssh createSshConnection() {
+    private SessionBuilder createSessionBuilder() {
         createTemporaryCredentialDirectoryIfMissing();
-        final Session session = this.sessionBuilderProvider.get()
-                .identity(this.sshKeys.getIdentityProvider())
-                .build();
-        return new Ssh(session);
+        return this.sessionBuilderProvider.get()
+                .identity(this.sshKeys.getIdentityProvider());
     }
 
     // [impl->dsn~auto-create-directory-for-temporary-credentials~1]
