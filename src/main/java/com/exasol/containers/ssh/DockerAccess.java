@@ -1,7 +1,10 @@
 package com.exasol.containers.ssh;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +31,7 @@ public final class DockerAccess {
     private Mode cachedAccessMode = Mode.UNKNOWN;
     // The SSH connection is created lazily and cached for later use.
     private Ssh cachedSshConnection = null;
+    private final List<SshPortForwarder> portForwarders = new ArrayList<>();
 
     enum Mode {
         UNKNOWN, SSH, DOCKER_EXEC
@@ -42,7 +46,7 @@ public final class DockerAccess {
 
     /**
      * Get the SSH key pair.
-     * 
+     *
      * @return SSH public / private key pair
      */
     public SshKeys getSshKeys() {
@@ -51,7 +55,7 @@ public final class DockerAccess {
 
     /**
      * Check whether we can use {@code docker exec} to access the docker container.
-     * 
+     *
      * @return {@code true} if docker container supports docker exec
      */
     // [impl->dsn~detect-if-docker-exec-is-possible~1]
@@ -65,7 +69,7 @@ public final class DockerAccess {
      * Note that the mode is determined upon the first call of this function and then cached to improve the performance
      * of later uses.
      * </p>
-     * 
+     *
      * @return either {@link Mode#DOCKER_EXEC} or {@link Mode#SSH}.
      */
     synchronized Mode getMode() {
@@ -94,13 +98,41 @@ public final class DockerAccess {
     // [impl->dsn~access-via-ssh~1]
     public synchronized Ssh getSsh() {
         if (this.cachedSshConnection == null) {
-            createTemporaryCredentialDirectoryIfMissing();
-            final Session session = this.sessionBuilderProvider.get() //
-                    .identity(this.sshKeys.getIdentityProvider()) //
-                    .build();
-            this.cachedSshConnection = new Ssh(session);
+            this.cachedSshConnection = createSshConnection();
         }
         return this.cachedSshConnection;
+    }
+
+    /**
+     * Make a TCP service on the local test host available from the database through reverse SSH forwarding.
+     *
+     * @param localPort port of the service on the local test host
+     * @return address visible from the database
+     */
+    public synchronized InetSocketAddress makeLocalTcpServiceAccessibleFromDatabase(final int localPort) {
+        final SshPortForwarder portForwarder = new SshPortForwarder(createSshConnection());
+        try {
+            final int remotePort = portForwarder.addReversePortForwarding(localPort);
+            this.portForwarders.add(portForwarder);
+            return new InetSocketAddress("localhost", remotePort);
+        } catch (final RuntimeException exception) {
+            portForwarder.close();
+            throw exception;
+        }
+    }
+
+    /** Close all reverse SSH forwarding connections. */
+    public synchronized void closePortForwarders() {
+        this.portForwarders.forEach(SshPortForwarder::close);
+        this.portForwarders.clear();
+    }
+
+    private Ssh createSshConnection() {
+        createTemporaryCredentialDirectoryIfMissing();
+        final Session session = this.sessionBuilderProvider.get()
+                .identity(this.sshKeys.getIdentityProvider())
+                .build();
+        return new Ssh(session);
     }
 
     // [impl->dsn~auto-create-directory-for-temporary-credentials~1]
@@ -163,7 +195,7 @@ public final class DockerAccess {
 
         /**
          * Set the {@link SessionBuilderProvider}.
-         * 
+         *
          * @param sessionBuilderProvider provide an instance of {@link SessionBuilder} to build a session to instantiate
          *                               {@link Ssh} in method {@link DockerAccess#getSsh()}.
          * @return this for fluent programming
@@ -179,7 +211,7 @@ public final class DockerAccess {
          * Checks the existence of the cluster configuration file to determine if {@code docker exec} can be used to
          * access the docker container.
          * </p>
-         * 
+         *
          * @param dockerProbe {@link DockerProbe} used to check for existence of file
          *                    {@link ExasolContainerConstants#CLUSTER_CONFIGURATION_PATH}.
          * @return this for fluent programming
@@ -191,7 +223,7 @@ public final class DockerAccess {
 
         /**
          * Set the temporary SSH keys.
-         * 
+         *
          * @param sshKeys pair of public and private SSH key to use for SSH connection
          * @return this for fluent programming
          */
@@ -211,7 +243,7 @@ public final class DockerAccess {
 
         /**
          * Set the directory in which temporary credentials are stored.
-         * 
+         *
          * @param temporaryCredentialsDirectory directory in which to store temporary credentials
          * @return this for fluent programming
          */

@@ -1,12 +1,14 @@
-# Test Containers for Exasol on Docker 8.1.0, released 2026-??-??
+# Test Containers for Exasol on Docker 8.1.0, released 2026-09-17
 
-Code name:
+Code name: Reverse Port Forwarding
 
 ## Summary
 
+This release adds reverse SSH port forwarding that makes local TCP services available from Exasol UDFs.
+
 ## Features
 
-* ISSUE_NUMBER: description
+* #297: Added reverse SSH port forwarding that makes local TCP services available from Exasol UDFs.
 
 ## Dependency Updates
 

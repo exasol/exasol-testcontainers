@@ -58,6 +58,18 @@ class SshTest {
         verify(session).disconnect();
     }
 
+    // [utest->dsn~reverse-ssh-port-forwarding-to-test-host~1]
+    @Test
+    void testAddReversePortForwarding() throws JSchException {
+        final Session session = mock(Session.class);
+        when(session.isConnected()).thenReturn(true);
+        final Ssh ssh = new Ssh(session);
+
+        ssh.addReversePortForwarding("*", 4321, "localhost", 1234);
+
+        verify(session).setPortForwardingR("*", 4321, "localhost", 1234);
+    }
+
     @Test
     void execute() throws JSchException, IOException {
         final Ssh ssh = mock(Ssh.class);

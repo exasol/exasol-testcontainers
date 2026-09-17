@@ -82,6 +82,10 @@ The `ExasolDriverManager` is responsible for installing and uninstalling drivers
 
 The `HostIpDetector` detects the IP address of the host the container is running on.
 
+## `SshPortForwarder`
+
+The `SshPortForwarder` creates reverse SSH port forwardings from the database to services on the local test host.
+
 ## `SupportInformationRetriever`
 
 The `SupportInformationRetriever` module provides access to cluster logs, configuration and core-dumps.
@@ -290,6 +294,17 @@ Covers:
 * [`req~reading-the-host-ip-address~1`](system_requirements.md#reading-the-host-ip-address)
 
 Needs: impl, itest
+
+### Reverse SSH Port Forwarding to the Test Host
+`dsn~reverse-ssh-port-forwarding-to-test-host~1`
+
+The `ExasolContainer` creates a dedicated `SshPortForwarder` for each requested local TCP service. The forwarder uses the container's mapped SSH endpoint and generated credentials to reserve a free database-side port, bind it to all database interfaces, and forward it to the service on the active test host. It returns the database-visible address as `localhost:<allocated-port>` and closes all forwarding sessions when the container stops, including when reuse leaves the database container running.
+
+Covers:
+
+* [`req~accessing-local-tcp-services-from-database~1`](system_requirements.md#accessing-local-tcp-services-from-the-database)
+
+Needs: impl, utest, itest
 
 ### Support Archive Retrieval
 
