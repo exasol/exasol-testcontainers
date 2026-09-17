@@ -53,7 +53,7 @@ final class SshPortForwarder implements AutoCloseable {
             }
             return Integer.parseInt(result.getStdout().trim());
         } catch (final IOException | NumberFormatException exception) {
-            throw new SshException(ExaError.messageBuilder("E-ETC-51")
+            throw new SshException(ExaError.messageBuilder("E-ETC-52")
                     .message("Failed to find a free TCP port in the Exasol database.")
                     .ticketMitigation().toString(), exception);
         }
