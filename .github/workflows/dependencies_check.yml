@@ -33,7 +33,7 @@ jobs:
         }
       - name: Set up JDKs
         id: setup-jdks
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: |-
@@ -41,8 +41,8 @@ jobs:
             21
           cache: maven
           server-id: ossindex
-          server-username: OSSINDEX_USERNAME
-          server-password: OSSINDEX_API_TOKEN
+          server-username-env-var: OSSINDEX_USERNAME
+          server-password-env-var: OSSINDEX_API_TOKEN
       - name: Generate ossindex report
         id: ossindex-report
         run: |
@@ -82,7 +82,7 @@ jobs:
       contents: write,
       pull-requests: write
     }
-    uses: ./.github/workflows/dependencies_update.yml
+    uses: $/.github/workflows/dependencies_update.yml
     with: {
       vulnerability_issues: '${{ needs.report_security_issues.outputs.created-issues }}'
     }

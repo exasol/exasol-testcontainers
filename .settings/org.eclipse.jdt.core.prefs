@@ -258,6 +258,7 @@ org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_local_variabl
 org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_method=insert
 org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_package=insert
 org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_parameter=do not insert
+org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_record_parameter=do not insert
 org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_type=insert
 org.eclipse.jdt.core.formatter.insert_new_line_after_label=do not insert
 org.eclipse.jdt.core.formatter.insert_new_line_after_opening_brace_in_array_initializer=do not insert
@@ -508,7 +509,7 @@ org.eclipse.jdt.core.formatter.put_text_block_quotes_on_new_line=false
 org.eclipse.jdt.core.formatter.tabulation.char=space
 org.eclipse.jdt.core.formatter.tabulation.size=4
 org.eclipse.jdt.core.formatter.text_block_indentation=0
-org.eclipse.jdt.core.formatter.use_on_off_tags=false
+org.eclipse.jdt.core.formatter.use_on_off_tags=true
 org.eclipse.jdt.core.formatter.use_tabs_only_for_leading_indentations=true
 org.eclipse.jdt.core.formatter.wrap_before_additive_operator=true
 org.eclipse.jdt.core.formatter.wrap_before_assertion_message_operator=true
