@@ -18,7 +18,7 @@ final class SshPortForwarder implements AutoCloseable {
      * @param sessionBuilder the session builder used to create the SSH session
      */
     SshPortForwarder(final SessionBuilder sessionBuilder) {
-        this(new Ssh(sessionBuilder.build()));
+        this(new Ssh(sessionBuilder));
     }
 
     // Visible for testing purposes.

@@ -703,6 +703,14 @@ Set system property `jdk.internal.httpclient.disableHostnameVerificationdokument
 
 Use method [setHostnameVerifier()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/net/ssl/HttpsURLConnection.html#setHostnameVerifier(javax.net.ssl.HostnameVerifier)) to set a custom hostname verifier.
 
+## Why SSH Connection Retries Require New Sessions
+
+The Exasol SSH service can reject the first authentication attempt while it is becoming ready. ETC retries that connection attempt for up to one minute.
+
+JSch sessions cannot be reused after a failed `connect()`. Reusing one causes subsequent attempts to fail with `Packet corrupt`, hiding the recoverable initial authentication failure.
+
+When ETC owns the session through a `SessionBuilder`, it replaces the failed session before each retry. Once connected, `SshPortForwarder` requests a remote port of `0`, allowing the SSH server to allocate a free port and report it to ETC. This eliminates the former database-side Python port probe.
+
 # Quality Scenarios
 
 # Risks
