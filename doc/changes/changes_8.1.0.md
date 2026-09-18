@@ -1,4 +1,4 @@
-# Test Containers for Exasol on Docker 8.1.0, released 2026-09-17
+# Test Containers for Exasol on Docker 8.1.0, released 2026-09-18
 
 Code name: Reverse Port Forwarding
 
