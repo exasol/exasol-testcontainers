@@ -33,13 +33,13 @@ jobs:
       fail-fast: false
       matrix:
         exasol_db_version: [
-          2026.1.1,
+          2026.1.2,
           2025.1.16,
           8.29.13
         ]
         
     env: {
-      DEFAULT_EXASOL_DB_VERSION: 2026.1.1
+      DEFAULT_EXASOL_DB_VERSION: 2026.1.2
     }
     steps:
       - name: Free Disk Space
@@ -57,7 +57,7 @@ jobs:
         }
       - name: Set up JDKs
         id: setup-java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: |-
@@ -96,7 +96,7 @@ jobs:
         run: |
           mvn --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
               -DossindexSkip=true \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              --no-transfer-progress \
               -DtrimStackTrace=false \
               -Dsonar.token=$SONAR_TOKEN
         env: {
@@ -185,7 +185,7 @@ jobs:
         }
       - name: Set up JDK 17
         id: setup-java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with: {
           distribution: temurin,
           java-version: '17',
@@ -195,7 +195,7 @@ jobs:
         id: build-next-java
         run: |
           mvn --batch-mode clean package -DtrimStackTrace=false -Djava.version=17 \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              --no-transfer-progress \
               -DossindexSkip=true
   ossindex:
     runs-on: ubuntu-latest
@@ -219,7 +219,7 @@ jobs:
         }
       - name: Set up JDKs
         id: setup-java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: |-
@@ -227,15 +227,15 @@ jobs:
             21
           cache: maven
           server-id: ossindex
-          server-username: OSSINDEX_USERNAME
-          server-password: OSSINDEX_API_TOKEN
+          server-username-env-var: OSSINDEX_USERNAME
+          server-password-env-var: OSSINDEX_API_TOKEN
       - name: Run Ossindex
         id: ossindex
         run: |
           mvn --batch-mode test-compile \
               org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
               org.sonatype.ossindex.maven:ossindex-maven-plugin:audit-aggregate \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+              --no-transfer-progress
         env: {
           OSSINDEX_USERNAME: '${{ secrets.OSSINDEX_USERNAME }}',
           OSSINDEX_API_TOKEN: '${{ secrets.OSSINDEX_API_TOKEN }}'
@@ -247,9 +247,7 @@ jobs:
         shell: bash
       }
     permissions: {
-      security-events: write,
-      contents: read,
-      actions: read
+      contents: read
     }
     concurrency: {
       group: '${{ github.workflow }}-github-actions-linter-${{ github.ref }}',
@@ -262,9 +260,9 @@ jobs:
         with: {
           persist-credentials: false
         }
-      - name: Lint GitHub actions with Zizmore
+      - name: Lint GitHub actions with Zizmor
         id: lint-github-actions
-        uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482
         with: {
           advanced-security: false
         }
@@ -297,7 +295,7 @@ jobs:
         }
       - name: Set up JDKs
         id: setup-java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: |-
@@ -332,7 +330,7 @@ jobs:
       actions: read,
       issues: read
     }
-    uses: ./.github/workflows/release.yml
+    uses: $/.github/workflows/release.yml
     with: {
       started-from-ci: true,
       maven-central-auto-publish: true

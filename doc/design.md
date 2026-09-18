@@ -82,6 +82,10 @@ The `ExasolDriverManager` is responsible for installing and uninstalling drivers
 
 The `HostIpDetector` detects the IP address of the host the container is running on.
 
+## `SshPortForwarder`
+
+The `SshPortForwarder` creates reverse SSH port forwardings from the database to services on the local test host.
+
 ## `SupportInformationRetriever`
 
 The `SupportInformationRetriever` module provides access to cluster logs, configuration and core-dumps.
@@ -290,6 +294,17 @@ Covers:
 * [`req~reading-the-host-ip-address~1`](system_requirements.md#reading-the-host-ip-address)
 
 Needs: impl, itest
+
+### Reverse SSH Port Forwarding to the Test Host
+`dsn~reverse-ssh-port-forwarding-to-test-host~1`
+
+The `ExasolContainer` creates a dedicated `SshPortForwarder` for each requested local TCP service. The forwarder uses the container's mapped SSH endpoint and generated credentials to reserve a free database-side port, bind it to all database interfaces, and forward it to the service on the active test host. It returns the database-visible address as `localhost:<allocated-port>` and closes all forwarding sessions when the container stops, including when reuse leaves the database container running.
+
+Covers:
+
+* [`req~accessing-local-tcp-services-from-database~1`](system_requirements.md#accessing-local-tcp-services-from-the-database)
+
+Needs: impl, utest, itest
 
 ### Support Archive Retrieval
 
@@ -687,6 +702,14 @@ Set system property `jdk.internal.httpclient.disableHostnameVerificationdokument
 #### `javax.net.ssl.HttpsURLConnection`
 
 Use method [setHostnameVerifier()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/javax/net/ssl/HttpsURLConnection.html#setHostnameVerifier(javax.net.ssl.HostnameVerifier)) to set a custom hostname verifier.
+
+## Why SSH Connection Retries Require New Sessions
+
+The Exasol SSH service can reject the first authentication attempt while it is becoming ready. ETC retries that connection attempt for up to one minute.
+
+JSch sessions cannot be reused after a failed `connect()`. Reusing one causes subsequent attempts to fail with `Packet corrupt`, hiding the recoverable initial authentication failure.
+
+When ETC owns the session through a `SessionBuilder`, it replaces the failed session before each retry. Once connected, `SshPortForwarder` requests a remote port of `0`, allowing the SSH server to allocate a free port and report it to ETC. This eliminates the former database-side Python port probe.
 
 # Quality Scenarios
 

@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,8 @@ import com.jcraft.jsch.*;
 public class Ssh {
     private static final Logger LOGGER = LoggerFactory.getLogger(Ssh.class);
 
-    private final Session session;
+    private Session session;
+    private final Supplier<Session> sessionProvider;
     private Charset charset = StandardCharsets.UTF_8;
 
     /**
@@ -34,6 +36,12 @@ public class Ssh {
      */
     public Ssh(final Session session) {
         this.session = session;
+        this.sessionProvider = null;
+    }
+
+    Ssh(final SessionBuilder sessionBuilder) {
+        this.session = sessionBuilder.build();
+        this.sessionProvider = sessionBuilder::build;
     }
 
     /**
@@ -41,6 +49,21 @@ public class Ssh {
      */
     public void disconnect() {
         this.session.disconnect();
+    }
+
+    /**
+     * Add a reverse TCP port forwarding.
+     *
+     * @param bindAddress address on the remote host on which to accept connections
+     * @param localPort   local port to which accepted connections are forwarded
+     * @return port assigned on the remote host
+     * @throws JSchException if setting up the forwarding fails
+     */
+    int addReversePortForwarding(final String bindAddress, final int localPort) throws JSchException {
+        if (!this.session.isConnected()) {
+            connectWithRetry();
+        }
+        return this.session.setPortForwardingR(bindAddress + ":0:localhost:" + localPort);
     }
 
     /**
@@ -146,7 +169,19 @@ public class Ssh {
         final Duration timeout = Duration.ofSeconds(60);
         LOGGER.info("Trying to open SSH channel to docker container with timeout {}", timeout);
         final Retry<JSchException> retry = new Retry<>(JSchException.class, timeout);
-        retry.retry(this.session::connect);
+        retry.retry(this::connect);
         LOGGER.info("SSH channel successfully opened");
+    }
+
+    private void connect() throws JSchException {
+        try {
+            this.session.connect();
+        } catch (final JSchException exception) {
+            if (this.sessionProvider != null) {
+                this.session.disconnect();
+                this.session = this.sessionProvider.get();
+            }
+            throw exception;
+        }
     }
 }

@@ -12,6 +12,7 @@ import static com.exasol.containers.status.ServiceStatus.*;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -857,6 +858,22 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     }
 
     /**
+     * Make a TCP service running on the local test host available from the Exasol database.
+     * <p>
+     * This is useful for services used by UDFs, such as code-coverage collectors, log collectors, and remote
+     * debuggers. The returned address is reachable from the database and points to the supplied local port on this
+     * test host.
+     * </p>
+     *
+     * @param localPort port of the service running on the local test host
+     * @return address under which the service is available from the Exasol database
+     */
+    // [impl->dsn~reverse-ssh-port-forwarding-to-test-host~1]
+    public InetSocketAddress makeLocalTcpServiceAccessibleFromDatabase(final int localPort) {
+        return this.dockerAccess.makeLocalTcpServiceAccessibleFromDatabase(localPort);
+    }
+
+    /**
      * Get the time zone.
      *
      * @return time zone
@@ -888,6 +905,9 @@ public class ExasolContainer<T extends ExasolContainer<T>> extends JdbcDatabaseC
     // [impl->dsn~keep-container-running-if-reuse~1]
     @Override
     public void stop() {
+        if (this.dockerAccess != null) {
+            this.dockerAccess.closePortForwarders();
+        }
         if (isShouldBeReused() && TestcontainersConfiguration.getInstance().environmentSupportsReuse()) {
             LOGGER.info("Leaving container running since reuse is enabled. " //
                     + "Don't forget to stop and remove the container manually using docker rm -f CONTAINER_ID.");

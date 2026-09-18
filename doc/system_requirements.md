@@ -245,6 +245,21 @@ Covers:
 
 Needs: dsn
 
+#### Accessing Local TCP Services From the Database
+`req~accessing-local-tcp-services-from-database~1`
+
+Integrators can make a TCP service running on their test host accessible from the Exasol database and its UDFs.
+
+Rationale:
+
+UDF integration tests need host-side services for code coverage collection, log collection and remote debugging. The host IP address can resolve to the UDF VM when Docker runs through Lima, and the Testcontainers host alias is not available in UDF VMs.
+
+Covers:
+
+* [`feat~docker-based-exasol-instance~1`](#docker-based-exasol-instance)
+
+Needs: dsn
+
 #### Configuring the Directory for Temporary Credentials
 `req~configuring-the-directory-for-temporary-credentials~1`
 

@@ -475,6 +475,17 @@ The effect is the same, but you get better decoupling from your code and need to
 
 ## Networking
 
+### Accessing a Local TCP Service From a UDF
+
+Use `makeLocalTcpServiceAccessibleFromDatabase()` when a UDF needs to connect to a TCP service on the test host, for example a JaCoCo collector, a UDF log collector, or a remote debugger. The returned address is reachable from the database and UDF VMs, including when Docker is backed by Lima.
+
+```java
+final InetSocketAddress collectorAddress = container
+        .makeLocalTcpServiceAccessibleFromDatabase(collectorPort);
+```
+
+Pass `collectorAddress.getHostString()` and `collectorAddress.getPort()` to the UDF. The forwarding connection is closed automatically when the `ExasolContainer` is stopped.
+
 ### Running the Exasol Test Container in a Docker Network
 
 For integration tests you sometimes need to connect services via a network. In case of test containers a convenient way is to use the docker network feature.
