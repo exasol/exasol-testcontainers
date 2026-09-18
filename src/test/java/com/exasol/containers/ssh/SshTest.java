@@ -65,9 +65,10 @@ class SshTest {
         when(session.isConnected()).thenReturn(true);
         final Ssh ssh = new Ssh(session);
 
-        ssh.addReversePortForwarding("*", 4321, "localhost", 1234);
+        when(session.setPortForwardingR("*:0:localhost:1234")).thenReturn(4321);
 
-        verify(session).setPortForwardingR("*", 4321, "localhost", 1234);
+        assertThat(ssh.addReversePortForwarding("*", 1234), equalTo(4321));
+        verify(session).setPortForwardingR("*:0:localhost:1234");
     }
 
     @Test

@@ -47,17 +47,15 @@ public class Ssh {
      * Add a reverse TCP port forwarding.
      *
      * @param bindAddress address on the remote host on which to accept connections
-     * @param remotePort  port on the remote host on which to accept connections
-     * @param localHost   local host to which accepted connections are forwarded
      * @param localPort   local port to which accepted connections are forwarded
+     * @return port assigned on the remote host
      * @throws JSchException if setting up the forwarding fails
      */
-    void addReversePortForwarding(final String bindAddress, final int remotePort, final String localHost,
-            final int localPort) throws JSchException {
+    int addReversePortForwarding(final String bindAddress, final int localPort) throws JSchException {
         if (!this.session.isConnected()) {
             connectWithRetry();
         }
-        this.session.setPortForwardingR(bindAddress, remotePort, localHost, localPort);
+        return this.session.setPortForwardingR(bindAddress + ":0:localhost:" + localPort);
     }
 
     /**
