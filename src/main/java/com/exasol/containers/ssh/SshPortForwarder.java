@@ -9,10 +9,19 @@ import com.jcraft.jsch.JSchException;
 final class SshPortForwarder implements AutoCloseable {
     private final Ssh ssh;
 
+    /**
+     * Creates a new SSH port forwarder using the given session builder and establishes the SSH session.
+     * <p>
+     * The SSH session will be disconnected in {@link #close()}.
+     * </p>
+     *
+     * @param sessionBuilder the session builder used to create the SSH session
+     */
     SshPortForwarder(final SessionBuilder sessionBuilder) {
         this(new Ssh(sessionBuilder.build()));
     }
 
+    // Visible for testing purposes.
     SshPortForwarder(final Ssh ssh) {
         this.ssh = ssh;
     }

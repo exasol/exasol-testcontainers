@@ -12,7 +12,7 @@ import com.jcraft.jsch.JSchException;
 // [utest->dsn~reverse-ssh-port-forwarding-to-test-host~1]
 class SshPortForwarderTest {
     @Test
-    void addsReversePortForwarding() throws JSchException {
+    void testAddsReversePortForwarding() throws JSchException {
         final Ssh ssh = mock(Ssh.class);
         when(ssh.addReversePortForwarding("*", 1234)).thenReturn(4321);
         try (final SshPortForwarder forwarder = new SshPortForwarder(ssh)) {
@@ -22,7 +22,7 @@ class SshPortForwarderTest {
     }
 
     @Test
-    void closesSshConnection() {
+    void testClosesSshConnection() {
         final Ssh ssh = mock(Ssh.class);
         final SshPortForwarder forwarder = new SshPortForwarder(ssh);
 
@@ -32,7 +32,7 @@ class SshPortForwarderTest {
     }
 
     @Test
-    void reportsFailedReversePortForwarding() throws JSchException {
+    void testReportsFailedReversePortForwarding() throws JSchException {
         final Ssh ssh = mock(Ssh.class);
         when(ssh.addReversePortForwarding("*", 1234)).thenThrow(new JSchException("failure"));
         try (final SshPortForwarder forwarder = new SshPortForwarder(ssh)) {
